@@ -205,13 +205,13 @@ Built for the **October 2026 Hackathon** — a full-stack fintech startup from c
 
 Interested in partnering, investing, or integrating?
 
-> 🌐 [mymob.tech](https://mymob.tech) | 📧 hello@mymob.tech
+> 🌐 [mymob.tech](https://mymob.tech) | 📧 [chauhankunal695@gmail.com](mailto:chauhankunal695@gmail.com)
 
 ---
 
 <div align="center">
 
-*Built with ❤️ in India*  
+*Built with ❤️ by MOB*  
 *© MyMobPay 2026 — All Rights Reserved*  
 *Core reconciliation technology is proprietary and confidential.*
 
