@@ -129,6 +129,25 @@ const IconArrowForward = ({ className = "w-5 h-5" }) => (
   </svg>
 );
 
+const IconCreditCard = ({ className = "w-6 h-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+  </svg>
+);
+
+const IconLocalShipping = ({ className = "w-6 h-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+  </svg>
+);
+
+const IconArrowBack = ({ className = "w-4 h-4" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="19" y1="12" x2="5" y2="12"></line>
+    <polyline points="12 19 5 12 12 5"></polyline>
+  </svg>
+);
+
 const IconWallet = ({ className = "w-5 h-5" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
     <path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 00-2 2v8a2 2 0 002 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
@@ -179,12 +198,167 @@ export default function DesktopCheckoutView({
   submitUtr,
   utrBusy,
   utrMsg,
+  /* Optional card props */
+  cardBrand,
+  setCardBrand,
+  cardNumber,
+  setCardNumber,
+  cardExpiry,
+  setCardExpiry,
+  cardCvv,
+  setCardCvv,
+  cardHolder,
+  setCardHolder,
+  cardOtp,
+  setCardOtp,
+  cardBusy,
+  cardMsg,
+  submitCardPayment,
+  /* Optional COD props */
+  codName,
+  setCodName,
+  codPhone,
+  setCodPhone,
+  codAddress,
+  setCodAddress,
+  codPincode,
+  setCodPincode,
+  codCity,
+  setCodCity,
+  codBusy,
+  codMsg,
+  submitCodOrder,
 }) {
   const [lang, setLang] = useState('en'); // 'en' | 'hi'
   const [selectedCrypto, setSelectedCrypto] = useState('USDT');
   const [copiedField, setCopiedField] = useState(null); // 'upi' | 'acc' | 'ifsc' | 'crypto'
   const [liveAnnouncement, setLiveAnnouncement] = useState('');
   const [successCountdown, setSuccessCountdown] = useState(5);
+
+  // Local card state fallbacks
+  const [localCardBrand, setLocalCardBrand] = useState('visa');
+  const [localCardNumber, setLocalCardNumber] = useState('');
+  const [localCardExpiry, setLocalCardExpiry] = useState('');
+  const [localCardCvv, setLocalCardCvv] = useState('');
+  const [localCardHolder, setLocalCardHolder] = useState('');
+  const [localCardOtp, setLocalCardOtp] = useState('');
+  const [localCardBusy, setLocalCardBusy] = useState(false);
+  const [localCardMsg, setLocalCardMsg] = useState('');
+
+  const activeCardBrand = cardBrand !== undefined ? cardBrand : localCardBrand;
+  const onCardBrandChange = setCardBrand || setLocalCardBrand;
+  const activeCardNumber = cardNumber !== undefined ? cardNumber : localCardNumber;
+  const onCardNumberChange = setCardNumber || setLocalCardNumber;
+  const activeCardExpiry = cardExpiry !== undefined ? cardExpiry : localCardExpiry;
+  const onCardExpiryChange = setCardExpiry || setLocalCardExpiry;
+  const activeCardCvv = cardCvv !== undefined ? cardCvv : localCardCvv;
+  const onCardCvvChange = setCardCvv || setLocalCardCvv;
+  const activeCardHolder = cardHolder !== undefined ? cardHolder : localCardHolder;
+  const onCardHolderChange = setCardHolder || setLocalCardHolder;
+  const activeCardOtp = cardOtp !== undefined ? cardOtp : localCardOtp;
+  const onCardOtpChange = setCardOtp || setLocalCardOtp;
+  const activeCardBusy = cardBusy !== undefined ? cardBusy : localCardBusy;
+  const activeCardMsg = cardMsg !== undefined ? cardMsg : localCardMsg;
+
+  // Local COD state fallbacks
+  const [localCodName, setLocalCodName] = useState('');
+  const [localCodPhone, setLocalCodPhone] = useState('');
+  const [localCodAddress, setLocalCodAddress] = useState('');
+  const [localCodPincode, setLocalCodPincode] = useState('');
+  const [localCodCity, setLocalCodCity] = useState('');
+  const [localCodBusy, setLocalCodBusy] = useState(false);
+  const [localCodMsg, setLocalCodMsg] = useState('');
+
+  const activeCodName = codName !== undefined ? codName : localCodName;
+  const onCodNameChange = setCodName || setLocalCodName;
+  const activeCodPhone = codPhone !== undefined ? codPhone : localCodPhone;
+  const onCodPhoneChange = setCodPhone || setLocalCodPhone;
+  const activeCodAddress = codAddress !== undefined ? codAddress : localCodAddress;
+  const onCodAddressChange = setCodAddress || setLocalCodAddress;
+  const activeCodPincode = codPincode !== undefined ? codPincode : localCodPincode;
+  const onCodPincodeChange = setCodPincode || setLocalCodPincode;
+  const activeCodCity = codCity !== undefined ? codCity : localCodCity;
+  const onCodCityChange = setCodCity || setLocalCodCity;
+  const activeCodBusy = codBusy !== undefined ? codBusy : localCodBusy;
+  const activeCodMsg = codMsg !== undefined ? codMsg : localCodMsg;
+
+  // Fallback handlers if parent doesn't provide them
+  const handleCardSubmit = async (e) => {
+    if (typeof submitCardPayment === 'function') {
+      return submitCardPayment(e);
+    }
+    if (e) e.preventDefault();
+    if (orderMode !== 'test') {
+      if (setCardMsg) setCardMsg('Direct card gateway is reserved for test mode. For live payments, please switch to UPI or Net Banking.');
+      else setLocalCardMsg('Direct card gateway is reserved for test mode. For live payments, please switch to UPI or Net Banking.');
+      return;
+    }
+    const cleanNum = activeCardNumber.replace(/\s+/g, '');
+    if (cleanNum.length < 15) {
+      if (setCardMsg) setCardMsg('Please enter a valid 16-digit card number.');
+      else setLocalCardMsg('Please enter a valid 16-digit card number.');
+      return;
+    }
+    setLocalCardBusy(true);
+    setLocalCardMsg('');
+    try {
+      const res = await fetch('/api/orders/process-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: safeActiveId,
+          card_brand: activeCardBrand,
+          card_last4: cleanNum.slice(-4),
+          cardholder_name: activeCardHolder.trim() || 'Valued Customer',
+          otp: activeCardOtp.trim() || '123456'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Card processing failed');
+      setLocalCardMsg('✓ Card payment verified! Redirecting…');
+      if (typeof handleReturn === 'function') handleReturn();
+    } catch (err) {
+      setLocalCardMsg(err.message);
+    } finally {
+      setLocalCardBusy(false);
+    }
+  };
+
+  const handleCodSubmit = async (e) => {
+    if (typeof submitCodOrder === 'function') {
+      return submitCodOrder(e);
+    }
+    if (e) e.preventDefault();
+    if (!activeCodName.trim() || !activeCodPhone.trim() || !activeCodAddress.trim() || !activeCodPincode.trim()) {
+      if (setCodMsg) setCodMsg('Please fill in Name, Phone, Address, and Pincode.');
+      else setLocalCodMsg('Please fill in Name, Phone, Address, and Pincode.');
+      return;
+    }
+    setLocalCodBusy(true);
+    setLocalCodMsg('');
+    try {
+      const res = await fetch('/api/orders/confirm-cod', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: safeActiveId,
+          customer_name: activeCodName.trim(),
+          customer_phone: activeCodPhone.trim(),
+          delivery_address: activeCodAddress.trim(),
+          pincode: activeCodPincode.trim(),
+          city: activeCodCity.trim() || 'N/A'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to confirm COD');
+      setLocalCodMsg('✓ Cash on Delivery order confirmed! Redirecting…');
+      if (typeof handleReturn === 'function') handleReturn();
+    } catch (err) {
+      setLocalCodMsg(err.message);
+    } finally {
+      setLocalCodBusy(false);
+    }
+  };
 
   // Auto-redirect immediately when payment is confirmed (bypass Screen 1 delay)
   React.useEffect(() => {
@@ -330,7 +504,7 @@ export default function DesktopCheckoutView({
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Payment Method</span>
             <span className="text-xs font-bold text-slate-800 uppercase">
-              {activeOpt === 'bank' ? 'Bank Transfer (IMPS/NEFT)' : activeOpt === 'crypto' ? 'Crypto' : 'UPI Instant Settlement'}
+              {activeOpt === 'bank' ? 'Bank Transfer (IMPS/NEFT)' : activeOpt === 'crypto' ? 'Crypto Settlement' : activeOpt === 'card' ? 'Credit / Debit Card' : activeOpt === 'cod' ? 'Cash on Delivery (COD)' : 'UPI Instant Settlement'}
             </span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
@@ -571,7 +745,7 @@ export default function DesktopCheckoutView({
 
                     {/* Method 1: UPI / QR code */}
                     <button
-                      className={`payment-tab w-full text-left p-3.5 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
+                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
                         activeOpt === 'upi'
                           ? 'bg-surface-container-lowest shadow-sm'
                           : 'hover:bg-surface-container-high/60'
@@ -583,35 +757,74 @@ export default function DesktopCheckoutView({
                       onClick={() => setActiveOpt('upi')}
                       type="button"
                     >
-                      <span className="flex items-center gap-3.5 min-w-0">
-                        <span className="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary flex-shrink-0">
-                          <IconQrCodeScanner className="w-6 h-6 text-secondary flex-shrink-0" />
+                      <span className="flex items-center gap-3 min-w-0">
+                        <span className="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary flex-shrink-0">
+                          <IconQrCodeScanner className="w-5 h-5 text-secondary flex-shrink-0" />
                         </span>
                         <span className="flex flex-col text-left min-w-0 flex-1">
-                          <span className="text-title-md text-on-surface text-[15px] truncate block font-semibold">
+                          <span className="text-title-md text-on-surface text-[14px] truncate block font-semibold">
                             UPI / QR code
                           </span>
                           <span className="flex items-center flex-wrap gap-1.5 mt-0.5">
-                            <span className="text-body-sm text-on-surface-variant text-[12px]">
-                              GPay, PhonePe, Paytm, BHIM
+                            <span className="text-body-sm text-on-surface-variant text-[11px]">
+                              GPay, PhonePe, Paytm
                             </span>
-                            <span className="text-label-sm px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-bold flex items-center gap-0.5 flex-shrink-0">
-                              <IconBolt className="w-[12px] h-[12px] text-on-tertiary-fixed-variant flex-shrink-0" />
+                            <span className="text-label-sm px-1.5 py-0.2 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-bold text-[10px] flex items-center gap-0.5 flex-shrink-0">
+                              <IconBolt className="w-[10px] h-[10px] text-on-tertiary-fixed-variant flex-shrink-0" />
                               Fastest
                             </span>
                           </span>
                         </span>
                       </span>
                       <IconChevronRight
-                        className={`w-5 h-5 flex-shrink-0 ${
+                        className={`w-4 h-4 flex-shrink-0 ${
                           activeOpt === 'upi' ? 'text-secondary' : 'text-outline-variant'
                         }`}
                       />
                     </button>
 
-                    {/* Method 2: Direct bank transfer */}
+                    {/* Method 2: Cards */}
                     <button
-                      className={`payment-tab w-full text-left p-3.5 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
+                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
+                        activeOpt === 'card'
+                          ? 'bg-surface-container-lowest shadow-sm'
+                          : 'hover:bg-surface-container-high/60'
+                      }`}
+                      id="tab-card"
+                      role="tab"
+                      aria-selected={activeOpt === 'card'}
+                      aria-controls="pane-card"
+                      onClick={() => setActiveOpt('card')}
+                      type="button"
+                    >
+                      <span className="flex items-center gap-3 min-w-0">
+                        <span className="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
+                          <IconCreditCard className="w-5 h-5 text-on-surface-variant flex-shrink-0" />
+                        </span>
+                        <span className="flex flex-col text-left min-w-0 flex-1">
+                          <span className="text-title-md text-on-surface text-[14px] truncate block font-semibold">
+                            Cards (Credit/Debit)
+                          </span>
+                          <span className="flex items-center flex-wrap gap-1.5 mt-0.5">
+                            <span className="text-body-sm text-on-surface-variant text-[11px]">
+                              Visa, MasterCard, RuPay
+                            </span>
+                            <span className="text-label-sm px-1.5 py-0.2 rounded-full bg-surface-container-highest text-secondary font-bold text-[10px] flex-shrink-0">
+                              3DS
+                            </span>
+                          </span>
+                        </span>
+                      </span>
+                      <IconChevronRight
+                        className={`w-4 h-4 flex-shrink-0 ${
+                          activeOpt === 'card' ? 'text-secondary' : 'text-outline-variant'
+                        }`}
+                      />
+                    </button>
+
+                    {/* Method 3: Direct bank transfer */}
+                    <button
+                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
                         activeOpt === 'bank'
                           ? 'bg-surface-container-lowest shadow-sm'
                           : 'hover:bg-surface-container-high/60'
@@ -623,34 +836,34 @@ export default function DesktopCheckoutView({
                       onClick={() => setActiveOpt('bank')}
                       type="button"
                     >
-                      <span className="flex items-center gap-3.5 min-w-0">
-                        <span className="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-                          <IconAccountBalance className="w-6 h-6 text-on-surface-variant flex-shrink-0" />
+                      <span className="flex items-center gap-3 min-w-0">
+                        <span className="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
+                          <IconAccountBalance className="w-5 h-5 text-on-surface-variant flex-shrink-0" />
                         </span>
                         <span className="flex flex-col text-left min-w-0 flex-1">
-                          <span className="text-title-md text-on-surface text-[15px] truncate block font-semibold">
+                          <span className="text-title-md text-on-surface text-[14px] truncate block font-semibold">
                             {lang === 'hi' ? 'सीधा बैंक ट्रांसफर' : 'Direct bank transfer'}
                           </span>
                           <span className="flex items-center flex-wrap gap-1.5 mt-0.5">
-                            <span className="text-body-sm text-on-surface-variant text-[12px]">
-                              Instant IMPS / NEFT / RTGS
+                            <span className="text-body-sm text-on-surface-variant text-[11px]">
+                              IMPS / NEFT / RTGS
                             </span>
-                            <span className="text-label-sm px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary font-semibold flex-shrink-0">
-                              Min ₹2,000
+                            <span className="text-label-sm px-1.5 py-0.2 rounded-full bg-secondary-container text-on-secondary font-bold text-[10px] flex-shrink-0">
+                              0% Fee
                             </span>
                           </span>
                         </span>
                       </span>
                       <IconChevronRight
-                        className={`w-5 h-5 flex-shrink-0 ${
+                        className={`w-4 h-4 flex-shrink-0 ${
                           activeOpt === 'bank' ? 'text-secondary' : 'text-outline-variant'
                         }`}
                       />
                     </button>
 
-                    {/* Method 3: Crypto currency */}
+                    {/* Method 4: Crypto currency */}
                     <button
-                      className={`payment-tab w-full text-left p-3.5 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
+                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
                         activeOpt === 'crypto'
                           ? 'bg-surface-container-lowest shadow-sm'
                           : 'hover:bg-surface-container-high/60'
@@ -662,28 +875,67 @@ export default function DesktopCheckoutView({
                       onClick={() => setActiveOpt('crypto')}
                       type="button"
                     >
-                      <span className="flex items-center gap-3.5 min-w-0">
-                        <span className="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
-                          <IconBitcoin className="w-6 h-6 text-on-surface-variant flex-shrink-0" />
+                      <span className="flex items-center gap-3 min-w-0">
+                        <span className="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
+                          <IconBitcoin className="w-5 h-5 text-on-surface-variant flex-shrink-0" />
                         </span>
                         <span className="flex flex-col text-left min-w-0 flex-1">
-                          <span className="text-title-md text-on-surface text-[15px] truncate block font-semibold">
+                          <span className="text-title-md text-on-surface text-[14px] truncate block font-semibold">
                             {lang === 'hi' ? 'क्रिप्टो करेंसी' : 'Crypto currency'}
                           </span>
                           <span className="flex items-center flex-wrap gap-1.5 mt-0.5">
-                            <span className="text-body-sm text-on-surface-variant text-[12px]">
-                              USDT, BTC, ETH settlement
+                            <span className="text-body-sm text-on-surface-variant text-[11px]">
+                              USDT, BTC, ETH
                             </span>
-                            <span className="text-label-sm px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-semibold flex items-center gap-0.5 flex-shrink-0">
-                              <IconLink className="w-[12px] h-[12px] text-on-tertiary-fixed-variant flex-shrink-0" />
+                            <span className="text-label-sm px-1.5 py-0.2 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-bold text-[10px] flex items-center gap-0.5 flex-shrink-0">
+                              <IconLink className="w-[10px] h-[10px] text-on-tertiary-fixed-variant flex-shrink-0" />
                               Web3
                             </span>
                           </span>
                         </span>
                       </span>
                       <IconChevronRight
-                        className={`w-5 h-5 flex-shrink-0 ${
+                        className={`w-4 h-4 flex-shrink-0 ${
                           activeOpt === 'crypto' ? 'text-secondary' : 'text-outline-variant'
+                        }`}
+                      />
+                    </button>
+
+                    {/* Method 5: Cash on Delivery */}
+                    <button
+                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
+                        activeOpt === 'cod'
+                          ? 'bg-surface-container-lowest shadow-sm'
+                          : 'hover:bg-surface-container-high/60'
+                      }`}
+                      id="tab-cod"
+                      role="tab"
+                      aria-selected={activeOpt === 'cod'}
+                      aria-controls="pane-cod"
+                      onClick={() => setActiveOpt('cod')}
+                      type="button"
+                    >
+                      <span className="flex items-center gap-3 min-w-0">
+                        <span className="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant flex-shrink-0">
+                          <IconLocalShipping className="w-5 h-5 text-on-surface-variant flex-shrink-0" />
+                        </span>
+                        <span className="flex flex-col text-left min-w-0 flex-1">
+                          <span className="text-title-md text-on-surface text-[14px] truncate block font-semibold">
+                            Cash on Delivery
+                          </span>
+                          <span className="flex items-center flex-wrap gap-1.5 mt-0.5">
+                            <span className="text-body-sm text-on-surface-variant text-[11px]">
+                              Pay upon delivery
+                            </span>
+                            <span className="text-label-sm px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-900 font-bold text-[10px] flex-shrink-0">
+                              COD
+                            </span>
+                          </span>
+                        </span>
+                      </span>
+                      <IconChevronRight
+                        className={`w-4 h-4 flex-shrink-0 ${
+                          activeOpt === 'cod' ? 'text-secondary' : 'text-outline-variant'
                         }`}
                       />
                     </button>
@@ -703,7 +955,173 @@ export default function DesktopCheckoutView({
 
                 {/* ── RIGHT COLUMN: Selected Method Detail Pane ── */}
                 <section className="md:col-span-7 p-5 sm:p-7 flex flex-col justify-between bg-surface-container-lowest">
-                  
+
+                  {/* Top Bar: Change payment method button */}
+                  {activeOpt && (
+                    <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-surface-container">
+                      <button
+                        type="button"
+                        onClick={() => setActiveOpt(null)}
+                        className="focus-ring text-secondary hover:text-[#0038b7] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer py-1 px-2.5 -ml-2 rounded-lg hover:bg-surface-container-high/60"
+                        id="changePaymentMethodDesktopBtn"
+                      >
+                        <IconArrowBack className="w-4 h-4 text-secondary" />
+                        <span>← Change payment method</span>
+                      </button>
+                      <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                        Paying ₹{formattedAmount}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* ═══════════════════════════════════════════════════
+                      SELECTION OVERVIEW (Shown when !activeOpt)
+                  ═══════════════════════════════════════════════════ */}
+                  {!activeOpt && (
+                    <div className="pane-content space-y-4 flex-1 animate-fade-in" id="pane-select-overview">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="text-title-md text-on-surface text-[17px] font-bold">
+                            Choose How You&apos;d Like to Pay
+                          </h3>
+                          <span className="text-label-sm px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
+                            ✓ 0% Gateway Fee
+                          </span>
+                        </div>
+                        <p className="text-body-sm text-on-surface-variant text-[12.5px]">
+                          Select your preferred payment method to complete ₹{formattedAmount} to {safeBizName}.
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-2.5 pt-1">
+                        {/* 1. UPI / QR code */}
+                        <button
+                          type="button"
+                          onClick={() => setActiveOpt('upi')}
+                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-secondary group-hover:scale-105 transition-transform shrink-0">
+                              <IconQrCodeScanner className="w-6 h-6 text-secondary" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-on-surface text-sm">UPI / QR Code & Apps</span>
+                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant">
+                                  Fastest
+                                </span>
+                              </div>
+                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
+                                Google Pay, PhonePe, Paytm, CRED & all UPI apps
+                              </p>
+                            </div>
+                          </div>
+                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
+                        </button>
+
+                        {/* 2. Cards */}
+                        <button
+                          type="button"
+                          onClick={() => setActiveOpt('card')}
+                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-on-surface group-hover:scale-105 transition-transform shrink-0">
+                              <IconCreditCard className="w-6 h-6 text-on-surface" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-on-surface text-sm">Debit & Credit Cards</span>
+                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-surface-container-highest text-secondary">
+                                  3DS Secure
+                                </span>
+                              </div>
+                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
+                                Visa, MasterCard, RuPay, Maestro
+                              </p>
+                            </div>
+                          </div>
+                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
+                        </button>
+
+                        {/* 3. Direct bank transfer */}
+                        <button
+                          type="button"
+                          onClick={() => setActiveOpt('bank')}
+                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-on-surface group-hover:scale-105 transition-transform shrink-0">
+                              <IconAccountBalance className="w-6 h-6 text-on-surface" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-on-surface text-sm">Direct Bank Transfer</span>
+                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-secondary-container text-white">
+                                  IMPS / NEFT
+                                </span>
+                              </div>
+                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
+                                Instant 24x7 virtual account bank transfer
+                              </p>
+                            </div>
+                          </div>
+                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
+                        </button>
+
+                        {/* 4. Crypto */}
+                        <button
+                          type="button"
+                          onClick={() => setActiveOpt('crypto')}
+                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-on-surface group-hover:scale-105 transition-transform shrink-0">
+                              <IconBitcoin className="w-6 h-6 text-on-surface" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-on-surface text-sm">Crypto Currency</span>
+                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant">
+                                  Web3
+                                </span>
+                              </div>
+                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
+                                USDT (TRC20/ERC20), Bitcoin & Ethereum
+                              </p>
+                            </div>
+                          </div>
+                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
+                        </button>
+
+                        {/* 5. Cash on Delivery */}
+                        <button
+                          type="button"
+                          onClick={() => setActiveOpt('cod')}
+                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-on-surface group-hover:scale-105 transition-transform shrink-0">
+                              <IconLocalShipping className="w-6 h-6 text-on-surface" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-on-surface text-sm">Cash on Delivery (COD)</span>
+                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
+                                  Pay Later
+                                </span>
+                              </div>
+                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
+                                Pay in cash when order is delivered to your address
+                              </p>
+                            </div>
+                          </div>
+                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* ═══════════════════════════════════════════════════
                       PANE 1: UPI / QR CODE
                   ═══════════════════════════════════════════════════ */}
@@ -1017,7 +1435,159 @@ export default function DesktopCheckoutView({
                   )}
 
                   {/* ═══════════════════════════════════════════════════
-                      PANE 2: DIRECT BANK TRANSFER
+                      PANE: CREDIT / DEBIT CARDS
+                  ═══════════════════════════════════════════════════ */}
+                  {activeOpt === 'card' && (
+                    <div className="pane-content space-y-4 flex-1 animate-fade-in" id="pane-card" role="tabpanel" aria-labelledby="tab-card">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-title-md text-on-surface text-[15px] font-semibold">Credit & Debit Cards</h3>
+                          <p className="text-body-sm text-on-surface-variant text-[12px]">Visa, MasterCard, RuPay, Maestro</p>
+                        </div>
+                        <span className="px-2 py-0.5 rounded text-label-sm bg-surface-container-highest text-secondary font-bold">3DS Secure</span>
+                      </div>
+
+                      {orderMode === 'test' ? (
+                        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
+                          <span className="font-bold">Sandbox Card Simulator:</span> Enter any card details and use OTP <code className="font-mono bg-amber-100 px-1 py-0.5 rounded">123456</code> to test instant verification.
+                        </div>
+                      ) : (
+                        <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200/80 text-blue-950 text-xs space-y-2">
+                          <div className="flex items-center gap-2">
+                            <IconInfo className="w-4 h-4 text-blue-700 flex-shrink-0" />
+                            <span className="font-bold text-blue-900">Direct Card Network Notice</span>
+                          </div>
+                          <p className="text-blue-800 text-[11.5px] leading-relaxed">
+                            Card network 3DS gateway is currently undergoing scheduled banking maintenance. For 0% MDR instant bank settlement, we recommend using <strong>UPI</strong> or <strong>Net Banking</strong>.
+                          </p>
+                          <div className="flex gap-2 pt-1">
+                            <button
+                              type="button"
+                              onClick={() => setActiveOpt('upi')}
+                              className="px-3 py-1.5 rounded-lg bg-secondary text-white font-bold text-xs hover:bg-[#0038b7] cursor-pointer"
+                            >
+                              Switch to UPI (0% Fee) →
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setActiveOpt('bank')}
+                              className="px-3 py-1.5 rounded-lg bg-white border border-blue-300 text-blue-900 font-bold text-xs hover:bg-blue-50 cursor-pointer"
+                            >
+                              Pay with Net Banking
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <form onSubmit={handleCardSubmit} className="space-y-3 p-4 rounded-xl bg-surface-container-low border border-surface-container">
+                        <div>
+                          <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                            Card Number
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={19}
+                            placeholder="4532 •••• •••• 8892"
+                            value={activeCardNumber}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/\D/g, '').slice(0, 16);
+                              const formatted = val.replace(/(\d{4})/g, '$1 ').trim();
+                              onCardNumberChange(formatted);
+                            }}
+                            className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs font-mono text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                            Name on Card
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="RAHUL SHARMA"
+                            value={activeCardHolder}
+                            onChange={(e) => onCardHolderChange(e.target.value.toUpperCase())}
+                            className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30 uppercase"
+                            required
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                              Expiry Date
+                            </label>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={5}
+                              placeholder="MM/YY"
+                              value={activeCardExpiry}
+                              onChange={(e) => {
+                                let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                if (v.length > 2) v = `${v.slice(0, 2)}/${v.slice(2)}`;
+                                onCardExpiryChange(v);
+                              }}
+                              className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs font-mono text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                              CVV
+                            </label>
+                            <input
+                              type="password"
+                              inputMode="numeric"
+                              maxLength={4}
+                              placeholder="•••"
+                              value={activeCardCvv}
+                              onChange={(e) => onCardCvvChange(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                              className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs font-mono text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        {orderMode === 'test' && (
+                          <div>
+                            <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                              Test OTP (Default: 123456)
+                            </label>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={6}
+                              placeholder="123456"
+                              value={activeCardOtp}
+                              onChange={(e) => onCardOtpChange(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                              className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs font-mono text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                            />
+                          </div>
+                        )}
+
+                        {activeCardMsg && (
+                          <p className={`text-xs font-semibold ${activeCardMsg.startsWith('✓') ? 'text-emerald-600' : 'text-rose-600'}`}>
+                            {activeCardMsg}
+                          </p>
+                        )}
+
+                        <button
+                          type="submit"
+                          disabled={activeCardBusy}
+                          className="focus-ring w-full h-11 rounded-xl bg-secondary text-on-secondary text-sm font-bold shadow-sm hover:bg-[#0038b7] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2"
+                        >
+                          <span>{activeCardBusy ? 'Processing Card…' : `Pay ₹${formattedAmount}`}</span>
+                          <IconArrowForward className="w-4 h-4" />
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {/* ═══════════════════════════════════════════════════
+                      PANE 3: DIRECT BANK TRANSFER
                   ═══════════════════════════════════════════════════ */}
                   {activeOpt === 'bank' && (
                     <div className="pane-content space-y-4 flex-1 animate-fade-in" id="pane-bank" role="tabpanel" aria-labelledby="tab-bank">
@@ -1242,6 +1812,118 @@ export default function DesktopCheckoutView({
                     </div>
                   )}
 
+                  {/* ═══════════════════════════════════════════════════
+                      PANE: CASH ON DELIVERY (COD)
+                  ═══════════════════════════════════════════════════ */}
+                  {activeOpt === 'cod' && (
+                    <div className="pane-content space-y-4 flex-1 animate-fade-in" id="pane-cod" role="tabpanel" aria-labelledby="tab-cod">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-title-md text-on-surface text-[15px] font-semibold">Cash on Delivery</h3>
+                          <p className="text-body-sm text-on-surface-variant text-[12px]">Pay in cash when order is delivered</p>
+                        </div>
+                        <span className="px-2 py-0.5 rounded text-label-sm bg-surface-container-highest text-secondary font-bold">Pay Later</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 text-xs flex items-center gap-2.5">
+                        <IconLocalShipping className="w-5 h-5 text-emerald-700 shrink-0" />
+                        <span>No advance payment needed. Pay <strong>₹{formattedAmount}</strong> to the courier delivery partner.</span>
+                      </div>
+
+                      <form onSubmit={handleCodSubmit} className="space-y-3 p-4 rounded-xl bg-surface-container-low border border-surface-container">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                              Recipient Name
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Rahul Sharma"
+                              value={activeCodName}
+                              onChange={(e) => onCodNameChange(e.target.value)}
+                              className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                              Mobile Number
+                            </label>
+                            <input
+                              type="tel"
+                              inputMode="numeric"
+                              maxLength={10}
+                              placeholder="9876543210"
+                              value={activeCodPhone}
+                              onChange={(e) => onCodPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                              className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs font-mono text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                            Delivery Address
+                          </label>
+                          <textarea
+                            rows={2}
+                            placeholder="Flat / House No., Street, Landmark"
+                            value={activeCodAddress}
+                            onChange={(e) => onCodAddressChange(e.target.value)}
+                            className="w-full p-2.5 rounded-lg border border-outline-variant/60 bg-white text-xs text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30 resize-none"
+                            required
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                              Pincode
+                            </label>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={6}
+                              placeholder="110001"
+                              value={activeCodPincode}
+                              onChange={(e) => onCodPincodeChange(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                              className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs font-mono text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                              City / State
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="New Delhi"
+                              value={activeCodCity}
+                              onChange={(e) => onCodCityChange(e.target.value)}
+                              className="w-full h-10 px-3 rounded-lg border border-outline-variant/60 bg-white text-xs text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                            />
+                          </div>
+                        </div>
+
+                        {activeCodMsg && (
+                          <p className={`text-xs font-semibold ${activeCodMsg.startsWith('✓') ? 'text-emerald-600' : 'text-rose-600'}`}>
+                            {activeCodMsg}
+                          </p>
+                        )}
+
+                        <button
+                          type="submit"
+                          disabled={activeCodBusy}
+                          className="focus-ring w-full h-11 rounded-xl bg-secondary text-on-secondary text-sm font-bold shadow-sm hover:bg-[#0038b7] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2"
+                        >
+                          <span>{activeCodBusy ? 'Confirming Order…' : `Confirm COD Order (₹${formattedAmount})`}</span>
+                          <IconArrowForward className="w-4 h-4" />
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
                   {/* Card Bottom Row (Secure Checkout / Powered by mymob.tech) */}
                   <div className="pt-5 mt-auto flex items-center justify-between text-on-surface-variant border-t border-surface-container-low">
                     <div className="flex items-center gap-1.5 text-label-sm text-on-surface-variant">
@@ -1265,8 +1947,10 @@ export default function DesktopCheckoutView({
                 </div>
                 <div className="flex items-center gap-3 text-label-sm text-on-surface-variant">
                   <span className="font-bold text-on-surface">UPI</span><span>·</span>
+                  <span className="font-bold text-on-surface">Cards</span><span>·</span>
                   <span className="font-bold text-on-surface">IMPS / NEFT</span><span>·</span>
-                  <span className="font-bold text-on-surface">Web3 USDT</span>
+                  <span className="font-bold text-on-surface">Web3 USDT</span><span>·</span>
+                  <span className="font-bold text-on-surface">COD</span>
                 </div>
               </footer>
             </div>

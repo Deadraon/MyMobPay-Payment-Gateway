@@ -115,6 +115,8 @@ function PayPageContent() {
   const paramLid      = searchParams.get('lid')      || '';
   const paramOrderId  = searchParams.get('order_id') || searchParams.get('id') || '';
   const cleanParamOrderId = (paramOrderId || '').trim().replace(/^[-#]+/, '');
+  const paramMethod   = searchParams.get('method')   || searchParams.get('payment_method') || '';
+  const cleanParamMethod = ['upi', 'card', 'bank', 'crypto', 'cod'].includes((paramMethod || '').toLowerCase()) ? (paramMethod || '').toLowerCase() : null;
 
   /* Core state */
   const [merchant,     setMerchant]     = useState(null);
@@ -131,11 +133,33 @@ function PayPageContent() {
   const [custName,     setCustName]     = useState(paramName);
   const [custPhone,    setCustPhone]    = useState(paramPhone);
 
-  /* Desktop accordion selection: 'upi' | 'bank' | 'crypto' */
-  const [activeOpt,    setActiveOpt]    = useState('upi');
+  /* Desktop method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' | 'cod' */
+  const [activeOpt,    setActiveOpt]    = useState(cleanParamMethod);
 
-  /* Mobile accordion selection: '' | 'pBank' | 'pUsdt' */
+  /* Mobile method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' | 'cod' */
+  const [selectedMethod, setSelectedMethod] = useState(cleanParamMethod);
+
+  /* Mobile accordion selection */
   const [activeAcc,    setActiveAcc]    = useState('');
+
+  /* Card payment state */
+  const [cardBrand,    setCardBrand]    = useState('visa');
+  const [cardNumber,   setCardNumber]   = useState('');
+  const [cardExpiry,   setCardExpiry]   = useState('');
+  const [cardCvv,      setCardCvv]      = useState('');
+  const [cardHolder,   setCardHolder]   = useState(paramName || '');
+  const [cardOtp,      setCardOtp]      = useState('');
+  const [cardBusy,     setCardBusy]     = useState(false);
+  const [cardMsg,      setCardMsg]      = useState('');
+
+  /* COD state */
+  const [codName,      setCodName]      = useState(paramName || '');
+  const [codPhone,     setCodPhone]     = useState(paramPhone || '');
+  const [codAddress,   setCodAddress]   = useState('');
+  const [codPincode,   setCodPincode]   = useState('');
+  const [codCity,      setCodCity]      = useState('');
+  const [codBusy,      setCodBusy]      = useState(false);
+  const [codMsg,       setCodMsg]       = useState('');
 
   /* View navigation: 'vChecking' | 'vPaidExpired' | 'vPay' | 'vOk' | 'vExp' */
   const [curView,      setCurView]      = useState(cleanParamOrderId ? 'vChecking' : 'vPay');
@@ -683,6 +707,76 @@ function PayPageContent() {
     }
   };
 
+  /* Submit Card Payment */
+  const submitCardPayment = async (e) => {
+    if (e) e.preventDefault();
+    if (orderMode !== 'test') {
+      setCardMsg('Direct card gateway is reserved for test mode. For live payments, please switch to UPI or Net Banking.');
+      return;
+    }
+    const cleanNum = cardNumber.replace(/\s+/g, '');
+    if (cleanNum.length < 15) {
+      setCardMsg('Please enter a valid 16-digit card number.');
+      return;
+    }
+    setCardBusy(true);
+    setCardMsg('');
+    try {
+      const res = await fetch('/api/orders/process-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: activeId,
+          card_brand: cardBrand,
+          card_last4: cleanNum.slice(-4),
+          cardholder_name: cardHolder.trim() || 'Valued Customer',
+          otp: cardOtp.trim() || '123456'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Card processing failed');
+      setCardMsg('✓ Card payment verified! Redirecting…');
+      handleSuccess();
+    } catch (err) {
+      setCardMsg(err.message);
+    } finally {
+      setCardBusy(false);
+    }
+  };
+
+  /* Submit COD Order */
+  const submitCodOrder = async (e) => {
+    if (e) e.preventDefault();
+    if (!codName.trim() || !codPhone.trim() || !codAddress.trim() || !codPincode.trim()) {
+      setCodMsg('Please fill in Name, Phone, Address, and Pincode.');
+      return;
+    }
+    setCodBusy(true);
+    setCodMsg('');
+    try {
+      const res = await fetch('/api/orders/confirm-cod', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: activeId,
+          customer_name: codName.trim(),
+          customer_phone: codPhone.trim(),
+          delivery_address: codAddress.trim(),
+          pincode: codPincode.trim(),
+          city: codCity.trim() || 'N/A'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to confirm COD');
+      setCodMsg('✓ Cash on Delivery order confirmed! Redirecting…');
+      handleSuccess();
+    } catch (err) {
+      setCodMsg(err.message);
+    } finally {
+      setCodBusy(false);
+    }
+  };
+
   /* ───────────────────────────────────────────────────────────
      CHECKING SESSION VIEW (Fast loader while verifying if already paid)
   ─────────────────────────────────────────────────────────── */
@@ -972,6 +1066,34 @@ function PayPageContent() {
           orderMode={orderMode}
           fmtInr={fmtInr}
           buildUpiLink={buildUpiLink}
+          cardBrand={cardBrand}
+          setCardBrand={setCardBrand}
+          cardNumber={cardNumber}
+          setCardNumber={setCardNumber}
+          cardExpiry={cardExpiry}
+          setCardExpiry={setCardExpiry}
+          cardCvv={cardCvv}
+          setCardCvv={setCardCvv}
+          cardHolder={cardHolder}
+          setCardHolder={setCardHolder}
+          cardOtp={cardOtp}
+          setCardOtp={setCardOtp}
+          cardBusy={cardBusy}
+          cardMsg={cardMsg}
+          submitCardPayment={submitCardPayment}
+          codName={codName}
+          setCodName={setCodName}
+          codPhone={codPhone}
+          setCodPhone={setCodPhone}
+          codAddress={codAddress}
+          setCodAddress={setCodAddress}
+          codPincode={codPincode}
+          setCodPincode={setCodPincode}
+          codCity={codCity}
+          setCodCity={setCodCity}
+          codBusy={codBusy}
+          codMsg={codMsg}
+          submitCodOrder={submitCodOrder}
         />
       </div>
 
@@ -1013,203 +1135,770 @@ function PayPageContent() {
             </div>
           )}
 
-
-          {/* VIEW 1: PAY — Matches Reference Design (Phone dot + Pristine White Card + Themed QR Stand) */}
+          {/* VIEW 1: PAY — Choice of Payment Methods First, then Selected Method */}
           {curView === 'vPay' && (
             <div id="vPay">
               {/* Subtle top camera dot (mockup aesthetic) */}
               <div className="mob-phone-dot" aria-hidden="true" />
 
-              {/* Main Pristine White Payment Card */}
-              <div className="mob-checkout-card">
-                {/* 1. Centered Brand Header: Blue/Orange M Logo + MyMobPay */}
-                <div className="mob-brand-header">
-                  <svg width="32" height="28" viewBox="0 0 38 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M 6.5 28.5 V 13 C 6.5 7.2 11.5 5 15.5 8.2 L 19 18.5"
-                      stroke="#0284C7"
-                      strokeWidth="5.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M 19 18.5 L 22.5 8.2 C 26.5 5 31.5 7.2 31.5 13 V 28.5"
-                      stroke="#FF7800"
-                      strokeWidth="5.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span className="mob-brand-title">MyMobPay</span>
-                </div>
-
-                {/* 2. Total Amount Display */}
-                <div className="mob-total-display">
-                  TOTAL: {fmtInr(displayAmt)}
-                </div>
-
-                {/* 3. Timer Pill: Clock icon + Expires in: mm:ss */}
-                <div className="mob-timer-pill-wrap">
-                  <div className={`mob-timer-pill ${isTimerLow ? 'low' : ''}`}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
+              {/* ─────────────────────────────────────────────────────────────
+                  STATE A: NO PAYMENT METHOD SELECTED YET (DEFAULT FIRST VIEW)
+                  Shows clean, professional payment method choices first
+              ───────────────────────────────────────────────────────────── */}
+              {!selectedMethod ? (
+                <div className="mob-select-methods-wrap">
+                  {/* Brand Header */}
+                  <div className="mob-brand-header">
+                    <svg width="32" height="28" viewBox="0 0 38 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M 6.5 28.5 V 13 C 6.5 7.2 11.5 5 15.5 8.2 L 19 18.5"
+                        stroke="#0284C7"
+                        strokeWidth="5.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M 19 18.5 L 22.5 8.2 C 26.5 5 31.5 7.2 31.5 13 V 28.5"
+                        stroke="#FF7800"
+                        strokeWidth="5.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
-                    <span className="mob-timer-label">Expires in:</span>
-                    <span className="mob-timer-digits">{mm}:{ss}</span>
+                    <span className="mob-brand-title">MyMobPay</span>
                   </div>
-                </div>
 
-                {/* 4. Themed QR Frame with 4 Orange Corners and Center M Badge */}
-                <div className="mob-qr-container">
-                  <div className="mob-qr-frame">
-                    <span className="mob-corner mob-corner-tl" />
-                    <span className="mob-corner mob-corner-tr" />
-                    <span className="mob-corner mob-corner-bl" />
-                    <span className="mob-corner mob-corner-br" />
-
-                    <div className="mob-qr-inner">
-                      {upiQrValue ? (
-                        <>
-                          <QRCode
-                            value={upiQrValue}
-                            size={196}
-                            level="Q"
-                            fgColor="#0f172a"
-                            bgColor="#ffffff"
-                            style={{ display: 'block', width: '100%', height: 'auto' }}
-                          />
-                          {/* Centered QR Badge with Dual-color M Logo */}
-                          <div className="mob-qr-center-pill">
-                            <svg width="24" height="22" viewBox="0 0 38 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                d="M 6.5 28.5 V 13 C 6.5 7.2 11.5 5 15.5 8.2 L 19 18.5"
-                                stroke="#0284C7"
-                                strokeWidth="5.2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <path
-                                d="M 19 18.5 L 22.5 8.2 C 26.5 5 31.5 7.2 31.5 13 V 28.5"
-                                stroke="#FF7800"
-                                strokeWidth="5.2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                        </>
-                      ) : (
-                        <div style={{ width: 196, height: 196, display: 'grid', placeItems: 'center', color: '#64748b', fontSize: 13 }}>
-                          Generating QR…
+                  {/* Order Hero / Summary Card */}
+                  <div className="mob-order-hero-card">
+                    <div className="mob-order-hero-top">
+                      <div>
+                        <span className="mob-order-hero-lbl">Amount to Pay</span>
+                        <div className="mob-order-hero-amt">{fmtInr(displayAmt)}</div>
+                      </div>
+                      <div className={`mob-timer-pill ${isTimerLow ? 'low' : ''}`}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span>{mm}:{ss}</span>
+                      </div>
+                    </div>
+                    <div className="mob-order-hero-meta">
+                      <div className="mob-hero-meta-item">
+                        <span className="mob-meta-k">Merchant</span>
+                        <span className="mob-meta-v">{bizName}</span>
+                      </div>
+                      {activeId && (
+                        <div className="mob-hero-meta-item">
+                          <span className="mob-meta-k">Order ID</span>
+                          <span className="mob-meta-v" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{activeId}</span>
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
 
-                {/* 5. Verified Merchant Pill */}
-                <div className="mob-merchant-badge">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
-                    <path d="M9 12l2 2 4-4"/>
-                  </svg>
-                  <span>Verified Merchant &bull; {bizName}</span>
-                </div>
-
-                {/* 5b. Payment Verification Advisory Line (Mobile) */}
-                <div className="mob-verify-notice">
-                  <div className="mob-verify-icon-box">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    <span className="mob-verify-ping" />
-                    <span className="mob-verify-dot" />
+                  {/* Section Title */}
+                  <div className="mob-choose-hdr">
+                    <h3>Choose Payment Method</h3>
+                    <p>Select your preferred option to complete payment</p>
                   </div>
-                  <div className="mob-verify-text">
-                    <strong className="mob-verify-title">Auto-verifying bank credit...</strong>{' '}
-                    <span className="mob-verify-desc">Bank notifications take 30–90 seconds. Please keep this screen open, or tap below to enter your 12-digit UTR if already debited.</span>
-                  </div>
-                </div>
 
-                {/* 6. Quick Tap-to-Pay UPI App Launcher Chips */}
-                <div className="mob-upi-apps-row">
-                  <p className="mob-action-hint">Tap to pay with any UPI app</p>
-                  <div className="mob-chips-grid">
-                    {UPI_CHIPS.map(app => (
-                      <button
-                        key={app.id}
-                        type="button"
-                        onClick={() => {
-                          if (!displayAmt) return;
-                          window.location.href = buildUpiLink(app.id, displayAmt, activeId, merchant, isMandate);
-                        }}
-                        className="mob-app-chip"
-                        title={`Pay with ${app.label}`}
-                      >
-                        <img src={app.logo} alt={app.label} style={{ maxHeight: app.h, maxWidth: '85%', width: 'auto', height: 'auto', display: 'block', objectFit: 'contain' }} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 7. Copyable UPI ID Bar */}
-                <div className="mob-upi-id-bar">
-                  <div className="mob-upi-id-left">
-                    <span className="mob-upi-id-label">UPI ID</span>
-                    <span className="mob-upi-id-val">{upiId}</span>
-                  </div>
-                  <button
-                    type="button"
-                    className={`mob-copy-btn ${copyFeedback ? 'done' : ''}`}
-                    onClick={handleCopyUpi}
-                  >
-                    {copyFeedback ? 'Copied ✓' : 'Copy'}
-                  </button>
-                </div>
-
-                {/* 8. Live Real-Time Verification Status & UTR Drawer (Stays on same screen!) */}
-                {(isChecking || checkMsg || showUtr) ? (
-                  <div style={{
-                    marginTop: 12,
-                    background: checkMsg?.startsWith('✓') ? '#ecfdf5' : '#f8fafc',
-                    border: `1.5px solid ${checkMsg?.startsWith('✓') ? '#a7f3d0' : '#e2e8f0'}`,
-                    borderRadius: 14,
-                    padding: '12px 14px',
-                    textAlign: 'left'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      {isChecking ? (
-                        <svg width="20" height="20" viewBox="0 0 48 48" style={{ animation: 'spin 0.8s linear infinite', flexShrink: 0 }}>
-                          <circle cx="24" cy="24" r="20" stroke="#cbd5e1" strokeWidth="5" fill="none" />
-                          <circle cx="24" cy="24" r="20" stroke="#0284C7" strokeWidth="5" strokeLinecap="round" fill="none" strokeDasharray="32 94" />
+                  {/* 5 Payment Methods Stack */}
+                  <div className="mob-methods-stack">
+                    {/* 1. UPI / QR */}
+                    <button
+                      type="button"
+                      className="mob-method-opt-btn"
+                      onClick={() => { setSelectedMethod('upi'); setActiveOpt('upi'); }}
+                    >
+                      <div className="mob-opt-icon mob-opt-upi">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M2 7V3a1 1 0 011-1h4v2H4v3H2zm0 10v4a1 1 0 001 1h4v-2H4v-3H2zm18 0v3h-3v2h4a1 1 0 001-1v-4h-2zm-3-15v2h3v3h2V3a1 1 0 00-1-1h-4zM7 7h4v4H7V7zm6 0h4v4h-4V7zm-6 6h4v4H7v-4zm6 0h4v4h-4v-4z"/>
                         </svg>
-                      ) : (
-                        <span style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          background: checkMsg?.startsWith('✓') ? '#10b981' : '#f59e0b',
-                          display: 'inline-block',
-                          flexShrink: 0
-                        }} />
-                      )}
-                      <div style={{ flex: 1 }}>
-                        <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: checkMsg?.startsWith('✓') ? '#065f46' : '#0f172a' }}>
-                          {isChecking ? 'Checking transaction status…' : (checkMsg?.startsWith('✓') ? 'Payment Verified!' : 'Payment Pending Confirmation')}
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: 11.5, color: checkMsg?.startsWith('✓') ? '#047857' : '#64748b', lineHeight: 1.4 }}>
-                          {checkMsg || 'Connecting to bank network to confirm your UPI transfer… Payment verification may take up to 60 seconds. Please do not close or refresh this screen.'}
-                        </p>
                       </div>
-                    </div>
+                      <div className="mob-opt-body">
+                        <div className="mob-opt-title-row">
+                          <span className="mob-opt-title">UPI / QR Code</span>
+                          <span className="mob-opt-tag-green">Instant • 0% Fee</span>
+                        </div>
+                        <span className="mob-opt-sub">Pay via Google Pay, PhonePe, Paytm, or any UPI app</span>
+                      </div>
+                      <span className="mob-opt-chevron">›</span>
+                    </button>
 
-                    {/* UTR Input Section */}
-                    {showUtr && !checkMsg?.startsWith('✓') && (
-                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #e2e8f0' }}>
-                        <label style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
-                          Already paid? Verify 12-digit UTR now:
+                    {/* 2. Cards */}
+                    <button
+                      type="button"
+                      className="mob-method-opt-btn"
+                      onClick={() => { setSelectedMethod('card'); setActiveOpt('card'); }}
+                    >
+                      <div className="mob-opt-icon mob-opt-card">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                        </svg>
+                      </div>
+                      <div className="mob-opt-body">
+                        <div className="mob-opt-title-row">
+                          <span className="mob-opt-title">Credit / Debit Card</span>
+                          <span className="mob-opt-tag-blue">Visa / MC / RuPay</span>
+                        </div>
+                        <span className="mob-opt-sub">Domestic & international credit or debit cards</span>
+                      </div>
+                      <span className="mob-opt-chevron">›</span>
+                    </button>
+
+                    {/* 3. Net Banking */}
+                    <button
+                      type="button"
+                      className="mob-method-opt-btn"
+                      onClick={() => { setSelectedMethod('bank'); setActiveOpt('bank'); }}
+                    >
+                      <div className="mob-opt-icon mob-opt-bank">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm9.5-20.5L2 6v2h19V6l-9.5-4.5z"/>
+                        </svg>
+                      </div>
+                      <div className="mob-opt-body">
+                        <div className="mob-opt-title-row">
+                          <span className="mob-opt-title">Direct Net Banking</span>
+                          <span className="mob-opt-tag-gray">IMPS / NEFT</span>
+                        </div>
+                        <span className="mob-opt-sub">Direct transfer to merchant bank account</span>
+                      </div>
+                      <span className="mob-opt-chevron">›</span>
+                    </button>
+
+                    {/* 4. Crypto */}
+                    <button
+                      type="button"
+                      className="mob-method-opt-btn"
+                      onClick={() => { setSelectedMethod('crypto'); setActiveOpt('crypto'); }}
+                    >
+                      <div className="mob-opt-icon mob-opt-crypto">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                          <circle cx="12" cy="12" r="9"/>
+                          <path d="M9 8h5a2 2 0 010 4H9m0 0h5.5a2 2 0 010 4H9M9 7v10" stroke="#fff" strokeWidth="1.8" fill="none"/>
+                        </svg>
+                      </div>
+                      <div className="mob-opt-body">
+                        <div className="mob-opt-title-row">
+                          <span className="mob-opt-title">Crypto Currency</span>
+                          <span className="mob-opt-tag-amber">USDT • TRC20</span>
+                        </div>
+                        <span className="mob-opt-sub">Pay {usdtAmt} USDT with on-chain verification</span>
+                      </div>
+                      <span className="mob-opt-chevron">›</span>
+                    </button>
+
+                    {/* 5. COD */}
+                    <button
+                      type="button"
+                      className="mob-method-opt-btn"
+                      onClick={() => { setSelectedMethod('cod'); setActiveOpt('cod'); }}
+                    >
+                      <div className="mob-opt-icon mob-opt-cod">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                        </svg>
+                      </div>
+                      <div className="mob-opt-body">
+                        <div className="mob-opt-title-row">
+                          <span className="mob-opt-title">Cash on Delivery (COD)</span>
+                          <span className="mob-opt-tag-emerald">Pay at Doorstep</span>
+                        </div>
+                        <span className="mob-opt-sub">Pay cash or scan UPI when your order arrives</span>
+                      </div>
+                      <span className="mob-opt-chevron">›</span>
+                    </button>
+                  </div>
+
+                  {/* Promo code link */}
+                  <div style={{ textAlign: 'center', marginTop: 14 }}>
+                    <button
+                      type="button"
+                      className="ghost"
+                      onClick={() => setShowPromo(!showPromo)}
+                      style={{ fontSize: 13 }}
+                    >
+                      {promoApplied ? `Promo applied: ${promoApplied.code} ✓` : 'Have a coupon code?'}
+                    </button>
+                  </div>
+                  {showPromo && (
+                    <form onSubmit={submitPromo} style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                      <input
+                        placeholder="Promo code"
+                        value={promoCode}
+                        onChange={e => setPromoCode(e.target.value.toUpperCase())}
+                        style={{ flex: 1, minHeight: 44, border: '1px solid #d0d5dd', borderRadius: 10, padding: '0 12px', fontSize: 13, textTransform: 'uppercase' }}
+                      />
+                      <button
+                        type="submit"
+                        disabled={promoLoading || !promoCode.trim()}
+                        style={{ minHeight: 44, padding: '0 16px', border: 0, borderRadius: 10, background: 'var(--brand)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                      >
+                        {promoLoading ? '…' : 'Apply'}
+                      </button>
+                    </form>
+                  )}
+                  {promoMsg && (
+                    <p style={{ textAlign: 'center', margin: '4px 0 0', fontSize: 12, fontWeight: 600, color: promoMsg.startsWith('✓') ? 'var(--ok)' : '#c0392b' }}>
+                      {promoMsg}
+                    </p>
+                  )}
+
+                  {/* Trust footer */}
+                  <div className="mob-overview-trust">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
+                      <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    <span>100% Secure Checkout &bull; 0% Platform MDR</span>
+                  </div>
+                </div>
+              ) : (
+                /* ─────────────────────────────────────────────────────────────
+                    STATE B: A SPECIFIC PAYMENT METHOD IS SELECTED
+                    Displays the chosen method with a prominent Change Method back button
+                ───────────────────────────────────────────────────────────── */
+                <div className="mob-active-method-view">
+                  {/* Top Change Method Navigation Bar */}
+                  <div className="mob-back-methods-bar">
+                    <button
+                      type="button"
+                      className="mob-back-btn"
+                      onClick={() => { setSelectedMethod(null); setActiveOpt(null); }}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                      </svg>
+                      <span>Change payment method</span>
+                    </button>
+                    <span className="mob-active-method-tag">
+                      {selectedMethod === 'upi' ? 'UPI / QR' :
+                       selectedMethod === 'card' ? 'Cards' :
+                       selectedMethod === 'bank' ? 'Net Banking' :
+                       selectedMethod === 'crypto' ? 'Crypto' : 'COD'}
+                    </span>
+                  </div>
+
+                  {/* ── B.1: UPI / QR METHOD VIEW ── */}
+                  {selectedMethod === 'upi' && (
+                    <div className="mob-checkout-card">
+                      {/* 1. Centered Brand Header */}
+                      <div className="mob-brand-header">
+                        <svg width="32" height="28" viewBox="0 0 38 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M 6.5 28.5 V 13 C 6.5 7.2 11.5 5 15.5 8.2 L 19 18.5"
+                            stroke="#0284C7"
+                            strokeWidth="5.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M 19 18.5 L 22.5 8.2 C 26.5 5 31.5 7.2 31.5 13 V 28.5"
+                            stroke="#FF7800"
+                            strokeWidth="5.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span className="mob-brand-title">MyMobPay</span>
+                      </div>
+
+                      {/* 2. Total Amount Display */}
+                      <div className="mob-total-display">
+                        TOTAL: {fmtInr(displayAmt)}
+                      </div>
+
+                      {/* 3. Timer Pill */}
+                      <div className="mob-timer-pill-wrap">
+                        <div className={`mob-timer-pill ${isTimerLow ? 'low' : ''}`}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                          </svg>
+                          <span className="mob-timer-label">Expires in:</span>
+                          <span className="mob-timer-digits">{mm}:{ss}</span>
+                        </div>
+                      </div>
+
+                      {/* 4. Themed QR Frame */}
+                      <div className="mob-qr-container">
+                        <div className="mob-qr-frame">
+                          <span className="mob-corner mob-corner-tl" />
+                          <span className="mob-corner mob-corner-tr" />
+                          <span className="mob-corner mob-corner-bl" />
+                          <span className="mob-corner mob-corner-br" />
+
+                          <div className="mob-qr-inner">
+                            {upiQrValue ? (
+                              <>
+                                <QRCode
+                                  value={upiQrValue}
+                                  size={196}
+                                  level="Q"
+                                  fgColor="#0f172a"
+                                  bgColor="#ffffff"
+                                  style={{ display: 'block', width: '100%', height: 'auto' }}
+                                />
+                                <div className="mob-qr-center-pill">
+                                  <svg width="24" height="22" viewBox="0 0 38 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                      d="M 6.5 28.5 V 13 C 6.5 7.2 11.5 5 15.5 8.2 L 19 18.5"
+                                      stroke="#0284C7"
+                                      strokeWidth="5.2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                    <path
+                                      d="M 19 18.5 L 22.5 8.2 C 26.5 5 31.5 7.2 31.5 13 V 28.5"
+                                      stroke="#FF7800"
+                                      strokeWidth="5.2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                </div>
+                              </>
+                            ) : (
+                              <div style={{ width: 196, height: 196, display: 'grid', placeItems: 'center', color: '#64748b', fontSize: 13 }}>
+                                Generating QR…
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 5. Verified Merchant Pill */}
+                      <div className="mob-merchant-badge">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
+                          <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                        <span>Verified Merchant &bull; {bizName}</span>
+                      </div>
+
+                      {/* 5b. Payment Verification Advisory Line */}
+                      <div className="mob-verify-notice">
+                        <div className="mob-verify-icon-box">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                          </svg>
+                          <span className="mob-verify-ping" />
+                          <span className="mob-verify-dot" />
+                        </div>
+                        <div className="mob-verify-text">
+                          <strong className="mob-verify-title">Auto-verifying bank credit...</strong>{' '}
+                          <span className="mob-verify-desc">Bank notifications take 30–90 seconds. Keep this screen open, or enter your 12-digit UTR below if already debited.</span>
+                        </div>
+                      </div>
+
+                      {/* 6. Direct UPI App Launcher Chips */}
+                      <div className="mob-upi-apps-row">
+                        <p className="mob-action-hint">Tap to pay with any UPI app</p>
+                        <div className="mob-chips-grid">
+                          {UPI_CHIPS.map(app => (
+                            <button
+                              key={app.id}
+                              type="button"
+                              onClick={() => {
+                                if (!displayAmt) return;
+                                window.location.href = buildUpiLink(app.id, displayAmt, activeId, merchant, isMandate);
+                              }}
+                              className="mob-app-chip"
+                              title={`Pay with ${app.label}`}
+                            >
+                              <img src={app.logo} alt={app.label} style={{ maxHeight: app.h, maxWidth: '85%', width: 'auto', height: 'auto', display: 'block', objectFit: 'contain' }} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* 7. Copyable UPI ID Bar */}
+                      <div className="mob-upi-id-bar">
+                        <div className="mob-upi-id-left">
+                          <span className="mob-upi-id-label">UPI ID</span>
+                          <span className="mob-upi-id-val">{upiId}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className={`mob-copy-btn ${copyFeedback ? 'done' : ''}`}
+                          onClick={handleCopyUpi}
+                        >
+                          {copyFeedback ? 'Copied ✓' : 'Copy'}
+                        </button>
+                      </div>
+
+                      {/* 8. Live Real-Time Verification Status & UTR Drawer */}
+                      {(isChecking || checkMsg || showUtr) ? (
+                        <div style={{
+                          marginTop: 12,
+                          background: checkMsg?.startsWith('✓') ? '#ecfdf5' : '#f8fafc',
+                          border: `1.5px solid ${checkMsg?.startsWith('✓') ? '#a7f3d0' : '#e2e8f0'}`,
+                          borderRadius: 14,
+                          padding: '12px 14px',
+                          textAlign: 'left'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            {isChecking ? (
+                              <svg width="20" height="20" viewBox="0 0 48 48" style={{ animation: 'spin 0.8s linear infinite', flexShrink: 0 }}>
+                                <circle cx="24" cy="24" r="20" stroke="#cbd5e1" strokeWidth="5" fill="none" />
+                                <circle cx="24" cy="24" stroke="#0284C7" strokeWidth="5" strokeLinecap="round" fill="none" strokeDasharray="32 94" />
+                              </svg>
+                            ) : (
+                              <span style={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                background: checkMsg?.startsWith('✓') ? '#10b981' : '#f59e0b',
+                                display: 'inline-block',
+                                flexShrink: 0
+                              }} />
+                            )}
+                            <div style={{ flex: 1 }}>
+                              <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: checkMsg?.startsWith('✓') ? '#065f46' : '#0f172a' }}>
+                                {isChecking ? 'Checking transaction status…' : (checkMsg?.startsWith('✓') ? 'Payment Verified!' : 'Payment Pending Confirmation')}
+                              </p>
+                              <p style={{ margin: '2px 0 0', fontSize: 11.5, color: checkMsg?.startsWith('✓') ? '#047857' : '#64748b', lineHeight: 1.4 }}>
+                                {checkMsg || 'Connecting to bank network to confirm your UPI transfer… Payment verification may take up to 60 seconds.'}
+                              </p>
+                            </div>
+                          </div>
+
+                          {showUtr && !checkMsg?.startsWith('✓') && (
+                            <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #e2e8f0' }}>
+                              <label style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
+                                Already paid? Verify 12-digit UTR now:
+                              </label>
+                              <div style={{ display: 'flex', gap: 6 }}>
+                                <input
+                                  inputMode="numeric"
+                                  maxLength={12}
+                                  placeholder="12-digit UTR reference"
+                                  value={utr}
+                                  onChange={e => { setUtr(e.target.value.replace(/\D/g, '').slice(0, 12)); setUtrMsg(''); }}
+                                  style={{
+                                    flex: 1,
+                                    minHeight: 40,
+                                    border: '1px solid #cbd5e1',
+                                    borderRadius: 10,
+                                    padding: '0 10px',
+                                    fontSize: 13,
+                                    fontFamily: "'IBM Plex Mono', monospace",
+                                    background: '#fff',
+                                    outline: 'none',
+                                    color: '#0f172a'
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  disabled={utr.length !== 12 || utrBusy}
+                                  onClick={submitUtr}
+                                  style={{
+                                    minHeight: 40,
+                                    padding: '0 14px',
+                                    border: 0,
+                                    borderRadius: 10,
+                                    background: '#0284C7',
+                                    color: '#fff',
+                                    fontWeight: 700,
+                                    fontSize: 12,
+                                    cursor: utr.length === 12 && !utrBusy ? 'pointer' : 'not-allowed',
+                                    opacity: utr.length === 12 && !utrBusy ? 1 : 0.5,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6
+                                  }}
+                                >
+                                  {utrBusy ? '…' : 'Verify'}
+                                </button>
+                              </div>
+                              {utrMsg && (
+                                <p style={{ margin: '6px 0 0', fontSize: 11.5, fontWeight: 600, color: utrMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
+                                  {utrMsg}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setShowUtr(true)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#0284C7',
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            marginTop: 8,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            padding: 0
+                          }}
+                        >
+                          <span>Paid via UPI app? Enter 12-digit UTR to verify</span>
+                          <span>›</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ── B.2: CARDS METHOD VIEW ── */}
+                  {selectedMethod === 'card' && (
+                    <div className="mob-checkout-card" style={{ textAlign: 'left' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Credit / Debit Card</h4>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#0284C7' }}>{fmtInr(displayAmt)}</span>
+                      </div>
+
+                      {/* Card Brands Badges */}
+                      <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+                        {['visa', 'mastercard', 'rupay'].map(b => (
+                          <button
+                            key={b}
+                            type="button"
+                            onClick={() => setCardBrand(b)}
+                            style={{
+                              flex: 1,
+                              padding: '8px 4px',
+                              borderRadius: 10,
+                              border: cardBrand === b ? '2px solid #0284C7' : '1px solid #e2e8f0',
+                              background: cardBrand === b ? '#f0f9ff' : '#ffffff',
+                              color: cardBrand === b ? '#0284C7' : '#64748b',
+                              fontSize: 11.5,
+                              fontWeight: 700,
+                              textTransform: 'uppercase',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {b}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Card Number */}
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                        Card Number
+                      </label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={19}
+                        placeholder="4532 •••• •••• 8892"
+                        value={cardNumber}
+                        onChange={e => {
+                          const v = e.target.value.replace(/\D/g, '').slice(0, 16);
+                          const formatted = v.match(/.{1,4}/g)?.join(' ') || v;
+                          setCardNumber(formatted);
+                          if (v.startsWith('4')) setCardBrand('visa');
+                          else if (v.startsWith('5')) setCardBrand('mastercard');
+                          else if (v.startsWith('6')) setCardBrand('rupay');
+                        }}
+                        style={{
+                          width: '100%',
+                          minHeight: 46,
+                          border: '1px solid #cbd5e1',
+                          borderRadius: 12,
+                          padding: '0 12px',
+                          fontSize: 14,
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          marginBottom: 12,
+                          boxSizing: 'border-box'
+                        }}
+                      />
+
+                      {/* Expiry & CVV */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                            Expiry (MM/YY)
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={5}
+                            placeholder="MM/YY"
+                            value={cardExpiry}
+                            onChange={e => {
+                              let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+                              if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+                              setCardExpiry(v);
+                            }}
+                            style={{
+                              width: '100%',
+                              minHeight: 46,
+                              border: '1px solid #cbd5e1',
+                              borderRadius: 12,
+                              padding: '0 12px',
+                              fontSize: 14,
+                              fontFamily: "'IBM Plex Mono', monospace",
+                              boxSizing: 'border-box'
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                            CVV
+                          </label>
+                          <input
+                            type="password"
+                            inputMode="numeric"
+                            maxLength={4}
+                            placeholder="•••"
+                            value={cardCvv}
+                            onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                            style={{
+                              width: '100%',
+                              minHeight: 46,
+                              border: '1px solid #cbd5e1',
+                              borderRadius: 12,
+                              padding: '0 12px',
+                              fontSize: 14,
+                              fontFamily: "'IBM Plex Mono', monospace",
+                              boxSizing: 'border-box'
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Cardholder Name */}
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                        Cardholder Name
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Name as on card"
+                        value={cardHolder}
+                        onChange={e => setCardHolder(e.target.value)}
+                        style={{
+                          width: '100%',
+                          minHeight: 46,
+                          border: '1px solid #cbd5e1',
+                          borderRadius: 12,
+                          padding: '0 12px',
+                          fontSize: 14,
+                          marginBottom: 14,
+                          boxSizing: 'border-box'
+                        }}
+                      />
+
+                      {/* Test Sandbox or Live Advisory */}
+                      {orderMode === 'test' ? (
+                        <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 12, padding: '10px 12px', marginBottom: 14, fontSize: 12, color: '#92400e' }}>
+                          <span style={{ fontWeight: 700 }}>Sandbox Mode:</span> Simulated payment test. Default OTP is <code>123456</code>.
+                          <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700 }}>OTP:</span>
+                            <input
+                              type="text"
+                              value={cardOtp}
+                              placeholder="123456"
+                              onChange={e => setCardOtp(e.target.value)}
+                              style={{ width: 90, minHeight: 32, padding: '0 8px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '10px 12px', marginBottom: 14, fontSize: 12, color: '#1e40af', lineHeight: 1.4 }}>
+                          Direct card processing rail: UPI or Net Banking is recommended for 0% MDR instant settlement.
+                        </div>
+                      )}
+
+                      {/* Card Submit Button */}
+                      <button
+                        type="button"
+                        disabled={cardBusy}
+                        onClick={submitCardPayment}
+                        style={{
+                          width: '100%',
+                          minHeight: 48,
+                          border: 0,
+                          borderRadius: 12,
+                          background: '#0284C7',
+                          color: '#fff',
+                          fontWeight: 700,
+                          fontSize: 14,
+                          cursor: cardBusy ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 8
+                        }}
+                      >
+                        {cardBusy ? 'Processing Card…' : `Pay ${fmtInr(displayAmt)} by Card`}
+                      </button>
+
+                      {cardMsg && (
+                        <p style={{ margin: '8px 0 0', fontSize: 12, fontWeight: 600, color: cardMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
+                          {cardMsg}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ── B.3: NET BANKING METHOD VIEW ── */}
+                  {selectedMethod === 'bank' && (
+                    <div className="mob-checkout-card" style={{ textAlign: 'left' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Direct Net Banking</h4>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#0284C7' }}>{fmtInr(displayAmt)}</span>
+                      </div>
+
+                      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 14, overflow: 'hidden', marginBottom: 14 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: '1px solid #e2e8f0', fontSize: 13 }}>
+                          <span style={{ color: '#64748b', fontWeight: 600 }}>Account Name</span>
+                          <span style={{ fontWeight: 700, color: '#0f172a' }}>{bankName}</span>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: '1px solid #e2e8f0', fontSize: 13, background: '#f1f5f9' }}>
+                          <div>
+                            <span style={{ color: '#64748b', fontWeight: 600, display: 'block', fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Account Number</span>
+                            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 700, fontSize: 15, color: '#0f172a' }}>{bankAcc}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleCopyAcc}
+                            style={{ border: 0, background: copiedAcc ? '#dcf5e8' : '#eaf2fe', color: copiedAcc ? '#0d7a47' : '#0284C7', fontWeight: 700, fontSize: 12, padding: '6px 14px', borderRadius: 8, cursor: 'pointer' }}
+                          >
+                            {copiedAcc ? 'Copied ✓' : 'Copy'}
+                          </button>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: bankBranch ? '1px solid #e2e8f0' : 'none', fontSize: 13, background: '#f1f5f9' }}>
+                          <div>
+                            <span style={{ color: '#64748b', fontWeight: 600, display: 'block', fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>IFSC Code</span>
+                            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 700, fontSize: 15, color: '#0f172a' }}>{bankIfsc}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleCopyIfsc}
+                            style={{ border: 0, background: copiedIfsc ? '#dcf5e8' : '#eaf2fe', color: copiedIfsc ? '#0d7a47' : '#0284C7', fontWeight: 700, fontSize: 12, padding: '6px 14px', borderRadius: 8, cursor: 'pointer' }}
+                          >
+                            {copiedIfsc ? 'Copied ✓' : 'Copy'}
+                          </button>
+                        </div>
+
+                        {bankBranch && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: '1px solid #e2e8f0', fontSize: 13 }}>
+                            <span style={{ color: '#64748b', fontWeight: 600 }}>Bank Branch</span>
+                            <span style={{ fontWeight: 600, color: '#0f172a' }}>{bankBranch}</span>
+                          </div>
+                        )}
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', fontSize: 13, background: '#f0f9ff' }}>
+                          <span style={{ color: '#0369a1', fontWeight: 600 }}>Amount to Transfer</span>
+                          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 800, fontSize: 15, color: '#0284C7' }}>{fmtInr(displayAmt)}</span>
+                        </div>
+                      </div>
+
+                      {/* Immediate UTR Verification Form */}
+                      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 14, padding: '12px 14px' }}>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
+                          Transferred funds? Enter 12-digit UTR:
                         </label>
                         <div style={{ display: 'flex', gap: 6 }}>
                           <input
@@ -1220,14 +1909,13 @@ function PayPageContent() {
                             onChange={e => { setUtr(e.target.value.replace(/\D/g, '').slice(0, 12)); setUtrMsg(''); }}
                             style={{
                               flex: 1,
-                              minHeight: 40,
+                              minHeight: 42,
                               border: '1px solid #cbd5e1',
                               borderRadius: 10,
                               padding: '0 10px',
                               fontSize: 13,
                               fontFamily: "'IBM Plex Mono', monospace",
                               background: '#fff',
-                              outline: 'none',
                               color: '#0f172a'
                             }}
                           />
@@ -1236,19 +1924,16 @@ function PayPageContent() {
                             disabled={utr.length !== 12 || utrBusy}
                             onClick={submitUtr}
                             style={{
-                              minHeight: 40,
-                              padding: '0 14px',
+                              minHeight: 42,
+                              padding: '0 16px',
                               border: 0,
                               borderRadius: 10,
                               background: '#0284C7',
                               color: '#fff',
                               fontWeight: 700,
-                              fontSize: 12,
+                              fontSize: 12.5,
                               cursor: utr.length === 12 && !utrBusy ? 'pointer' : 'not-allowed',
-                              opacity: utr.length === 12 && !utrBusy ? 1 : 0.5,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6
+                              opacity: utr.length === 12 && !utrBusy ? 1 : 0.5
                             }}
                           >
                             {utrBusy ? '…' : 'Verify'}
@@ -1260,228 +1945,198 @@ function PayPageContent() {
                           </p>
                         )}
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowUtr(true)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#0284C7',
-                      fontSize: 11.5,
-                      fontWeight: 600,
-                      marginTop: 8,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      padding: 0
-                    }}
-                  >
-                    <span>Paid via UPI app? Enter 12-digit UTR to verify</span>
-                    <span>›</span>
-                  </button>
-                )}
-              </div>
-
-              {/* Other ways to pay accordion */}
-              <div className="gh">Other ways to pay</div>
-              <div className="card">
-                {/* Net Banking */}
-                <button
-                  type="button"
-                  className="row acc"
-                  aria-expanded={activeAcc === 'pBank'}
-                  onClick={() => setActiveAcc(activeAcc === 'pBank' ? '' : 'pBank')}
-                >
-                  <span className="ic">
-                    <svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 21h18"/></svg>
-                  </span>
-                  <span>
-                    Net Banking<span className="badge">0% fee</span>
-                    <small>Pay from your bank account</small>
-                  </span>
-                  <span className="ch">›</span>
-                </button>
-                <div className={`pn ${activeAcc === 'pBank' ? 'show' : ''}`} id="pBank">
-                  <div style={{ marginTop: 6, background: '#fff', border: '1px solid var(--line)', borderRadius: 14, overflow: 'hidden' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: '1px solid var(--line)', fontSize: 13 }}>
-                      <span style={{ color: 'var(--mut)', fontWeight: 600 }}>Account Name</span>
-                      <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{bankName}</span>
                     </div>
+                  )}
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: '1px solid var(--line)', fontSize: 13, background: 'var(--soft)' }}>
-                      <div>
-                        <span style={{ color: 'var(--mut)', fontWeight: 600, display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Account Number</span>
-                        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 700, fontSize: 15, color: 'var(--ink)' }}>{bankAcc}</span>
+                  {/* ── B.4: CRYPTO METHOD VIEW ── */}
+                  {selectedMethod === 'crypto' && (
+                    <div className="mob-checkout-card" style={{ textAlign: 'left' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Crypto (USDT)</h4>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#f59e0b' }}>{usdtAmt} USDT</span>
                       </div>
+
+                      <div style={{ textAlign: 'center', padding: '12px 14px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 14, marginBottom: 14 }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 4 }}>Deposit Address (TRC20 Network)</span>
+                        <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, fontWeight: 700, color: '#0f172a', wordBreak: 'break-all', marginBottom: 10 }}>
+                          {cryptoWallet}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleCopyUsdt}
+                          style={{
+                            border: 0,
+                            background: copyUsdtDone ? '#dcfce7' : '#eaf2fe',
+                            color: copyUsdtDone ? '#15803d' : '#0284C7',
+                            fontWeight: 700,
+                            fontSize: 12,
+                            padding: '8px 18px',
+                            borderRadius: 10,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {copyUsdtDone ? 'Address Copied ✓' : 'Copy Wallet Address'}
+                        </button>
+                      </div>
+
+                      <form onSubmit={submitTx}>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
+                          Enter TxID (Transaction Hash)
+                        </label>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <input
+                            type="text"
+                            placeholder="64-char transaction hash"
+                            value={txHash}
+                            onChange={e => setTxHash(e.target.value)}
+                            style={{
+                              flex: 1,
+                              minHeight: 42,
+                              border: '1px solid #cbd5e1',
+                              borderRadius: 10,
+                              padding: '0 10px',
+                              fontSize: 12.5,
+                              fontFamily: "'IBM Plex Mono', monospace"
+                            }}
+                          />
+                          <button
+                            type="submit"
+                            disabled={txBusy || !txHash.trim()}
+                            style={{
+                              minHeight: 42,
+                              padding: '0 16px',
+                              border: 0,
+                              borderRadius: 10,
+                              background: '#f59e0b',
+                              color: '#fff',
+                              fontWeight: 700,
+                              fontSize: 12.5,
+                              cursor: txBusy || !txHash.trim() ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            {txBusy ? '…' : 'Verify'}
+                          </button>
+                        </div>
+                        {txMsg && (
+                          <p style={{ margin: '6px 0 0', fontSize: 11.5, fontWeight: 600, color: txMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
+                            {txMsg}
+                          </p>
+                        )}
+                      </form>
+                    </div>
+                  )}
+
+                  {/* ── B.5: COD METHOD VIEW ── */}
+                  {selectedMethod === 'cod' && (
+                    <div className="mob-checkout-card" style={{ textAlign: 'left' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Cash on Delivery</h4>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#059669' }}>{fmtInr(displayAmt)}</span>
+                      </div>
+
+                      <p style={{ margin: '0 0 14px', fontSize: 12.5, color: '#64748b', lineHeight: 1.4 }}>
+                        Fill your delivery address below. You can pay ₹{displayAmt} in cash or UPI when your shipment arrives.
+                      </p>
+
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Receiver Name"
+                        value={codName}
+                        onChange={e => setCodName(e.target.value)}
+                        style={{ width: '100%', minHeight: 44, border: '1px solid #cbd5e1', borderRadius: 10, padding: '0 12px', fontSize: 13.5, marginBottom: 10, boxSizing: 'border-box' }}
+                      />
+
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                        Contact Phone
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="10-digit mobile number"
+                        value={codPhone}
+                        onChange={e => setCodPhone(e.target.value)}
+                        style={{ width: '100%', minHeight: 44, border: '1px solid #cbd5e1', borderRadius: 10, padding: '0 12px', fontSize: 13.5, marginBottom: 10, boxSizing: 'border-box' }}
+                      />
+
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                        Delivery Address
+                      </label>
+                      <textarea
+                        rows={2}
+                        placeholder="Flat, House No., Building, Street"
+                        value={codAddress}
+                        onChange={e => setCodAddress(e.target.value)}
+                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: 10, padding: '8px 12px', fontSize: 13.5, marginBottom: 10, boxSizing: 'border-box', resize: 'none' }}
+                      />
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                            Pincode
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={6}
+                            placeholder="6-digit PIN"
+                            value={codPincode}
+                            onChange={e => setCodPincode(e.target.value)}
+                            style={{ width: '100%', minHeight: 44, border: '1px solid #cbd5e1', borderRadius: 10, padding: '0 12px', fontSize: 13.5, boxSizing: 'border-box' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                            City / Area
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="City"
+                            value={codCity}
+                            onChange={e => setCodCity(e.target.value)}
+                            style={{ width: '100%', minHeight: 44, border: '1px solid #cbd5e1', borderRadius: 10, padding: '0 12px', fontSize: 13.5, boxSizing: 'border-box' }}
+                          />
+                        </div>
+                      </div>
+
                       <button
                         type="button"
-                        onClick={handleCopyAcc}
-                        style={{ border: 0, background: copiedAcc ? '#dcf5e8' : 'var(--tint)', color: copiedAcc ? '#0d7a47' : 'var(--brand-d)', fontWeight: 700, fontSize: 12, padding: '6px 14px', borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s' }}
+                        disabled={codBusy}
+                        onClick={submitCodOrder}
+                        style={{
+                          width: '100%',
+                          minHeight: 48,
+                          border: 0,
+                          borderRadius: 12,
+                          background: '#059669',
+                          color: '#fff',
+                          fontWeight: 700,
+                          fontSize: 14,
+                          cursor: codBusy ? 'not-allowed' : 'pointer'
+                        }}
                       >
-                        {copiedAcc ? 'Copied ✓' : 'Copy'}
+                        {codBusy ? 'Confirming Order…' : 'Confirm Cash on Delivery Order'}
                       </button>
+
+                      {codMsg && (
+                        <p style={{ margin: '8px 0 0', fontSize: 12, fontWeight: 600, color: codMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
+                          {codMsg}
+                        </p>
+                      )}
                     </div>
+                  )}
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: bankBranch ? '1px solid var(--line)' : 'none', fontSize: 13, background: 'var(--soft)' }}>
-                      <div>
-                        <span style={{ color: 'var(--mut)', fontWeight: 600, display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em' }}>IFSC Code</span>
-                        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 700, fontSize: 15, color: 'var(--ink)' }}>{bankIfsc}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleCopyIfsc}
-                        style={{ border: 0, background: copiedIfsc ? '#dcf5e8' : 'var(--tint)', color: copiedIfsc ? '#0d7a47' : 'var(--brand-d)', fontWeight: 700, fontSize: 12, padding: '6px 14px', borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s' }}
-                      >
-                        {copiedIfsc ? 'Copied ✓' : 'Copy'}
-                      </button>
-                    </div>
-
-                    {bankBranch && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: '1px solid var(--line)', fontSize: 13 }}>
-                        <span style={{ color: 'var(--mut)', fontWeight: 600 }}>Bank</span>
-                        <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{bankBranch}</span>
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', fontSize: 13, background: 'var(--tint)' }}>
-                      <span style={{ color: 'var(--mut)', fontWeight: 600 }}>Amount to Transfer</span>
-                      <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 800, fontSize: 15, color: 'var(--brand-d)' }}>{fmtInr(displayAmt)}</span>
-                    </div>
+                  {/* Trust badge */}
+                  <div className="trust">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/>
+                      <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    <span>0% transaction fee. Your payment goes straight to the merchant.</span>
                   </div>
-                  <p className="tip">You&apos;ll return here after paying at your bank.</p>
                 </div>
-
-                {/* Crypto (USDT) */}
-                <button
-                  type="button"
-                  className="row acc"
-                  aria-expanded={activeAcc === 'pUsdt'}
-                  onClick={() => setActiveAcc(activeAcc === 'pUsdt' ? '' : 'pUsdt')}
-                >
-                  <span className="ic">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 8h5a2 2 0 010 4H9m0 0h5.5a2 2 0 010 4H9M9 7v10"/></svg>
-                  </span>
-                  <span>
-                    Crypto (USDT)
-                    <small>TRC20 network</small>
-                  </span>
-                  <span className="ch">›</span>
-                </button>
-                <div className={`pn ${activeAcc === 'pUsdt' ? 'show' : ''}`} id="pUsdt">
-                  <div style={{ textAlign: 'center', padding: '6px 0 2px', fontSize: 13, fontWeight: 700, color: 'var(--mut)' }}>
-                    Pay <strong style={{ color: 'var(--ink)', fontSize: 16, fontFamily: "'IBM Plex Mono', monospace" }}>{usdtAmt} USDT</strong>
-                  </div>
-                  <div className="id" style={{ marginTop: 8 }}>
-                    <span>{cryptoWallet}</span>
-                    <button
-                      type="button"
-                      className={`cp ${copyUsdtDone ? 'done' : ''}`}
-                      onClick={handleCopyUsdt}
-                    >
-                      {copyUsdtDone ? 'Copied' : 'Copy'}
-                    </button>
-                  </div>
-                  <p className="tip">Send only USDT on the TRC20 network to this address.</p>
-
-                  <form onSubmit={submitTx} style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-                    <input
-                      type="text"
-                      placeholder="Transaction hash (TxID)…"
-                      value={txHash}
-                      onChange={e => setTxHash(e.target.value)}
-                      style={{ flex: 1, minHeight: 44, border: '1px solid #d0d5dd', borderRadius: 10, padding: '0 12px', fontSize: 13, fontFamily: "'IBM Plex Mono', monospace" }}
-                    />
-                    <button
-                      type="submit"
-                      disabled={txBusy || !txHash.trim()}
-                      style={{ minHeight: 44, padding: '0 14px', border: 0, borderRadius: 10, background: 'var(--brand)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
-                    >
-                      {txBusy ? '…' : 'Verify'}
-                    </button>
-                  </form>
-                  {txMsg && <p style={{ fontSize: 12, fontWeight: 600, color: txMsg.startsWith('✓') ? 'var(--ok)' : '#c0392b', margin: '6px 0 0' }}>{txMsg}</p>}
-                </div>
-              </div>
-
-              {/* UTR reference accordion */}
-              <div className="utrc">
-                <button
-                  type="button"
-                  className="t"
-                  onClick={() => setShowUtr(!showUtr)}
-                >
-                  <span>Already paid? Enter your UTR</span>
-                  <span style={{ transform: showUtr ? 'rotate(90deg)' : 'none', transition: 'transform .2s' }}>›</span>
-                </button>
-                <div className={`utr ${showUtr ? '' : 'hide'}`}>
-                  <input
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={12}
-                    placeholder="12-digit UTR"
-                    value={utr}
-                    onChange={e => setUtr(e.target.value.replace(/\D/g, '').slice(0, 12))}
-                  />
-                  <button
-                    type="button"
-                    disabled={utr.length !== 12 || utrBusy}
-                    onClick={submitUtr}
-                  >
-                    {utrBusy ? '…' : 'Verify'}
-                  </button>
-                </div>
-                {utrMsg && (
-                  <p style={{ margin: '0 0 10px', fontSize: 12.5, fontWeight: 600, color: utrMsg.startsWith('✓') ? 'var(--ok)' : '#c0392b' }}>
-                    {utrMsg}
-                  </p>
-                )}
-              </div>
-
-              {/* Promo code link */}
-              <div style={{ textAlign: 'center', marginTop: 10 }}>
-                <button
-                  type="button"
-                  className="ghost"
-                  onClick={() => setShowPromo(!showPromo)}
-                  style={{ fontSize: 13 }}
-                >
-                  {promoApplied ? `Promo applied: ${promoApplied.code} ✓` : 'Have a coupon code?'}
-                </button>
-              </div>
-              {showPromo && (
-                <form onSubmit={submitPromo} style={{ display: 'flex', gap: 8, marginTop: 6 }}>
-                  <input
-                    placeholder="Promo code"
-                    value={promoCode}
-                    onChange={e => setPromoCode(e.target.value.toUpperCase())}
-                    style={{ flex: 1, minHeight: 44, border: '1px solid #d0d5dd', borderRadius: 10, padding: '0 12px', fontSize: 13, textTransform: 'uppercase' }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={promoLoading || !promoCode.trim()}
-                    style={{ minHeight: 44, padding: '0 16px', border: 0, borderRadius: 10, background: 'var(--brand)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
-                  >
-                    {promoLoading ? '…' : 'Apply'}
-                  </button>
-                </form>
               )}
-              {promoMsg && (
-                <p style={{ textAlign: 'center', margin: '4px 0 0', fontSize: 12, fontWeight: 600, color: promoMsg.startsWith('✓') ? 'var(--ok)' : '#c0392b' }}>
-                  {promoMsg}
-                </p>
-              )}
-
-              <div className="trust">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/>
-                  <path d="M9 12l2 2 4-4"/>
-                </svg>
-                <span>0% transaction fee. Your payment goes straight to the merchant.</span>
-              </div>
             </div>
           )}
 
@@ -1517,7 +2172,7 @@ function PayPageContent() {
                 <div className="rcp" style={{ textAlign: 'left', margin: '16px 0', background: '#f8fafc', padding: '16px', borderRadius: 16, border: '1px solid #e2e8f0' }}>
                   <div><span>Order Reference</span><span style={{ fontFamily: 'monospace', fontWeight: 700 }}>{activeId || 'DEMO'}</span></div>
                   <div><span>Amount Paid</span><span style={{ color: '#059669', fontWeight: 800 }}>{fmtInr(displayAmt)}</span></div>
-                  <div><span>Payment Method</span><span>UPI Instant Settlement</span></div>
+                  <div><span>Payment Method</span><span>{selectedMethod === 'card' ? 'Credit / Debit Card' : selectedMethod === 'bank' ? 'Direct Bank Transfer' : selectedMethod === 'crypto' ? 'Crypto USDT (TRC20)' : selectedMethod === 'cod' ? 'Cash on Delivery (COD)' : 'UPI Instant Settlement'}</span></div>
                   <div><span>Transaction Status</span><span style={{ color: '#059669', fontWeight: 700 }}>✓ Verified & Paid</span></div>
                   <div><span>Settlement Time</span><span>{okTime || new Date().toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })}</span></div>
                 </div>
@@ -1548,8 +2203,8 @@ function PayPageContent() {
           )}
         </div>
 
-        {/* ── BOTTOM FIXED BAR (Only shown on mobile vPay) ── */}
-        {curView === 'vPay' && (
+        {/* ── BOTTOM FIXED BAR (Only shown on mobile vPay when UPI method is selected) ── */}
+        {curView === 'vPay' && selectedMethod === 'upi' && (
           <div className="bar" id="bar">
             <div className="t">
               <small>Total</small>
@@ -1751,6 +2406,299 @@ export default function PayPage() {
             border-radius: 50%;
             margin: 4px auto 14px;
             opacity: 0.85;
+          }
+
+          /* ── Mobile Payment Method Overview Selection Styles ── */
+          .mob-select-methods-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          }
+
+          .mob-order-hero-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
+            border: 1.5px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 18px 20px 16px;
+            box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
+          }
+
+          .mob-order-hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+          }
+
+          .mob-order-hero-lbl {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 2px;
+          }
+
+          .mob-order-hero-amt {
+            font-size: 28px;
+            font-weight: 900;
+            color: #0f172a;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+          }
+
+          .mob-order-hero-meta {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 12px;
+          }
+
+          .mob-hero-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          }
+
+          .mob-meta-k {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+          }
+
+          .mob-meta-v {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #1e293b;
+          }
+
+          .mob-choose-hdr {
+            margin: 4px 2px 0;
+            text-align: left;
+          }
+
+          .mob-choose-hdr h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+          }
+
+          .mob-choose-hdr p {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+          }
+
+          .mob-methods-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+
+          .mob-method-opt-btn {
+            all: unset;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #ffffff;
+            border: 1.5px solid #edf2f7;
+            border-radius: 18px;
+            padding: 14px 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+            transition: all 0.15s ease;
+            box-sizing: border-box;
+            width: 100%;
+            text-align: left;
+          }
+
+          .mob-method-opt-btn:active {
+            transform: scale(0.985);
+            border-color: #0284C7;
+            background: #f8fafc;
+          }
+
+          .mob-opt-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+          }
+
+          .mob-opt-upi {
+            background: #e0f2fe;
+            color: #0284C7;
+          }
+
+          .mob-opt-card {
+            background: #f1f5f9;
+            color: #2563eb;
+          }
+
+          .mob-opt-bank {
+            background: #f1f5f9;
+            color: #475569;
+          }
+
+          .mob-opt-crypto {
+            background: #fef3c7;
+            color: #d97706;
+          }
+
+          .mob-opt-cod {
+            background: #ecfdf5;
+            color: #059669;
+          }
+
+          .mob-opt-body {
+            flex: 1;
+            min-width: 0;
+          }
+
+          .mob-opt-title-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 2px;
+          }
+
+          .mob-opt-title {
+            font-size: 14.5px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+          }
+
+          .mob-opt-tag-green {
+            background: #ecfdf5;
+            color: #059669;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            line-height: 1.2;
+          }
+
+          .mob-opt-tag-blue {
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            line-height: 1.2;
+          }
+
+          .mob-opt-tag-gray {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            line-height: 1.2;
+          }
+
+          .mob-opt-tag-amber {
+            background: #fef3c7;
+            color: #b45309;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            line-height: 1.2;
+          }
+
+          .mob-opt-tag-emerald {
+            background: #ecfdf5;
+            color: #047857;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            line-height: 1.2;
+          }
+
+          .mob-opt-sub {
+            font-size: 11.5px;
+            color: #64748b;
+            font-weight: 500;
+            line-height: 1.3;
+            display: block;
+          }
+
+          .mob-opt-chevron {
+            color: #94a3b8;
+            font-size: 20px;
+            font-weight: 400;
+            flex-shrink: 0;
+          }
+
+          .mob-overview-trust {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #059669;
+          }
+
+          /* ── Mobile Back / Change Method Bar ── */
+          .mob-active-method-view {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .mob-back-methods-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 4px 2px;
+          }
+
+          .mob-back-btn {
+            all: unset;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #0284C7;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 10px;
+            background: #eff6ff;
+            transition: all 0.15s ease;
+          }
+
+          .mob-back-btn:active {
+            transform: scale(0.97);
+            background: #dbeafe;
+          }
+
+          .mob-active-method-tag {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
           }
 
           /* ── Mobile Checkout Pure Solid White Card ── */
