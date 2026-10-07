@@ -11,7 +11,7 @@
 [![Merchant Dashboard](https://img.shields.io/badge/Merchant_Dashboard-mymob.tech%2Fdashboard-10B981?style=for-the-badge)](https://mymob.tech/dashboard)
 [![Customer Checkout](https://img.shields.io/badge/Checkout-mymob.tech%2Fpay-6366F1?style=for-the-badge)](https://mymob.tech/pay)
 
-> **Presented at Hackathon — October 2026**  
+> **Next-Generation UPI Payment Infrastructure**  
 > *Empowering Indian businesses to keep 100% of their revenue*
 
 <br />
@@ -195,9 +195,9 @@ The product is **live and working** at [mymob.tech](https://mymob.tech).
 
 ---
 
-## 👥 Team
+## 👥 Team & Vision
 
-Built for the **October 2026 Hackathon** — a full-stack fintech startup from concept to live product.
+MyMobPay is built as an independent, production-ready fintech infrastructure dedicated to giving Indian merchants 100% control over their digital payments.
 
 ---
 
