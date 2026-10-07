@@ -49,6 +49,9 @@ export default function ConsoleActivationPaywall({
   const [language, setLanguage] = useState('en'); // 'en' | 'hi'
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showEnterpriseModal, setShowEnterpriseModal] = useState(false);
+  const [manualUtr, setManualUtr] = useState('');
+  const [isVerifyingUtr, setIsVerifyingUtr] = useState(false);
+  const [utrError, setUtrError] = useState('');
 
   // Payment Confirmation Success States
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
@@ -247,6 +250,75 @@ export default function ConsoleActivationPaywall({
       setStatusMsg('Status check failed. Please check network connection.');
     } finally {
       setStatusChecking(false);
+    }
+  };
+
+  // Auto-register pending order for this merchant so bank webhook matches seamlessly
+  useEffect(() => {
+    const merchantUid = profile?.id || user?.id;
+    if (!merchantUid || !currentPlan.amount || currentPlan.amount <= 0) return;
+    const createPendingOrder = async () => {
+      try {
+        await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: CONFIG.platformApiKey,
+            amount: currentPlan.amount,
+            note: currentPlan.note,
+            external_ref: merchantUid,
+            callback_url: callbackUrl,
+          }),
+        });
+      } catch (e) {
+        // Silent catch
+      }
+    };
+    createPendingOrder();
+  }, [profile?.id, user?.id, currentPlan.amount, currentPlan.note]);
+
+  // Handle manual 12-digit UTR verification
+  const handleVerifyManualUtr = async (e) => {
+    if (e) e.preventDefault();
+    const cleanUtr = manualUtr.trim();
+    if (!cleanUtr || cleanUtr.length < 10) {
+      setUtrError('Please enter a valid 12-digit bank UTR / Ref number.');
+      return;
+    }
+    setUtrError('');
+    setIsVerifyingUtr(true);
+    setStatusMsg('Verifying UTR with bank records...');
+    try {
+      const merchantUid = user?.id || profile?.id;
+      const res = await fetch('/api/merchant/subscription/activate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          merchantId: merchantUid,
+          planId: currentPlan.id,
+          planName: currentPlan.title,
+          amount: currentPlan.amount || 499,
+          durationDays: currentPlan.id === '3m' ? 90 : 30,
+          utr: cleanUtr,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to verify UTR');
+      }
+      if (fetchProfile && merchantUid) {
+        await fetchProfile(merchantUid);
+      }
+      if (fetchSubscriptionHistory && merchantUid) {
+        await fetchSubscriptionHistory(merchantUid);
+      }
+      setStatusMsg('✓ Subscription activated & verified! Unlocking console...');
+      setPaymentConfirmed(true);
+    } catch (err) {
+      console.error('Manual UTR verification failed:', err);
+      setUtrError(err.message || 'Could not verify UTR. Please ensure payment is completed.');
+    } finally {
+      setIsVerifyingUtr(false);
     }
   };
 
@@ -852,6 +924,55 @@ export default function ConsoleActivationPaywall({
                     )}
                   </button>
                 </div>
+              </div>
+
+              {/* Subsection 4: Already Paid? Manual 12-Digit UTR Verification Card */}
+              <div className="p-3.5 rounded-xl bg-sky-50/70 border border-sky-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-sky-950 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-sky-600" />
+                    Already Paid? Enter 12-Digit Bank UTR / Ref No.
+                  </span>
+                  <span className="text-[10px] text-sky-700 font-bold px-2 py-0.5 rounded-full bg-sky-100 border border-sky-300">
+                    Instant Unlock
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-normal">
+                  If you scanned the QR and paid from your phone or friend's UPI app, paste the 12-digit UPI Ref/UTR number from your payment receipt below:
+                </p>
+                <form onSubmit={handleVerifyManualUtr} className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. 628013441782"
+                    value={manualUtr}
+                    onChange={(e) => {
+                      setManualUtr(e.target.value.replace(/[^0-9A-Za-z]/g, ''));
+                      setUtrError('');
+                    }}
+                    className="flex-1 px-3 py-2 text-xs font-mono font-semibold bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 placeholder:text-slate-400"
+                    maxLength={22}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isVerifyingUtr || !manualUtr.trim()}
+                    className="px-4 py-2 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white text-xs font-bold rounded-lg shadow-sm disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                  >
+                    {isVerifyingUtr ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Verifying...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        <span>Verify &amp; Unlock</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+                {utrError && (
+                  <p className="text-[11px] font-semibold text-rose-600">{utrError}</p>
+                )}
               </div>
 
               {/* Past Payment Reference Note & Status Sync */}
