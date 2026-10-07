@@ -1,5 +1,9 @@
 <div align="center">
 
+<a href="https://mymob.tech" target="_blank">
+  <img src="public/icon.png" alt="MyMobPay Logo" width="96" height="96" />
+</a>
+
 # 🚀 MyMobPay
 ### Zero-Commission UPI Payment Gateway for Indian Businesses
 
@@ -9,6 +13,12 @@
 
 > **Presented at Hackathon — October 2026**  
 > *Empowering Indian businesses to keep 100% of their revenue*
+
+<br />
+
+<a href="https://mymob.tech" target="_blank">
+  <img src="public/og-banner.png" alt="MyMobPay Platform Showcase" width="750" />
+</a>
 
 </div>
 
@@ -58,6 +68,10 @@ Customer Opens Checkout
         ▼
   Customer sees ✅ Success  |  Merchant sees 📊 Revenue Updated
 ```
+
+<p align="center">
+  <img src="public/how_it_works_flow.jpg" alt="How It Works Flow" width="700" />
+</p>
 
 Our core reconciliation technology is proprietary and patent-pending.
 
