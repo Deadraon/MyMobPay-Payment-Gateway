@@ -30,6 +30,28 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Merchant account not found.' }, { status: 404 });
     }
 
+    const cleanUtr = String(utr || '').trim();
+
+    // 1b. Duplicate UTR check to prevent replay fraud across different accounts
+    if (cleanUtr && cleanUtr.length >= 10) {
+      const { data: existingUtr } = await supabaseAdmin
+        .from('orders')
+        .select('id, merchant_id, external_ref')
+        .eq('utr', cleanUtr)
+        .eq('status', 'verified')
+        .limit(1);
+
+      if (existingUtr && existingUtr.length > 0) {
+        const existing = existingUtr[0];
+        if (existing.merchant_id !== merchantId && existing.external_ref !== merchantId) {
+          return NextResponse.json({
+            error: `UTR ${cleanUtr} has already been verified for another transaction.`,
+            code: 'DUPLICATE_UTR'
+          }, { status: 400 });
+        }
+      }
+    }
+
     // 2. Calculate new expiry date
     const currentExpiry = merchant.subscription_expires_at ? new Date(merchant.subscription_expires_at) : new Date();
     const baseDate = currentExpiry > new Date() ? currentExpiry : new Date();
@@ -58,23 +80,52 @@ export async function POST(req) {
       return NextResponse.json({ error: updateErr.message }, { status: 500 });
     }
 
-    // 4. Create an order record for audit & invoice tracking
-    const orderId = generateOrderId();
+    // 4. Update matching pending subscription order or insert verified order for audit
     const invoiceRef = `INV-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`;
+    const effectiveUtr = cleanUtr || `NPCI-${Date.now().toString().slice(-6)}`;
+
+    let targetOrderId = body.orderId || null;
+    if (!targetOrderId) {
+      const { data: pendingOrders } = await supabaseAdmin
+        .from('orders')
+        .select('id')
+        .eq('external_ref', merchantId)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (pendingOrders && pendingOrders.length > 0) {
+        targetOrderId = pendingOrders[0].id;
+      }
+    }
 
     try {
-      await supabaseAdmin.from('orders').insert({
-        id: orderId,
-        merchant_id: merchantId,
-        amount: parseFloat(amount) || 499,
-        status: 'verified',
-        note: `Subscription_${planId}`,
-        external_ref: merchantId,
-        utr: utr || `NPCI-${Date.now().toString().slice(-6)}`,
-        verified_at: nowIso,
-      });
+      if (targetOrderId) {
+        await supabaseAdmin
+          .from('orders')
+          .update({
+            status: 'verified',
+            utr: effectiveUtr,
+            customer_utr: cleanUtr || null,
+            verified_at: nowIso,
+          })
+          .eq('id', targetOrderId);
+      } else {
+        const orderId = generateOrderId();
+        await supabaseAdmin.from('orders').insert({
+          id: orderId,
+          merchant_id: merchantId,
+          amount: parseFloat(amount) || 499,
+          status: 'verified',
+          note: `Subscription_${planId}`,
+          external_ref: merchantId,
+          utr: effectiveUtr,
+          customer_utr: cleanUtr || null,
+          verified_at: nowIso,
+        });
+      }
     } catch (orderInsertErr) {
-      console.warn('[SUB ACTIVATE API] Order insert notice:', orderInsertErr?.message);
+      console.warn('[SUB ACTIVATE API] Order insert/update notice:', orderInsertErr?.message);
     }
 
     // 5. Look up merchant email from Auth

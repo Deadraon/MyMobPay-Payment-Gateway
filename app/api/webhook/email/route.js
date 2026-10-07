@@ -48,7 +48,7 @@ export async function POST(request) {
        }
     }
 
-    const isAdminMerchant = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || api_key === CONFIG.platformApiKey;
+    const isAdminMerchant = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || merchant.id === 'dd45279e-7a2c-413c-9e24-24d88011b680' || api_key === CONFIG.platformApiKey;
 
     if (!isSubActive && !isAdminMerchant) {
       return NextResponse.json({ error: 'Merchant subscription is inactive or expired' }, { status: 403 });
@@ -102,16 +102,40 @@ export async function POST(request) {
       }
     }
 
-    // 3b. Fallback: match by exact amount (supported by unique paise offset)
+    // 3a-2. Check if Order ID is referenced directly in the email body
+    if (!matchedOrder) {
+      const orderMatch = emailBody.match(/\b(MMP_[0-9A-Za-z_]+)\b/i);
+      if (orderMatch) {
+        const { data: oByRef } = await supabaseAdmin
+          .from('orders')
+          .select('*')
+          .eq('id', orderMatch[1])
+          .eq('status', 'pending')
+          .limit(1);
+        if (oByRef && oByRef.length > 0) {
+          matchedOrder = oByRef[0];
+        }
+      }
+    }
+
+    // 3b. Fallback: match by amount (supporting unique paise offset)
     if (!matchedOrder) {
       let amountQuery = supabaseAdmin
         .from('orders')
         .select('*')
-        .eq('status', 'pending')
-        .eq('amount', amount);
+        .eq('status', 'pending');
 
       if (!isAdminMerchant) {
-        amountQuery = amountQuery.eq('merchant_id', merchant.id);
+        amountQuery = amountQuery.eq('merchant_id', merchant.id).eq('amount', amount);
+      } else {
+        const isSubAmount = amount === 499 || amount === 1497 || amount === 998 || amount === 1 || (amount >= 495 && amount <= 505);
+        if (isSubAmount) {
+          const minAmt = Math.floor(amount);
+          const maxAmt = Math.floor(amount) + 0.99;
+          amountQuery = amountQuery.gte('amount', minAmt).lte('amount', maxAmt);
+        } else {
+          amountQuery = amountQuery.eq('amount', amount);
+        }
       }
 
       const { data: orders, error: findError } = await amountQuery

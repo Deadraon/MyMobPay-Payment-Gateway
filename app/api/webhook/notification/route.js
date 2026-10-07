@@ -39,21 +39,69 @@ export async function POST(request) {
 
     const { amount, utr } = parsed;
 
-    // Find the most recent pending order matching the amount
-    const { data: order, error: findError } = await supabaseAdmin
-      .from('orders')
-      .select('*')
-      .eq('status', 'pending')
-      .eq('amount', amount)
-      .order('created_at', { ascending: false })
-      .limit(1);
+    let matchedOrder = null;
 
-    if (findError) {
-      console.error('Error finding matching order:', findError);
-      return NextResponse.json({ error: findError.message }, { status: 500 });
+    // 1. Prioritize customer-submitted UTR match
+    if (utr && utr !== 'UNKNOWN_REF') {
+      const { data: utrOrder } = await supabaseAdmin
+        .from('orders')
+        .select('*')
+        .eq('status', 'pending')
+        .eq('customer_utr', utr)
+        .limit(1);
+
+      if (utrOrder && utrOrder.length > 0) {
+        matchedOrder = utrOrder[0];
+      }
     }
 
-    if (!order || order.length === 0) {
+    // 2. Check for order ID in text
+    if (!matchedOrder) {
+      const orderMatch = textToParse.match(/\b(MMP_[0-9A-Za-z_]+)\b/i);
+      if (orderMatch) {
+        const { data: oByRef } = await supabaseAdmin
+          .from('orders')
+          .select('*')
+          .eq('id', orderMatch[1])
+          .eq('status', 'pending')
+          .limit(1);
+        if (oByRef && oByRef.length > 0) {
+          matchedOrder = oByRef[0];
+        }
+      }
+    }
+
+    // 3. Find the most recent pending order matching the amount (support paise offset for subscriptions)
+    if (!matchedOrder) {
+      const isSubAmount = amount === 499 || amount === 1497 || amount === 998 || amount === 1 || (amount >= 495 && amount <= 505);
+      let orderQuery = supabaseAdmin
+        .from('orders')
+        .select('*')
+        .eq('status', 'pending');
+
+      if (isSubAmount) {
+        const minAmt = Math.floor(amount);
+        const maxAmt = Math.floor(amount) + 0.99;
+        orderQuery = orderQuery.gte('amount', minAmt).lte('amount', maxAmt);
+      } else {
+        orderQuery = orderQuery.eq('amount', amount);
+      }
+
+      const { data: orders, error: findError } = await orderQuery
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (findError) {
+        console.error('Error finding matching order:', findError);
+        return NextResponse.json({ error: findError.message }, { status: 500 });
+      }
+
+      if (orders && orders.length > 0) {
+        matchedOrder = orders[0];
+      }
+    }
+
+    if (!matchedOrder) {
       return NextResponse.json({
         success: false,
         code: 'ORDER_NOT_FOUND',
@@ -61,8 +109,6 @@ export async function POST(request) {
         parsed: { amount, utr }
       }, { status: 200 });
     }
-
-    const matchedOrder = order[0];
 
     // Check for double spending UTR
     const { data: duplicateUtr, error: dupError } = await supabaseAdmin

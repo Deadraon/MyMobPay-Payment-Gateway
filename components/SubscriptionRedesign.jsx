@@ -42,6 +42,8 @@ export default function SubscriptionRedesign({
   const [toastMessage, setToastMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
   const [renewUtr, setRenewUtr] = useState('');
+  const [activeOrderId, setActiveOrderId] = useState('');
+  const [activeAmount, setActiveAmount] = useState(null);
 
   // ── Real Subscription Details Computation ─────────────────────
   const subDetails = useMemo(() => {
@@ -240,7 +242,7 @@ export default function SubscriptionRedesign({
     if (!showPaymentModal || !profile?.id || selectedPlan.amount <= 0) return;
     const createPendingOrder = async () => {
       try {
-        await fetch('/api/orders', {
+        const res = await fetch('/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -250,6 +252,11 @@ export default function SubscriptionRedesign({
             external_ref: profile.id,
           }),
         });
+        const data = await res.json();
+        if (data && data.orderId) {
+          setActiveOrderId(data.orderId);
+          if (data.orderAmount) setActiveAmount(data.orderAmount);
+        }
       } catch (e) {
         // Silent catch
       }
@@ -266,9 +273,10 @@ export default function SubscriptionRedesign({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           merchantId: profile?.id,
+          orderId: activeOrderId || undefined,
           planId: selectedPlan.id,
           planName: selectedPlan.name || selectedPlan.title,
-          amount: selectedPlan.amount,
+          amount: activeAmount || selectedPlan.amount,
           durationDays: selectedPlan.durationDays,
           utr: renewUtr.trim() || '',
         }),
@@ -345,7 +353,7 @@ export default function SubscriptionRedesign({
   // UPI Intent String for Real Live QR Code
   const upiVpa = CONFIG.upiId || '9410181307@okbizaxis';
   const merchantMid = profile?.id ? profile.id.slice(0, 10).toUpperCase() : 'MMP';
-  const qrString = `upi://pay?pa=${upiVpa}&pn=MyMobPay+License&am=${selectedPlan.amount}&tn=Sub_${merchantMid}&cu=INR`;
+  const qrString = `upi://pay?pa=${upiVpa}&pn=MyMobPay+License&am=${activeAmount ? Number(activeAmount).toFixed(2) : selectedPlan.amount.toFixed(2)}&tn=Subscription_${selectedPlan.id}_${merchantMid}${activeOrderId ? `_${activeOrderId}` : ''}&cu=INR`;
   const checkoutUrl = `/pay?api_key=${CONFIG.platformApiKey}&amount=${selectedPlan.amount}&ref=${profile?.id || ''}&note=Subscription_${selectedPlan.id}`;
 
   return (

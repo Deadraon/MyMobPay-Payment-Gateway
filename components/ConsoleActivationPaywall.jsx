@@ -52,6 +52,8 @@ export default function ConsoleActivationPaywall({
   const [manualUtr, setManualUtr] = useState('');
   const [isVerifyingUtr, setIsVerifyingUtr] = useState(false);
   const [utrError, setUtrError] = useState('');
+  const [activeOrderId, setActiveOrderId] = useState('');
+  const [activeAmount, setActiveAmount] = useState(null);
 
   // Payment Confirmation Success States
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
@@ -187,7 +189,8 @@ export default function ConsoleActivationPaywall({
     ? `/pay?api_key=${CONFIG.platformApiKey}&amount=${currentPlan.amount}&ref=${profile?.id || ''}&note=${currentPlan.note}&callback=${encodeURIComponent(callbackUrl)}`
     : '#';
 
-  const upiIntentUri = `upi://pay?pa=${encodeURIComponent(merchantVpa)}&pn=${encodeURIComponent(CONFIG.businessName || 'MyMobPay')}&am=${currentPlan.amount > 0 ? currentPlan.amount.toFixed(2) : '1.00'}&cu=INR&tn=${encodeURIComponent(`${currentPlan.note}_${profile?.id ? profile.id.slice(0, 8) : 'SUB'}`)}`;
+  const finalPayAmount = activeAmount || currentPlan.amount;
+  const upiIntentUri = `upi://pay?pa=${encodeURIComponent(merchantVpa)}&pn=${encodeURIComponent(CONFIG.businessName || 'MyMobPay')}&am=${finalPayAmount > 0 ? Number(finalPayAmount).toFixed(2) : '1.00'}&cu=INR&tn=${encodeURIComponent(`${currentPlan.note}_${profile?.id ? profile.id.slice(0, 8) : 'SUB'}${activeOrderId ? `_${activeOrderId}` : ''}`)}`;
 
   const handleCopyVpa = () => {
     if (navigator?.clipboard) {
@@ -259,7 +262,7 @@ export default function ConsoleActivationPaywall({
     if (!merchantUid || !currentPlan.amount || currentPlan.amount <= 0) return;
     const createPendingOrder = async () => {
       try {
-        await fetch('/api/orders', {
+        const res = await fetch('/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -270,6 +273,11 @@ export default function ConsoleActivationPaywall({
             callback_url: callbackUrl,
           }),
         });
+        const data = await res.json();
+        if (data && data.orderId) {
+          setActiveOrderId(data.orderId);
+          if (data.orderAmount) setActiveAmount(data.orderAmount);
+        }
       } catch (e) {
         // Silent catch
       }
@@ -295,9 +303,10 @@ export default function ConsoleActivationPaywall({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           merchantId: merchantUid,
+          orderId: activeOrderId || undefined,
           planId: currentPlan.id,
           planName: currentPlan.title,
-          amount: currentPlan.amount || 499,
+          amount: activeAmount || currentPlan.amount || 499,
           durationDays: currentPlan.id === '3m' ? 90 : 30,
           utr: cleanUtr,
         }),
@@ -938,7 +947,7 @@ export default function ConsoleActivationPaywall({
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-600 leading-normal">
-                  If you scanned the QR and paid from your phone or friend's UPI app, paste the 12-digit UPI Ref/UTR number from your payment receipt below:
+                  If you scanned the QR and paid from your phone or friend&apos;s UPI app, paste the 12-digit UPI Ref/UTR number from your payment receipt below:
                 </p>
                 <form onSubmit={handleVerifyManualUtr} className="flex flex-col sm:flex-row gap-2">
                   <input

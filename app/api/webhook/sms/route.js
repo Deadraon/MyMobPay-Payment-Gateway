@@ -85,27 +85,77 @@ export async function POST(request) {
 
     const isPlatformReceiver = merchant ? (merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || merchant.id === 'dd45279e-7a2c-413c-9e24-24d88011b680' || apiKey === CONFIG.platformApiKey || secret === CONFIG.platformApiKey) : false;
 
-    // Find the most recent pending order matching the amount (isolated by merchant unless platform receiver)
-    let orderQuery = supabaseAdmin
-      .from('orders')
-      .select('*')
-      .eq('status', 'pending')
-      .eq('amount', amount);
-      
-    if (merchant && !isPlatformReceiver) {
-      orderQuery = orderQuery.eq('merchant_id', merchant.id);
+    let matchedOrder = null;
+
+    // 1. Prioritize customer-submitted UTR match
+    if (utr && utr !== 'UNKNOWN_REF') {
+      let utrQuery = supabaseAdmin
+        .from('orders')
+        .select('*')
+        .eq('status', 'pending')
+        .eq('customer_utr', utr);
+
+      if (merchant && !isPlatformReceiver) {
+        utrQuery = utrQuery.eq('merchant_id', merchant.id);
+      }
+
+      const { data: utrOrder } = await utrQuery.limit(1);
+      if (utrOrder && utrOrder.length > 0) {
+        matchedOrder = utrOrder[0];
+      }
     }
 
-    const { data: order, error: findError } = await orderQuery
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (findError) {
-      console.error('Error searching for matching order:', findError);
-      return NextResponse.json({ error: findError.message }, { status: 500 });
+    // 2. Check if Order ID is referenced directly in the SMS text
+    if (!matchedOrder) {
+      const orderMatch = message.match(/\b(MMP_[0-9A-Za-z_]+)\b/i);
+      if (orderMatch) {
+        const { data: oByRef } = await supabaseAdmin
+          .from('orders')
+          .select('*')
+          .eq('id', orderMatch[1])
+          .eq('status', 'pending')
+          .limit(1);
+        if (oByRef && oByRef.length > 0) {
+          matchedOrder = oByRef[0];
+        }
+      }
     }
 
-    if (!order || order.length === 0) {
+    // 3. Find pending order matching amount
+    if (!matchedOrder) {
+      let orderQuery = supabaseAdmin
+        .from('orders')
+        .select('*')
+        .eq('status', 'pending');
+        
+      if (merchant && !isPlatformReceiver) {
+        orderQuery = orderQuery.eq('merchant_id', merchant.id).eq('amount', amount);
+      } else {
+        const isSubAmount = amount === 499 || amount === 1497 || amount === 998 || amount === 1 || (amount >= 495 && amount <= 505);
+        if (isSubAmount) {
+          const minAmt = Math.floor(amount);
+          const maxAmt = Math.floor(amount) + 0.99;
+          orderQuery = orderQuery.gte('amount', minAmt).lte('amount', maxAmt);
+        } else {
+          orderQuery = orderQuery.eq('amount', amount);
+        }
+      }
+
+      const { data: orders, error: findError } = await orderQuery
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (findError) {
+        console.error('Error searching for matching order:', findError);
+        return NextResponse.json({ error: findError.message }, { status: 500 });
+      }
+
+      if (orders && orders.length > 0) {
+        matchedOrder = orders[0];
+      }
+    }
+
+    if (!matchedOrder) {
       // Smart Fallback for Platform Subscription payments:
       const isSubAmount = amount === 499 || amount === 1497 || amount === 1 || (amount >= 495 && amount <= 505);
       if (isPlatformReceiver && isSubAmount) {
@@ -171,8 +221,6 @@ export async function POST(request) {
         parsed: { amount, utr }
       }, { status: 200 });
     }
-
-    const matchedOrder = order[0];
 
     // Check if another order already has this UTR to prevent double-spending / fraud
     const { data: duplicateUtr, error: dupError } = await supabaseAdmin
