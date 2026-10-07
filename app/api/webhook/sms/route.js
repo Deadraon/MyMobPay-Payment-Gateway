@@ -106,6 +106,63 @@ export async function POST(request) {
     }
 
     if (!order || order.length === 0) {
+      // Smart Fallback for Platform Subscription payments:
+      const isSubAmount = amount === 499 || amount === 1497 || amount === 1 || (amount >= 495 && amount <= 505);
+      if (isPlatformReceiver && isSubAmount) {
+        const merchantMatch = message.match(/(?:Subscription|Trial)_[0-9A-Za-z]+_([0-9a-fA-F-]{8,36})/i);
+        let targetMerchantId = null;
+        if (merchantMatch) {
+          const rawId = merchantMatch[1];
+          const { data: foundMerchants } = await supabaseAdmin
+            .from('merchants')
+            .select('id')
+            .filter('id', 'ilike', `${rawId}%`)
+            .limit(1);
+          if (foundMerchants && foundMerchants.length > 0) {
+            targetMerchantId = foundMerchants[0].id;
+          }
+        }
+
+        if (!targetMerchantId) {
+          const { data: candidateMerchants } = await supabaseAdmin
+            .from('merchants')
+            .select('id')
+            .neq('subscription_status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(1);
+          if (candidateMerchants && candidateMerchants.length > 0) {
+            targetMerchantId = candidateMerchants[0].id;
+          }
+        }
+
+        if (targetMerchantId) {
+          const planId = amount >= 1400 ? '3m' : amount === 1 ? 'trial' : '1m';
+          const orderId = `MMP_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_AUTO_${Date.now().toString().slice(-4)}`;
+          
+          const { data: autoOrder } = await supabaseAdmin.from('orders').insert({
+            id: orderId,
+            merchant_id: targetMerchantId,
+            amount: amount,
+            status: 'verified',
+            note: `Subscription_${planId}`,
+            external_ref: targetMerchantId,
+            utr: utr,
+            customer_utr: utr,
+            verified_at: new Date().toISOString()
+          }).select().single();
+
+          if (autoOrder) {
+            await checkAndProcessSubscription(autoOrder, apiKey || CONFIG.platformApiKey);
+            return NextResponse.json({
+              success: true,
+              code: 'ORDER_VERIFIED',
+              message: `Auto-verified subscription payment of Rs. ${amount} for merchant ${targetMerchantId}`,
+              order: autoOrder
+            });
+          }
+        }
+      }
+
       // Order not found
       return NextResponse.json({
         success: false,

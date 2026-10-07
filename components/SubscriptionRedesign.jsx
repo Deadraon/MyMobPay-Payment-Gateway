@@ -41,6 +41,7 @@ export default function SubscriptionRedesign({
   const [isActivating, setIsActivating] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
+  const [renewUtr, setRenewUtr] = useState('');
 
   // ── Real Subscription Details Computation ─────────────────────
   const subDetails = useMemo(() => {
@@ -234,6 +235,28 @@ export default function SubscriptionRedesign({
     openTaxInvoiceWindow(inv, profile, subDetails, triggerToast);
   };
 
+  // ── Auto-register pending order when modal opens so bank email/SMS matches ──
+  useEffect(() => {
+    if (!showPaymentModal || !profile?.id || selectedPlan.amount <= 0) return;
+    const createPendingOrder = async () => {
+      try {
+        await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: CONFIG.platformApiKey,
+            amount: selectedPlan.amount,
+            note: `Subscription_${selectedPlan.id}`,
+            external_ref: profile.id,
+          }),
+        });
+      } catch (e) {
+        // Silent catch
+      }
+    };
+    createPendingOrder();
+  }, [showPaymentModal, profile?.id, selectedPlan.amount, selectedPlan.id]);
+
   // ── Handle Payment & Plan Activation ──────────────────────────
   const handleActivatePlan = async () => {
     setIsActivating(true);
@@ -244,9 +267,10 @@ export default function SubscriptionRedesign({
         body: JSON.stringify({
           merchantId: profile?.id,
           planId: selectedPlan.id,
-          planName: selectedPlan.name,
+          planName: selectedPlan.name || selectedPlan.title,
           amount: selectedPlan.amount,
           durationDays: selectedPlan.durationDays,
+          utr: renewUtr.trim() || '',
         }),
       });
 
@@ -933,6 +957,22 @@ export default function SubscriptionRedesign({
                 <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
                 Open Live Checkout Page
               </a>
+
+              {/* Optional 12-Digit Bank UTR Input */}
+              <div className="w-full text-left space-y-1">
+                <label className="text-[11px] font-semibold text-slate-600 flex items-center justify-between">
+                  <span>12-Digit Bank UTR / UPI Ref:</span>
+                  <span className="text-[10px] text-emerald-600 font-bold">Auto-matches receipt</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 628013441782"
+                  value={renewUtr}
+                  onChange={(e) => setRenewUtr(e.target.value.replace(/[^0-9A-Za-z]/g, ''))}
+                  className="w-full px-3 py-2 text-xs font-mono font-semibold bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-400"
+                  maxLength={22}
+                />
+              </div>
 
               {/* Confirm / Activate Button */}
               <button
