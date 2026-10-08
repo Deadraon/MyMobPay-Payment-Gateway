@@ -61,7 +61,7 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // 3. Check for matching bank credit in email_logs
+    // 3. Check for matching bank credit in email_logs with strict amount verification
     let isBankConfirmed = false;
     const { data: matchedEmail } = await supabaseAdmin
       .from('email_logs')
@@ -70,7 +70,28 @@ export async function POST(request) {
       .limit(1);
 
     if (matchedEmail && matchedEmail.length > 0) {
-      isBankConfirmed = true;
+      const emailRecord = matchedEmail[0];
+      const snippet = emailRecord.body_snippet || '';
+      const orderAmt = parseFloat(order.amount);
+      const formattedAmt = orderAmt.toFixed(2);
+      const integerAmt = Math.floor(orderAmt).toString();
+
+      // SECURITY CHECK: Verify that the bank email actually credited the matching order amount
+      const hasMatchingAmount =
+        snippet.includes(formattedAmt) ||
+        snippet.includes(`INR ${formattedAmt}`) ||
+        snippet.includes(`Rs. ${formattedAmt}`) ||
+        snippet.includes(`Rs.${formattedAmt}`) ||
+        snippet.includes(`₹${formattedAmt}`) ||
+        snippet.includes(`Rs. ${integerAmt}`) ||
+        snippet.includes(`Rs.${integerAmt}`) ||
+        snippet.includes(`INR ${integerAmt}`);
+
+      if (hasMatchingAmount) {
+        isBankConfirmed = true;
+      } else {
+        console.warn(`[Security Warning] UTR ${cleanUtr} found in bank log, but credited amount does not match required order amount ₹${formattedAmt}. Skipping auto-verification.`);
+      }
     }
 
     // 4. In test mode OR if bank alert has already matched, verify the order

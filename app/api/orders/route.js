@@ -42,8 +42,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'API Key is required to create an order.' }, { status: 400 });
     }
 
-    if (!amount || isNaN(parseFloat(amount))) {
-      return NextResponse.json({ error: 'Valid amount is required' }, { status: 400 });
+    const numAmount = parseFloat(amount);
+    if (!amount || isNaN(numAmount) || numAmount <= 0 || numAmount > 1000000) {
+      return NextResponse.json({ error: 'Valid amount between ₹1.00 and ₹10,00,000.00 is required.' }, { status: 400 });
     }
 
     let actualKey = effectiveApiKey;
@@ -116,7 +117,7 @@ export async function POST(request) {
     // E.g. MMP_20260927_8F3kQ9zR2x1A
     let orderId = '';
     const requestedOrderId = (body.order_id || body.orderId || '').trim().replace(/^[-#]+/, '');
-    if (requestedOrderId && requestedOrderId.length >= 4) {
+    if (requestedOrderId && /^[A-Za-z0-9_-]{4,64}$/.test(requestedOrderId)) {
       orderId = requestedOrderId;
     } else {
       orderId = generateOrderId();

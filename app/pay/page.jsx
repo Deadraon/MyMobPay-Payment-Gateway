@@ -4,9 +4,13 @@ import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
+import dynamic from 'next/dynamic';
 import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
-import DesktopCheckoutView from '@/components/DesktopCheckoutView';
+
+const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutView'), {
+  ssr: false,
+});
 
 /* ── Original MyMobPay Website Logo (Dual-color Blue/Orange M mark + MyMobPay) ── */
 const MyMobPayLogo = () => (
@@ -382,6 +386,18 @@ function PayPageContent() {
       handleReturn(cleanId, verifiedCallback);
     }
   }
+
+  /* ── Security: Scrub sensitive merchant API keys from browser address bar ── */
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window.location.search.includes('key=') || window.location.search.includes('api_key='))) {
+      try {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('key');
+        cleanUrl.searchParams.delete('api_key');
+        window.history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search);
+      } catch {}
+    }
+  }, []);
 
   /* ── Auto-create / Hydrate order ── */
   useEffect(() => {

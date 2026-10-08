@@ -334,7 +334,6 @@ export default function PaymentLinksRedesign({
           dbOrderId = data.orderId;
           const params = new URLSearchParams();
           params.set('order_id', data.orderId);
-          params.set('key', apiKey);
           params.set('amount', effectiveAmount.toFixed(2));
           if (effectiveRef) params.set('ref', effectiveRef);
           if (finalCallbackUrl) params.set('callback', finalCallbackUrl);

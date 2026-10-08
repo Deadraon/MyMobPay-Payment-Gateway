@@ -117,14 +117,15 @@ export async function POST(request) {
       }
     }
 
-    // Check recent parsed emails matching exact amount within 30 minutes
-    const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    // Check recent parsed emails matching exact amount created AFTER this order was placed
+    const orderCreatedAt = order.created_at ? new Date(order.created_at).getTime() - 60000 : Date.now() - 30 * 60 * 1000;
+    const orderCreatedIso = new Date(orderCreatedAt).toISOString();
     const formattedAmt = parseFloat(order.amount).toFixed(2);
     
     const { data: recentEmails } = await supabaseAdmin
       .from('email_logs')
       .select('*')
-      .gte('created_at', thirtyMinAgo)
+      .gte('created_at', orderCreatedIso)
       .order('created_at', { ascending: false })
       .limit(10);
 
@@ -132,17 +133,33 @@ export async function POST(request) {
       for (const email of recentEmails) {
         const snippet = email.body_snippet || '';
         // Check if snippet contains matching amount
-        if (snippet.includes(`AMT: ${formattedAmt}`) || snippet.includes(`INR ${formattedAmt}`) || snippet.includes(`Rs. ${formattedAmt}`) || snippet.includes(`Rs.${formattedAmt}`)) {
-          // Extract UTR from snippet if present
-          const utrMatch = snippet.match(/UTR:\s*([A-Za-z0-9_]+)/i) || snippet.match(/UPI\/([0-9]{12})/i);
-          const foundUtr = utrMatch ? utrMatch[1] : ('UPI' + Date.now().toString().slice(-10));
+        if (
+          snippet.includes(`AMT: ${formattedAmt}`) ||
+          snippet.includes(`INR ${formattedAmt}`) ||
+          snippet.includes(`Rs. ${formattedAmt}`) ||
+          snippet.includes(`Rs.${formattedAmt}`) ||
+          snippet.includes(`₹${formattedAmt}`)
+        ) {
+          // Extract genuine UTR from snippet if present
+          const utrMatch =
+            snippet.match(/UTR:\s*([A-Za-z0-9_]{8,35})/i) ||
+            snippet.match(/UPI\/([0-9]{12})/i) ||
+            snippet.match(/Ref\s*([0-9]{12})/i) ||
+            snippet.match(/RRN\s*([0-9]{12})/i);
 
-          // Check if duplicate UTR
+          // CRITICAL SECURITY: Never fabricate a fake UTR to auto-verify
+          if (!utrMatch || !utrMatch[1]) {
+            continue;
+          }
+
+          const foundUtr = utrMatch[1].trim();
+
+          // Check if this UTR has already been used on ANY verified order
           const { data: dupCheck } = await supabaseAdmin
             .from('orders')
             .select('id')
             .eq('utr', foundUtr)
-            .neq('id', order.id)
+            .eq('status', 'verified')
             .limit(1);
 
           if (!dupCheck || dupCheck.length === 0) {
