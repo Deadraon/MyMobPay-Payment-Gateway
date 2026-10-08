@@ -974,150 +974,17 @@ export default function DesktopCheckoutView({
                     </div>
                   )}
 
-                  {/* ═══════════════════════════════════════════════════
-                      SELECTION OVERVIEW (Shown when !activeOpt)
-                  ═══════════════════════════════════════════════════ */}
+                  {/* SELECTION OVERVIEW removed — left sidebar is the only method picker */}
                   {!activeOpt && (
-                    <div className="pane-content space-y-4 flex-1 animate-fade-in" id="pane-select-overview">
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className="text-title-md text-on-surface text-[17px] font-bold">
-                            Choose How You&apos;d Like to Pay
-                          </h3>
-                          <span className="text-label-sm px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
-                            ✓ 0% Gateway Fee
-                          </span>
-                        </div>
-                        <p className="text-body-sm text-on-surface-variant text-[12.5px]">
-                          Select your preferred payment method to complete ₹{formattedAmount} to {safeBizName}.
-                        </p>
+                    <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-12 animate-fade-in" id="pane-select-overview">
+                      <div className="w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center">
+                        <IconQrCodeScanner className="w-7 h-7 text-secondary" />
                       </div>
-
-                      <div className="grid grid-cols-1 gap-2.5 pt-1">
-                        {/* 1. UPI / QR code */}
-                        <button
-                          type="button"
-                          onClick={() => setActiveOpt('upi')}
-                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
-                        >
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-secondary group-hover:scale-105 transition-transform shrink-0">
-                              <IconQrCodeScanner className="w-6 h-6 text-secondary" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-on-surface text-sm">UPI / QR Code & Apps</span>
-                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant">
-                                  Fastest
-                                </span>
-                              </div>
-                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
-                                Google Pay, PhonePe, Paytm, CRED & all UPI apps
-                              </p>
-                            </div>
-                          </div>
-                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
-                        </button>
-
-                        {/* 2. Cards */}
-                        <button
-                          type="button"
-                          onClick={() => setActiveOpt('card')}
-                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
-                        >
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-on-surface group-hover:scale-105 transition-transform shrink-0">
-                              <IconCreditCard className="w-6 h-6 text-on-surface" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-on-surface text-sm">Debit & Credit Cards</span>
-                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-surface-container-highest text-secondary">
-                                  3DS Secure
-                                </span>
-                              </div>
-                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
-                                Visa, MasterCard, RuPay, Maestro
-                              </p>
-                            </div>
-                          </div>
-                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
-                        </button>
-
-                        {/* 3. Direct bank transfer */}
-                        <button
-                          type="button"
-                          onClick={() => setActiveOpt('bank')}
-                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
-                        >
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-on-surface group-hover:scale-105 transition-transform shrink-0">
-                              <IconAccountBalance className="w-6 h-6 text-on-surface" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-on-surface text-sm">Direct Bank Transfer</span>
-                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-secondary-container text-white">
-                                  IMPS / NEFT
-                                </span>
-                              </div>
-                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
-                                Instant 24x7 virtual account bank transfer
-                              </p>
-                            </div>
-                          </div>
-                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
-                        </button>
-
-                        {/* 4. Crypto */}
-                        <button
-                          type="button"
-                          onClick={() => setActiveOpt('crypto')}
-                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
-                        >
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-on-surface group-hover:scale-105 transition-transform shrink-0">
-                              <IconBitcoin className="w-6 h-6 text-on-surface" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-on-surface text-sm">Crypto Currency</span>
-                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant">
-                                  Web3
-                                </span>
-                              </div>
-                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
-                                USDT (TRC20/ERC20), Bitcoin & Ethereum
-                              </p>
-                            </div>
-                          </div>
-                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
-                        </button>
-
-                        {/* 5. Cash on Delivery */}
-                        <button
-                          type="button"
-                          onClick={() => setActiveOpt('cod')}
-                          className="group w-full p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high border border-surface-container hover:border-secondary/40 text-left transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-sm"
-                        >
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            <div className="w-11 h-11 rounded-xl bg-white shadow-xs flex items-center justify-center text-on-surface group-hover:scale-105 transition-transform shrink-0">
-                              <IconLocalShipping className="w-6 h-6 text-on-surface" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-on-surface text-sm">Cash on Delivery (COD)</span>
-                                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
-                                  Pay Later
-                                </span>
-                              </div>
-                              <p className="text-[11.5px] text-on-surface-variant mt-0.5 truncate">
-                                Pay in cash when order is delivered to your address
-                              </p>
-                            </div>
-                          </div>
-                          <IconChevronRight className="w-5 h-5 text-secondary group-hover:translate-x-0.5 transition-transform shrink-0" />
-                        </button>
+                      <div>
+                        <h3 className="text-on-surface font-bold text-[15px]">Select a Payment Method</h3>
+                        <p className="text-on-surface-variant text-[12.5px] mt-1">
+                          Choose from the options on the left to continue your ₹{formattedAmount} payment.
+                        </p>
                       </div>
                     </div>
                   )}

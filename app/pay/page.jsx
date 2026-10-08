@@ -167,9 +167,24 @@ function PayPageContent() {
   const [checkMsg,     setCheckMsg]     = useState('');
   const [isChecking,   setIsChecking]   = useState(false);
 
-  /* Session Countdown Timer (327 seconds default matching prototype) */
+  /* Session Countdown Timer — persisted via sessionStorage so refresh continues where it left off */
   const SESSION_SECS = 327;
-  const [timeLeft, setTimeLeft] = useState(SESSION_SECS);
+  const TIMER_KEY = `mmp_timer_${cleanParamOrderId || 'sess'}`;
+  const [timeLeft, setTimeLeft] = useState(() => {
+    if (typeof window === 'undefined') return SESSION_SECS;
+    try {
+      const stored = sessionStorage.getItem(TIMER_KEY);
+      if (stored) {
+        const { startedAt } = JSON.parse(stored);
+        const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+        const remaining = SESSION_SECS - elapsed;
+        if (remaining > 0) return remaining;
+      }
+    } catch {}
+    // First visit — record start timestamp
+    try { sessionStorage.setItem(TIMER_KEY, JSON.stringify({ startedAt: Date.now() })); } catch {}
+    return SESSION_SECS;
+  });
 
   /* Copy feedback state */
   const [copyFeedback, setCopyFeedback] = useState(false);
@@ -492,22 +507,41 @@ function PayPageContent() {
     };
   }, [orderId, cleanParamOrderId, confirmed]);
 
-  /* ── Countdown timer ── */
+  /* ── Countdown timer — timestamp-based so refresh doesn't reset it ── */
   useEffect(() => {
     if (curView === 'vOk') return;
 
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setCurView('vExp');
-          return 0;
+    // Ensure sessionStorage has a start timestamp (handles hydration edge case)
+    try {
+      const stored = sessionStorage.getItem(TIMER_KEY);
+      if (!stored) {
+        sessionStorage.setItem(TIMER_KEY, JSON.stringify({ startedAt: Date.now() - (SESSION_SECS - timeLeft) * 1000 }));
+      }
+    } catch {}
+
+    const tick = () => {
+      try {
+        const stored = sessionStorage.getItem(TIMER_KEY);
+        if (stored) {
+          const { startedAt } = JSON.parse(stored);
+          const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+          const remaining = Math.max(SESSION_SECS - elapsed, 0);
+          setTimeLeft(remaining);
+          if (remaining <= 0) {
+            clearInterval(interval);
+            setCurView('vExp');
+          }
+          return;
         }
+      } catch {}
+      setTimeLeft(prev => {
+        if (prev <= 1) { clearInterval(interval); setCurView('vExp'); return 0; }
         return prev - 1;
       });
-    }, 1000);
+    };
 
-    return () => clearInterval(timer);
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
   }, [curView]);
 
   /* ── Check Status CTA Handler ── */
@@ -1226,26 +1260,7 @@ function PayPageContent() {
                       <span className="mob-opt-chevron">›</span>
                     </button>
 
-                    {/* 2. Cards */}
-                    <button
-                      type="button"
-                      className="mob-method-opt-btn"
-                      onClick={() => { setSelectedMethod('card'); setActiveOpt('card'); }}
-                    >
-                      <div className="mob-opt-icon mob-opt-card">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-                        </svg>
-                      </div>
-                      <div className="mob-opt-body">
-                        <div className="mob-opt-title-row">
-                          <span className="mob-opt-title">Credit / Debit Card</span>
-                          <span className="mob-opt-tag-blue">Visa / MC / RuPay</span>
-                        </div>
-                        <span className="mob-opt-sub">Domestic & international credit or debit cards</span>
-                      </div>
-                      <span className="mob-opt-chevron">›</span>
-                    </button>
+
 
                     {/* 3. Net Banking */}
                     <button
@@ -1290,26 +1305,7 @@ function PayPageContent() {
                       <span className="mob-opt-chevron">›</span>
                     </button>
 
-                    {/* 5. COD */}
-                    <button
-                      type="button"
-                      className="mob-method-opt-btn"
-                      onClick={() => { setSelectedMethod('cod'); setActiveOpt('cod'); }}
-                    >
-                      <div className="mob-opt-icon mob-opt-cod">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                        </svg>
-                      </div>
-                      <div className="mob-opt-body">
-                        <div className="mob-opt-title-row">
-                          <span className="mob-opt-title">Cash on Delivery (COD)</span>
-                          <span className="mob-opt-tag-emerald">Pay at Doorstep</span>
-                        </div>
-                        <span className="mob-opt-sub">Pay cash or scan UPI when your order arrives</span>
-                      </div>
-                      <span className="mob-opt-chevron">›</span>
-                    </button>
+
                   </div>
 
                   {/* Promo code link */}
@@ -1374,12 +1370,13 @@ function PayPageContent() {
                       </svg>
                       <span>Change payment method</span>
                     </button>
-                    <span className="mob-active-method-tag">
-                      {selectedMethod === 'upi' ? 'UPI / QR' :
-                       selectedMethod === 'card' ? 'Cards' :
-                       selectedMethod === 'bank' ? 'Net Banking' :
-                       selectedMethod === 'crypto' ? 'Crypto' : 'COD'}
-                    </span>
+                    <div className={`mob-timer-pill ${isTimerLow ? 'low' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 20, background: isTimerLow ? '#fef2f2' : '#f0fdf4', color: isTimerLow ? '#dc2626' : '#15803d', border: `1px solid ${isTimerLow ? '#fecaca' : '#bbf7d0'}` }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      <span>{mm}:{ss}</span>
+                    </div>
                   </div>
 
                   {/* ── B.1: UPI / QR METHOD VIEW ── */}
