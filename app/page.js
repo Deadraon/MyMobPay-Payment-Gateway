@@ -11,7 +11,7 @@ import {
   Key, Landmark, Code, Play, Star, Plus, Minus, Info, Lock, Sparkles, QrCode,
   Copy, Check, Smartphone, Building2, Bell, Terminal, Globe,
   Pause, RotateCcw, CheckCircle, ExternalLink, Activity,
-  Volume2, Share2, FileText, CreditCard, Send
+  Volume2, Share2, FileText, CreditCard, Send, Sun, Moon
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
@@ -61,6 +61,7 @@ export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [heroTab, setHeroTab] = useState('checkout'); // 'checkout' | 'console'
   const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
+  const [pageTheme, setPageTheme] = useState('light'); // 'light' | 'dark'
 
   // Dynamic animated rotating text lines in Hero section
   const heroLines = useMemo(() => [
@@ -185,8 +186,31 @@ export default function HomePage() {
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
+  // Persist theme to localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('pageTheme');
+      if (saved === 'dark' || saved === 'light') setPageTheme(saved);
+    } catch (e) {}
+  }, []);
+
+  const togglePageTheme = () => {
+    const next = pageTheme === 'light' ? 'dark' : 'light';
+    setPageTheme(next);
+    try { localStorage.setItem('pageTheme', next); } catch (e) {}
+  };
+
+  const isDark = pageTheme === 'dark';
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden selection:bg-blue-500/10 selection:text-blue-600 relative">
+    <div
+      data-page-theme={pageTheme}
+      className={`min-h-screen overflow-x-hidden relative transition-colors duration-500 ${
+        isDark
+          ? 'bg-[#080f1c] text-slate-100 selection:bg-blue-500/30 selection:text-white'
+          : 'bg-slate-50 text-slate-900 selection:bg-blue-500/10 selection:text-blue-600'
+      }`}
+    >
       <InteractiveBackground />
       
       {/* ────────────────────────────────────────────────────────
@@ -328,9 +352,9 @@ export default function HomePage() {
       {/* ────────────────────────────────────────────────────────
          FLAGSHIP HERO SECTION (Razorpay-Grade Clean Light Fintech)
          ──────────────────────────────────────────────────────── */}
-      <section className="relative mt-20 pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden bg-white">
+      <section className={`relative mt-20 pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden transition-colors duration-500 ${isDark ? 'bg-[#080f1c]' : 'bg-white'}`}>
         
-        <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_20%,#000_70%,transparent_100%)] opacity-50 -z-20" />
+        <div className={`absolute inset-0 [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_20%,#000_70%,transparent_100%)] opacity-50 -z-20 ${isDark ? 'bg-[radial-gradient(#1e293b_1px,transparent_1px)]' : 'bg-[radial-gradient(#e2e8f0_1px,transparent_1px)]'}`} />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
@@ -552,7 +576,7 @@ export default function HomePage() {
       {/* ────────────────────────────────────────────────────────
          TRUSTED BY FOUNDERS & STARTUPS TICKER (Razorpay-Style)
          ──────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-10 bg-slate-50 border-b border-slate-200/80">
+      <section className={`relative z-10 py-10 border-b transition-colors duration-500 ${isDark ? 'bg-[#0b1422] border-slate-800' : 'bg-slate-50 border-slate-200/80'}`}>
         <div className="max-w-7xl mx-auto px-6 text-center space-y-5">
           <p className="text-xs font-semibold text-slate-500 tracking-wide">
             Powering 10,000+ modern founders, developers, and fast-growing businesses across India
@@ -641,7 +665,7 @@ export default function HomePage() {
                 {/* Sidebar */}
                 <div className="hidden md:flex w-[180px] bg-slate-50 border-r border-slate-200 flex-col py-6 px-3 gap-1 flex-shrink-0">
                   <div className="px-3 pb-4">
-                    <MyMobPayLogo className="w-28 h-auto" textColor="#0F172A" />
+                    <MyMobPayLogo className="w-28 h-auto" textColor={isDark ? "#FFFFFF" : "#0F172A"} />
                   </div>
                   {[
                     { label: 'Dashboard', active: true, dot: 'bg-blue-500' },
@@ -774,7 +798,7 @@ export default function HomePage() {
       {/* ────────────────────────────────────────────────────────
          HOW IT WORKS — DIRECT SETTLEMENT ARCHITECTURE (MINIMAL)
          ──────────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="hidden lg:block relative z-10 py-20 bg-white border-b border-slate-200">
+      <section id="how-it-works" className={`hidden lg:block relative z-10 py-20 border-b transition-colors duration-500 ${isDark ? 'bg-[#080f1c] border-slate-800' : 'bg-white border-slate-200'}`}>
         <div className="max-w-6xl mx-auto px-6 space-y-14 relative">
           
           {/* Section Header */}
@@ -2276,6 +2300,33 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Theme Switcher Button */}
+      <button
+        onClick={togglePageTheme}
+        aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+        title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
+        className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 active:scale-95 flex items-center gap-2 border backdrop-blur-md cursor-pointer group"
+        style={{
+          backgroundColor: isDark ? 'rgba(15, 30, 54, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: isDark ? 'rgba(51, 149, 255, 0.35)' : 'rgba(226, 232, 240, 0.9)',
+          boxShadow: isDark
+            ? '0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(51, 149, 255, 0.3)'
+            : '0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 0 12px rgba(37, 99, 235, 0.12)',
+        }}
+      >
+        {isDark ? (
+          <>
+            <Sun className="w-5 h-5 text-amber-400 transition-transform group-hover:rotate-45" />
+            <span className="text-xs font-bold text-slate-200 pr-1 hidden sm:inline">Light</span>
+          </>
+        ) : (
+          <>
+            <Moon className="w-5 h-5 text-slate-700 transition-transform group-hover:-rotate-12" />
+            <span className="text-xs font-bold text-slate-700 pr-1 hidden sm:inline">Dark</span>
+          </>
+        )}
+      </button>
 
     </div>
   );
