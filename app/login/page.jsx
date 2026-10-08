@@ -7,7 +7,7 @@ import {
   Loader2, Lock, Mail, ArrowRight, ShieldCheck, 
   CheckCircle2, Building2, QrCode, Phone, Smartphone,
   Zap, Eye, EyeOff, AlertCircle, X, RefreshCw, MessageCircle,
-  Link2, Check, Sparkles
+  Link2, Check, UserPlus
 } from 'lucide-react';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
@@ -609,14 +609,35 @@ export default function LoginPage() {
         }
 
       } else if (action === 'signin') {
+        let loginEmail = email.trim();
+
+        // If user typed a Merchant ID (MID-XXXX) or Business name instead of email
+        if (!loginEmail.includes('@')) {
+          try {
+            const res = await fetch('/api/auth/resolve-identifier', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ identifier: loginEmail }),
+            });
+            if (res.ok) {
+              const resData = await res.json();
+              if (resData?.email) {
+                loginEmail = resData.email;
+              }
+            }
+          } catch (resErr) {
+            console.warn('Could not resolve merchant ID to email:', resErr);
+          }
+        }
+
         const { error: authError } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
+          email: loginEmail,
           password: password,
         });
 
         if (authError) {
           if (authError.message?.toLowerCase().includes('invalid login credentials')) {
-            throw new Error('Invalid email or password. If you are new, click "Sign Up" below.');
+            throw new Error('Invalid email/merchant ID or password. If you are new, click "Sign Up" above.');
           }
           throw new Error(authError.message || 'Invalid login credentials.');
         }
@@ -843,7 +864,7 @@ export default function LoginPage() {
                 <div className="mt-5 p-1 bg-[#eaedff] rounded-xl grid grid-cols-2 gap-1 border border-[#dae2fd]/70 shadow-xs">
                   <button 
                     type="button" 
-                    onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
+                    onClick={() => { setMode('signin'); setError(''); setMessage(''); setEmailOtpSent(false); }}
                     className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                       mode === 'signin' 
                         ? 'bg-white text-[#0045de] shadow-sm' 
@@ -855,50 +876,48 @@ export default function LoginPage() {
                   </button>
                   <button 
                     type="button" 
-                    onClick={() => { setMode('signup'); setError(''); setMessage(''); }}
+                    onClick={() => { setMode('signup'); setError(''); setMessage(''); setEmailOtpSent(false); }}
                     className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                       mode === 'signup' 
                         ? 'bg-white text-[#0045de] shadow-sm' 
                         : 'text-[#44474d] hover:text-[#131b2e]'
                     }`}
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <UserPlus className="w-3.5 h-3.5" />
                     <span>Sign Up</span>
                   </button>
                 </div>
 
-                {/* In Sign In Mode: Segmented Sub-Tab Switcher (Email OTP vs Password) */}
-                {mode === 'signin' && (
-                  <div className="mt-4 p-1 bg-[#eaedff] rounded-lg grid grid-cols-2 gap-1">
-                    <button 
-                      type="button" 
-                      onClick={() => { setAuthTab('email'); setError(''); setMessage(''); }}
-                      className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                        authTab === 'email' 
-                          ? 'bg-white text-[#0045de] shadow-sm' 
-                          : 'text-[#44474d] hover:text-[#131b2e]'
-                      }`}
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                      <span>Email OTP</span>
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => { setAuthTab('password'); setError(''); setMessage(''); }}
-                      className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                        authTab === 'password' 
-                          ? 'bg-white text-[#0045de] shadow-sm' 
-                          : 'text-[#44474d] hover:text-[#131b2e]'
-                      }`}
-                    >
-                      <Lock className="w-3.5 h-3.5" />
-                      <span>Password</span>
-                    </button>
-                  </div>
-                )}
+                {/* Sub-Tab Switcher: Email OTP vs Password (Available in both Log In & Sign Up) */}
+                <div className="mt-4 p-1 bg-[#eaedff] rounded-lg grid grid-cols-2 gap-1">
+                  <button 
+                    type="button" 
+                    onClick={() => { setAuthTab('email'); setError(''); setMessage(''); }}
+                    className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      authTab === 'email' 
+                        ? 'bg-white text-[#0045de] shadow-sm' 
+                        : 'text-[#44474d] hover:text-[#131b2e]'
+                    }`}
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Email OTP</span>
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => { setAuthTab('password'); setError(''); setMessage(''); }}
+                    className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      authTab === 'password' 
+                        ? 'bg-white text-[#0045de] shadow-sm' 
+                        : 'text-[#44474d] hover:text-[#131b2e]'
+                    }`}
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Password</span>
+                  </button>
+                </div>
 
-                {/* ── Sign In: Email OTP View (Strictly 6-Digit Code) ── */}
-                {mode === 'signin' && authTab === 'email' && (
+                {/* ── Email OTP View (Available in both Log In & Sign Up) ── */}
+                {authTab === 'email' && (
                   <div className="mt-6 flex flex-col space-y-4">
                     {!emailOtpSent ? (
                       <>
@@ -922,7 +941,9 @@ export default function LoginPage() {
                             />
                           </div>
                           <p className="text-[11px] text-[#74777e] leading-relaxed">
-                            We will send a 6-digit verification code to your email inbox.
+                            {mode === 'signup' 
+                              ? 'We will send a 6-digit verification code to create your merchant account.'
+                              : 'We will send a 6-digit verification code to your email inbox.'}
                           </p>
                         </div>
 
@@ -936,7 +957,7 @@ export default function LoginPage() {
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
                           ) : (
                             <>
-                              <span>Send Email OTP</span>
+                              <span>{mode === 'signup' ? 'Send Verification OTP' : 'Send Email OTP'}</span>
                               <ArrowRight className="w-4 h-4" />
                             </>
                           )}
@@ -975,7 +996,7 @@ export default function LoginPage() {
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
                           ) : (
                             <>
-                              <span>Verify OTP &amp; Enter Dashboard</span>
+                              <span>{mode === 'signup' ? 'Verify OTP & Launch Dashboard' : 'Verify OTP & Enter Dashboard'}</span>
                               <CheckCircle2 className="w-4 h-4" />
                             </>
                           )}
@@ -1008,19 +1029,19 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* ── Sign In: Email & Password View ── */}
+                {/* ── Sign In: Email / ID & Password View ── */}
                 {mode === 'signin' && authTab === 'password' && (
                   <form onSubmit={(e) => { e.preventDefault(); handleAuth('signin'); }} className="mt-6 flex flex-col space-y-4">
                     <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-medium text-[#44474d]">Merchant Email Address</label>
+                      <label className="text-xs font-medium text-[#44474d]">Merchant Email / ID</label>
                       <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
                         <Mail className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
                         <input
-                          type="email"
+                          type="text"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="name@company.com"
+                          placeholder="merchant@company.com or MID-..."
                           className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
                         />
                       </div>
@@ -1074,8 +1095,8 @@ export default function LoginPage() {
                   </form>
                 )}
 
-                {/* ── Mode: Sign Up View ── */}
-                {mode === 'signup' && (
+                {/* ── Mode: Sign Up (Password View) ── */}
+                {mode === 'signup' && authTab === 'password' && (
                   <form onSubmit={(e) => { e.preventDefault(); handleAuth('signup'); }} className="mt-6 flex flex-col space-y-3.5">
                     <div>
                       <label className="block text-[11px] font-bold text-[#131b2e] mb-1">
@@ -1245,7 +1266,7 @@ export default function LoginPage() {
                       onClick={() => { setMode('signup'); setError(''); setMessage(''); }}
                       className="font-bold text-[#0045de] hover:underline cursor-pointer ml-1"
                     >
-                      Sign Up (Get ₹50,000 free processing credits)
+                      Sign Up
                     </button>
                   </p>
                 ) : (
