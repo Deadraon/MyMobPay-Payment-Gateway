@@ -239,7 +239,6 @@ export default function DesktopCheckoutView({
   const [bankTransferClicked, setBankTransferClicked] = useState(false);
   const [upiCheckCount, setUpiCheckCount] = useState(0);
   const [upiDelayed, setUpiDelayed] = useState(false);
-  const [showDetailsBreakdown, setShowDetailsBreakdown] = useState(false);
 
   // Mark UPI as delayed if user stays on UPI screen for >45s without completing
   useEffect(() => {
@@ -909,117 +908,21 @@ export default function DesktopCheckoutView({
                 {/* ── RIGHT COLUMN: Selected Method Detail Pane & Order Summary ── */}
                 <section className="md:col-span-7 p-5 sm:p-7 flex flex-col justify-between bg-surface-container-lowest overflow-y-auto">
 
-                  {/* Top Bar: Change payment method button */}
+                  {/* Top Bar: View order details back button */}
                   {activeOpt && (
                     <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-surface-container">
                       <button
                         type="button"
                         onClick={() => setActiveOpt(null)}
                         className="focus-ring text-secondary hover:text-[#0038b7] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer py-1 px-2.5 -ml-2 rounded-lg hover:bg-surface-container-high/60"
-                        id="changePaymentMethodDesktopBtn"
+                        id="viewOrderDetailsDesktopBtn"
                       >
                         <IconArrowBack className="w-4 h-4 text-secondary" />
-                        <span>Change payment method</span>
+                        <span>View order details</span>
                       </button>
                       <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
                         Paying ₹{formattedAmount}
                       </span>
-                    </div>
-                  )}
-
-                  {/* Payment Details Card (Visible inside the view after clicking any payment mode) */}
-                  {activeOpt && (
-                    <div className="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest shadow-2xs overflow-hidden mb-4 animate-fade-in" id="activePaymentDetailsCard">
-                      {/* Top Header Row: Merchant info + Amount Due */}
-                      <div className="p-3.5 sm:p-4 bg-gradient-to-br from-surface-container-low/50 to-surface-container-lowest border-b border-surface-container flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-9 h-9 rounded-xl bg-primary-container text-on-primary flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
-                            {safeBizName.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-on-surface text-sm truncate block">{safeBizName}</span>
-                              <IconCheckCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                            </div>
-                            <div className="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
-                              <span>Ref:</span>
-                              <code className="font-mono font-bold text-on-surface bg-surface-container-low px-1.5 py-0.5 rounded text-[10.5px] select-all">
-                                {orderRefDisplay}
-                              </code>
-                              <button
-                                type="button"
-                                onClick={() => handleCopyText(orderRefDisplay, 'orderId')}
-                                className="p-0.5 rounded hover:bg-surface-container text-secondary transition-colors cursor-pointer"
-                                title="Copy Order Reference"
-                                aria-label="Copy Order Reference"
-                              >
-                                {copiedField === 'orderId' ? (
-                                  <IconCheck className="w-3 h-3 text-emerald-600" />
-                                ) : (
-                                  <IconCopy className="w-3 h-3 text-on-surface-variant" />
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="text-right flex-shrink-0">
-                          <span className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider block">
-                            {lang === 'hi' ? 'कुल देय राशि' : 'Total Payable'}
-                          </span>
-                          <span className="text-xl sm:text-2xl font-extrabold text-on-surface tracking-tight block">
-                            ₹{formattedAmount}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Itemized summary & collapsible toggle */}
-                      <div className="px-3.5 sm:px-4 py-2 bg-surface-container-low/40 flex items-center justify-between text-[11px] text-on-surface-variant">
-                        <div className="flex items-center gap-2">
-                          <span>{orderDate || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                          <span>•</span>
-                          <span className="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60 text-[10.5px]">
-                            0% Fee (Free)
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setShowDetailsBreakdown(prev => !prev)}
-                          className="text-secondary hover:underline font-semibold flex items-center gap-1 cursor-pointer"
-                        >
-                          <span>{showDetailsBreakdown ? 'Hide details' : 'Order details'}</span>
-                          <span className="text-[10px] font-bold">{showDetailsBreakdown ? '▲' : '▼'}</span>
-                        </button>
-                      </div>
-
-                      {/* Expanded Itemized Breakdown */}
-                      {showDetailsBreakdown && (
-                        <div className="p-3.5 sm:p-4 space-y-2 text-xs border-t border-surface-container bg-surface-container-lowest animate-fade-in">
-                          <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
-                            <span className="text-on-surface-variant font-medium">Order Reference</span>
-                            <span className="font-mono font-bold text-on-surface">{orderRefDisplay}</span>
-                          </div>
-                          <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
-                            <span className="text-on-surface-variant font-medium">Merchant Settlement</span>
-                            <span className="font-medium text-on-surface">{safeBizName}</span>
-                          </div>
-                          <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
-                            <span className="text-on-surface-variant font-medium">Convenience Fee</span>
-                            <span className="font-semibold text-emerald-600">₹0.00 (0% MDR Waived)</span>
-                          </div>
-                          <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
-                            <span className="text-on-surface-variant font-medium">Applicable GST</span>
-                            <span className="font-medium text-on-surface">₹0.00</span>
-                          </div>
-                          <div className="flex items-center justify-between pt-1 text-[11.5px]">
-                            <span className="text-on-surface-variant font-medium">Guarantee</span>
-                            <span className="inline-flex items-center gap-1 font-semibold text-secondary">
-                              <IconSecurity className="w-3.5 h-3.5" />
-                              Direct Bank Real-Time Settled
-                            </span>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
 
