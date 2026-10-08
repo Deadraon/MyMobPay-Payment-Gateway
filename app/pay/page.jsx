@@ -167,7 +167,7 @@ function PayPageContent() {
   const [checkMsg,     setCheckMsg]     = useState('');
   const [isChecking,   setIsChecking]   = useState(false);
 
-  /* Session Countdown Timer — persisted via sessionStorage so refresh continues where it left off */
+  /* Session Countdown Timer — persisted via sessionStorage once a payment method is chosen */
   const SESSION_SECS = 327;
   const TIMER_KEY = `mmp_timer_${cleanParamOrderId || 'sess'}`;
   const [timeLeft, setTimeLeft] = useState(() => {
@@ -181,8 +181,6 @@ function PayPageContent() {
         if (remaining > 0) return remaining;
       }
     } catch {}
-    // First visit — record start timestamp
-    try { sessionStorage.setItem(TIMER_KEY, JSON.stringify({ startedAt: Date.now() })); } catch {}
     return SESSION_SECS;
   });
 
@@ -191,6 +189,11 @@ function PayPageContent() {
   const [copyUsdtDone, setCopyUsdtDone] = useState(false);
   const [copiedAcc,    setCopiedAcc]    = useState(false);
   const [copiedIfsc,   setCopiedIfsc]   = useState(false);
+  const [copiedOrderId, setCopiedOrderId] = useState(false);
+
+  /* Mobile UPI assistance states (delay + check counts) */
+  const [mobUpiDelayed,    setMobUpiDelayed]    = useState(false);
+  const [mobUpiCheckCount, setMobUpiCheckCount] = useState(0);
 
   /* UTR state */
   const [showUtr,      setShowUtr]      = useState(false);
@@ -510,6 +513,8 @@ function PayPageContent() {
   /* ── Countdown timer — timestamp-based so refresh doesn't reset it ── */
   useEffect(() => {
     if (curView === 'vOk') return;
+    // Do not start or run countdown timer until a payment method is selected
+    if (!selectedMethod && !activeOpt) return;
 
     // Ensure sessionStorage has a start timestamp (handles hydration edge case)
     try {
@@ -542,11 +547,21 @@ function PayPageContent() {
 
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [curView]);
+  }, [curView, selectedMethod, activeOpt]);
+
+  // Mark Mobile UPI as delayed if on UPI screen for >45s without completing
+  useEffect(() => {
+    if (selectedMethod !== 'upi') return;
+    const t = setTimeout(() => {
+      setMobUpiDelayed(true);
+    }, 45000);
+    return () => clearTimeout(t);
+  }, [selectedMethod]);
 
   /* ── Check Status CTA Handler ── */
   async function triggerChecking() {
     if (isChecking) return;
+    setMobUpiCheckCount(prev => prev + 1);
     setIsChecking(true);
     setCheckMsg('Checking transaction status…');
 
@@ -668,6 +683,15 @@ function PayPageContent() {
     try { navigator.vibrate?.(25); } catch {}
     setCopyUsdtDone(true);
     setTimeout(() => setCopyUsdtDone(false), 1600);
+  };
+
+  /* Copy Order Reference */
+  const handleCopyOrderId = () => {
+    if (!activeId) return;
+    navigator.clipboard?.writeText(activeId);
+    try { navigator.vibrate?.(15); } catch {}
+    setCopiedOrderId(true);
+    setTimeout(() => setCopiedOrderId(false), 1500);
   };
 
   /* Submit UTR */
@@ -1202,32 +1226,93 @@ function PayPageContent() {
                     <span className="mob-brand-title">MyMobPay</span>
                   </div>
 
-                  {/* Order Hero / Summary Card */}
+                  {/* Executive Order Summary Card */}
                   <div className="mob-order-hero-card">
+                    {/* Top Row: Merchant Info & Total Payable */}
                     <div className="mob-order-hero-top">
-                      <div>
-                        <span className="mob-order-hero-lbl">Amount to Pay</span>
+                      <div className="mob-merchant-info-row">
+                        <div className="mob-biz-avatar">
+                          {bizInitial || bizName?.charAt(0)?.toUpperCase() || 'M'}
+                        </div>
+                        <div className="mob-biz-details">
+                          <div className="mob-biz-name-row">
+                            <span className="mob-biz-title">{bizName}</span>
+                            <span className="mob-verified-check" title="Verified Merchant">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
+                                <path d="M9 12l2 2 4-4"/>
+                              </svg>
+                            </span>
+                          </div>
+                          <span className="mob-biz-sub">
+                            {orderMode === 'test' ? 'Sandbox Order' : 'Verified Merchant Settlement'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mob-order-amt-block">
+                        <span className="mob-order-hero-lbl">Total Payable</span>
                         <div className="mob-order-hero-amt">{fmtInr(displayAmt)}</div>
                       </div>
-                      <div className={`mob-timer-pill ${isTimerLow ? 'low' : ''}`}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10" />
-                          <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        <span>{mm}:{ss}</span>
-                      </div>
                     </div>
-                    <div className="mob-order-hero-meta">
-                      <div className="mob-hero-meta-item">
-                        <span className="mob-meta-k">Merchant</span>
-                        <span className="mob-meta-v">{bizName}</span>
-                      </div>
+
+                    {/* Specification Itemized Rows */}
+                    <div className="mob-order-hero-specs">
                       {activeId && (
-                        <div className="mob-hero-meta-item">
-                          <span className="mob-meta-k">Order ID</span>
-                          <span className="mob-meta-v" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{activeId}</span>
+                        <div className="mob-spec-row">
+                          <span className="mob-spec-k">Order ID</span>
+                          <div className="mob-spec-v-wrap">
+                            <code className="mob-spec-code">{activeId}</code>
+                            <button
+                              type="button"
+                              onClick={handleCopyOrderId}
+                              className="mob-copy-ref-btn"
+                              aria-label="Copy Order ID"
+                              title="Copy Order ID"
+                            >
+                              {copiedOrderId ? (
+                                <span className="mob-copy-done">✓ Copied</span>
+                              ) : (
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
                         </div>
                       )}
+
+                      <div className="mob-spec-row">
+                        <span className="mob-spec-k">Order Date</span>
+                        <span className="mob-spec-v">{orderDate || 'Today'}</span>
+                      </div>
+
+                      <div className="mob-spec-row">
+                        <span className="mob-spec-k">Convenience Fee</span>
+                        <span className="mob-spec-v mob-fee-waived">₹0.00 (0% MDR Waived)</span>
+                      </div>
+
+                      <div className="mob-spec-row">
+                        <span className="mob-spec-k">Settlement Route</span>
+                        <span className="mob-spec-v mob-secure-route">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                          </svg>
+                          Direct Real-Time Bank Settled
+                        </span>
+                      </div>
+
+                      <div className="mob-spec-row">
+                        <span className="mob-spec-k">Session Timer</span>
+                        <span className="mob-spec-v" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#b45309', background: '#fef3c7', padding: '1px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                          </svg>
+                          {(selectedMethod || activeOpt) ? `${mm}:${ss}` : '05:00 (Starts on select)'}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -1488,7 +1573,7 @@ function PayPageContent() {
                         </div>
                         <div className="mob-verify-text">
                           <strong className="mob-verify-title">Auto-verifying bank credit...</strong>{' '}
-                          <span className="mob-verify-desc">Bank notifications take 30–90 seconds. Keep this screen open, or enter your 12-digit UTR below if already debited.</span>
+                          <span className="mob-verify-desc">Bank notifications take 30–90 seconds. Please keep this screen open while we verify your transaction.</span>
                         </div>
                       </div>
 
@@ -1528,8 +1613,8 @@ function PayPageContent() {
                         </button>
                       </div>
 
-                      {/* 8. Live Real-Time Verification Status & UTR Drawer */}
-                      {(isChecking || checkMsg || showUtr) ? (
+                      {/* 8. Live Real-Time Verification Status & UTR Drawer (Hidden by default; appears if payment takes >45s or user checks status) */}
+                      {(isChecking || mobUpiDelayed || mobUpiCheckCount >= 1 || showUtr) && (
                         <div style={{
                           marginTop: 12,
                           background: checkMsg?.startsWith('✓') ? '#ecfdf5' : '#f8fafc',
@@ -1564,7 +1649,7 @@ function PayPageContent() {
                             </div>
                           </div>
 
-                          {showUtr && !checkMsg?.startsWith('✓') && (
+                          {(showUtr || mobUpiDelayed || mobUpiCheckCount >= 1) && !checkMsg?.startsWith('✓') && (
                             <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #e2e8f0' }}>
                               <label style={{ display: 'block', fontSize: 10.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
                                 Already paid? Verify 12-digit UTR now:
@@ -1572,10 +1657,10 @@ function PayPageContent() {
                               <div style={{ display: 'flex', gap: 6 }}>
                                 <input
                                   inputMode="numeric"
-                                  maxLength={12}
+                                  maxLength={16}
                                   placeholder="12-digit UTR reference"
                                   value={utr}
-                                  onChange={e => { setUtr(e.target.value.replace(/\D/g, '').slice(0, 12)); setUtrMsg(''); }}
+                                  onChange={e => { setUtr(e.target.value.replace(/\D/g, '').slice(0, 16)); setUtrMsg(''); }}
                                   style={{
                                     flex: 1,
                                     minHeight: 40,
@@ -1591,7 +1676,7 @@ function PayPageContent() {
                                 />
                                 <button
                                   type="button"
-                                  disabled={utr.length !== 12 || utrBusy}
+                                  disabled={utr.length < 8 || utrBusy}
                                   onClick={submitUtr}
                                   style={{
                                     minHeight: 40,
@@ -1602,8 +1687,8 @@ function PayPageContent() {
                                     color: '#fff',
                                     fontWeight: 700,
                                     fontSize: 12,
-                                    cursor: utr.length === 12 && !utrBusy ? 'pointer' : 'not-allowed',
-                                    opacity: utr.length === 12 && !utrBusy ? 1 : 0.5,
+                                    cursor: utr.length >= 8 && !utrBusy ? 'pointer' : 'not-allowed',
+                                    opacity: utr.length >= 8 && !utrBusy ? 1 : 0.5,
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 6
@@ -1620,27 +1705,6 @@ function PayPageContent() {
                             </div>
                           )}
                         </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setShowUtr(true)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#0284C7',
-                            fontSize: 11.5,
-                            fontWeight: 600,
-                            marginTop: 8,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            padding: 0
-                          }}
-                        >
-                          <span>Paid via UPI app? Enter 12-digit UTR to verify</span>
-                          <span>›</span>
-                        </button>
                       )}
                     </div>
                   )}
@@ -2416,7 +2480,7 @@ export default function PayPage() {
             background: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
             border: 1.5px solid #e2e8f0;
             border-radius: 24px;
-            padding: 18px 20px 16px;
+            padding: 16px 18px;
             box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
           }
 
@@ -2424,11 +2488,76 @@ export default function PayPage() {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 12px;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #edf2f7;
+            margin-bottom: 10px;
+          }
+
+          .mob-merchant-info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+          }
+
+          .mob-biz-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #0284c7;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2);
+          }
+
+          .mob-biz-details {
+            min-width: 0;
+            text-align: left;
+          }
+
+          .mob-biz-name-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+
+          .mob-biz-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 135px;
+          }
+
+          .mob-verified-check {
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+          }
+
+          .mob-biz-sub {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 1px;
+          }
+
+          .mob-order-amt-block {
+            text-align: right;
+            flex-shrink: 0;
           }
 
           .mob-order-hero-lbl {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
@@ -2438,7 +2567,7 @@ export default function PayPage() {
           }
 
           .mob-order-hero-amt {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 900;
             color: #0f172a;
             letter-spacing: -0.03em;
@@ -2446,32 +2575,83 @@ export default function PayPage() {
             font-variant-numeric: tabular-nums;
           }
 
-          .mob-order-hero-meta {
-            display: flex;
-            justify-content: space-between;
-            padding-top: 10px;
-            border-top: 1px dashed #e2e8f0;
-            font-size: 12px;
-          }
-
-          .mob-hero-meta-item {
+          .mob-order-hero-specs {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 7px;
+            font-size: 11.5px;
           }
 
-          .mob-meta-k {
-            font-size: 10px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+          .mob-spec-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 0;
+            border-bottom: 1px dashed #f1f5f9;
           }
 
-          .mob-meta-v {
-            font-size: 12.5px;
+          .mob-spec-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+          }
+
+          .mob-spec-k {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 11px;
+          }
+
+          .mob-spec-v {
+            color: #0f172a;
             font-weight: 700;
-            color: #1e293b;
+            font-size: 11.5px;
+          }
+
+          .mob-spec-v-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+
+          .mob-spec-code {
+            font-family: 'IBM Plex Mono', monospace;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #0f172a;
+          }
+
+          .mob-copy-ref-btn {
+            background: none;
+            border: none;
+            padding: 2px 4px;
+            cursor: pointer;
+            color: #0284c7;
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+          }
+
+          .mob-copy-done {
+            color: #059669;
+            font-weight: 700;
+            font-size: 10.5px;
+          }
+
+          .mob-fee-waived {
+            color: #059669;
+            font-weight: 700;
+          }
+
+          .mob-secure-route {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #0284c7;
+            font-weight: 700;
+            font-size: 11px;
           }
 
           .mob-choose-hdr {
