@@ -47,7 +47,10 @@ import {
   Percent,
   Trash2,
   Plus,
-  Sparkles
+  Sparkles,
+  Smartphone,
+  ShieldCheck,
+  QrCode
 } from 'lucide-react';
 
 const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-primary)' }) => (
@@ -88,7 +91,9 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('admin_google_logged_in') === 'true' || !!sessionStorage.getItem('admin_pwd');
+      return sessionStorage.getItem('admin_google_logged_in') === 'true' || 
+             !!sessionStorage.getItem('admin_token') || 
+             !!sessionStorage.getItem('admin_pwd');
     }
     return false;
   });
@@ -115,9 +120,11 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Login UI states
-  const [loginMode, setLoginMode] = useState('google'); // 'google' | 'password'
-  const [showPassword, setShowPassword] = useState(false);
+  // Passwordless Login UI states
+  const [loginMode, setLoginMode] = useState('totp'); // 'totp' | 'google'
+  const [showPairingModal, setShowPairingModal] = useState(false);
+  const [activeTotpSecret, setActiveTotpSecret] = useState('MYMOBPAYADMINSEC');
+  const [totpPairCopied, setTotpPairCopied] = useState(false);
 
   // Modern Toast notification state
   const [toast, setToast] = useState(null);
@@ -199,17 +206,24 @@ export default function AdminPage() {
   });
   const [codeActionLoading, setCodeActionLoading] = useState(false);
 
-  // Helper to dynamically build authorization headers (password vs OAuth token)
+  // Helper to dynamically build authorization headers (admin session token vs OAuth token vs password)
   const getAuthHeaders = useCallback(async () => {
     const headers = {};
-    const savedPwd = sessionStorage.getItem('admin_pwd') || password;
+    const adminToken = sessionStorage.getItem('admin_token');
     const isGoogleLoggedIn = sessionStorage.getItem('admin_google_logged_in') === 'true';
+    const savedPwd = sessionStorage.getItem('admin_pwd') || password;
 
     if (isGoogleLoggedIn) {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         headers['Authorization'] = `Bearer ${session.access_token}`;
+      } else if (adminToken) {
+        headers['Authorization'] = `Bearer ${adminToken}`;
+        headers['x-admin-token'] = adminToken;
       }
+    } else if (adminToken) {
+      headers['Authorization'] = `Bearer ${adminToken}`;
+      headers['x-admin-token'] = adminToken;
     } else if (savedPwd) {
       headers['x-admin-password'] = savedPwd;
     }
@@ -379,6 +393,9 @@ export default function AdminPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         sessionStorage.setItem('admin_google_logged_in', 'true');
+        if (data.token) {
+          sessionStorage.setItem('admin_token', data.token);
+        }
         setGoogleUser(session.user);
         setIsLoggedIn(true);
         setAuthError('');
@@ -520,10 +537,31 @@ export default function AdminPage() {
     }
   }, [isLoggedIn, handleRefreshAll]);
 
-  // Password / TOTP submission login
+  // Fetch active TOTP configuration for pairing assistant
+  useEffect(() => {
+    if (!isLoggedIn) {
+      fetch('/api/admin/login')
+        .then(r => r.json())
+        .then(d => {
+          if (d?.activeSecret) {
+            setActiveTotpSecret(d.activeSecret);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLoggedIn]);
+
+  // Passwordless Authenticator App submission login (Option 2)
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setAuthError('');
+
+    const cleanCode = String(totpCode || '').trim().replace(/\D/g, '');
+    if (cleanCode.length !== 6) {
+      setAuthError('Please enter the 6-digit code shown in your Authenticator app.');
+      return;
+    }
+
     setAuthLoading(true);
 
     try {
@@ -531,28 +569,24 @@ export default function AdminPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          password,
-          totpCode: require2fa ? totpCode : undefined
+          provider: 'totp',
+          totpCode: cleanCode
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(data.error || 'Authentication failed');
       }
 
-      if (data.require2fa) {
-        setRequire2fa(true);
-        setAuthLoading(false);
-        return;
+      if (data.token) {
+        sessionStorage.setItem('admin_token', data.token);
       }
-
-      sessionStorage.setItem('admin_pwd', password);
       setIsLoggedIn(true);
-      setRequire2fa(false);
       setTotpCode('');
+      showToast('Authenticated successfully with Google Authenticator', 'success');
     } catch (err) {
-      setAuthError(err.message || 'Incorrect Admin Password');
+      setAuthError(err.message || 'Invalid 6-digit Authenticator code');
     } finally {
       setAuthLoading(false);
     }
@@ -578,6 +612,7 @@ export default function AdminPage() {
 
   // Logout
   const handleLogout = async () => {
+    sessionStorage.removeItem('admin_token');
     sessionStorage.removeItem('admin_pwd');
     sessionStorage.removeItem('admin_google_logged_in');
     await supabase.auth.signOut();
@@ -674,7 +709,6 @@ export default function AdminPage() {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          password: verificationPassword,
           action: pendingAction.type,
           ...pendingAction.data
         })
@@ -933,10 +967,26 @@ export default function AdminPage() {
             <button
               type="button"
               onClick={() => {
+                setLoginMode('totp');
+                setAuthError('');
+              }}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                loginMode === 'totp'
+                  ? 'bg-white text-blue-700 shadow-sm border border-slate-200/60'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <Smartphone className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>Authenticator App</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
                 setLoginMode('google');
                 setAuthError('');
               }}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 loginMode === 'google'
                   ? 'bg-white text-blue-700 shadow-sm border border-slate-200/60'
                   : 'text-slate-500 hover:text-slate-900'
@@ -948,23 +998,7 @@ export default function AdminPage() {
                 <path d="M7.1,13.38c-0.18,-0.52 -0.28,-1.09 -0.28,-1.68c0,-0.59 0.1,-1.16 0.28,-1.68V7.36H2.68C2.06,8.6 1.7,10.01 1.7,11.7c0,1.69 0.36,3.1 0.98,4.34l3.74,-2.91c-0.18,-0.52 -0.18,-0.75 -0.32,-1.75Z" fill="#FBBC05" />
                 <path d="M12,5.68c1.28,0 2.43,0.44 3.34,1.3l2.5,-2.5C16.31,3.07 14.34,2.7 12,2.7c-3.42,0 -6.45,1.75 -7.92,4.67l4.4,3.38C9.17,7.22 10.1,5.68 12,5.68Z" fill="#EA4335" />
               </svg>
-              <span>Google ID</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setLoginMode('password');
-                setAuthError('');
-              }}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                loginMode === 'password'
-                  ? 'bg-white text-blue-700 shadow-sm border border-slate-200/60'
-                  : 'text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              <Key className="w-3.5 h-3.5 text-slate-600" />
-              <span>Master Password</span>
+              <span>Google SSO</span>
             </button>
           </div>
 
@@ -999,50 +1033,61 @@ export default function AdminPage() {
             </div>
           ) : (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Admin Master Password</label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    placeholder="Enter platform admin password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-semibold text-slate-900 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+              <div className="p-3.5 bg-blue-50/60 border border-blue-100 rounded-2xl flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20">
+                  <Smartphone className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-blue-950">Passwordless 2FA Access</p>
+                  <p className="text-[10px] text-slate-500 font-medium">
+                    Enter the dynamic 6-digit code from Google Authenticator or Microsoft Authenticator.
+                  </p>
                 </div>
               </div>
 
-              {require2fa && (
-                <div className="space-y-1.5 animate-fadeIn">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Google Authenticator Code (2FA)</label>
-                  <input
-                    type="text"
-                    maxLength="6"
-                    required
-                    placeholder="000000"
-                    value={totpCode}
-                    onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center text-base tracking-[0.25em] font-mono font-black text-slate-900 focus:bg-white focus:border-blue-500 outline-none transition-all"
-                  />
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center px-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                    6-Digit Security Code
+                  </label>
+                  <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <Clock className="w-3 h-3 animate-spin" />
+                    <span>Syncs every 30s</span>
+                  </span>
                 </div>
-              )}
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  autoFocus
+                  required
+                  placeholder="000000"
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-center text-2xl tracking-[0.35em] font-mono font-black text-slate-900 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300 placeholder:tracking-widest"
+                />
+              </div>
 
               <button
                 type="submit"
-                disabled={authLoading}
-                className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl text-xs transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                disabled={authLoading || totpCode.trim().length !== 6}
+                className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-2xl text-xs transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
               >
-                <Lock className="w-4 h-4" />
-                <span>Unlock Admin Console</span>
+                <ShieldCheck className="w-4 h-4" />
+                <span>Verify & Unlock Console</span>
               </button>
+
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowPairingModal(true)}
+                  className="w-full py-2.5 px-3 bg-slate-50 hover:bg-blue-50/70 border border-dashed border-slate-300 hover:border-blue-300 rounded-xl text-[11px] font-bold text-slate-600 hover:text-blue-700 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <QrCode className="w-3.5 h-3.5 text-blue-600" />
+                  <span>First time setup? Scan QR Code & View Key</span>
+                </button>
+              </div>
             </form>
           )}
 
@@ -1056,11 +1101,86 @@ export default function AdminPage() {
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
             <p className="text-[10px] text-slate-400 font-medium">
-              Secure Gateway • Restricted Access Only
+              Secure Gateway • Passwordless TOTP Protected
             </p>
           </div>
 
         </div>
+
+        {/* Pairing Assistant Modal */}
+        {showPairingModal && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+            <div className="bg-white rounded-[2rem] max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-scaleUp">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                    <Smartphone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">
+                      Link Authenticator App
+                    </h3>
+                    <p className="text-[10px] text-slate-400 font-semibold">Google / Microsoft / Authy</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPairingModal(false)}
+                  className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <div className="bg-white p-3 rounded-2xl border-2 border-slate-100 shadow-sm">
+                  <QRCode
+                    value={`otpauth://totp/MyMobPay%20Admin:SuperAdmin?secret=${activeTotpSecret}&issuer=MyMobPay`}
+                    size={140}
+                  />
+                </div>
+
+                <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between">
+                  <div className="min-w-0 pr-2">
+                    <p className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Manual Setup Key</p>
+                    <p className="text-xs font-mono font-black text-slate-900 tracking-wider truncate">
+                      {activeTotpSecret}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(activeTotpSecret);
+                      setTotpPairCopied(true);
+                      setTimeout(() => setTotpPairCopied(false), 2000);
+                    }}
+                    className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-blue-50 text-slate-700 hover:text-blue-600 text-[10px] font-bold flex items-center gap-1 shadow-sm shrink-0 cursor-pointer"
+                  >
+                    {totpPairCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                    <span>{totpPairCopied ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
+
+                <div className="w-full space-y-1.5 text-[10px] text-slate-500 font-medium bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                  <p className="font-bold text-blue-900">3-Step Phone Pairing:</p>
+                  <ol className="list-decimal list-inside space-y-0.5">
+                    <li>Open <b>Google Authenticator</b> on your phone.</li>
+                    <li>Tap <b>+</b> &gt; <b>Scan a QR code</b> (or enter key).</li>
+                    <li>Type the 6-digit code on the login screen to enter!</li>
+                  </ol>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowPairingModal(false)}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm"
+              >
+                Done, Back to Login
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
     );
   }
@@ -2894,7 +3014,7 @@ export default function AdminPage() {
                   {[
                     { name: 'NEXT_PUBLIC_SUPABASE_URL', status: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Active' : 'Missing' },
                     { name: 'NEXT_PUBLIC_SUPABASE_ANON_KEY', status: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Active' : 'Missing' },
-                    { name: 'ADMIN_PASSWORD', status: 'Active (Protected)' },
+                    { name: 'ADMIN_TOTP_SECRET', status: 'Active (Passwordless 2FA)' },
                     { name: 'SUPABASE_SERVICE_KEY', status: 'Active (RLS Bypassed)' }
                   ].map((env, idx) => (
                     <div key={idx} className="flex justify-between items-center py-2 border-b border-slate-200 last:border-b-0 text-xs">
@@ -2939,7 +3059,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Password Verification Modal */}
+        {/* Action Verification Modal */}
         {isVerificationModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fadeIn">
             <div className="bg-white border border-slate-200 rounded-[2rem] p-8 w-full max-w-md shadow-2xl space-y-6 animate-scale-up relative">
@@ -2954,24 +3074,11 @@ export default function AdminPage() {
                 {googleUser ? (
                   <>You are authenticated as <span className="font-bold text-slate-800">{googleUser.email}</span>. Click confirm to authorize this platform update.</>
                 ) : (
-                  <>You are modifying sensitive platform-wide payment or credentials settings. Please re-enter the admin access password to authorize this action.</>
+                  <>You are modifying sensitive platform-wide payment or credentials settings. Click confirm to authorize and apply this update.</>
                 )}
               </p>
               
               <form onSubmit={handleVerifyAndConfirm} className="space-y-5 font-semibold text-xs text-slate-700">
-                {!googleUser && (
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Admin Password</label>
-                    <input
-                      type="password"
-                      placeholder="••••••••••••"
-                      required
-                      value={verificationPassword}
-                      onChange={(e) => setVerificationPassword(e.target.value)}
-                      className="w-full bg-white border border-slate-300 rounded-xl py-3 px-4 text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 transition-all font-semibold"
-                    />
-                  </div>
-                )}
                 
                 <div className="flex gap-3 pt-2">
                   <button

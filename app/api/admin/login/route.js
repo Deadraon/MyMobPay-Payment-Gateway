@@ -1,8 +1,32 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { getAdminSettings, verifyTOTP, isAuthorizedAdminUser } from '@/lib/adminSettings';
+import { 
+  getAdminSettings, 
+  verifyTOTP, 
+  isAuthorizedAdminUser, 
+  createAdminSessionToken,
+  DEFAULT_ADMIN_TOTP_SECRET 
+} from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
+// GET: Check Authenticator configuration status
+export async function GET() {
+  try {
+    const settings = await getAdminSettings();
+    const hasCustomSecret = !!settings.totp_secret && settings.totp_secret !== DEFAULT_ADMIN_TOTP_SECRET;
+    return NextResponse.json({
+      success: true,
+      hasCustomSecret,
+      defaultSecret: DEFAULT_ADMIN_TOTP_SECRET,
+      activeSecret: settings.totp_secret || DEFAULT_ADMIN_TOTP_SECRET,
+      totpEnabled: true
+    });
+  } catch (e) {
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}
+
+// POST: Passwordless Admin Login (Google OAuth SSO OR 6-Digit Dynamic Authenticator Code)
 export async function POST(request) {
   try {
     // 0. Rate limiting to protect against brute-force attacks (5 attempts per minute)
@@ -24,18 +48,7 @@ export async function POST(request) {
     const body = await request.json();
     const { password, totpCode, provider, token } = body;
 
-    const isDev = process.env.NODE_ENV !== 'production';
-    const adminPassword = process.env.ADMIN_PASSWORD || (isDev ? 'admin123' : null);
-
-    if (!adminPassword) {
-      console.error('[SECURITY CRITICAL] ADMIN_PASSWORD environment variable is not configured in production.');
-      return NextResponse.json(
-        { error: 'Server authentication misconfiguration. Please contact support.' },
-        { status: 500 }
-      );
-    }
-
-    // 1. Google OAuth Session Validation
+    // 1. Google OAuth Session Validation (Passwordless SSO)
     if (provider === 'google') {
       if (!token) {
         return NextResponse.json({ error: 'Authorization token is required' }, { status: 400 });
@@ -43,7 +56,7 @@ export async function POST(request) {
 
       const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
       if (error || !user) {
-        return NextResponse.json({ error: 'Invalid authentication session' }, { status: 401 });
+        return NextResponse.json({ error: 'Invalid Google authentication session' }, { status: 401 });
       }
 
       const settings = await getAdminSettings();
@@ -53,34 +66,60 @@ export async function POST(request) {
         }, { status: 403 });
       }
 
-      return NextResponse.json({ success: true, user: { email: user.email, id: user.id } });
+      // Generate signed, stateless admin session token
+      const adminToken = createAdminSessionToken();
+
+      return NextResponse.json({ 
+        success: true, 
+        token: adminToken,
+        user: { email: user.email, id: user.id } 
+      });
     }
 
-    // 2. Standard Password / 2FA Login
-    if (!password) {
-      return NextResponse.json({ error: 'Password is required' }, { status: 400 });
-    }
-
-    if (password !== adminPassword) {
-      return NextResponse.json({ error: 'Incorrect Admin Password' }, { status: 401 });
-    }
-
-    // Load admin settings to verify 2FA
-    const settings = await getAdminSettings();
-
-    if (settings.totp_enabled) {
-      if (!totpCode) {
-        // Correct password, prompt for TOTP code
-        return NextResponse.json({ success: true, require2fa: true });
+    // 2. Passwordless TOTP Authenticator App Verification (Option 2)
+    if (provider === 'totp' || totpCode) {
+      const cleanCode = String(totpCode || '').trim();
+      if (!cleanCode || cleanCode.length !== 6 || !/^\d{6}$/.test(cleanCode)) {
+        return NextResponse.json({ 
+          error: 'Please enter a valid 6-digit Authenticator code.' 
+        }, { status: 400 });
       }
 
-      const isValidTotp = verifyTOTP(settings.totp_secret, totpCode);
+      const settings = await getAdminSettings();
+      const secret = settings.totp_secret || process.env.ADMIN_TOTP_SECRET || DEFAULT_ADMIN_TOTP_SECRET;
+
+      const isValidTotp = verifyTOTP(secret, cleanCode, 2);
       if (!isValidTotp) {
-        return NextResponse.json({ error: 'Invalid Google Authenticator code.' }, { status: 401 });
+        return NextResponse.json({ 
+          error: 'Invalid 6-digit code. Please enter the current code from your Authenticator app.' 
+        }, { status: 401 });
       }
+
+      // Generate signed, stateless admin session token
+      const adminToken = createAdminSessionToken();
+
+      return NextResponse.json({ 
+        success: true, 
+        token: adminToken 
+      });
     }
 
-    return NextResponse.json({ success: true });
+    // 3. Fallback: Optional legacy password verification (for server recovery/dev)
+    if (password) {
+      const isDev = process.env.NODE_ENV !== 'production';
+      const adminPassword = process.env.ADMIN_PASSWORD || (isDev ? 'admin123' : null);
+
+      if (adminPassword && password === adminPassword) {
+        const adminToken = createAdminSessionToken();
+        return NextResponse.json({ success: true, token: adminToken });
+      }
+
+      return NextResponse.json({ error: 'Incorrect credentials.' }, { status: 401 });
+    }
+
+    return NextResponse.json({ 
+      error: 'Please enter your 6-digit Authenticator code or sign in with Google.' 
+    }, { status: 400 });
   } catch (err) {
     console.error('API admin login error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
