@@ -920,9 +920,15 @@ export default function DesktopCheckoutView({
                         <IconArrowBack className="w-4 h-4 text-secondary" />
                         <span>View order details</span>
                       </button>
-                      <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
-                        Paying ₹{formattedAmount}
-                      </span>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                          Paying ₹{formattedAmount}
+                        </span>
+                        <span className="font-mono font-bold text-xs text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200/70 inline-flex items-center gap-1.5">
+                          <IconSchedule className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                          {safeMm}:{safeSs}
+                        </span>
+                      </div>
                     </div>
                   )}
 
@@ -943,16 +949,6 @@ export default function DesktopCheckoutView({
                                 {lang === 'hi' ? 'भुगतान प्रतीक्षित' : 'Awaiting payment selection'}
                               </span>
                             </div>
-                          </div>
-                          
-                          <div className="text-right">
-                            <span className="text-[10.5px] font-medium text-on-surface-variant block">
-                              {lang === 'hi' ? 'सत्र समाप्ति' : 'Session expires in'}
-                            </span>
-                            <span className="font-mono font-bold text-xs text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/70 inline-flex items-center gap-1 mt-0.5">
-                              <IconSchedule className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                              {safeMm}:{safeSs}
-                            </span>
                           </div>
                         </div>
 
