@@ -4,7 +4,7 @@
   <img src="public/icon.png" alt="MyMobPay Logo" width="100" height="100" style="border-radius: 20px;" />
 </a>
 
-# ⚡ MyMobPay (`mymobpay`)
+# ⚡ MyMobPay
 ### Direct-to-Bank UPI Payment Gateway Infrastructure with 0% Transaction Fees
 **The Next-Generation Non-Custodial Payment Gateway Built for Indian SaaS Founders, Builders & Developers.**
 
