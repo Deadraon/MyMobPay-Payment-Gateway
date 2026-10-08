@@ -4,9 +4,17 @@ import { parseTransactionText } from '@/lib/parseSms';
 import { CONFIG } from '@/lib/config';
 import { triggerMerchantWebhook } from '@/lib/webhook';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(request) {
   try {
+    // 0. Rate limiting to prevent webhook flood attacks
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`webhook_email_${clientIp}`, 120, 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
+
     const { api_key, body: emailBody, from: emailSender } = await request.json();
 
     if (!api_key || !emailBody) {

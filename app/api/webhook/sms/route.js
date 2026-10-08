@@ -1,12 +1,30 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
 import { parseBankSms } from '@/lib/parseSms';
 import { CONFIG } from '@/lib/config';
 import { triggerMerchantWebhook } from '@/lib/webhook';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+
+// Constant-time string comparison to prevent timing attacks
+function safeCompare(a, b) {
+  if (!a || !b || typeof a !== 'string' || typeof b !== 'string') return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 export async function POST(request) {
   try {
+    // 0. Rate limiting to prevent flood / DoS attacks
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`webhook_sms_${clientIp}`, 120, 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
+
     const body = await request.json();
     const { secret, message } = body;
 
@@ -16,8 +34,8 @@ export async function POST(request) {
     let merchant = null;
     let isAuthorized = false;
 
-    // Check if the global secret is provided
-    if (secret && secret === validSecret) {
+    // Check if the global secret is provided (timing-safe)
+    if (secret && safeCompare(secret, validSecret)) {
       isAuthorized = true;
     }
 

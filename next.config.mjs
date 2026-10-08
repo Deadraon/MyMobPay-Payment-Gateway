@@ -62,6 +62,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Strictly isolate Admin APIs from cross-origin browser requests and search crawlers
+        source: '/api/admin/:path*',
+        headers: [
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        ],
+      },
     ];
   },
 };
