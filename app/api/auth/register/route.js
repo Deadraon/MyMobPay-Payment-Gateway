@@ -37,17 +37,46 @@ export async function POST(req) {
       // Check if user already exists
       const errMsg = createError.message?.toLowerCase() || '';
       if (errMsg.includes('already') || createError.code === 'email_exists' || createError.status === 422) {
+        // Find existing user in auth.users (e.g. created during the email OTP verification step)
+        const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
+        const existingUser = usersData?.users?.find(
+          (u) => u.email?.toLowerCase() === cleanEmail
+        );
+
+        if (existingUser) {
+          // Update the user's password and metadata with the registration data
+          const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+            password: password,
+            email_confirm: true,
+            user_metadata: {
+              ...(existingUser.user_metadata || {}),
+              business_name: finalBusinessName,
+              upi_id: finalUpiId,
+              phone: cleanPhone,
+            },
+          });
+
+          if (updateErr) {
+            console.error('[REGISTER API] User update error:', updateErr);
+            return NextResponse.json({
+              error: updateErr.message || 'Could not complete registration. Please sign in.',
+            }, { status: 400 });
+          }
+
+          userId = existingUser.id;
+        } else {
+          return NextResponse.json({
+            error: 'This email is already registered. Please click "Already have an account? Sign In" below.',
+            code: 'email_exists',
+          }, { status: 400 });
+        }
+      } else {
+        console.error('[REGISTER API] User creation error:', createError);
         return NextResponse.json({
-          error: 'This email is already registered. Please click "Already have an account? Sign In" below.',
-          code: 'email_exists',
+          error: createError.message || `Auth API error: ${JSON.stringify(createError)}`,
+          code: createError.code,
         }, { status: 400 });
       }
-
-      console.error('[REGISTER API] User creation error:', createError);
-      return NextResponse.json({
-        error: createError.message || `Auth API error: ${JSON.stringify(createError)}`,
-        code: createError.code,
-      }, { status: 400 });
     }
 
     // 2. Insert/Upsert merchant profile in public.merchants
