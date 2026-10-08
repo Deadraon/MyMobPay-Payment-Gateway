@@ -582,7 +582,18 @@ export default function DesktopCheckoutView({
         <button
           type="button"
           onClick={() => {
-            if (typeof window !== 'undefined') window.location.reload();
+            if (typeof window !== 'undefined') {
+              try {
+                for (let i = sessionStorage.length - 1; i >= 0; i--) {
+                  const k = sessionStorage.key(i);
+                  if (k && k.startsWith('mmp_timer_')) {
+                    sessionStorage.removeItem(k);
+                  }
+                }
+              } catch {}
+              if (setCurView) setCurView('vPay');
+              window.location.reload();
+            }
           }}
           className="focus-ring w-full py-3 bg-[#000d21] hover:bg-slate-800 text-white font-semibold rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-2"
         >

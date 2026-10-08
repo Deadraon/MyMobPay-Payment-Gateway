@@ -176,9 +176,13 @@ function PayPageContent() {
       const stored = sessionStorage.getItem(TIMER_KEY);
       if (stored) {
         const { startedAt } = JSON.parse(stored);
-        const elapsed = Math.floor((Date.now() - startedAt) / 1000);
-        const remaining = SESSION_SECS - elapsed;
-        if (remaining > 0) return remaining;
+        if (startedAt && typeof startedAt === 'number') {
+          const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+          const remaining = SESSION_SECS - elapsed;
+          if (remaining > 0) return remaining;
+          // Stale expired timestamp from a previous session — clear it!
+          sessionStorage.removeItem(TIMER_KEY);
+        }
       }
     } catch {}
     return SESSION_SECS;
@@ -512,15 +516,33 @@ function PayPageContent() {
 
   /* ── Countdown timer — timestamp-based so refresh doesn't reset it ── */
   useEffect(() => {
-    if (curView === 'vOk') return;
+    if (curView === 'vOk' || curView === 'vExp') return;
     // Do not start or run countdown timer until a payment method is selected
     if (!selectedMethod && !activeOpt) return;
 
-    // Ensure sessionStorage has a start timestamp (handles hydration edge case)
+    // Check existing stored timestamp
+    let currentRemaining = SESSION_SECS;
     try {
       const stored = sessionStorage.getItem(TIMER_KEY);
-      if (!stored) {
-        sessionStorage.setItem(TIMER_KEY, JSON.stringify({ startedAt: Date.now() - (SESSION_SECS - timeLeft) * 1000 }));
+      let isValidStored = false;
+      if (stored) {
+        const { startedAt } = JSON.parse(stored);
+        if (startedAt && typeof startedAt === 'number') {
+          const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+          const remaining = SESSION_SECS - elapsed;
+          if (remaining > 0) {
+            isValidStored = true;
+            currentRemaining = remaining;
+          }
+        }
+      }
+      if (!isValidStored) {
+        // Start fresh active session timestamp when user selects method!
+        sessionStorage.setItem(TIMER_KEY, JSON.stringify({ startedAt: Date.now() }));
+        setTimeLeft(SESSION_SECS);
+        currentRemaining = SESSION_SECS;
+      } else {
+        setTimeLeft(currentRemaining);
       }
     } catch {}
 
@@ -534,13 +556,19 @@ function PayPageContent() {
           setTimeLeft(remaining);
           if (remaining <= 0) {
             clearInterval(interval);
+            try { sessionStorage.removeItem(TIMER_KEY); } catch {}
             setCurView('vExp');
           }
           return;
         }
       } catch {}
       setTimeLeft(prev => {
-        if (prev <= 1) { clearInterval(interval); setCurView('vExp'); return 0; }
+        if (prev <= 1) {
+          clearInterval(interval);
+          try { sessionStorage.removeItem(TIMER_KEY); } catch {}
+          setCurView('vExp');
+          return 0;
+        }
         return prev - 1;
       });
     };
@@ -2258,7 +2286,7 @@ function PayPageContent() {
                 <div className="xic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
                 <h2>Session expired</h2>
                 <p>This payment session has ended. Start again to get a fresh code.</p>
-                <button type="button" className="pri wide" style={{ marginTop: 22 }} onClick={() => { setTimeLeft(SESSION_SECS); setCurView('vPay'); }}>Start again</button>
+                <button type="button" className="pri wide" style={{ marginTop: 22 }} onClick={() => { try { sessionStorage.removeItem(TIMER_KEY); } catch {} setTimeLeft(SESSION_SECS); setCurView('vPay'); }}>Start again</button>
               </div>
             </div>
           )}
