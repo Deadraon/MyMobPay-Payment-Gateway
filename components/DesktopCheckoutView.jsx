@@ -1296,73 +1296,65 @@ export default function DesktopCheckoutView({
 
                         {/* UTR & Delayed Verification Assistance (Hidden by default; appears if payment takes >45s or user checks status) */}
                         {(upiDelayed || upiCheckCount >= 1 || showUtr) && (
-                          <div className="space-y-2 mt-2 animate-fade-in">
-                            {checkMsg && (
-                              <div className={`p-2.5 rounded-lg text-xs font-semibold text-center leading-relaxed ${
-                                checkMsg.startsWith('✓') 
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                                  : 'bg-blue-50/90 text-blue-900 border border-blue-200/80 shadow-2xs'
-                              }`}>
+                          <div className="mt-2 animate-fade-in">
+                            {checkMsg && checkMsg.startsWith('✓') ? (
+                              <div className="p-2.5 rounded-xl text-xs font-semibold text-center leading-relaxed bg-emerald-50 text-emerald-800 border border-emerald-200/90 shadow-2xs">
                                 {checkMsg}
                               </div>
-                            )}
-
-                            {/* UTR Verification Drawer */}
-                            <div className={`rounded-xl border transition-all overflow-hidden ${showUtr ? 'border-secondary/40 ring-2 ring-secondary/15 bg-surface-container-lowest' : 'border-surface-container bg-surface-container-low/70'}`}>
-                              <button
-                                type="button"
-                                className="w-full px-3.5 py-2.5 flex items-center justify-between text-xs font-semibold text-secondary hover:bg-surface-container-high/50 transition-colors cursor-pointer"
-                                onClick={() => setShowUtr && setShowUtr(!showUtr)}
-                                id="toggleUtrDrawerDesktop"
-                              >
-                                <span className="flex items-center gap-1.5">
-                                  <IconVerified className="w-3.5 h-3.5 text-secondary flex-shrink-0" />
-                                  <span>Paid via UPI app? Enter 12-digit UTR to verify</span>
-                                </span>
-                                <span className={`transform transition-transform text-sm font-bold ${showUtr ? 'rotate-90' : ''}`}>›</span>
-                              </button>
-
-                              {showUtr && (
-                                <div className="p-3 border-t border-surface-container space-y-2 bg-surface-container-lowest animate-fade-in">
-                                  <div className="flex gap-2">
-                                    <input
-                                      type="text"
-                                      inputMode="numeric"
-                                      pattern="[0-9]*"
-                                      maxLength={16}
-                                      placeholder="Enter 12-digit UTR / Ref Number"
-                                      value={utr || ''}
-                                      onChange={(e) => setUtr && setUtr(e.target.value.replace(/\D/g, '').slice(0, 16))}
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && utr && utr.length >= 8 && !utrBusy) {
-                                          submitUtr(e);
-                                        }
-                                      }}
-                                      autoFocus
-                                      className="flex-1 h-10 px-3 rounded-lg border border-outline-variant/60 text-xs font-mono text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
-                                      id="utrInputDesktop"
-                                    />
-                                    <button
-                                      type="button"
-                                      disabled={!utr || utr.length < 8 || utrBusy}
-                                      onClick={submitUtr}
-                                      className="h-10 px-4 rounded-lg bg-secondary text-on-secondary text-xs font-bold hover:bg-[#0038b7] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-xs"
-                                      id="verifyUtrDesktopBtn"
-                                    >
-                                      {utrBusy ? '…' : 'Verify UTR'}
-                                    </button>
+                            ) : (
+                              /* Compact Unified Verification Card */
+                              <div className="p-3 rounded-xl border border-slate-200/90 bg-white shadow-2xs space-y-2">
+                                <div className="flex items-center justify-between text-xs">
+                                  <div className="flex items-center gap-1.5 font-semibold text-slate-700">
+                                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse flex-shrink-0" />
+                                    <span>Payment pending confirmation</span>
                                   </div>
-                                  {utrMsg && (
-                                    <p className={`text-xs font-semibold ${utrMsg.startsWith('✓') ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                      {utrMsg}
-                                    </p>
-                                  )}
-                                  <p className="text-[11px] text-on-surface-variant leading-tight">
-                                    You can find the 12-digit UPI Ref / UTR number in your payment receipt on GPay, PhonePe, Paytm or BHIM.
-                                  </p>
+                                  <span className="text-[11px] font-medium text-slate-500">
+                                    Verify with 12-digit UTR
+                                  </span>
                                 </div>
-                              )}
-                            </div>
+
+                                <div className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    maxLength={16}
+                                    placeholder="Enter 12-digit UTR / Ref Number"
+                                    value={utr || ''}
+                                    onChange={(e) => setUtr && setUtr(e.target.value.replace(/\D/g, '').slice(0, 16))}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' && utr && utr.length >= 8 && !utrBusy) {
+                                        submitUtr(e);
+                                      }
+                                    }}
+                                    autoFocus
+                                    style={{ backgroundColor: '#ffffff', color: '#0f172a', colorScheme: 'light' }}
+                                    className="flex-1 h-9 px-3 rounded-lg border border-slate-300 bg-white text-xs font-mono text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30 transition-colors"
+                                    id="utrInputDesktop"
+                                  />
+                                  <button
+                                    type="button"
+                                    disabled={!utr || utr.length < 8 || utrBusy}
+                                    onClick={submitUtr}
+                                    className="h-9 px-3.5 rounded-lg bg-secondary text-on-secondary text-xs font-semibold hover:bg-[#0038b7] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-2xs"
+                                    id="verifyUtrDesktopBtn"
+                                  >
+                                    {utrBusy ? '…' : 'Verify UTR'}
+                                  </button>
+                                </div>
+
+                                {utrMsg && (
+                                  <p className={`text-xs font-semibold ${utrMsg.startsWith('✓') ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                    {utrMsg}
+                                  </p>
+                                )}
+
+                                <p className="text-[11px] text-slate-500 leading-tight">
+                                  Found in your UPI app receipt (GPay, PhonePe, Paytm or BHIM).
+                                </p>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -1482,10 +1474,13 @@ export default function DesktopCheckoutView({
 
                       {/* Bank UTR submission box — appears immediately after clicking "I've made the transfer" */}
                       {(bankTransferClicked || showUtr) && (
-                        <div className="p-3.5 rounded-xl border border-secondary/30 bg-surface-container-lowest shadow-2xs space-y-2.5 animate-fade-in mt-3">
-                          <div className="flex items-center gap-1.5 text-xs font-bold text-secondary">
-                            <IconVerified className="w-4 h-4 text-secondary flex-shrink-0" />
-                            <span>Submit 12-Digit Bank UTR / IMPS Ref</span>
+                        <div className="p-3 rounded-xl border border-slate-200/90 bg-white shadow-2xs space-y-2 mt-3 animate-fade-in" id="bankCompactVerificationCard">
+                          <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1.5 font-semibold text-slate-700">
+                              <IconVerified className="w-4 h-4 text-secondary flex-shrink-0" />
+                              <span>Submit 12-Digit Bank UTR / IMPS Ref</span>
+                            </div>
+                            <span className="text-[11px] font-medium text-slate-500">Bank receipt</span>
                           </div>
                           <div className="flex gap-2">
                             <input
@@ -1502,14 +1497,15 @@ export default function DesktopCheckoutView({
                                 }
                               }}
                               autoFocus
-                              className="flex-1 h-10 px-3 rounded-lg border border-outline-variant/60 text-xs font-mono text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                              style={{ backgroundColor: '#ffffff', color: '#0f172a', colorScheme: 'light' }}
+                              className="flex-1 h-9 px-3 rounded-lg border border-slate-300 bg-white text-xs font-mono text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30 transition-colors"
                               id="utrInputBankDesktop"
                             />
                             <button
                               type="button"
                               disabled={!utr || utr.length < 8 || utrBusy}
                               onClick={submitUtr}
-                              className="h-10 px-4 rounded-lg bg-secondary text-on-secondary text-xs font-bold hover:bg-[#0038b7] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-xs"
+                              className="h-9 px-3.5 rounded-lg bg-secondary text-on-secondary text-xs font-semibold hover:bg-[#0038b7] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-2xs"
                               id="verifyUtrBankDesktopBtn"
                             >
                               {utrBusy ? '…' : 'Submit UTR'}
@@ -1520,7 +1516,7 @@ export default function DesktopCheckoutView({
                               {utrMsg}
                             </p>
                           )}
-                          <p className="text-[11px] text-on-surface-variant leading-tight">
+                          <p className="text-[11px] text-slate-500 leading-tight">
                             Enter the 12-digit transaction reference number (UTR / IMPS Ref) provided by your bank receipt.
                           </p>
                         </div>

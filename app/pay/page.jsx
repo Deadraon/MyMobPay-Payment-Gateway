@@ -1699,7 +1699,8 @@ function PayPageContent() {
                                     fontFamily: "'IBM Plex Mono', monospace",
                                     background: '#fff',
                                     outline: 'none',
-                                    color: '#0f172a'
+                                    color: '#0f172a',
+                                    colorScheme: 'light'
                                   }}
                                 />
                                 <button
@@ -2005,7 +2006,8 @@ function PayPageContent() {
                               fontSize: 13,
                               fontFamily: "'IBM Plex Mono', monospace",
                               background: '#fff',
-                              color: '#0f172a'
+                              color: '#0f172a',
+                              colorScheme: 'light'
                             }}
                           />
                           <button

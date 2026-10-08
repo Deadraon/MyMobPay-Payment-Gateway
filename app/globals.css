@@ -56,11 +56,19 @@
 /* ─── Base Reset ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
-/* Form controls light scheme safeguard to prevent native black boxes */
+/* Form controls light scheme safeguard to prevent native black boxes on dark OS/browsers */
+input, textarea, select {
+  color-scheme: light !important;
+}
+
 input[type="checkbox"],
 input[type="radio"] {
   color-scheme: light !important;
   accent-color: #2563eb;
+}
+
+input:not([type="checkbox"]):not([type="radio"]) {
+  color-scheme: light !important;
 }
 
 html { scroll-behavior: smooth; }
