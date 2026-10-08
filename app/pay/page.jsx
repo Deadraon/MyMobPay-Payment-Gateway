@@ -1320,105 +1320,104 @@ function PayPageContent() {
                         <span className="mob-spec-k">Convenience Fee</span>
                         <span className="mob-spec-v mob-fee-waived">₹0.00 (0% MDR Waived)</span>
                       </div>
-
-                      <div className="mob-spec-row">
-                        <span className="mob-spec-k">Settlement Route</span>
-                        <span className="mob-spec-v mob-secure-route">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                          </svg>
-                          Direct Real-Time Bank Settled
-                        </span>
-                      </div>
-
-                      <div className="mob-spec-row">
-                        <span className="mob-spec-k">Session Timer</span>
-                        <span className="mob-spec-v" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#b45309', background: '#fef3c7', padding: '1px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                          </svg>
-                          {(selectedMethod || activeOpt) ? `${mm}:${ss}` : '05:00 (Starts on select)'}
-                        </span>
-                      </div>
                     </div>
                   </div>
 
                   {/* Section Title */}
                   <div className="mob-choose-hdr">
-                    <h3>Choose Payment Method</h3>
-                    <p>Select your preferred option to complete payment</p>
+                    <div>
+                      <h3>Choose Payment Method</h3>
+                      <p>Select your preferred option to complete payment</p>
+                    </div>
+                    <span className="mob-bento-badge">BENTO MODE</span>
                   </div>
 
-                  {/* 5 Payment Methods Stack */}
-                  <div className="mob-methods-stack">
-                    {/* 1. UPI / QR */}
+                  {/* Bento Grid Layout */}
+                  <div className="mob-bento-grid">
+                    {/* 1. UPI / QR (Full-Width Top Card) */}
                     <button
                       type="button"
-                      className="mob-method-opt-btn"
+                      className="mob-bento-upi-card"
                       onClick={() => { setSelectedMethod('upi'); setActiveOpt('upi'); }}
                     >
-                      <div className="mob-opt-icon mob-opt-upi">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M2 7V3a1 1 0 011-1h4v2H4v3H2zm0 10v4a1 1 0 001 1h4v-2H4v-3H2zm18 0v3h-3v2h4a1 1 0 001-1v-4h-2zm-3-15v2h3v3h2V3a1 1 0 00-1-1h-4zM7 7h4v4H7V7zm6 0h4v4h-4V7zm-6 6h4v4H7v-4zm6 0h4v4h-4v-4z"/>
+                      <div className="mob-bento-upi-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 8V5a1 1 0 0 1 1-1h3"/>
+                          <path d="M16 4h3a1 1 0 0 1 1 1v3"/>
+                          <path d="M20 16v3a1 1 0 0 1-1 1h-3"/>
+                          <path d="M8 20H5a1 1 0 0 1-1-1v-3"/>
+                          <rect x="8" y="8" width="8" height="8" rx="1.5" stroke="#ffffff" strokeWidth="2"/>
+                          <circle cx="12" cy="12" r="1" fill="#ffffff"/>
                         </svg>
                       </div>
-                      <div className="mob-opt-body">
-                        <div className="mob-opt-title-row">
-                          <span className="mob-opt-title">UPI / QR Code</span>
-                          <span className="mob-opt-tag-green">Instant • 0% Fee</span>
+                      <div className="mob-bento-upi-body">
+                        <div className="mob-bento-upi-title-row">
+                          <span className="mob-bento-upi-title">UPI / QR Code</span>
+                          <span className="mob-bento-upi-tag">INSTANT &bull; 0% FEE</span>
                         </div>
-                        <span className="mob-opt-sub">Pay via Google Pay, PhonePe, Paytm, or any UPI app</span>
+                        <span className="mob-bento-upi-sub">Pay via Google Pay, PhonePe, Paytm, or any UPI app</span>
                       </div>
-                      <span className="mob-opt-chevron">›</span>
-                    </button>
-
-
-
-                    {/* 3. Net Banking */}
-                    <button
-                      type="button"
-                      className="mob-method-opt-btn"
-                      onClick={() => { setSelectedMethod('bank'); setActiveOpt('bank'); }}
-                    >
-                      <div className="mob-opt-icon mob-opt-bank">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm9.5-20.5L2 6v2h19V6l-9.5-4.5z"/>
+                      <div className="mob-bento-upi-chevron">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
                         </svg>
                       </div>
-                      <div className="mob-opt-body">
-                        <div className="mob-opt-title-row">
-                          <span className="mob-opt-title">Direct Net Banking</span>
-                          <span className="mob-opt-tag-gray">IMPS / NEFT</span>
-                        </div>
-                        <span className="mob-opt-sub">Direct transfer to merchant bank account</span>
-                      </div>
-                      <span className="mob-opt-chevron">›</span>
                     </button>
 
-                    {/* 4. Crypto */}
-                    <button
-                      type="button"
-                      className="mob-method-opt-btn"
-                      onClick={() => { setSelectedMethod('crypto'); setActiveOpt('crypto'); }}
-                    >
-                      <div className="mob-opt-icon mob-opt-crypto">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="12" r="9"/>
-                          <path d="M9 8h5a2 2 0 010 4H9m0 0h5.5a2 2 0 010 4H9M9 7v10" stroke="#fff" strokeWidth="1.8" fill="none"/>
-                        </svg>
-                      </div>
-                      <div className="mob-opt-body">
-                        <div className="mob-opt-title-row">
-                          <span className="mob-opt-title">Crypto Currency</span>
-                          <span className="mob-opt-tag-amber">USDT • TRC20</span>
+                    {/* 2 & 3. 2-Column Split Row (Net Banking + Crypto) */}
+                    <div className="mob-bento-split-row">
+                      {/* Direct Net Banking Card */}
+                      <button
+                        type="button"
+                        className="mob-bento-split-card mob-bento-bank-card"
+                        onClick={() => { setSelectedMethod('bank'); setActiveOpt('bank'); }}
+                      >
+                        <div className="mob-bento-card-top">
+                          <div className="mob-bento-card-icon mob-bento-bank-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="3" y1="21" x2="21" y2="21" />
+                              <line x1="6" y1="18" x2="6" y2="11" />
+                              <line x1="10" y1="18" x2="10" y2="11" />
+                              <line x1="14" y1="18" x2="14" y2="11" />
+                              <line x1="18" y1="18" x2="18" y2="11" />
+                              <polygon points="12 3 2 9 22 9 12 3" />
+                            </svg>
+                          </div>
+                          <div className="mob-bento-card-chevron mob-bento-bank-chevron">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                          </div>
                         </div>
-                        <span className="mob-opt-sub">Pay {usdtAmt} USDT with on-chain verification</span>
-                      </div>
-                      <span className="mob-opt-chevron">›</span>
-                    </button>
+                        <span className="mob-bento-split-title">Direct Net Banking</span>
+                        <span className="mob-bento-split-tag mob-bento-bank-tag">IMPS / NEFT</span>
+                        <span className="mob-bento-split-sub">Direct transfer to merchant bank account</span>
+                      </button>
 
-
+                      {/* Crypto Currency Card */}
+                      <button
+                        type="button"
+                        className="mob-bento-split-card mob-bento-crypto-card"
+                        onClick={() => { setSelectedMethod('crypto'); setActiveOpt('crypto'); }}
+                      >
+                        <div className="mob-bento-card-top">
+                          <div className="mob-bento-card-icon mob-bento-crypto-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="9" />
+                              <path d="M9 8h4.5a2 2 0 0 1 0 4H9m0 0h5a2 2 0 0 1 0 4H9M9 6v12" />
+                            </svg>
+                          </div>
+                          <div className="mob-bento-card-chevron mob-bento-crypto-chevron">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                          </div>
+                        </div>
+                        <span className="mob-bento-split-title">Crypto Currency</span>
+                        <span className="mob-bento-split-tag mob-bento-crypto-tag">USDT &bull; TRC20</span>
+                        <span className="mob-bento-split-sub">Pay {usdtAmt || '0.0111'} USDT with on-chain verification</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Promo code link */}
@@ -1481,7 +1480,7 @@ function PayPageContent() {
                         <line x1="19" y1="12" x2="5" y2="12"></line>
                         <polyline points="12 19 5 12 12 5"></polyline>
                       </svg>
-                      <span>Change payment method</span>
+                      <span>View Order Details</span>
                     </button>
                     <div className={`mob-timer-pill ${isTimerLow ? 'low' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 20, background: isTimerLow ? '#fef2f2' : '#f0fdf4', color: isTimerLow ? '#dc2626' : '#15803d', border: `1px solid ${isTimerLow ? '#fecaca' : '#bbf7d0'}` }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -2685,7 +2684,10 @@ export default function PayPage() {
           }
 
           .mob-choose-hdr {
-            margin: 4px 2px 0;
+            margin: 8px 2px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             text-align: left;
           }
 
@@ -2699,9 +2701,252 @@ export default function PayPage() {
 
           .mob-choose-hdr p {
             margin: 2px 0 0;
-            font-size: 12px;
+            font-size: 11.5px;
             color: #64748b;
             font-weight: 500;
+          }
+
+          .mob-bento-badge {
+            background: #dcfce7;
+            color: #059669;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            white-space: nowrap;
+          }
+
+          /* Bento Grid Layout */
+          .mob-bento-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 6px;
+          }
+
+          /* 1. UPI Top Card (Full-width Bento card) */
+          .mob-bento-upi-card {
+            all: unset;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 55%, #e6fbf0 100%);
+            border: 1.5px solid #a7f3d0;
+            border-radius: 20px;
+            padding: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.08);
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+            box-sizing: border-box;
+            width: 100%;
+            text-align: left;
+          }
+
+          .mob-bento-upi-card:active {
+            transform: scale(0.985);
+            border-color: #059669;
+            background: #ecfdf5;
+          }
+
+          .mob-bento-upi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28);
+          }
+
+          .mob-bento-upi-body {
+            flex: 1;
+            min-width: 0;
+          }
+
+          .mob-bento-upi-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 3px;
+          }
+
+          .mob-bento-upi-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+          }
+
+          .mob-bento-upi-tag {
+            background: #dcfce7;
+            color: #059669;
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 6px;
+            line-height: 1.2;
+            letter-spacing: 0.02em;
+          }
+
+          .mob-bento-upi-sub {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+            line-height: 1.35;
+            display: block;
+          }
+
+          .mob-bento-upi-chevron {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.12);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transition: transform 0.15s ease;
+          }
+
+          .mob-bento-upi-card:active .mob-bento-upi-chevron {
+            transform: translateX(2px);
+          }
+
+          /* 2 & 3. Split Row (2-Column Grid) */
+          .mob-bento-split-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+          }
+
+          .mob-bento-split-card {
+            all: unset;
+            display: flex;
+            flex-direction: column;
+            border-radius: 20px;
+            padding: 14px 12px;
+            cursor: pointer;
+            box-sizing: border-box;
+            width: 100%;
+            text-align: left;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+
+          .mob-bento-split-card:active {
+            transform: scale(0.98);
+          }
+
+          /* Bank Card Variant */
+          .mob-bento-bank-card {
+            background: linear-gradient(180deg, #f8faff 0%, #f0f4ff 100%);
+            border: 1.5px solid #e0e7ff;
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.04);
+          }
+
+          .mob-bento-bank-card:active {
+            border-color: #4f46e5;
+            background: #eef2ff;
+          }
+
+          /* Crypto Card Variant */
+          .mob-bento-crypto-card {
+            background: linear-gradient(180deg, #fffdf8 0%, #fef8ee 100%);
+            border: 1.5px solid #fef3c7;
+            box-shadow: 0 3px 10px rgba(245, 158, 11, 0.04);
+          }
+
+          .mob-bento-crypto-card:active {
+            border-color: #d97706;
+            background: #fffbeb;
+          }
+
+          .mob-bento-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+          }
+
+          .mob-bento-card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+          }
+
+          .mob-bento-bank-icon {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+          }
+
+          .mob-bento-crypto-icon {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25);
+          }
+
+          .mob-bento-card-chevron {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+          }
+
+          .mob-bento-bank-chevron {
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.08);
+          }
+
+          .mob-bento-crypto-chevron {
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 2px 5px rgba(245, 158, 11, 0.08);
+          }
+
+          .mob-bento-split-title {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.25;
+            display: block;
+          }
+
+          .mob-bento-split-tag {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            width: fit-content;
+            margin: 6px 0;
+            letter-spacing: 0.03em;
+            display: inline-block;
+            line-height: 1.2;
+          }
+
+          .mob-bento-bank-tag {
+            background: #e0e7ff;
+            color: #4338ca;
+          }
+
+          .mob-bento-crypto-tag {
+            background: #fef3c7;
+            color: #b45309;
+          }
+
+          .mob-bento-split-sub {
+            font-size: 10.5px;
+            color: #64748b;
+            font-weight: 500;
+            line-height: 1.35;
+            display: block;
           }
 
           .mob-methods-stack {
