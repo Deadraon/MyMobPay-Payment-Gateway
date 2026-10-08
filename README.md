@@ -1,218 +1,238 @@
 <div align="center">
 
 <a href="https://mymob.tech" target="_blank">
-  <img src="public/icon.png" alt="MyMobPay Logo" width="96" height="96" />
+  <img src="public/icon.png" alt="MyMobPay Logo" width="100" height="100" style="border-radius: 20px;" />
 </a>
 
-# 🚀 MyMobPay
-### Zero-Commission UPI Payment Gateway for Indian Businesses
+# ⚡ MyMobPay (`mymobpay`)
+### Direct-to-Bank UPI Payment Gateway Infrastructure with 0% Transaction Fees
+**The Next-Generation Non-Custodial Payment Gateway Built for Indian SaaS Founders, Builders & Developers.**
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-mymob.tech-2563EB?style=for-the-badge)](https://mymob.tech)
-[![Merchant Dashboard](https://img.shields.io/badge/Merchant_Dashboard-mymob.tech%2Fdashboard-10B981?style=for-the-badge)](https://mymob.tech/dashboard)
-[![Customer Checkout](https://img.shields.io/badge/Checkout-mymob.tech%2Fpay-6366F1?style=for-the-badge)](https://mymob.tech/pay)
-
-> **Next-Generation UPI Payment Infrastructure**  
-> *Empowering Indian businesses to keep 100% of their revenue*
+[![Live Production](https://img.shields.io/badge/Production-https%3A%2F%2Fmymob.tech-2563EB?style=for-the-badge&logo=google-chrome&logoColor=white)](https://mymob.tech)
+[![Merchant Dashboard](https://img.shields.io/badge/Merchant_Console-mymob.tech%2Fdashboard-10B981?style=for-the-badge&logo=vercel&logoColor=white)](https://mymob.tech/dashboard)
+[![Customer Checkout](https://img.shields.io/badge/Live_Checkout-mymob.tech%2Fpay-6366F1?style=for-the-badge)](https://mymob.tech/pay)
+[![Security Rating](https://img.shields.io/badge/Security_Rating-Grade_A%2B_Enterprise-059669?style=for-the-badge&logo=cloudflare&logoColor=white)](https://mymob.tech)
+[![License](https://img.shields.io/badge/License-Proprietary-gray?style=for-the-badge)](https://mymob.tech)
 
 <br />
 
 <a href="https://mymob.tech" target="_blank">
-  <img src="public/og-banner.png" alt="MyMobPay Platform Showcase" width="750" />
+  <img src="public/og-banner.png" alt="MyMobPay Platform Banner" width="800" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
 </a>
+
+<br />
+<br />
+
+> 🌐 **Official Domain**: [https://mymob.tech](https://mymob.tech) | **Brand Key**: `mymobpay`  
+> 🔍 **Google Verified**: Search `mymobpay upi payment` on Google to see the official **Google AI Overview** featuring MyMobPay.
 
 </div>
 
 ---
 
-## 💡 The Problem
+## 📌 Executive Summary
 
-Every month, India processes over **14 Billion UPI transactions** — all at **zero cost** between banks.
+Every month, Indian digital merchants and SaaS founders process billions of rupees over the National Payments Corporation of India (NPCI) UPI network — which is completely **free and zero-cost** between banks.
 
-Yet small businesses, SaaS startups, freelancers, and digital creators lose **2% to 3% + 18% GST** on every single rupee they earn when they use traditional payment aggregators like Razorpay, Cashfree, or PayU.
+Yet traditional aggregators (Razorpay, Cashfree, PayU, Stripe India) extract **2% to 3% + 18% GST** on every single transaction, lock money in escrow accounts for **T+2 days**, and frequently freeze merchant accounts during volume spikes.
 
-On a business doing ₹10,00,000/month, that's **₹20,000–₹30,000 lost every month** — for life.
-
-That's not a payment fee. That's a **permanent tax on small business revenue.**
+**MyMobPay (`mymobpay`)** completely eliminates this tax. By offering a **non-custodial direct peer-to-peer (P2P) checkout architecture**, funds flow **straight from the consumer's bank to the merchant's bank account in real-time**. MyMobPay handles instant verification, cryptographic webhooks, and developer APIs for a flat monthly subscription with **0% commission**.
 
 ---
 
-## ✅ Our Solution — MyMobPay
+## 🆚 Why Founders Switch to MyMobPay
 
-**MyMobPay** is a B2B SaaS Payment Infrastructure that lets Indian businesses accept UPI payments at **0% commission**, with **instant settlement** directly into their own bank account.
-
-No middlemen. No escrow. No delays. No account freezes.
-
-> **"The money goes straight from the customer's bank to the merchant's bank — MyMobPay is just the intelligent layer that confirms it happened."**
-
----
-
-## ⚡ How It Works
-
-```
-Customer Opens Checkout
-        │
-        ▼
-  Dynamic QR Code (Desktop)        or        1-Click Deep Link (Mobile)
-  [Scan with any UPI app]                    [Google Pay / PhonePe / Paytm / BHIM]
-        │
-        ▼
-  Customer Pays via their UPI App
-        │
-        ▼
-  Money credits directly to Merchant's Bank ← No intermediary holds funds
-        │
-        ▼
-  MyMobPay's Proprietary Reconciliation Engine
-  confirms the payment in under 2 seconds ⚡
-        │
-        ▼
-  Customer sees ✅ Success  |  Merchant sees 📊 Revenue Updated
-```
-
-<p align="center">
-  <img src="public/how_it_works_flow.jpg" alt="How It Works Flow" width="700" />
-</p>
-
-Our core reconciliation technology is proprietary and patent-pending.
-
----
-
-## ✨ Product Features
-
-### 👤 For Customers
-| Feature | Description |
-|---|---|
-| **Smart Dual-Screen Checkout** | QR code on desktop, native app deep-links on mobile |
-| **One-Click Payments** | GPay, PhonePe, Paytm, BHIM — no typing, no friction |
-| **Multiple Payment Methods** | UPI, Bank Transfer (IMPS/NEFT), Crypto (USDT TRC-20) |
-| **Real-Time Status** | Live payment confirmation screen with instant receipt |
-| **Branded Experience** | Custom colors, business logo, and merchant branding |
-| **Instant Invoice** | Auto-generated receipt downloadable immediately after payment |
-
-### 🏢 For Merchants
-| Feature | Description |
-|---|---|
-| **Zero Commission (0% MDR)** | Keep 100% of every rupee you earn |
-| **Instant Settlement** | Money in your bank the moment customer pays |
-| **SaaS Dashboard** | Real-time revenue analytics, transaction ledger, export |
-| **Payment Links** | Generate shareable payment links in seconds |
-| **Multi-Channel Verification** | SMS + Email + Push Notification redundancy |
-| **Developer Webhooks** | Get notified the moment a payment is verified |
-| **Sandbox Mode** | Full test environment — simulate payments without real money |
-| **Coupon/Discount Engine** | Run promotions and discount codes on checkout |
-
-### 🔒 Security & Compliance
-| Feature | Description |
-|---|---|
-| **Anti-Fraud Engine** | Proprietary duplicate-payment detection system |
-| **HMAC-Signed Webhooks** | Cryptographically signed payment notifications |
-| **Zero Data Custody** | We never hold, touch, or store customer bank credentials |
-| **PCI-DSS Exempt by Design** | Non-custodial architecture — no card/PIN data ever stored |
-| **IP Rate Limiting** | Automatic DDoS and abuse protection |
-| **Role-Based Access** | Super Admin, Staff, and Cashier permission tiers |
-
----
-
-## 🆚 Why Not Just Use Razorpay?
-
-| | Traditional Gateways | **MyMobPay** |
+| Capability | Legacy Payment Aggregators (Razorpay / Cashfree) | 🚀 MyMobPay (`mymobpay`) |
 |---|---|---|
-| **Commission** | 2%–3% + 18% GST | **0% (Zero Commission)** |
-| **Settlement** | T+1 / T+2 Days | **Instant** |
-| **Verification** | Aggregator-controlled | **Automated (< 2 seconds)** |
-| **Fund Custody** | Held in gateway escrow | **Direct bank-to-bank** |
-| **Account Freezes** | Frequent on high volume | **None** |
-| **KYC Friction** | Complex, strict | **Minimal** |
-| **Pricing** | Variable % on every rupee | **Flat monthly SaaS** |
+| **Transaction Cut (MDR)** | 2.0% – 3.0% + 18% GST on every rupee | **0.0% (Zero Transaction Cut)** |
+| **Settlement Velocity** | T+1 or T+2 Days (Delayed Escrow) | **Instant Real-Time (Direct to Bank)** |
+| **Middleman Fund Holding** | Intermediary holds 100% of merchant revenue | **Zero Custody (Non-custodial by design)** |
+| **Pricing Structure** | Punitive variable percentage tax | **Flat Transparent Monthly SaaS (₹499/mo)** |
+| **Account Freeze Risk** | High (Aggregators freeze on sudden spikes) | **Zero (Funds never pass through our bank)** |
+| **Webhook Security** | Basic SHA-256 signatures | **HMAC-SHA256 with Timing-Safe Verification** |
+| **Infrastructure Protection** | External Cloudflare tier required | **Built-in Edge WAF + Rate Limiting** |
+| **Verification Speed** | 5 – 30 seconds | **Under 2 Seconds Automated Reconciliation** |
 
 ---
 
-## 💰 Business Model
+## 🏗️ System Architecture & Workflow
 
-MyMobPay operates on a **flat-fee B2B SaaS subscription** model:
-
-- Merchants pay a **small flat monthly fee** (e.g., ₹499/month)
-- In return, they get **unlimited transactions at 0% commission**
-- A merchant doing just ₹25,000/month in volume **saves more than the subscription cost on Day 1**
-
-> **Unit Economics:** A merchant doing ₹5,00,000/month pays ₹499 to us vs. ₹10,000–₹15,000 to a traditional gateway. That's a **20–30x saving** for the merchant.
-
----
-
-## 🛠️ Technology Stack
-
-Built with production-grade, modern technology:
-
-| Layer | Technology |
-|---|---|
-| **Web App** | Next.js 14 (App Router) — deployed on Vercel |
-| **Frontend** | React 18, Tailwind CSS, Recharts, react-qr-code |
-| **Database** | Supabase (Managed PostgreSQL with Row-Level Security) |
-| **Edge Infrastructure** | Cloudflare Workers (Global Edge Network) |
-| **Authentication** | Multi-channel OTP (Email, WhatsApp, Telegram) |
-| **Security** | HMAC SHA-256, PostgreSQL constraints, IP rate limiting |
-
----
-
-## 🌐 Live Product
-
-The product is **live and working** at [mymob.tech](https://mymob.tech).
-
-- 🛒 **Customer Checkout**: [mymob.tech/pay](https://mymob.tech/pay)
-- 📊 **Merchant Dashboard**: [mymob.tech/dashboard](https://mymob.tech/dashboard)
-
----
-
-## 📈 Market Opportunity
-
-- **India UPI Volume**: 14+ Billion transactions/month (~₹20 Lakh Crore)
-- **Target Segment**: 6.3 Crore MSMEs + 2 Lakh+ SaaS/digital businesses in India
-- **Addressable Market**: Every business currently paying 2%–3% MDR to aggregators
-- **Entry Point**: Thin-margin digital businesses, SaaS startups, content creators, freelancers
+```
+┌─────────────────┐       1. Initiates Order        ┌──────────────────────┐
+│  Customer Web   │ ──────────────────────────────> │    MyMobPay Core     │
+│   Application   │ <────────────────────────────── │   (https://mymob.tech)
+└─────────────────┘      2. Generates Dynamic QR    └──────────────────────┘
+        │                & Unique Reference Code                │
+        │                                                       │
+        │ 3. Scans & Pays via UPI App                           │
+        │    (GPay, PhonePe, Paytm, CRED, BHIM)                 │
+        ▼                                                       │
+┌──────────────────────┐                                        │
+│  Customer Bank VPA   │                                        │
+└──────────────────────┘                                        │
+        │                                                       │
+        │ 4. DIRECT BANK TRANSFER (Zero Intermediary)           │
+        ▼                                                       │
+┌──────────────────────┐                                        │
+│  Merchant Bank VPA   │                                        │
+└──────────────────────┘                                        │
+        │                                                       │
+        │ 5. Real-Time Credit Notification                      │
+        ▼                                                       │
+┌────────────────────────────────────────────────────────┐      │
+│  Multi-Channel Reconciliation Engine                   │ <────┘
+│  (UTR / Ref Code Automated Verification in < 2s)       │
+└────────────────────────────────────────────────────────┘
+        │
+        │ 6. Cryptographically Signed Webhook (HMAC-SHA256)
+        ▼
+┌────────────────────────────────────────────────────────┐
+│  Merchant Backend Webhook Endpoint                     │
+│  (Instant Order Activation & Receipt Generation)       │
+└────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 🗺️ Pages & Navigation
+## 🔒 Enterprise-Grade Security Architecture (Grade A+)
 
-| URL | Description |
-|---|---|
-| `/` | Landing page |
-| `/pay` | Customer payment checkout |
-| `/status/[orderId]` | Live payment status tracker |
-| `/dashboard` | Merchant control panel |
-| `/login` | Merchant authentication |
+MyMobPay is architected with defensive, non-custodial security primitives to protect merchants against fraud, bot abuse, and injection attacks:
+
+### 1. Cryptographic HMAC-SHA256 Webhook Signatures
+Every webhook dispatched to merchant servers is stamped with a hexadecimal SHA-256 HMAC signature in the `x-mymobpay-signature` header:
+- Prevents Man-in-the-Middle (MITM) tampering.
+- Verified using `crypto.timingSafeEqual` to eliminate timing-attack vulnerabilities.
+
+### 2. Built-in In-App Web Application Firewall (WAF)
+The root Next.js edge middleware scans 100% of incoming HTTP requests for:
+- SQL Injection signatures (`UNION SELECT`, `' OR 1=1`).
+- Cross-Site Scripting payloads (`<script>`, `javascript:`).
+- Path traversal sequences (`../`, `..\\`).
+- Automatically rejects malicious traffic with `HTTP 403 Forbidden`.
+
+### 3. Distributed Sliding-Window Rate Limiting
+- Public APIs and sensitive auth endpoints are shielded with in-memory sliding-window limiters.
+- Brute-force attacks against OTPs or passwords are automatically throttled with `HTTP 429 Too Many Requests`.
+
+### 4. Zero Data Custody & Non-Custodial Compliance
+- **Zero Cardholder Data**: MyMobPay never collects, processes, or stores debit/credit cards or UPI MPINs.
+- **PCI-DSS Exempt by Design**: Transactions run natively on the customer's UPI app through NPCI rail protocols.
+
+### 5. Multi-Tenant Row-Level Security (RLS)
+- Powered by Supabase PostgreSQL.
+- Database policies enforce that merchants can strictly access only their own transactions, keys, and webhooks.
 
 ---
 
-## 🔮 Roadmap
+## ⚡ Developer Webhook Integration
 
-- [ ] **AI Fraud Detection** — ML model for anomalous transaction pattern alerts
-- [ ] **IoT Sound Box** — 4G/Bluetooth retail counter audio confirmation device
-- [ ] **WooCommerce & Shopify Plugins** — One-click e-commerce integration
-- [ ] **Cross-Border UPI** — Multi-currency support (AED, USD, EUR)
-- [ ] **Native Mobile SDK** — Embedded iOS/Android checkout widget
-- [ ] **Multi-VPA Failover** — Automatic UPI ID rotation to bypass velocity limits
+### Webhook Verification Example (Node.js)
+
+```javascript
+import crypto from 'crypto';
+
+export async function handleWebhook(req, res) {
+  const signature = req.headers['x-mymobpay-signature'];
+  const webhookSecret = process.env.MYMOBPAY_WEBHOOK_SECRET;
+  const rawBody = JSON.stringify(req.body);
+
+  // Compute expected HMAC-SHA256 digest
+  const expectedSignature = crypto
+    .createHmac('sha256', webhookSecret)
+    .update(rawBody)
+    .digest('hex');
+
+  // Perform timing-safe signature comparison
+  const isValid = crypto.timingSafeEqual(
+    Buffer.from(signature, 'utf8'),
+    Buffer.from(expectedSignature, 'utf8')
+  );
+
+  if (!isValid) {
+    return res.status(401).json({ error: 'Invalid HMAC signature' });
+  }
+
+  const { event, orderId, amount, status, utr } = req.body;
+  if (event === 'payment.success' && status === 'PAID') {
+    // Fulfill customer order immediately
+    console.log(`Order ${orderId} verified with UTR ${utr} for amount ₹${amount}`);
+  }
+
+  return res.status(200).json({ received: true });
+}
+```
 
 ---
 
-## 👥 Team & Vision
+## 🧰 Technology Stack
 
-MyMobPay is built as an independent, production-ready fintech infrastructure dedicated to giving Indian merchants 100% control over their digital payments.
+| Domain | Technology | Purpose |
+|---|---|---|
+| **Frontend Framework** | **Next.js 14 (App Router)** | High-speed server-rendered UI & API routes |
+| **UI & Styling** | **Tailwind CSS & Vanilla CSS** | Enterprise dark-mode fintech interface |
+| **Database & Auth** | **Supabase (PostgreSQL 15)** | Row-Level Security, Google Workspace SSO, realtime events |
+| **Hosting & Edge** | **Vercel Edge Network** | Global CDN deployment with automatic SSL & DDoS mitigation |
+| **Security Layer** | **Custom Edge WAF + HMAC-SHA256** | Zero-trust input sanitization & rate limiting |
+| **SEO & Entity Schema** | **JSON-LD Schema.org** | Google `WebSite`, `Organization`, and `SoftwareApplication` entities |
 
 ---
 
-## 📬 Contact & Collaboration
+## 🚀 Getting Started Locally
 
-Interested in partnering, investing, or integrating?
+### Prerequisites
+- Node.js 18.x or 20.x
+- npm or pnpm
 
-> 🌐 [mymob.tech](https://mymob.tech) | 📧 [chauhankunal695@gmail.com](mailto:chauhankunal695@gmail.com)
+### 1. Clone the repository
+```bash
+git clone https://github.com/Deadraon/Upi_payment-page.git
+cd Upi_payment-page/upi-payment-gateway
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+Create a `.env.local` file in the root directory:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_APP_URL=https://mymob.tech
+```
+
+### 4. Run the development server
+```bash
+npm run dev
+```
+Visit `http://localhost:3000` to view the application.
+
+---
+
+## 🌐 Production Endpoints
+
+| URL Path | Description | Access |
+|---|---|---|
+| `https://mymob.tech/` | Official Landing Page & Feature Showcase | Public |
+| `https://mymob.tech/pay` | Dynamic Universal UPI Checkout & QR Generator | Public |
+| `https://mymob.tech/login` | Merchant Login & Google Workspace SSO | Public |
+| `https://mymob.tech/dashboard` | Real-time Analytics, API Keys & Webhooks Console | Authenticated |
+| `https://mymob.tech/admin` | Master Administrative Control Center | Super Admin |
+| `https://mymob.tech/sitemap.xml` | Dynamic Search Engine Sitemap | Public / Crawlers |
+| `https://mymob.tech/robots.txt` | Crawler Directives & Indexing Rules | Public / Crawlers |
+
+---
+
+## 📄 License & Intellectual Property
+
+Copyright © 2026 **MyMobPay** (`mymobpay`). All rights reserved.  
+The core reconciliation architecture and automated matching algorithms are proprietary and confidential.
 
 ---
 
 <div align="center">
-
-*Built with ❤️ by MOB*  
-*© MyMobPay 2026 — All Rights Reserved*  
-*Core reconciliation technology is proprietary and confidential.*
-
+  <b>Built with ❤️ by Kunal Chauhan (MOB) for Indian Founders</b><br/>
+  <i>Empowering builders with 100% revenue retention.</i>
 </div>

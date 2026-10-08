@@ -96,7 +96,12 @@ function formatCustomerError(err) {
     return 'Too many attempts. For your security, please wait a minute before requesting another code.';
   }
 
-  // 5. Network / Server errors
+  // 5. Supabase default email service limits / failures
+  if (lower.includes('magic link email') || lower.includes('error sending') || lower.includes('error sending email')) {
+    return 'Email delivery service temporarily reached its hourly limit. Please use "Continue with Google Workspace" or Password login, or try again later.';
+  }
+
+  // 6. Network / Server errors
   if (lower.includes('network') || lower.includes('failed to fetch') || lower.includes('load failed')) {
     return 'Connection issue. Please check your internet connection and try again.';
   }

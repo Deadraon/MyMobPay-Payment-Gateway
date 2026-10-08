@@ -55,7 +55,9 @@ export const metadata = {
     "India payment API",
     "payment gateway for developers",
     "SaaS payment India",
+    "mymobpay",
     "MyMobPay",
+    "mymob pay",
     "mymob.tech",
   ],
   authors: [{ name: "MyMobPay", url: BASE_URL }],
@@ -179,6 +181,20 @@ export default function RootLayout({ children }) {
 
 
 
+        {/* JSON-LD Structured Data — WebSite (Signals official site name to Google) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: safeJsonLd({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "MyMobPay",
+              alternateName: ["mymobpay", "mymob.tech", "MyMob Pay"],
+              url: BASE_URL,
+            }),
+          }}
+        />
+
         {/* JSON-LD Structured Data — Organisation */}
         {/* safeJsonLd() escapes </script>, > and & so the script block cannot
             be prematurely closed regardless of future content changes. */}
@@ -189,6 +205,7 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "MyMobPay",
+              alternateName: ["mymobpay", "mymob.tech", "MyMob Pay"],
               url: BASE_URL,
               logo: `${BASE_URL}/og-banner.png`,
               description:
