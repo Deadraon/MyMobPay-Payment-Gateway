@@ -898,234 +898,154 @@ export default function DesktopCheckoutView({
 
                   {/* ── Order Full Details View (When no method is selected) ── */}
                   {!activeOpt && (
-                    <div className="flex-1 flex flex-col space-y-4 animate-fade-in" id="pane-order-full-details">
+                    <div className="flex-1 flex flex-col justify-between py-1 animate-fade-in" id="pane-order-full-details">
                       
-                      {/* Status & Live Countdown Bar */}
-                      <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            {lang === 'hi' ? 'सक्रिय ऑर्डर • भुगतान प्रतीक्षित' : 'Active Order • Awaiting Payment'}
-                          </span>
-                          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-secondary-container text-on-secondary">
-                            0% Fee
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
-                          <IconSchedule className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                          <span>{lang === 'hi' ? 'शेष समय' : 'Expires in'} {safeMm}:{safeSs}</span>
-                        </div>
-                      </div>
-
-                      {/* Order Specifications Card */}
-                      <div className="rounded-xl border border-surface-container bg-surface-container-low/40 p-3.5 space-y-2.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
-                            {lang === 'hi' ? 'ऑर्डर की जानकारी' : 'Order Information'}
-                          </span>
-                          <span className="text-[11px] text-on-surface-variant font-medium">
-                            {orderMode === 'test' ? 'Sandbox Mode' : 'Live Production'}
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                          {/* Order ID */}
-                          <div className="p-2.5 rounded-lg bg-surface-container-lowest border border-surface-container flex items-center justify-between">
-                            <div>
-                              <div className="text-[10px] text-on-surface-variant font-medium uppercase tracking-wider">
-                                {lang === 'hi' ? 'ऑर्डर आईडी' : 'Order Reference'}
-                              </div>
-                              <div className="font-mono font-bold text-on-surface text-[12px] mt-0.5 truncate max-w-[170px]" title={orderRefDisplay}>
-                                {orderRefDisplay}
-                              </div>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleCopyText(orderRefDisplay, 'orderId')}
-                              className="focus-ring p-1.5 rounded-md hover:bg-surface-container text-secondary transition-colors cursor-pointer"
-                              title="Copy Order ID"
-                              aria-label="Copy Order ID"
-                            >
-                              {copiedField === 'orderId' ? (
-                                <IconCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                              ) : (
-                                <IconCopy className="w-4 h-4 flex-shrink-0" />
-                              )}
-                            </button>
-                          </div>
-
-                          {/* Merchant */}
-                          <div className="p-2.5 rounded-lg bg-surface-container-lowest border border-surface-container flex items-center justify-between">
-                            <div>
-                              <div className="text-[10px] text-on-surface-variant font-medium uppercase tracking-wider">
-                                {lang === 'hi' ? 'व्यापारी' : 'Merchant / Beneficiary'}
-                              </div>
-                              <div className="font-bold text-on-surface text-[12px] mt-0.5 truncate max-w-[170px]" title={safeBizName}>
-                                {safeBizName}
-                              </div>
-                            </div>
-                            <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 flex-shrink-0">
-                              <IconCheckCircle className="w-3 h-3 text-emerald-600 flex-shrink-0" />
-                              Verified
-                            </span>
-                          </div>
-
-                          {/* Date & Time */}
-                          <div className="p-2.5 rounded-lg bg-surface-container-lowest border border-surface-container">
-                            <div className="text-[10px] text-on-surface-variant font-medium uppercase tracking-wider">
-                              {lang === 'hi' ? 'दिनांक' : 'Order Date'}
-                            </div>
-                            <div className="font-medium text-on-surface text-[12px] mt-0.5">
-                              {orderDate || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                            </div>
-                          </div>
-
-                          {/* Settlement Type */}
-                          <div className="p-2.5 rounded-lg bg-surface-container-lowest border border-surface-container">
-                            <div className="text-[10px] text-on-surface-variant font-medium uppercase tracking-wider">
-                              {lang === 'hi' ? 'निपटान प्रकार' : 'Settlement Route'}
-                            </div>
-                            <div className="font-medium text-on-surface text-[12px] mt-0.5 flex items-center gap-1">
-                              <IconSecurity className="w-3.5 h-3.5 text-secondary flex-shrink-0" />
-                              <span>Direct Real-Time Bank Settled</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Amount Breakdown Receipt */}
-                      <div className="rounded-xl border border-surface-container bg-surface-container-lowest p-3.5 space-y-2">
-                        <div className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
-                          {lang === 'hi' ? 'भुगतान विवरण' : 'Payment Breakdown'}
-                        </div>
-
-                        <div className="space-y-1.5 text-xs text-on-surface-variant">
-                          <div className="flex items-center justify-between">
-                            <span>{lang === 'hi' ? 'ऑर्डर राशि' : 'Order Amount / Subtotal'}</span>
-                            <span className="font-mono font-medium text-on-surface">₹{formattedAmount}</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>{lang === 'hi' ? 'गेटवे सुविधा शुल्क' : 'Gateway Processing Fee'}</span>
-                            <span className="text-emerald-600 font-bold">₹0.00 (Waived)</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>{lang === 'hi' ? 'कर (GST)' : 'Applicable GST / Taxes'}</span>
-                            <span className="font-mono font-medium text-on-surface">₹0.00</span>
-                          </div>
-                        </div>
-
-                        <div className="border-t border-dashed border-surface-container pt-2 flex items-center justify-between">
+                      <div className="space-y-4">
+                        {/* Order Header / Status Bar */}
+                        <div className="flex items-center justify-between pb-3.5 border-b border-surface-container">
                           <div>
-                            <span className="font-bold text-on-surface text-sm block">
-                              {lang === 'hi' ? 'कुल देय राशि' : 'Total Payable Amount'}
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant block">
+                              {lang === 'hi' ? 'ऑर्डर सारांश' : 'Order Summary'}
                             </span>
-                            <span className="text-[10px] text-on-surface-variant">
-                              {lang === 'hi' ? 'सभी कर शामिल' : 'Inclusive of all charges'}
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/80">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                {lang === 'hi' ? 'भुगतान प्रतीक्षित' : 'Awaiting payment selection'}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <span className="text-[10.5px] font-medium text-on-surface-variant block">
+                              {lang === 'hi' ? 'सत्र समाप्ति' : 'Session expires in'}
+                            </span>
+                            <span className="font-mono font-bold text-xs text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/70 inline-flex items-center gap-1 mt-0.5">
+                              <IconSchedule className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                              {safeMm}:{safeSs}
                             </span>
                           </div>
-                          <span className="text-2xl font-black text-secondary font-mono tracking-tight">
-                            ₹{formattedAmount}
-                          </span>
+                        </div>
+
+                        {/* Executive Order Receipt Card */}
+                        <div className="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest shadow-2xs overflow-hidden">
+                          
+                          {/* Receipt Top: Merchant & Total */}
+                          <div className="p-4 sm:p-5 bg-gradient-to-br from-surface-container-low/50 to-surface-container-lowest border-b border-surface-container flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-11 h-11 rounded-xl bg-primary-container text-on-primary flex items-center justify-center font-bold text-base shadow-xs flex-shrink-0">
+                                {safeBizName.charAt(0).toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-bold text-on-surface text-[15px] truncate block">{safeBizName}</span>
+                                  <IconCheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                                </div>
+                                <span className="text-body-sm text-[11.5px] text-on-surface-variant truncate block">
+                                  {orderMode === 'test' ? 'Sandbox Order' : 'Verified Merchant Settlement'}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="text-right flex-shrink-0">
+                              <span className="text-[10.5px] font-semibold text-on-surface-variant uppercase tracking-wider block">
+                                {lang === 'hi' ? 'कुल देय' : 'Total Payable'}
+                              </span>
+                              <span className="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight block">
+                                ₹{formattedAmount}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Itemized Specification Rows */}
+                          <div className="p-4 sm:p-5 space-y-3 text-xs">
+                            <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
+                              <span className="text-on-surface-variant font-medium">
+                                {lang === 'hi' ? 'ऑर्डर संदर्भ' : 'Order Reference'}
+                              </span>
+                              <div className="flex items-center gap-1.5">
+                                <code className="font-mono font-bold text-on-surface bg-surface-container-low px-2 py-0.5 rounded text-[11.5px] select-all">
+                                  {orderRefDisplay}
+                                </code>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyText(orderRefDisplay, 'orderId')}
+                                  className="focus-ring p-1 rounded hover:bg-surface-container text-secondary transition-colors cursor-pointer"
+                                  title="Copy Order Reference"
+                                  aria-label="Copy Order Reference"
+                                >
+                                  {copiedField === 'orderId' ? (
+                                    <IconCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                  ) : (
+                                    <IconCopy className="w-3.5 h-3.5 text-on-surface-variant" />
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
+                              <span className="text-on-surface-variant font-medium">
+                                {lang === 'hi' ? 'दिनांक एवं समय' : 'Order Date'}
+                              </span>
+                              <span className="font-medium text-on-surface">
+                                {orderDate || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
+                              <span className="text-on-surface-variant font-medium">
+                                {lang === 'hi' ? 'सुविधा शुल्क' : 'Convenience Fee'}
+                              </span>
+                              <span className="font-semibold text-emerald-600">
+                                ₹0.00 (0% MDR Waived)
+                              </span>
+                            </div>
+
+                            <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
+                              <span className="text-on-surface-variant font-medium">
+                                {lang === 'hi' ? 'लागू कर' : 'Applicable GST'}
+                              </span>
+                              <span className="font-medium text-on-surface">₹0.00</span>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-1">
+                              <span className="text-on-surface-variant font-medium">
+                                {lang === 'hi' ? 'सुरक्षा गारंटी' : 'Settlement Guarantee'}
+                              </span>
+                              <span className="inline-flex items-center gap-1 font-semibold text-secondary text-[11.5px]">
+                                <IconSecurity className="w-3.5 h-3.5" />
+                                Direct Bank Real-Time Settled
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Gentle Direction Banner (Points directly to left sidebar, NO extra buttons!) */}
+                        <div className="p-3.5 rounded-xl bg-surface-container-low border border-surface-container flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary font-bold text-sm flex-shrink-0">
+                            ←
+                          </div>
+                          <div className="text-xs text-on-surface-variant leading-snug">
+                            <span className="font-bold text-on-surface block text-[12.5px]">
+                              {lang === 'hi' ? 'बाएं मेनू से भुगतान विधि चुनें' : 'Select a payment method from the left sidebar'}
+                            </span>
+                            <span>
+                              {lang === 'hi' ? 'भुगतान पूरा करने के लिए UPI, बैंक ट्रांसफर, या क्रिप्टो विकल्प चुनें।' : 'Choose UPI / QR Code, Direct Bank Transfer, or Crypto from the sidebar to continue.'}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Payment Method Quick Action Section */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
-                            <IconBolt className="w-3.5 h-3.5 text-secondary" />
-                            {lang === 'hi' ? 'भुगतान विधि चुनें' : 'Choose Payment Method To Proceed'}
-                          </span>
-                          <span className="text-[11px] text-secondary font-semibold">
-                            {lang === 'hi' ? 'तुरंत आगे बढ़ें' : 'Click any option to pay'}
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          {/* Option 1: UPI */}
-                          <button
-                            type="button"
-                            onClick={() => setActiveOpt('upi')}
-                            className="p-3 rounded-xl border border-surface-container bg-surface-container-low/70 hover:bg-surface-container-lowest hover:border-secondary hover:shadow-sm transition-all text-left flex flex-col justify-between gap-2 cursor-pointer group"
-                          >
-                            <div className="flex items-center justify-between w-full">
-                              <div className="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-colors">
-                                <IconQrCodeScanner className="w-4 h-4" />
-                              </div>
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant">
-                                ⚡ Fastest
-                              </span>
-                            </div>
-                            <div>
-                              <div className="font-bold text-xs text-on-surface group-hover:text-secondary transition-colors">
-                                UPI / QR Code
-                              </div>
-                              <div className="text-[10.5px] text-on-surface-variant mt-0.5">
-                                GPay, PhonePe, Paytm
-                              </div>
-                            </div>
-                            <div className="text-[11px] text-secondary font-bold flex items-center gap-1 pt-1 border-t border-surface-container/60">
-                              <span>Pay with UPI</span>
-                              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-                            </div>
-                          </button>
-
-                          {/* Option 2: Bank Transfer */}
-                          <button
-                            type="button"
-                            onClick={() => setActiveOpt('bank')}
-                            className="p-3 rounded-xl border border-surface-container bg-surface-container-low/70 hover:bg-surface-container-lowest hover:border-secondary hover:shadow-sm transition-all text-left flex flex-col justify-between gap-2 cursor-pointer group"
-                          >
-                            <div className="flex items-center justify-between w-full">
-                              <div className="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-secondary group-hover:text-white transition-colors">
-                                <IconAccountBalance className="w-4 h-4" />
-                              </div>
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary">
-                                0% Fee
-                              </span>
-                            </div>
-                            <div>
-                              <div className="font-bold text-xs text-on-surface group-hover:text-secondary transition-colors">
-                                Bank Transfer
-                              </div>
-                              <div className="text-[10.5px] text-on-surface-variant mt-0.5">
-                                IMPS / NEFT / RTGS
-                              </div>
-                            </div>
-                            <div className="text-[11px] text-secondary font-bold flex items-center gap-1 pt-1 border-t border-surface-container/60">
-                              <span>View Bank Details</span>
-                              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-                            </div>
-                          </button>
-
-                          {/* Option 3: Crypto */}
-                          <button
-                            type="button"
-                            onClick={() => setActiveOpt('crypto')}
-                            className="p-3 rounded-xl border border-surface-container bg-surface-container-low/70 hover:bg-surface-container-lowest hover:border-secondary hover:shadow-sm transition-all text-left flex flex-col justify-between gap-2 cursor-pointer group"
-                          >
-                            <div className="flex items-center justify-between w-full">
-                              <div className="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-secondary group-hover:text-white transition-colors">
-                                <IconBitcoin className="w-4 h-4" />
-                              </div>
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant">
-                                Web3
-                              </span>
-                            </div>
-                            <div>
-                              <div className="font-bold text-xs text-on-surface group-hover:text-secondary transition-colors">
-                                Crypto Currency
-                              </div>
-                              <div className="text-[10.5px] text-on-surface-variant mt-0.5">
-                                USDT, BTC, ETH
-                              </div>
-                            </div>
-                            <div className="text-[11px] text-secondary font-bold flex items-center gap-1 pt-1 border-t border-surface-container/60">
-                              <span>Pay with Crypto</span>
-                              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-                            </div>
-                          </button>
-                        </div>
+                      {/* Security Footnote */}
+                      <div className="flex items-center justify-center gap-4 pt-4 text-[11px] text-on-surface-variant border-t border-surface-container-low">
+                        <span className="flex items-center gap-1">
+                          <IconLock className="w-3.5 h-3.5 text-secondary flex-shrink-0" />
+                          256-Bit SSL Encryption
+                        </span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                          <IconVerified className="w-3.5 h-3.5 text-secondary flex-shrink-0" />
+                          100% Buyer Protection
+                        </span>
                       </div>
 
                     </div>
