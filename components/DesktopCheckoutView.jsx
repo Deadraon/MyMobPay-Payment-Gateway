@@ -918,7 +918,7 @@ export default function DesktopCheckoutView({
                         id="changePaymentMethodDesktopBtn"
                       >
                         <IconArrowBack className="w-4 h-4 text-secondary" />
-                        <span>← Change payment method</span>
+                        <span>Change payment method</span>
                       </button>
                       <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
                         Paying ₹{formattedAmount}
