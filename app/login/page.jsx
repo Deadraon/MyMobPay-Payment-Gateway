@@ -7,7 +7,7 @@ import {
   Loader2, Lock, Mail, ArrowRight, ShieldCheck, 
   CheckCircle2, Building2, QrCode, Phone, Smartphone,
   Zap, Eye, EyeOff, AlertCircle, X, RefreshCw, MessageCircle,
-  Link2, Check
+  Link2, Check, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
@@ -552,25 +552,17 @@ export default function LoginPage() {
       return;
     }
 
-    if (action === 'signup') {
-      if (!businessName.trim()) {
-        setError('Please enter your Business or Brand name.');
-        return;
-      }
-      if (!upiId.trim() || !upiId.includes('@')) {
-        setError('Please enter a valid UPI ID (e.g. name@okhdfcbank or merchant@upi).');
-        return;
-      }
-      const cleanPhone = phone.trim().replace(/\D/g, '');
-      if (cleanPhone.length !== 10) {
-        setError('Please enter a valid 10-digit mobile phone number.');
-        return;
-      }
-    }
-
     if (password.length < 6) {
       setError('Password must be at least 6 characters.');
       return;
+    }
+
+    if (action === 'signup') {
+      const cleanPhone = phone.trim().replace(/\D/g, '');
+      if (cleanPhone && cleanPhone.length !== 10) {
+        setError('Please enter a valid 10-digit mobile phone number or leave it blank.');
+        return;
+      }
     }
 
     setLoading(true);
@@ -847,9 +839,37 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* In Sign In Mode: Segmented Tab Switcher */}
+                {/* ── Primary Auth Mode Switcher: Log In vs Sign Up ── */}
+                <div className="mt-5 p-1 bg-[#eaedff] rounded-xl grid grid-cols-2 gap-1 border border-[#dae2fd]/70 shadow-xs">
+                  <button 
+                    type="button" 
+                    onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
+                    className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      mode === 'signin' 
+                        ? 'bg-white text-[#0045de] shadow-sm' 
+                        : 'text-[#44474d] hover:text-[#131b2e]'
+                    }`}
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Log In</span>
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => { setMode('signup'); setError(''); setMessage(''); }}
+                    className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      mode === 'signup' 
+                        ? 'bg-white text-[#0045de] shadow-sm' 
+                        : 'text-[#44474d] hover:text-[#131b2e]'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Sign Up</span>
+                  </button>
+                </div>
+
+                {/* In Sign In Mode: Segmented Sub-Tab Switcher (Email OTP vs Password) */}
                 {mode === 'signin' && (
-                  <div className="mt-6 p-1 bg-[#eaedff] rounded-lg grid grid-cols-2 gap-1">
+                  <div className="mt-4 p-1 bg-[#eaedff] rounded-lg grid grid-cols-2 gap-1">
                     <button 
                       type="button" 
                       onClick={() => { setAuthTab('email'); setError(''); setMessage(''); }}
@@ -1058,56 +1078,9 @@ export default function LoginPage() {
                 {mode === 'signup' && (
                   <form onSubmit={(e) => { e.preventDefault(); handleAuth('signup'); }} className="mt-6 flex flex-col space-y-3.5">
                     <div>
-                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">Business / Brand Name</label>
-                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                        <Building2 className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
-                        <input
-                          type="text"
-                          required
-                          value={businessName}
-                          onChange={(e) => setBusinessName(e.target.value)}
-                          placeholder="e.g. Acme Tech Studio"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">Receiving UPI ID (VPA)</label>
-                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                        <QrCode className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
-                        <input
-                          type="text"
-                          required
-                          value={upiId}
-                          onChange={(e) => setUpiId(e.target.value)}
-                          placeholder="e.g. merchant@okhdfcbank"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">Mobile Phone Number</label>
-                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 py-1 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                        <div className="flex items-center gap-1.5 pr-2.5 py-1.5 text-[#131b2e] text-xs font-bold border-r border-[#dae2fd]">
-                          <span className="text-base leading-none">🇮🇳</span>
-                          <span>+91</span>
-                        </div>
-                        <input
-                          type="tel"
-                          required
-                          maxLength={10}
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                          placeholder="10-digit mobile number"
-                          className="w-full bg-transparent py-2 pl-3 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">Work Email Address</label>
+                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">
+                        Merchant Email Address <span className="text-red-500">*</span>
+                      </label>
                       <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
                         <Mail className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
                         <input
@@ -1115,14 +1088,16 @@ export default function LoginPage() {
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="name@company.com"
+                          placeholder="merchant@company.com"
                           className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">Create Password (min 6 chars)</label>
+                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">
+                        Create Password (min 6 chars) <span className="text-red-500">*</span>
+                      </label>
                       <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
                         <Lock className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
                         <input
@@ -1144,6 +1119,58 @@ export default function LoginPage() {
                       </div>
                     </div>
 
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">
+                        Business / Brand Name <span className="text-[10px] text-[#74777e] font-normal">(Optional)</span>
+                      </label>
+                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
+                        <Building2 className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                        <input
+                          type="text"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          placeholder="e.g. Acme Tech Studio"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">
+                        Receiving UPI ID <span className="text-[10px] text-[#74777e] font-normal">(Optional - can set later)</span>
+                      </label>
+                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
+                        <QrCode className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                        <input
+                          type="text"
+                          value={upiId}
+                          onChange={(e) => setUpiId(e.target.value)}
+                          placeholder="e.g. merchant@okhdfcbank"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#131b2e] mb-1">
+                        Mobile Phone Number <span className="text-[10px] text-[#74777e] font-normal">(Optional)</span>
+                      </label>
+                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 py-1 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
+                        <div className="flex items-center gap-1.5 pr-2.5 py-1.5 text-[#131b2e] text-xs font-bold border-r border-[#dae2fd]">
+                          <span className="text-base leading-none">🇮🇳</span>
+                          <span>+91</span>
+                        </div>
+                        <input
+                          type="tel"
+                          maxLength={10}
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                          placeholder="10-digit mobile number"
+                          className="w-full bg-transparent py-2 pl-3 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                        />
+                      </div>
+                    </div>
+
                     <button
                       type="submit"
                       disabled={loading}
@@ -1153,7 +1180,7 @@ export default function LoginPage() {
                         <Loader2 className="w-5 h-5 animate-spin text-white" />
                       ) : (
                         <>
-                          <span>Create Account &amp; Get API Keys</span>
+                          <span>Create Account &amp; Enter Dashboard</span>
                           <ArrowRight className="w-4 h-4" />
                         </>
                       )}

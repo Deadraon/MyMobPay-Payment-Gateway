@@ -14,16 +14,10 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Password must be at least 6 characters long.' }, { status: 400 });
     }
 
-    if (!businessName || !businessName.trim()) {
-      return NextResponse.json({ error: 'Business or brand name is required.' }, { status: 400 });
-    }
-
-    if (!upiId || !upiId.includes('@')) {
-      return NextResponse.json({ error: 'Please provide a valid UPI ID (e.g., merchant@upi).' }, { status: 400 });
-    }
-
     const cleanEmail = email.trim().toLowerCase();
     const cleanPhone = (phone || '').toString().trim();
+    const finalBusinessName = (businessName && businessName.trim()) ? businessName.trim() : (cleanEmail.split('@')[0] || 'My Merchant Store');
+    const finalUpiId = (upiId && upiId.includes('@')) ? upiId.trim() : `${cleanEmail.split('@')[0]}@upi`;
 
     // 1. Attempt to create the user directly in Supabase Auth
     const { data: createData, error: createError } = await supabaseAdmin.auth.admin.createUser({
@@ -31,8 +25,8 @@ export async function POST(req) {
       password: password,
       email_confirm: true,
       user_metadata: {
-        business_name: businessName.trim(),
-        upi_id: upiId.trim(),
+        business_name: finalBusinessName,
+        upi_id: finalUpiId,
         phone: cleanPhone,
       },
     });
@@ -62,8 +56,8 @@ export async function POST(req) {
         .from('merchants')
         .upsert({
           id: userId,
-          business_name: businessName.trim(),
-          upi_id: upiId.trim(),
+          business_name: finalBusinessName,
+          upi_id: finalUpiId,
           phone_number: cleanPhone || undefined,
           subscription_status: 'inactive',
           sandbox_mode: true,
