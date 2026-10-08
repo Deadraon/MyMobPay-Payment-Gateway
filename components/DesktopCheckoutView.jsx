@@ -1638,15 +1638,11 @@ export default function DesktopCheckoutView({
                     </div>
                   )}
 
-                  {/* Card Bottom Row (Secure Checkout / Powered by mymob.tech) */}
+                  {/* Card Bottom Row (Secure Checkout) */}
                   <div className="pt-5 mt-auto flex items-center justify-between text-on-surface-variant border-t border-surface-container-low">
                     <div className="flex items-center gap-1.5 text-label-sm text-on-surface-variant">
                       <IconLock className="w-4 h-4 text-on-tertiary-container flex-shrink-0" />
                       <span>Secure checkout</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-label-sm text-on-surface-variant">
-                      <span>Powered by</span>
-                      <MyMobPayLogo className="h-4.5 w-auto" textColor="#0c2340" />
                     </div>
                   </div>
 

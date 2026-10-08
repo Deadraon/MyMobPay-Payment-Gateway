@@ -962,7 +962,7 @@ function PayPageContent() {
             </Link>
           </div>
           <div className="secure">
-            <i></i><span>Secure checkout, powered by MyMobPay</span>
+            <i></i><span>Secure checkout</span>
           </div>
         </header>
 
