@@ -347,7 +347,7 @@ export default function HomePage() {
             </div>
 
             {/* Authoritative Headline with separate animated lines */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-bold text-slate-900 tracking-tight leading-[1.15]">
+            <h1 className="font-sans text-4xl sm:text-5xl lg:text-[54px] font-bold text-slate-900 tracking-tight leading-[1.15]">
               <span className="block animate-fade-up delay-100">
                 Accept payments directly
               </span>
@@ -363,7 +363,7 @@ export default function HomePage() {
             </h1>
 
             {/* Calm, Reassuring Subhead */}
-            <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150">
+            <p className="font-sans text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150">
               Collect direct UPI and IMPS bank transfers with automated real-time reconciliation, signed HMAC webhooks, and 0% intermediary deductions.
             </p>
 
