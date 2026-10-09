@@ -58,6 +58,7 @@ import PaymentLinksRedesign from '@/components/PaymentLinksRedesign';
 import TransactionsRedesign from '@/components/TransactionsRedesign';
 import SubscriptionRedesign from '@/components/SubscriptionRedesign';
 import SettingsRedesign from '@/components/SettingsRedesign';
+import AdminConsole from '@/components/AdminConsole';
 import MerchantOnboardingWizard from '@/components/MerchantOnboardingWizard';
 import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
 import { formatMerchantId } from '@/lib/merchantId';
@@ -170,7 +171,15 @@ export default function DashboardPage() {
 
   const [copied, setCopied] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (['overview', 'payment-links', 'transactions', 'connections', 'developer', 'playground', 'subscription', 'settings', 'admin'].includes(hash)) {
+        return hash;
+      }
+    }
+    return 'overview';
+  });
   const [settingsCategory, setSettingsCategory] = useState('banking');
 
 
@@ -9028,6 +9037,32 @@ echo "Order Created: " . $data['orderId'];
 
 
 
+  if (activeTab === 'admin' && isAdminUser) {
+    return (
+      <AdminConsole
+        user={user}
+        profile={profile}
+        onBackToMerchant={() => setActiveTab('overview')}
+      />
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
 
 
@@ -9081,15 +9116,20 @@ echo "Order Created: " . $data['orderId'];
 
             {/* Pinned: Admin Console (Super Admin) */}
             {isAdminUser && (
-              <a
-                href="/admin"
-                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs mt-1"
+              <button
+                onClick={() => setActiveTab('admin')}
+                type="button"
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 ${
+                  activeTab === 'admin'
+                    ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-300'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent'
+                }`}
                 title="Access SaaS Super Admin Console"
               >
                 <Shield className="w-3.5 h-3.5 text-blue-200" />
                 <span className="flex-1 text-left font-black tracking-wide text-[11px]">Admin Console</span>
                 <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-black uppercase">Root</span>
-              </a>
+              </button>
             )}
 
             <div className="h-px bg-slate-100 my-2" />
@@ -9469,15 +9509,20 @@ echo "Order Created: " . $data['orderId'];
 
             {/* Admin Console Shortcut */}
             {isAdminUser && (
-              <a
-                href="/admin"
-                className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-3.5 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 text-xs font-extrabold uppercase tracking-wider cursor-pointer border border-blue-400/30 shrink-0"
+              <button
+                onClick={() => setActiveTab('admin')}
+                type="button"
+                className={`hidden sm:flex items-center gap-2 ${
+                  activeTab === 'admin'
+                    ? 'bg-blue-700 text-white ring-2 ring-blue-400'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
+                } px-3.5 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 text-xs font-extrabold uppercase tracking-wider cursor-pointer border border-blue-400/30 shrink-0`}
                 title="Access SaaS Super Admin Console"
               >
                 <Shield className="w-3.5 h-3.5 text-blue-200" />
                 <span>Admin Console</span>
                 <span className="text-[9px] bg-white/20 px-1.5 py-0.5 rounded font-black">SUPER</span>
-              </a>
+              </button>
             )}
 
             <div className="h-8 w-[1px] bg-slate-200 mx-0.5 sm:mx-1"></div>
@@ -9623,13 +9668,17 @@ echo "Order Created: " . $data['orderId'];
                     );
                   })}
                   {isAdminUser && (
-                    <a
-                      href="/admin"
-                      className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-blue-600 bg-blue-50/50 border border-blue-100 mt-1"
+                    <button
+                      onClick={() => {
+                        setActiveTab('admin');
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-blue-600 bg-blue-50/50 hover:bg-blue-100/50 border border-blue-100 mt-1 text-left cursor-pointer"
                     >
                       <Shield className="w-4.5 h-4.5 text-blue-600" />
                       Admin Console
-                    </a>
+                    </button>
                   )}
                 </nav>
               </div>
@@ -9654,9 +9703,13 @@ echo "Order Created: " . $data['orderId'];
           <div className="md:hidden fixed inset-x-0 bottom-0 top-[64px] z-30 bg-white/70 backdrop-blur-lg flex flex-col pt-6 px-6 pb-6 animate-fadeIn overflow-y-auto">
             {/* Mobile Admin Banner */}
             {isAdminUser && (
-              <a
-                href="/admin"
-                className="flex items-center justify-between p-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-md mb-4 border border-blue-400/30 shrink-0"
+              <button
+                onClick={() => {
+                  setActiveTab('admin');
+                  setIsMobileMenuOpen(false);
+                }}
+                type="button"
+                className="w-full flex items-center justify-between p-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-md mb-4 border border-blue-400/30 shrink-0 cursor-pointer text-left"
                 title="Open SaaS Super Admin Console"
               >
                 <div className="flex items-center gap-2.5">
@@ -9664,7 +9717,7 @@ echo "Order Created: " . $data['orderId'];
                   <span className="text-xs font-black uppercase tracking-wider">Super Admin Console</span>
                 </div>
                 <span className="text-[9px] bg-white/20 px-2 py-0.5 rounded font-black">ROOT</span>
-              </a>
+              </button>
             )}
 
             {/* Drawer Header Info */}
