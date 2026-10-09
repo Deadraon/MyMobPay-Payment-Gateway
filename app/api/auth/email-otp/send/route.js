@@ -48,7 +48,7 @@ export async function POST(req) {
         });
         return NextResponse.json({
           success: true,
-          message: `Magic sign-in link dispatched to ${cleanEmail}. Check your inbox!`,
+          message: `Direct sign-in link sent to ${cleanEmail}. Check your inbox!`,
         });
       } else {
         // Send ONLY the 6-Digit OTP email (NO button link)

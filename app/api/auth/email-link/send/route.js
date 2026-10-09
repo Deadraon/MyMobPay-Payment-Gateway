@@ -50,12 +50,12 @@ export async function POST(req) {
       });
       return NextResponse.json({
         success: true,
-        message: `Magic sign-in link dispatched to ${cleanEmail}. Check your inbox!`,
+        message: `Direct sign-in link sent to ${cleanEmail}. Check your inbox!`,
       });
     }
 
     // 3. Fallback: If custom SMTP is not configured in .env.local, use Supabase's mailer
-    console.warn(`[EMAIL LINK] Using Supabase mailer with Magic Link template.`);
+    console.warn(`[EMAIL LINK] Using Supabase mailer with sign-in link template.`);
 
     // Tag user metadata with auth_type = 'link' so the conditional template displays the Sign-In button
     try {
@@ -90,7 +90,7 @@ export async function POST(req) {
 
     return NextResponse.json({
       success: true,
-      message: `Magic sign-in link dispatched to ${cleanEmail}. Check your inbox!`,
+      message: `Direct sign-in link sent to ${cleanEmail}. Check your inbox!`,
     });
 
   } catch (err) {
