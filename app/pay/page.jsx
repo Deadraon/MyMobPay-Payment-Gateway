@@ -241,10 +241,15 @@ function PayPageContent() {
     : (paramProject || (isPlatformKey || isSetupOrSubscription ? 'MyMobPay' : (CONFIG.businessName && CONFIG.businessName !== 'Demo Store' ? CONFIG.businessName : 'Merchant')));
   const bizName       = rawBizName === 'Demo Store' ? (isPlatformKey || isSetupOrSubscription ? 'MyMobPay' : 'Merchant') : rawBizName;
   const bizInitial    = (bizName || 'M').charAt(0).toUpperCase();
-  const bankAcc       = merchant?.bank_account_number || CONFIG.bankAccountNumber || '919410181307';
-  const bankIfsc      = merchant?.bank_ifsc || CONFIG.bankIfsc || 'PYTM0123456';
+  const bankAcc       = (merchant?.bank_account_number || '').trim();
+  const bankIfsc      = (merchant?.bank_ifsc || '').trim();
   const bankName      = merchant?.bank_account_name || bizName;
   const bankBranch    = merchant?.bank_name || '';
+  const hasBankTransfer = Boolean(
+    merchant?.enable_bank_transfer !== false &&
+    bankAcc &&
+    bankIfsc
+  );
   const cryptoWallet  = merchant?.crypto_wallet_address || CONFIG.defaultCryptoWallet;
   const cryptoNetwork = merchant?.crypto_network || CONFIG.defaultCryptoNetwork;
   const usdtAmt       = displayAmt ? (displayAmt / (CONFIG.usdtInrRate || 90)).toFixed(4) : '0.0000';
@@ -301,6 +306,14 @@ function PayPageContent() {
           });
       });
   }, [paramApiKey]);
+
+  /* ── Fallback away from Bank method if merchant has not configured bank details ── */
+  useEffect(() => {
+    if (merchant && !hasBankTransfer) {
+      if (activeOpt === 'bank') setActiveOpt('upi');
+      if (selectedMethod === 'bank') setSelectedMethod('upi');
+    }
+  }, [hasBankTransfer, merchant, activeOpt, selectedMethod]);
 
   /* ── Return / Navigation Handler (Direct to final status screen or merchant callback) ── */
   const handleReturn = (explicitId, explicitCallback) => {
@@ -1117,6 +1130,7 @@ function PayPageContent() {
           bankAcc={bankAcc}
           bankIfsc={bankIfsc}
           bankBranch={bankBranch}
+          hasBankTransfer={hasBankTransfer}
           copiedAcc={copiedAcc}
           copiedIfsc={copiedIfsc}
           handleCopyAcc={handleCopyAcc}
@@ -1363,35 +1377,40 @@ function PayPageContent() {
                       </div>
                     </button>
 
-                    {/* 2 & 3. 2-Column Split Row (Net Banking + Crypto) */}
-                    <div className="mob-bento-split-row">
-                      {/* Direct Net Banking Card */}
-                      <button
-                        type="button"
-                        className="mob-bento-split-card mob-bento-bank-card"
-                        onClick={() => { setSelectedMethod('bank'); setActiveOpt('bank'); }}
-                      >
-                        <div className="mob-bento-card-top">
-                          <div className="mob-bento-card-icon mob-bento-bank-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                              <line x1="3" y1="21" x2="21" y2="21" />
-                              <line x1="6" y1="18" x2="6" y2="11" />
-                              <line x1="10" y1="18" x2="10" y2="11" />
-                              <line x1="14" y1="18" x2="14" y2="11" />
-                              <line x1="18" y1="18" x2="18" y2="11" />
-                              <polygon points="12 3 2 9 22 9 12 3" />
-                            </svg>
+                    {/* 2 & 3. Split Row (Net Banking + Crypto) */}
+                    <div
+                      className="mob-bento-split-row"
+                      style={!hasBankTransfer ? { gridTemplateColumns: '1fr' } : undefined}
+                    >
+                      {/* Direct Net Banking Card (Only if configured) */}
+                      {hasBankTransfer && (
+                        <button
+                          type="button"
+                          className="mob-bento-split-card mob-bento-bank-card"
+                          onClick={() => { setSelectedMethod('bank'); setActiveOpt('bank'); }}
+                        >
+                          <div className="mob-bento-card-top">
+                            <div className="mob-bento-card-icon mob-bento-bank-icon">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="3" y1="21" x2="21" y2="21" />
+                                <line x1="6" y1="18" x2="6" y2="11" />
+                                <line x1="10" y1="18" x2="10" y2="11" />
+                                <line x1="14" y1="18" x2="14" y2="11" />
+                                <line x1="18" y1="18" x2="18" y2="11" />
+                                <polygon points="12 3 2 9 22 9 12 3" />
+                              </svg>
+                            </div>
+                            <div className="mob-bento-card-chevron mob-bento-bank-chevron">
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="9 18 15 12 9 6" />
+                              </svg>
+                            </div>
                           </div>
-                          <div className="mob-bento-card-chevron mob-bento-bank-chevron">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                          </div>
-                        </div>
-                        <span className="mob-bento-split-title">Direct Net Banking</span>
-                        <span className="mob-bento-split-tag mob-bento-bank-tag">IMPS / NEFT</span>
-                        <span className="mob-bento-split-sub">Direct transfer to merchant bank account</span>
-                      </button>
+                          <span className="mob-bento-split-title">Direct Net Banking</span>
+                          <span className="mob-bento-split-tag mob-bento-bank-tag">IMPS / NEFT</span>
+                          <span className="mob-bento-split-sub">Direct transfer to merchant bank account</span>
+                        </button>
+                      )}
 
                       {/* Crypto Currency Card */}
                       <button
@@ -1930,6 +1949,23 @@ function PayPageContent() {
 
                   {/* ── B.3: NET BANKING METHOD VIEW ── */}
                   {selectedMethod === 'bank' && (
+                    !hasBankTransfer ? (
+                      <div className="mob-checkout-card" style={{ textAlign: 'center', padding: '24px 16px' }}>
+                        <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
+                          Direct Bank Transfer is not enabled for this store
+                        </p>
+                        <p style={{ margin: '6px 0 16px', fontSize: 12.5, color: '#64748b' }}>
+                          Please complete payment using UPI / QR code.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => { setSelectedMethod('upi'); setActiveOpt('upi'); }}
+                          style={{ padding: '8px 18px', background: '#0284C7', color: '#fff', borderRadius: 8, fontWeight: 700, border: 0, cursor: 'pointer' }}
+                        >
+                          Pay via UPI / QR Code
+                        </button>
+                      </div>
+                    ) : (
                     <div className="mob-checkout-card" style={{ textAlign: 'left' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                         <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Direct Net Banking</h4>
@@ -2035,6 +2071,7 @@ function PayPageContent() {
                         )}
                       </div>
                     </div>
+                    )
                   )}
 
                   {/* ── B.4: CRYPTO METHOD VIEW ── */}

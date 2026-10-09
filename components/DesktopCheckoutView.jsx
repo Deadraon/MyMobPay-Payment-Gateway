@@ -183,6 +183,7 @@ export default function DesktopCheckoutView({
   bankAcc,
   bankIfsc,
   bankBranch,
+  hasBankTransfer,
   cryptoWallet,
   usdtAmt,
   curView,
@@ -248,6 +249,13 @@ export default function DesktopCheckoutView({
     }, 45000);
     return () => clearTimeout(t);
   }, [activeOpt]);
+
+  // If activeOpt is 'bank' but bank transfer is not configured, fallback to 'upi'
+  useEffect(() => {
+    if (activeOpt === 'bank' && !isBankAvailable && setActiveOpt) {
+      setActiveOpt('upi');
+    }
+  }, [activeOpt, isBankAvailable, setActiveOpt]);
 
   const handleUpiCheckClick = (e) => {
     setUpiCheckCount(prev => prev + 1);
@@ -412,8 +420,13 @@ export default function DesktopCheckoutView({
   const safeSs = ss != null ? String(ss).padStart(2, '0') : '35';
 
   // Bank transfer details
-  const displayBankAcc = bankAcc || `MYMOB${orderRefDisplay}`;
-  const displayBankIfsc = bankIfsc || 'YESB0CMSNOC';
+  const isBankAvailable = Boolean(
+    hasBankTransfer !== undefined
+      ? hasBankTransfer
+      : (bankAcc && bankIfsc && bankAcc.trim() && bankIfsc.trim())
+  );
+  const displayBankAcc = bankAcc || '';
+  const displayBankIfsc = bankIfsc || '';
   const displayBankName = bankName || safeBizName;
 
   // Crypto rates and addresses
@@ -813,7 +826,8 @@ export default function DesktopCheckoutView({
                       />
                     </button>
 
-                    {/* Method 2: Direct bank transfer */}
+                    {/* Method 2: Direct bank transfer (Only if merchant has configured bank account) */}
+                    {isBankAvailable && (
                     <button
                       className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
                         activeOpt === 'bank'
@@ -851,6 +865,7 @@ export default function DesktopCheckoutView({
                         }`}
                       />
                     </button>
+                    )}
 
                     {/* Method 3: Crypto currency */}
                     <button
@@ -1364,6 +1379,32 @@ export default function DesktopCheckoutView({
                       PANE 3: DIRECT BANK TRANSFER
                   ═══════════════════════════════════════════════════ */}
                   {activeOpt === 'bank' && (
+                    !isBankAvailable ? (
+                      <div className="pane-content space-y-4 flex-1 animate-fade-in p-6 text-center" id="pane-bank" role="tabpanel" aria-labelledby="tab-bank">
+                        <div className="p-6 rounded-2xl bg-surface-container-low border border-surface-container text-on-surface max-w-md mx-auto">
+                          <div className="w-12 h-12 rounded-full bg-surface-container-high mx-auto mb-3 flex items-center justify-center text-secondary">
+                            <IconAccountBalance className="w-6 h-6 text-secondary" />
+                          </div>
+                          <h4 className="font-bold text-base text-on-surface">
+                            {lang === 'hi'
+                              ? 'व्यापारी द्वारा सीधा बैंक ट्रांसफर सक्षम नहीं किया गया है'
+                              : 'Direct Bank Transfer Not Enabled'}
+                          </h4>
+                          <p className="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                            {lang === 'hi'
+                              ? 'व्यापारी ने कोई निपटान बैंक खाता कॉन्फ़िगर नहीं किया है। कृपया नीचे दिए गए UPI / QR कोड से तुरंत भुगतान करें।'
+                              : 'This merchant has not configured a settlement bank account. Please complete your payment using UPI / QR code.'}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setActiveOpt('upi')}
+                            className="mt-4 px-5 py-2.5 bg-secondary text-on-secondary rounded-xl text-xs font-bold hover:bg-[#0038b7] transition-all cursor-pointer shadow-sm active:scale-98"
+                          >
+                            {lang === 'hi' ? 'यूपीआई से भुगतान करें' : 'Pay via UPI / QR Code'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
                     <div className="pane-content space-y-4 flex-1 animate-fade-in" id="pane-bank" role="tabpanel" aria-labelledby="tab-bank">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1518,6 +1559,7 @@ export default function DesktopCheckoutView({
                         </div>
                       )}
                     </div>
+                    )
                   )}
 
                   {/* ═══════════════════════════════════════════════════
