@@ -2,25 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Building2, 
-  User, 
-  Mail, 
-  Phone, 
+  X, 
   Copy, 
   Check, 
-  ShieldCheck, 
-  CreditCard, 
-  Globe, 
-  FileText, 
-  X, 
   Loader2, 
   CheckCircle2, 
-  Sparkles,
-  ArrowRight,
-  Lock,
-  Landmark,
-  BadgeCheck,
-  AlertCircle
+  AlertCircle 
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatMerchantId } from '@/lib/merchantId';
@@ -30,7 +17,7 @@ export default function ProfileBusinessInfoModal({
   onClose, 
   profile, 
   user, 
-  onProfileUpdated,
+  onProfileUpdated, 
   onOpenSettings 
 }) {
   const [activeTab, setActiveTab] = useState('business'); // 'business' | 'settlement'
@@ -146,25 +133,23 @@ export default function ProfileBusinessInfoModal({
   // Status Badge
   const isTrial = profile?.subscription_status === 'trial' || profile?.setup_progress?.plan_type === 'trial_3day';
   const isActive = profile?.subscription_status === 'active';
-  const planBadgeText = isTrial ? '3-Day Free Trial' : isActive ? 'Active Pro' : 'Sandbox Active';
+  const planBadgeText = isTrial ? '3-Day Trial' : isActive ? 'Active Pro' : 'Sandbox Active';
 
   return (
-    // Solid dark overlay without backdrop-blur for clean performance and no visual noise
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 animate-fadeIn">
+    // Overlay with minor backdrop blur to cleanly outstand the popup
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/40 backdrop-blur-[3px] transition-all animate-fadeIn"
+      onClick={onClose}
+    >
       <div 
-        className="bg-white border border-slate-200/90 rounded-2xl shadow-2xl flex flex-col w-full max-w-2xl overflow-hidden max-h-[92vh] animate-scaleUp"
+        className="bg-white border border-slate-200/90 rounded-2xl shadow-2xl flex flex-col w-full max-w-xl overflow-hidden max-h-[92vh] animate-scaleUp"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Top Header */}
+        {/* Modal Top Header (Clean typography, zero extra svg icons) */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#eff3ff] border border-[#dae2fd] flex items-center justify-center text-[#0045de]">
-              <Building2 className="w-4.5 h-4.5" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-[#0c2340] leading-tight">Profile &amp; Business Info</h2>
-              <p className="text-[11px] text-slate-500 font-medium">Merchant identity credentials and company settlement details</p>
-            </div>
+          <div>
+            <h2 className="text-base font-bold text-slate-900 leading-tight">Profile &amp; Business Info</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Manage your merchant identity and settlement credentials</p>
           </div>
           <button 
             type="button"
@@ -172,94 +157,85 @@ export default function ProfileBusinessInfoModal({
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             title="Close"
           >
-            <X className="w-4.5 h-4.5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Merchant Summary Card */}
-        <div className="px-6 pt-5 pb-2">
-          <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5">
-            {/* Merchant Identity */}
+        {/* Merchant Summary Bar */}
+        <div className="px-6 pt-4 pb-2">
+          <div className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-11 h-11 rounded-xl bg-[#0c2340] text-white flex items-center justify-center font-bold text-xs shadow-xs border border-slate-700/30 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 tracking-wider">
                 {merchantInitials}
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-slate-900 truncate max-w-[220px]">
+                  <h3 className="text-sm font-bold text-slate-900 truncate max-w-[200px]">
                     {businessName || 'My Business'}
                   </h3>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <BadgeCheck className="w-3 h-3 text-emerald-600" />
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                     <span>{planBadgeText}</span>
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5 flex items-center gap-1.5">
+                <p className="text-[11px] text-slate-500 truncate mt-0.5">
                   <span>{ownerName || 'Merchant Owner'}</span>
-                  <span>•</span>
-                  <span className="font-mono text-slate-400">{displayEmail}</span>
+                  <span className="mx-1 text-slate-300">•</span>
+                  <span className="font-mono text-slate-500">{displayEmail}</span>
                 </p>
               </div>
             </div>
 
-            {/* Merchant ID Box with 1-Click Copy */}
-            <div className="bg-white border border-slate-200/90 rounded-lg px-3 py-2 flex items-center justify-between sm:justify-start gap-2.5 shadow-2xs w-full sm:w-auto shrink-0">
+            {/* Merchant ID Pill */}
+            <div className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 flex items-center gap-2 shrink-0 shadow-2xs">
               <div className="text-left">
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Merchant ID
+                <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block leading-none mb-0.5">
+                  MID
                 </span>
-                <span className="text-xs font-mono font-bold text-[#0c2340]">
+                <span className="text-xs font-mono font-bold text-slate-900 leading-none">
                   {shortMid}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => copyToClipboard(shortMid, 'mid-badge')}
-                className="px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                className="p-1 rounded-md hover:bg-slate-100 text-slate-500 transition-colors cursor-pointer"
                 title="Copy Merchant ID"
               >
                 {copiedKey === 'mid-badge' ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="text-emerald-600 text-[10px]">Copied</span>
-                  </>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                 ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 text-slate-500" />
-                    <span className="text-[10px]">Copy</span>
-                  </>
+                  <Copy className="w-3.5 h-3.5 text-slate-400" />
                 )}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Sleek Segmented Switcher */}
-        <div className="px-6 pt-3 pb-1">
-          <div className="p-1 bg-slate-100 rounded-xl grid grid-cols-2 gap-1 border border-slate-200/50">
+        {/* Minimalist Typography Switcher (No extra icons) */}
+        <div className="px-6 pt-2 pb-1">
+          <div className="p-1 bg-slate-100 rounded-xl grid grid-cols-2 gap-1 border border-slate-200/60">
             <button
               type="button"
               onClick={() => setActiveTab('business')}
-              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'business'
-                  ? 'bg-white text-[#0045de] shadow-xs'
+                  ? 'bg-white text-blue-600 shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Business &amp; Contact Details</span>
+              Business &amp; Contact
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('settlement')}
-              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'settlement'
-                  ? 'bg-white text-[#0045de] shadow-xs'
+                  ? 'bg-white text-blue-600 shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <CreditCard className="w-3.5 h-3.5" />
-              <span>Settlement &amp; Bank Details</span>
+              Settlement &amp; Bank
             </button>
           </div>
         </div>
@@ -282,39 +258,11 @@ export default function ProfileBusinessInfoModal({
 
           {activeTab === 'business' ? (
             <div className="space-y-3.5">
-              {/* Merchant ID Reference Field */}
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    Account Merchant ID (MID)
-                  </span>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs font-mono font-bold text-slate-900">
-                      {shortMid}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-slate-500 mt-0.5 block">
-                    Use this ID to log in via Email OTP or identify your account with support.
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(shortMid, 'mid-field')}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-                  >
-                    {copiedKey === 'mid-field' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
-                    <span>{copiedKey === 'mid-field' ? 'Copied' : 'Copy'}</span>
-                  </button>
-                </div>
-              </div>
-
               {/* Business Name & Owner Name */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
-                    <span>Business / Brand Name</span>
-                    <span className="text-red-500 font-bold">*</span>
+                  <label className="text-xs font-semibold text-slate-700">
+                    Business / Brand Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -322,7 +270,7 @@ export default function ProfileBusinessInfoModal({
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="e.g. Acme Tech Studio"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
 
@@ -335,7 +283,7 @@ export default function ProfileBusinessInfoModal({
                     value={ownerName}
                     onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="e.g. Kunal Chauhan"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -343,12 +291,14 @@ export default function ProfileBusinessInfoModal({
               {/* Login Email (Locked) & Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
-                    <span>Primary Login Email</span>
-                    <span className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded font-semibold flex items-center gap-1">
-                      <Lock className="w-2.5 h-2.5" /> Locked
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-slate-700">
+                      Primary Login Email
+                    </label>
+                    <span className="text-[10px] text-slate-400 font-medium">
+                      Primary • Locked
                     </span>
-                  </label>
+                  </div>
                   <input
                     type="email"
                     readOnly
@@ -367,7 +317,7 @@ export default function ProfileBusinessInfoModal({
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -381,7 +331,7 @@ export default function ProfileBusinessInfoModal({
                   <select
                     value={businessCategory}
                     onChange={(e) => setBusinessCategory(e.target.value)}
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer"
                   >
                     <option value="Digital Services & SaaS">Digital Services &amp; SaaS</option>
                     <option value="E-Commerce & Retail">E-Commerce &amp; Retail</option>
@@ -402,7 +352,7 @@ export default function ProfileBusinessInfoModal({
                     value={supportEmail}
                     onChange={(e) => setSupportEmail(e.target.value)}
                     placeholder="support@company.com"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -418,7 +368,7 @@ export default function ProfileBusinessInfoModal({
                     value={businessWebsite}
                     onChange={(e) => setBusinessWebsite(e.target.value)}
                     placeholder="https://company.com"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
 
@@ -431,53 +381,50 @@ export default function ProfileBusinessInfoModal({
                     value={gstin}
                     onChange={(e) => setGstin(e.target.value)}
                     placeholder="e.g. 07AAAAA0000A1Z5"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 uppercase"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 uppercase"
                   />
                 </div>
               </div>
             </div>
           ) : (
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               {/* Direct UPI Settlement Notice */}
-              <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 font-bold">
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900">Direct Bank Settlement</span>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    0% Fees • Instant T+0
+                  </span>
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-emerald-950">Instant Peer-to-Peer UPI Routing</span>
-                    <span className="text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.2 rounded-full">
-                      0% Commission
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-emerald-800 leading-relaxed mt-0.5">
-                    Customer payments via Google Pay, PhonePe, Paytm, and BHIM settle directly into your linked UPI VPA without platform hold periods.
-                  </p>
-                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed mt-1">
+                  Customer payments via UPI settle instantly into your linked account with zero gateway hold periods.
+                </p>
               </div>
 
               {/* Settlement UPI ID */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
-                  <span>Settlement UPI ID (VPA)</span>
-                  <span className="text-[10px] text-[#0045de] font-bold">Primary Payout Destination</span>
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-700">
+                    Settlement UPI ID (VPA)
+                  </label>
+                  <span className="text-[10px] text-blue-600 font-semibold">Primary Payout</span>
+                </div>
                 <div className="relative">
                   <input
                     type="text"
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     placeholder="merchant@okhdfcbank or business@upi"
-                    className="w-full h-10 px-3 pr-10 bg-white border border-slate-200 rounded-xl text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="w-full h-10 px-3 pr-10 bg-white border border-slate-200 rounded-xl text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                   {upiId && (
                     <button
                       type="button"
                       onClick={() => copyToClipboard(upiId, 'upi-vpa')}
-                      className="absolute right-2 top-2 p-1 text-slate-400 hover:text-[#0045de] transition-colors cursor-pointer"
+                      className="absolute right-2.5 top-2.5 p-1 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
                       title="Copy UPI ID"
                     >
-                      {copiedKey === 'upi-vpa' ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                      {copiedKey === 'upi-vpa' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   )}
                 </div>
@@ -485,10 +432,9 @@ export default function ProfileBusinessInfoModal({
 
               {/* Optional Bank Settlement Info */}
               <div className="pt-2 border-t border-slate-100">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <Landmark className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Bank Account Information (Optional)</span>
+                <div className="flex items-center justify-between mb-2.5">
+                  <h4 className="text-xs font-bold text-slate-800">
+                    Bank Account Information (Optional)
                   </h4>
                   <span className="text-[10px] text-slate-400">For Direct IMPS Settlements</span>
                 </div>
@@ -501,7 +447,7 @@ export default function ProfileBusinessInfoModal({
                       value={bankName}
                       onChange={(e) => setBankName(e.target.value)}
                       placeholder="e.g. HDFC Bank, ICICI Bank"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
 
@@ -512,7 +458,7 @@ export default function ProfileBusinessInfoModal({
                       value={bankAccountName}
                       onChange={(e) => setBankAccountName(e.target.value)}
                       placeholder="Account holder name"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
 
@@ -523,7 +469,7 @@ export default function ProfileBusinessInfoModal({
                       value={bankAccountNumber}
                       onChange={(e) => setBankAccountNumber(e.target.value)}
                       placeholder="e.g. 50100234567890"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
 
@@ -534,7 +480,7 @@ export default function ProfileBusinessInfoModal({
                       value={bankIfsc}
                       onChange={(e) => setBankIfsc(e.target.value.toUpperCase())}
                       placeholder="e.g. HDFC0001234"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium uppercase text-slate-800 focus:outline-none focus:border-[#0045de] focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium uppercase text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -543,31 +489,30 @@ export default function ProfileBusinessInfoModal({
           )}
 
           {/* Modal Footer Controls */}
-          <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => {
                 onClose();
                 if (onOpenSettings) onOpenSettings();
               }}
-              className="text-xs font-semibold text-[#0045de] hover:text-[#0037b3] hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+              className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition-colors"
             >
-              <span>Looking for API keys &amp; Webhooks? Open Settings</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              API Keys &amp; Webhooks →
             </button>
 
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={onClose}
                 className="h-9 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
               >
-                Close
+                Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="h-9 px-5 rounded-xl bg-[#0045de] hover:bg-[#0037b3] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
+                className="h-9 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
               >
                 {saving ? (
                   <>
@@ -575,7 +520,7 @@ export default function ProfileBusinessInfoModal({
                     <span>Saving...</span>
                   </>
                 ) : (
-                  <span>Save Details</span>
+                  <span>Save Changes</span>
                 )}
               </button>
             </div>
