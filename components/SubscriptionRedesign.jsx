@@ -5,7 +5,6 @@ import {
   CheckCircle,
   Building2,
   Zap,
-  ShieldCheck,
   X,
   QrCode,
   Download,
@@ -652,68 +651,6 @@ export default function SubscriptionRedesign({
           })}
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-           3. ACTION CHECKOUT CONFIRMATION STRIP
-           ═══════════════════════════════════════════════════════════ */}
-        <div className="p-4 px-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 w-full sm:w-auto">
-            <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
-              selectedPlan.isTrial ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-blue-50 border-blue-100 text-blue-600'
-            }`}>
-              {selectedPlan.isTrial ? <Zap className="w-5 h-5 text-emerald-600" /> : <ShieldCheck className="w-5 h-5" />}
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                Selected Plan
-              </span>
-              <span className="text-sm font-bold text-[#000d21]">
-                {selectedPlan.isTrial
-                  ? '3-Day Free Trial (₹0) — Instant Live Mode'
-                  : selectedPlan.isCustom
-                  ? 'Enterprise Custom Plan'
-                  : `Standard Plan — ${selectedPlan.title} (₹${selectedPlan.amount.toLocaleString('en-IN')})`}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
-            <div className="hidden md:flex flex-col text-right">
-              <span className="text-xs font-semibold text-[#000d21] flex items-center gap-1.5 justify-end">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Direct Bank Settlement
-              </span>
-              <span className="text-[10px] text-slate-400">
-                Instant activation • 0% MDR
-              </span>
-            </div>
-
-            <button
-              onClick={() => {
-                if (selectedPlan.isTrial) {
-                  handleActivateTrial();
-                } else if (selectedPlan.isCustom) {
-                  setShowContactSalesModal(true);
-                } else {
-                  handleProceedToCheckout(selectedPlan);
-                }
-              }}
-              type="button"
-              disabled={isActivating}
-              className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-white font-semibold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                selectedPlan.isTrial
-                  ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20'
-                  : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'
-              }`}
-            >
-              <Zap className="w-4 h-4" />
-              {selectedPlan.isTrial
-                ? (isActivating ? 'Activating Trial...' : 'Activate 3-Day Free Trial (Free)')
-                : selectedPlan.isCustom
-                ? 'Contact Enterprise Sales'
-                : `Subscribe & Pay ₹${selectedPlan.amount.toLocaleString('en-IN')} via UPI`}
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
