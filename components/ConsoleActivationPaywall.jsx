@@ -1067,7 +1067,7 @@ export default function ConsoleActivationPaywall({
           <HelpCircle className="w-3.5 h-3.5" />
           <span>Need help with activation?</span>
         </button>
-        <span className="font-mono text-[12px]">Session ID: MMP_{profile?.id ? profile.id.slice(0, 8).toUpperCase() : 'M982_6301A'}</span>
+        <span className="font-mono text-[12px]">Merchant ID: {merchantId}</span>
       </div>
 
       {/* Help Modal */}

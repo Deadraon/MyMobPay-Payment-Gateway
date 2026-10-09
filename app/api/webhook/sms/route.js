@@ -177,10 +177,10 @@ export async function POST(request) {
       // Smart Fallback for Platform Subscription payments:
       const isSubAmount = amount === 499 || amount === 1497 || amount === 1 || (amount >= 495 && amount <= 505);
       if (isPlatformReceiver && isSubAmount) {
-        const merchantMatch = message.match(/(?:Subscription|Trial)_[0-9A-Za-z]+_([0-9a-fA-F-]{8,36})/i);
+        const merchantMatch = message.match(/(?:Subscription|Trial)_[0-9A-Za-z]+_(?:MID-)?([0-9a-fA-F-]{8,36})/i);
         let targetMerchantId = null;
         if (merchantMatch) {
-          const rawId = merchantMatch[1];
+          const rawId = merchantMatch[1].replace(/-/g, '').slice(0, 8).toLowerCase();
           const { data: foundMerchants } = await supabaseAdmin
             .from('merchants')
             .select('id')

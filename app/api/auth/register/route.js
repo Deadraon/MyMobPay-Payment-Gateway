@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendWelcomeEmail } from '@/lib/mailer';
+import { formatMerchantId } from '@/lib/merchantId';
 
 export async function POST(req) {
   try {
@@ -99,7 +100,7 @@ export async function POST(req) {
 
       // 3. Dispatch Welcome & Merchant Credentials Email
       try {
-        const mid = `MID-${userId.slice(0, 8).toUpperCase()}`;
+        const mid = formatMerchantId(userId);
         await sendWelcomeEmail({
           to: cleanEmail,
           businessName: finalBusinessName,

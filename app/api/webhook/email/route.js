@@ -165,11 +165,11 @@ export async function POST(request) {
       // If a merchant scanned the QR directly from another device and no order was pre-created:
       const isSubAmount = amount === 499 || amount === 1497 || amount === 1 || (amount >= 495 && amount <= 505);
       if (isAdminMerchant && isSubAmount) {
-        // Look for merchant ID encoded in email remark/body (e.g. Subscription_1Month_3cc05a3a)
-        const merchantMatch = emailBody.match(/(?:Subscription|Trial)_[0-9A-Za-z]+_([0-9a-fA-F-]{8,36})/i);
+        // Look for merchant ID encoded in email remark/body (e.g. Subscription_1m_MID-DD45279E)
+        const merchantMatch = emailBody.match(/(?:Subscription|Trial)_[0-9A-Za-z]+_(?:MID-)?([0-9a-fA-F-]{8,36})/i);
         let targetMerchantId = null;
         if (merchantMatch) {
-          const rawId = merchantMatch[1];
+          const rawId = merchantMatch[1].replace(/-/g, '').slice(0, 8).toLowerCase();
           const { data: foundMerchants } = await supabaseAdmin
             .from('merchants')
             .select('id')
