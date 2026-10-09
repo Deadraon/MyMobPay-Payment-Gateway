@@ -75,10 +75,11 @@ export async function POST(request) {
        }
     }
 
+    const isTestMode = isTestFromKey || merchant.sandbox_mode !== false;
     const isAdminMerchant = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || actualKey === CONFIG.platformApiKey;
 
-    if (!isSubActive && !isAdminMerchant) {
-      return NextResponse.json({ error: 'Merchant account is inactive or expired. Please renew subscription.' }, { status: 403 });
+    if (!isSubActive && !isAdminMerchant && !isTestMode) {
+      return NextResponse.json({ error: 'Merchant account is inactive or expired. Please subscribe or activate trial to accept live payments.' }, { status: 403 });
     }
 
     let finalAmount = parseFloat(amount);

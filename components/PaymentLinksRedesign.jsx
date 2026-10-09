@@ -133,8 +133,42 @@ export default function PaymentLinksRedesign({
       ? list.filter((item) => item.merchantId === profile.id)
       : [];
 
+    // Also include any real database orders that were created as Payment Links for this merchant
+    const linkOrders = Array.isArray(orders)
+      ? orders.filter(
+          (o) =>
+            o.merchant_id === profile?.id &&
+            (o.method === 'LINK' || (o.external_ref && o.external_ref.startsWith('pl_')))
+        )
+      : [];
+
+    const combined = [...merchantScoped];
+    linkOrders.forEach((o) => {
+      const linkId = (o.external_ref && o.external_ref.startsWith('pl_')) ? o.external_ref : `pl_${o.id}`;
+      const exists = combined.some(
+        (item) => item.id === linkId || item.orderId === o.id || item.ref === o.external_ref
+      );
+      if (!exists) {
+        const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
+        const apiKey = profile?.api_key ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key : '';
+        combined.push({
+          id: linkId,
+          merchantId: profile?.id,
+          orderId: o.id,
+          purpose: o.note || 'Payment for Services',
+          ref: o.external_ref || o.id,
+          customerName: o.customer_name || 'Direct Customer',
+          customerPhone: o.customer_phone || '--',
+          amount: o.amount ? Number(o.amount).toFixed(2) : '0.00',
+          status: (o.status === 'verified' || o.status === 'paid' || o.status === 'completed') ? 'Paid' : (o.status === 'failed' || o.status === 'expired') ? 'Expired' : 'Pending',
+          createdAt: o.created_at || new Date().toISOString(),
+          url: `${host}/pay?key=${apiKey}&amount=${Number(o.amount || 0).toFixed(2)}&ref=${encodeURIComponent(o.external_ref || o.id)}&note=${encodeURIComponent(o.note || '')}`
+        });
+      }
+    });
+
     // Harmonize status with real database orders if matching
-    return merchantScoped.map((item) => {
+    return combined.map((item) => {
       // ONLY match orders that belong specifically to this payment link by orderId or external_ref
       const matchingOrder = orders.find(
         (o) =>
@@ -156,7 +190,7 @@ export default function PaymentLinksRedesign({
       }
       return item;
     });
-  }, [payLinkHistory, profile?.id, orders]);
+  }, [payLinkHistory, profile?.id, profile?.api_key, profile?.sandbox_mode, orders]);
 
   // Expose global preview update helpers for compatibility with mock script
   useEffect(() => {
