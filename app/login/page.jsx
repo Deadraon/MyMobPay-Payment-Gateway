@@ -249,18 +249,58 @@ export default function LoginPage() {
   const [qrTimer, setQrTimer] = useState(45);
   const [qrChallenge, setQrChallenge] = useState('mymob-auth-session');
 
+  // Refs to allow onAuthStateChange callback to access current UI state synchronously
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+  const isRegistrationSubmittedRef = useRef(false);
+
   // Supabase Auth State Change Listener (for Magic Link redirects & existing session)
   useEffect(() => {
+    const handleAuthRedirect = async (session) => {
+      if (!session?.user) return;
+
+      // 1. If currently in the middle of filling out signup details, don't hijack to dashboard!
+      if (modeRef.current === 'signup' && !isRegistrationSubmittedRef.current) {
+        setIsEmailVerified(true);
+        if (session.user.email) setEmail(session.user.email);
+        setMessage('Email verified! Please complete your Business Name and Settlement UPI ID below to finish registration.');
+        return;
+      }
+
+      // 2. Check if merchant profile exists and has real details in DB
+      try {
+        const { data: merchantProfile } = await supabase
+          .from('merchants')
+          .select('id, business_name, upi_id')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        // If no merchant profile or incomplete profile, keep user on signup to complete registration
+        if (!merchantProfile || !merchantProfile.business_name || merchantProfile.business_name === 'My Business' || merchantProfile.upi_id === 'pending@upi') {
+          setMode('signup');
+          setIsEmailVerified(true);
+          if (session.user.email) setEmail(session.user.email);
+          setMessage('Email verified! Please enter your Business Name and Settlement UPI ID to finish setting up your account.');
+          return;
+        }
+      } catch (checkErr) {
+        console.warn('Profile check warning:', checkErr);
+      }
+
+      // Profile is verified and completed -> Safe to launch dashboard
+      setMessage('Authenticated successfully! Launching merchant dashboard...');
+      router.replace('/dashboard');
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
-        setMessage('Authenticated successfully! Launching merchant dashboard...');
-        router.replace('/dashboard');
+        handleAuthRedirect(session);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        router.replace('/dashboard');
+        handleAuthRedirect(session);
       }
     });
 
@@ -354,7 +394,7 @@ export default function LoginPage() {
     }
   }, [phone, otpMethod]);
 
-  // Email OTP Handler (Strictly OTP code)
+  // Email OTP Handler (Strictly OTP code, NO buttons/links)
   const handleSendEmailOtp = async () => {
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !cleanEmail.includes('@')) {
@@ -366,27 +406,25 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.mymob.tech';
-      const { error: otpErr } = await supabase.auth.signInWithOtp({
-        email: cleanEmail,
-        options: {
-          emailRedirectTo: `${origin}/dashboard`,
-          shouldCreateUser: mode === 'signup',
-        },
+      const res = await fetch('/api/auth/email-otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: cleanEmail,
+          type: 'otp',
+          purpose: mode === 'signup' ? 'signup' : 'login',
+        }),
       });
 
-      if (otpErr) {
-        if (otpErr.message?.toLowerCase().includes('signups not allowed')) {
-          setError('No merchant account registered with this email. Please sign up below.');
-          return;
-        }
-        throw otpErr;
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Could not send verification code. Please try again.');
       }
 
       setEmailOtpSent(true);
       setEmailOtp('');
       setEmailTimer(45);
-      setMessage(`6-digit verification code sent to ${cleanEmail}. Check your inbox!`);
+      setMessage(data.message || `6-digit verification code sent to ${cleanEmail}. Check your inbox!`);
     } catch (err) {
       console.error('Email OTP send error:', err);
       setError(formatCustomerError(err));
@@ -395,7 +433,7 @@ export default function LoginPage() {
     }
   };
 
-  // Email Link (Magic Link) Handler
+  // Email Link (Magic Link) Handler (Strictly one-click button, NO OTP digits)
   const handleSendEmailLink = async () => {
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !cleanEmail.includes('@')) {
@@ -407,26 +445,24 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.mymob.tech';
-      const { error: linkErr } = await supabase.auth.signInWithOtp({
-        email: cleanEmail,
-        options: {
-          emailRedirectTo: `${origin}/dashboard`,
-          shouldCreateUser: mode === 'signup',
-        },
+      const res = await fetch('/api/auth/email-otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: cleanEmail,
+          type: 'link',
+          purpose: 'login',
+        }),
       });
 
-      if (linkErr) {
-        if (linkErr.message?.toLowerCase().includes('signups not allowed')) {
-          setError('No merchant account registered with this email. Please sign up below.');
-          return;
-        }
-        throw linkErr;
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Could not send sign-in link. Please try again.');
       }
 
       setLinkSent(true);
       setLinkTimer(45);
-      setMessage(`Magic sign-in link dispatched to ${cleanEmail}. Check your inbox!`);
+      setMessage(data.message || `Magic sign-in link dispatched to ${cleanEmail}. Check your inbox!`);
     } catch (err) {
       console.error('Email Link send error:', err);
       setError(formatCustomerError(err));
@@ -556,6 +592,18 @@ export default function LoginPage() {
     }
 
     if (action === 'signup') {
+      if (!businessName.trim()) {
+        setError('Please enter your Business / Brand Name to complete your merchant registration.');
+        return;
+      }
+
+      if (!upiId.trim() || !upiId.includes('@')) {
+        setError('Please enter a valid Settlement UPI ID (e.g. store@upi, name@okaxis) where customer payments will route.');
+        return;
+      }
+
+      isRegistrationSubmittedRef.current = true;
+
       if (emailOtpSent && !isEmailVerified) {
         if (emailOtp.length === 6) {
           // Attempt to verify right now
@@ -565,18 +613,21 @@ export default function LoginPage() {
             type: 'email',
           });
           if (verifyErr) {
+            isRegistrationSubmittedRef.current = false;
             setError(formatCustomerError(verifyErr));
             return;
           }
           setIsEmailVerified(true);
         } else {
-          setError('Please enter the 6-digit verification code sent to your email or clear it to continue with password signup.');
+          isRegistrationSubmittedRef.current = false;
+          setError('Please enter the 6-digit verification code sent to your email or verify it above.');
           return;
         }
       }
 
       const cleanPhone = phone.trim().replace(/\D/g, '');
       if (cleanPhone && cleanPhone.length !== 10) {
+        isRegistrationSubmittedRef.current = false;
         setError('Please enter a valid 10-digit mobile phone number or leave it blank.');
         return;
       }
@@ -663,6 +714,7 @@ export default function LoginPage() {
         setTimeout(() => router.push('/dashboard'), 600);
       }
     } catch (err) {
+      isRegistrationSubmittedRef.current = false;
       console.error('Auth handler error:', err);
       const exactMessage = err?.message || err?.toString() || 'Could not sign in. Please try again.';
       setError(formatCustomerError(exactMessage));
@@ -1269,13 +1321,15 @@ export default function LoginPage() {
 
                     {/* Business / Brand Name */}
                     <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-semibold text-[#131b2e]">
-                        Business / Brand Name <span className="text-[10px] text-[#74777e] font-normal">(Optional)</span>
+                      <label className="text-xs font-semibold text-[#131b2e] flex items-center gap-1">
+                        <span>Business / Brand Name</span>
+                        <span className="text-red-500">*</span>
                       </label>
                       <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
                         <Building2 className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
                         <input
                           type="text"
+                          required
                           value={businessName}
                           onChange={(e) => setBusinessName(e.target.value)}
                           placeholder="e.g. Acme Tech Studio"
@@ -1286,19 +1340,27 @@ export default function LoginPage() {
 
                     {/* Receiving UPI ID */}
                     <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-semibold text-[#131b2e]">
-                        Receiving UPI ID <span className="text-[10px] text-[#74777e] font-normal">(Optional - can set later)</span>
+                      <label className="text-xs font-semibold text-[#131b2e] flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <span>Settlement UPI ID</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                        <span className="text-[10px] text-[#0045de] font-medium">Direct Bank Routing</span>
                       </label>
                       <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
                         <QrCode className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
                         <input
                           type="text"
+                          required
                           value={upiId}
                           onChange={(e) => setUpiId(e.target.value)}
                           placeholder="e.g. merchant@okhdfcbank"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-mono"
                         />
                       </div>
+                      <p className="text-[11px] text-[#74777e]">
+                        Customer payments settle directly to this UPI address with 0% gateway commission.
+                      </p>
                     </div>
 
                     {/* Mobile Phone Number */}

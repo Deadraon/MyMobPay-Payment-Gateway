@@ -102,8 +102,8 @@ export async function POST(req) {
         const mid = `MID-${userId.slice(0, 8).toUpperCase()}`;
         await sendWelcomeEmail({
           to: cleanEmail,
-          businessName: businessName.trim(),
-          upiId: upiId.trim(),
+          businessName: finalBusinessName,
+          upiId: finalUpiId,
           mid,
         });
       } catch (welcomeErr) {
