@@ -243,7 +243,8 @@ export default function StatusPage() {
   if (!mounted || loading) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <MyMobPayLogo className="w-40 h-auto mb-1" textColor="#0c2340" />
+        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
         <p className="text-sm text-slate-500 font-medium">Loading transaction...</p>
       </div>
     </div>

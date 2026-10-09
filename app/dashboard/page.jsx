@@ -5560,7 +5560,8 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+          <MyMobPayLogo className="w-48 h-auto mb-1" textColor="#0c2340" />
+          <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
 
 
 
