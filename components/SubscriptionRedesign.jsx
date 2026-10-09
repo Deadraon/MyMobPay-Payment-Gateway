@@ -453,46 +453,35 @@ export default function SubscriptionRedesign({
       {/* ═══════════════════════════════════════════════════════════
          0. 3-DAY FREE TRIAL HERO PROMO BANNER FOR NEW USERS
          ═══════════════════════════════════════════════════════════ */}
+      {/* ── 0. SLEEK OFFER HEADLINE STRIP ─────────────────────── */}
       {!hasUsedTrial && !subDetails.isActive && (
-        <div className="rounded-2xl p-6 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white shadow-lg relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-400/30">
-          <div className="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-          <div className="flex items-start gap-4 z-10">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/30 text-white shadow-inner">
-              <Zap className="w-6 h-6 text-amber-300" />
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-bold uppercase tracking-wider mb-2 border border-white/20">
-                🎁 New Merchant Special Offer
-              </div>
-              <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
-                Try MyMobPay Live Free for 3 Days
-              </h3>
-              <p className="text-sm text-emerald-100 max-w-xl mt-1 leading-relaxed">
-                Test live collections with 0% MDR direct bank settlement and unlock real production API keys. No payment required upfront!
-              </p>
-            </div>
+        <div className="rounded-xl px-4 py-2.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/90 border border-blue-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center gap-2.5 text-xs text-slate-700 min-w-0">
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-600 text-white font-bold text-[10px] uppercase tracking-wide shrink-0">
+              <Zap className="w-3 h-3 fill-current" /> Special Offer
+            </span>
+            <span className="font-normal text-slate-800 text-xs sm:text-[13px]">
+              <strong className="font-bold text-[#000d21]">Try Live Mode free for 3 days:</strong> Unlock production API keys &amp; collect real UPI payments with 0% MDR upfront.
+            </span>
           </div>
-          <div className="flex items-center gap-3 w-full md:w-auto z-10 shrink-0">
-            <button
-              type="button"
-              disabled={isActivating}
-              onClick={handleActivateTrial}
-              className="w-full md:w-auto px-6 py-3 rounded-xl bg-white text-emerald-900 font-bold text-sm shadow-md hover:bg-emerald-50 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
-            >
-              {isActivating ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-emerald-700 border-t-transparent rounded-full animate-spin" />
-                  Activating...
-                </>
-              ) : (
-                <>
-                  <Zap className="w-4 h-4 fill-emerald-600 text-emerald-600" />
-                  Activate 3-Day Free Trial
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </div>
+          <button
+            type="button"
+            disabled={isActivating}
+            onClick={handleActivateTrial}
+            className="self-start sm:self-auto px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 shadow-2xs cursor-pointer disabled:opacity-60"
+          >
+            {isActivating ? (
+              <>
+                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Activating...</span>
+              </>
+            ) : (
+              <>
+                <span>Claim 3-Day Free Trial</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </>
+            )}
+          </button>
         </div>
       )}
 
