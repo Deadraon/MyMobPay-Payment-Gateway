@@ -59,6 +59,7 @@ import TransactionsRedesign from '@/components/TransactionsRedesign';
 import SubscriptionRedesign from '@/components/SubscriptionRedesign';
 import SettingsRedesign from '@/components/SettingsRedesign';
 import MerchantOnboardingWizard from '@/components/MerchantOnboardingWizard';
+import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
 
 
 
@@ -504,6 +505,7 @@ export default function DashboardPage() {
 
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isBusinessInfoModalOpen, setIsBusinessInfoModalOpen] = useState(false);
 
 
 
@@ -9518,8 +9520,7 @@ echo "Order Created: " . $data['orderId'];
                   <button
                     onClick={() => {
                       setIsProfileDropdownOpen(false);
-                      setProfileModalTab('profile');
-                      setIsProfileModalOpen(true);
+                      setIsBusinessInfoModalOpen(true);
                     }}
                     className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors"
                   >
@@ -9529,8 +9530,8 @@ echo "Order Created: " . $data['orderId'];
                   <button
                     onClick={() => {
                       setIsProfileDropdownOpen(false);
-                      setProfileModalTab('bank');
-                      setIsProfileModalOpen(true);
+                      setSettingsCategory('settlement');
+                      setActiveTab('settings');
                     }}
                     className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors"
                   >
@@ -9681,7 +9682,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-                openProfileModal('profile');
+                setIsBusinessInfoModalOpen(true);
 
 
 
@@ -22234,6 +22235,19 @@ async function checkOrderStatus(orderId) {
 
       )}
 
+      {/* Dedicated Profile & Business Info Panel */}
+      <ProfileBusinessInfoModal
+        isOpen={isBusinessInfoModalOpen}
+        onClose={() => setIsBusinessInfoModalOpen(false)}
+        profile={profile}
+        user={user}
+        onProfileUpdated={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
+        onOpenSettings={() => {
+          setSettingsCategory('general');
+          setActiveTab('settings');
+        }}
+      />
+
 
 
 
@@ -22448,7 +22462,11 @@ async function checkOrderStatus(orderId) {
 
 
 
-                              openProfileModal(shortcut.action);
+                              if (shortcut.action === 'profile') {
+                                setIsBusinessInfoModalOpen(true);
+                              } else {
+                                openProfileModal(shortcut.action);
+                              }
 
 
 
