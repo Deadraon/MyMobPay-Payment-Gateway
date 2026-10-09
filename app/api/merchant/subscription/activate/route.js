@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendSubscriptionInvoiceEmail } from '@/lib/mailer';
 import { generateOrderId } from '@/lib/orderId';
+import { resolveMerchantIdToUuid, formatMerchantId } from '@/lib/merchantId';
 
 export async function POST(req) {
   try {
@@ -19,11 +20,13 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Merchant ID is required.' }, { status: 400 });
     }
 
+    const actualMerchantId = (await resolveMerchantIdToUuid(merchantId)) || merchantId;
+
     // 1. Fetch current merchant record
     const { data: merchant, error: fetchErr } = await supabaseAdmin
       .from('merchants')
       .select('id, business_name, upi_id, subscription_status, subscription_expires_at, setup_progress')
-      .eq('id', merchantId)
+      .eq('id', actualMerchantId)
       .single();
 
     if (fetchErr || !merchant) {
@@ -43,7 +46,7 @@ export async function POST(req) {
 
       if (existingUtr && existingUtr.length > 0) {
         const existing = existingUtr[0];
-        if (existing.merchant_id !== merchantId && existing.external_ref !== merchantId) {
+        if (existing.merchant_id !== actualMerchantId && existing.external_ref !== actualMerchantId) {
           return NextResponse.json({
             error: `UTR ${cleanUtr} has already been verified for another transaction.`,
             code: 'DUPLICATE_UTR'
@@ -91,7 +94,7 @@ export async function POST(req) {
         setup_progress: updatedProgress,
         sandbox_mode: false,
       })
-      .eq('id', merchantId);
+      .eq('id', actualMerchantId);
 
     if (updateErr) {
       console.error('[SUB ACTIVATE API] Update error:', updateErr);
@@ -107,7 +110,7 @@ export async function POST(req) {
       const { data: pendingOrders } = await supabaseAdmin
         .from('orders')
         .select('id')
-        .eq('external_ref', merchantId)
+        .eq('external_ref', actualMerchantId)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
         .limit(1);
@@ -132,11 +135,11 @@ export async function POST(req) {
         const orderId = generateOrderId();
         await supabaseAdmin.from('orders').insert({
           id: orderId,
-          merchant_id: merchantId,
+          merchant_id: actualMerchantId,
           amount: parseFloat(amount) || 499,
           status: 'verified',
           note: `Subscription_${planId}`,
-          external_ref: merchantId,
+          external_ref: actualMerchantId,
           utr: effectiveUtr,
           customer_utr: cleanUtr || null,
           verified_at: nowIso,
@@ -149,7 +152,7 @@ export async function POST(req) {
     // 5. Look up merchant email from Auth
     let recipientEmail = null;
     try {
-      const { data: authUserData } = await supabaseAdmin.auth.admin.getUserById(merchantId);
+      const { data: authUserData } = await supabaseAdmin.auth.admin.getUserById(actualMerchantId);
       recipientEmail = authUserData?.user?.email;
     } catch (authErr) {
       console.warn('[SUB ACTIVATE API] User auth lookup notice:', authErr?.message);
@@ -161,7 +164,7 @@ export async function POST(req) {
         await sendSubscriptionInvoiceEmail({
           to: recipientEmail,
           businessName: merchant.business_name || 'Merchant Partner',
-          mid: `MID-${merchantId.slice(0, 8).toUpperCase()}`,
+          mid: formatMerchantId(actualMerchantId),
           planName: planName,
           amount: parseFloat(amount) || 499,
           durationDays,

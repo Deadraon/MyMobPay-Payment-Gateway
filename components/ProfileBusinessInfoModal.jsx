@@ -23,6 +23,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { formatMerchantId } from '@/lib/merchantId';
 
 export default function ProfileBusinessInfoModal({ 
   isOpen, 
@@ -78,9 +79,8 @@ export default function ProfileBusinessInfoModal({
 
   if (!isOpen) return null;
 
-  // Merchant ID formatting
-  const rawId = profile?.id || user?.id || '';
-  const shortMid = rawId ? `MID-${rawId.slice(0, 8).toUpperCase()}` : 'MID-MMP88492';
+  // Merchant ID formatting - single unified display format
+  const shortMid = formatMerchantId(profile?.id || user?.id);
   const displayEmail = user?.email || profile?.email || 'merchant@mymob.tech';
   const merchantInitials = (businessName || ownerName || 'M').slice(0, 2).toUpperCase();
 
@@ -292,9 +292,6 @@ export default function ProfileBusinessInfoModal({
                     <span className="text-xs font-mono font-bold text-slate-900">
                       {shortMid}
                     </span>
-                    <span className="text-[11px] text-slate-400 font-mono">
-                      ({rawId ? rawId.slice(0, 18) + '...' : ''})
-                    </span>
                   </div>
                   <span className="text-[10px] text-slate-500 mt-0.5 block">
                     Use this ID to log in via Email OTP or identify your account with support.
@@ -308,14 +305,6 @@ export default function ProfileBusinessInfoModal({
                   >
                     {copiedKey === 'mid-field' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
                     <span>{copiedKey === 'mid-field' ? 'Copied' : 'Copy'}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(rawId, 'raw-id')}
-                    className="px-2 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 text-[11px] font-medium transition-colors cursor-pointer shadow-2xs"
-                    title="Copy Full UUID"
-                  >
-                    {copiedKey === 'raw-id' ? 'Copied UUID' : 'Full UUID'}
                   </button>
                 </div>
               </div>

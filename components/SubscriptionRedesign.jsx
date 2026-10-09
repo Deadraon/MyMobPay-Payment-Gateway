@@ -23,6 +23,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { CONFIG } from '@/lib/config';
 import { openTaxInvoiceWindow } from '@/lib/invoiceGenerator';
+import { formatMerchantId } from '@/lib/merchantId';
 
 export default function SubscriptionRedesign({
   profile = {},
@@ -444,7 +445,7 @@ export default function SubscriptionRedesign({
 
   // UPI Intent String for Real Live QR Code
   const upiVpa = CONFIG.upiId || '9410181307@okbizaxis';
-  const merchantMid = profile?.id ? profile.id.slice(0, 10).toUpperCase() : 'MMP';
+  const merchantMid = formatMerchantId(profile?.id);
   const qrString = `upi://pay?pa=${upiVpa}&pn=MyMobPay+License&am=${activeAmount ? Number(activeAmount).toFixed(2) : selectedPlan.amount.toFixed(2)}&tn=Subscription_${selectedPlan.id}_${merchantMid}${activeOrderId ? `_${activeOrderId}` : ''}&cu=INR`;
   const checkoutUrl = `/pay?api_key=${CONFIG.platformApiKey}&amount=${selectedPlan.amount}&ref=${profile?.id || ''}&note=Subscription_${selectedPlan.id}`;
 

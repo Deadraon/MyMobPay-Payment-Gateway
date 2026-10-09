@@ -18,6 +18,7 @@ import {
   Copy,
   Inbox
 } from 'lucide-react';
+import { formatMerchantId } from '@/lib/merchantId';
 
 export default function DashboardOverviewRedesign({
   profile,
@@ -216,13 +217,7 @@ export default function DashboardOverviewRedesign({
   }, [merchantBusinessName]);
 
   const merchantMID = useMemo(() => {
-    if (profile?.id) {
-      return profile.id.slice(0, 9).toUpperCase();
-    }
-    if (profile?.merchant_id) {
-      return profile.merchant_id.toUpperCase();
-    }
-    return '3CC0C5A3A';
+    return formatMerchantId(profile?.id || profile?.merchant_id);
   }, [profile?.id, profile?.merchant_id]);
 
   const merchantDomain = profile?.website || (profile?.email ? profile.email.split('@')[1] : 'mymob.tech');
@@ -398,7 +393,7 @@ export default function DashboardOverviewRedesign({
                   {merchantDomain}
                 </p>
                 <p className="text-[#778bad] text-xs font-mono font-medium truncate">
-                  MID: {merchantMID}
+                  {merchantMID}
                 </p>
               </div>
             </div>

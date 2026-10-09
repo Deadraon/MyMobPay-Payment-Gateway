@@ -10,6 +10,7 @@ import {
 import QRCode from 'react-qr-code';
 import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
+import { formatMerchantId } from '@/lib/merchantId';
 
 export default function ConsoleActivationPaywall({
   profile,
@@ -126,7 +127,7 @@ export default function ConsoleActivationPaywall({
 
   const merchantVpa = CONFIG.upiId || '9410181307@okbizaxis';
   const callbackUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'https://www.mymob.tech/dashboard';
-  const merchantId = profile?.id ? `MID-${profile.id.slice(0, 8).toUpperCase()}` : 'MID-884920';
+  const merchantId = formatMerchantId(profile?.id);
 
   // Plans config
   const plans = {

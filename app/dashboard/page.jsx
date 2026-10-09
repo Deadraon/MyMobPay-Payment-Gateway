@@ -60,6 +60,7 @@ import SubscriptionRedesign from '@/components/SubscriptionRedesign';
 import SettingsRedesign from '@/components/SettingsRedesign';
 import MerchantOnboardingWizard from '@/components/MerchantOnboardingWizard';
 import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
+import { formatMerchantId } from '@/lib/merchantId';
 
 
 
@@ -9501,7 +9502,7 @@ echo "Order Created: " . $data['orderId'];
                     <span className="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
                   </div>
                   <span className="text-[11px] font-mono text-slate-400 font-medium">
-                    MID: {profile?.id ? profile.id.slice(0, 8).toUpperCase() : 'MMP884920'}
+                    {formatMerchantId(profile?.id)}
                   </span>
                 </div>
               </div>
