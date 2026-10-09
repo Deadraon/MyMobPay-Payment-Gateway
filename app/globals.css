@@ -1,81 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html, body {
-    margin: 0;
-    padding: 0;
-    scroll-behavior: smooth;
-  }
-}
-
-/* ─── Stitch Design System: Light Tokens (:root) ─────────── */
+/* ─── Clean Design Tokens ────────────────────────────────── */
 :root {
-  --color-primary: #004ac6;
-  --color-primary-container: #2563eb;
-  --color-on-primary: #ffffff;
-  --color-on-primary-container: #eeefff;
-  --color-primary-fixed: #dbe1ff;
-  --color-primary-fixed-dim: #b4c5ff;
-
-  --color-secondary: #565e74;
-  --color-secondary-container: #dae2fd;
-  --color-on-secondary: #ffffff;
-  --color-secondary-fixed: #dae2fd;
-  --color-secondary-fixed-dim: #bec6e0;
-
-  --color-tertiary: #006243;
-  --color-tertiary-container: #007d57;
-  --color-on-tertiary: #ffffff;
-  --color-on-tertiary-container: #bdffdc;
-  --color-tertiary-fixed: #85f8c4;
-  --color-tertiary-fixed-dim: #68dba9;
-
-  --color-surface: #f8f9ff;
-  --color-surface-bright: #f8f9ff;
-  --color-surface-dim: #cbdbf5;
-  --color-surface-variant: #d3e4fe;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #eff4ff;
-  --color-surface-container: #e5eeff;
-  --color-surface-container-high: #dce9ff;
-  --color-surface-container-highest: #d3e4fe;
-
-  --color-on-surface: #0b1c30;
-  --color-on-surface-variant: #434655;
-  --color-on-background: #0b1c30;
-
-  --color-outline: #737686;
-  --color-outline-variant: #c3c6d7;
-  --color-border-subtle: #E2E8F0;
-
-  --color-code-surface: #030712;
-  --color-inverse-surface: #213145;
-  --color-inverse-on-surface: #eaf1ff;
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
-  --color-background: #f8f9ff;
-
-  /* App legacy token fallbacks */
-  --bg-base:        #f8fafc;
-  --bg-card:        #ffffff;
-  --bg-input:       #f8fafc;
-  --border-subtle:  #e2e8f0;
-  --border-hover:   #cbd5e1;
-  --accent:         #2563EB;
-  --accent-light:   #3B82F6;
-  --accent-glow:    rgba(37, 99, 235, 0.08);
-  --text-primary:   #0b1c30;
-  --text-secondary: #434655;
-  --text-muted:     #737686;
+  --bg-base:        #f7f8fa; /* Razorpay off-white content bg */
+  --bg-card:        #ffffff; /* White cards */
+  --bg-input:       #f8fafc; /* Slate-50 input bg */
+  --border-subtle:  #e2e8f0; /* Subtle border */
+  --border-hover:   #cbd5e1; /* Hover border */
+  --accent:         #3395FF; /* Razorpay electric blue */
+  --accent-light:   #54A6FF;
+  --accent-glow:    rgba(51, 149, 255, 0.12);
+  --text-primary:   #1a2332; /* Dark charcoal text */
+  --text-secondary: #475569; /* Slate-600 */
+  --text-muted:     #94a3b8; /* Slate-400 */
+  --success:        #10B981;
+  --danger:         #EF4444;
+  --warning:        #F59E0B;
+  --font-sans:      var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:      'JetBrains Mono', monospace;
   --radius-card:    12px;
   --radius-input:   8px;
   --radius-btn:     8px;
 
+  /* Sidebar — always dark like Razorpay */
   --sidebar-bg:         #1a2332;
   --sidebar-bg-header:  #141c2b;
   --sidebar-border:     rgba(255,255,255,0.06);
@@ -87,96 +38,108 @@
   --sidebar-label:      #4b5563;
 }
 
-/* ─── Stitch Design System: Dark Tokens (.dark, [data-page-theme="dark"]) ── */
-.dark, [data-page-theme="dark"], html.dark {
-  --color-primary: #0053db;
-  --color-primary-container: #2563eb;
-  --color-on-primary: #ffffff;
-  --color-on-primary-container: #dbeafe;
-  --color-primary-fixed: #38bdf8;
-  --color-primary-fixed-dim: #38bdf8;
+/* ─── Light Mode Theme Tokens ────────────────────────────── */
+.light-theme {
+  --bg-base:        #f7f8fa;
+  --bg-card:        #ffffff;
+  --bg-input:       #f8fafc;
+  --border-subtle:  #e2e8f0;
+  --border-hover:   #cbd5e1;
+  --accent:         #2563EB;
+  --accent-light:   #3B82F6;
+  --accent-glow:    rgba(37, 99, 235, 0.05);
+  --text-primary:   #1a2332;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+}
 
-  --color-secondary: #64748b;
-  --color-secondary-container: #1e293b;
-  --color-on-secondary: #ffffff;
-  --color-secondary-fixed: #1e293b;
-  --color-secondary-fixed-dim: #334155;
-
-  --color-tertiary: #10B981;
-  --color-tertiary-container: #065f46;
-  --color-on-tertiary: #ffffff;
-  --color-on-tertiary-container: #a7f3d0;
-  --color-tertiary-fixed: #34d399;
-  --color-tertiary-fixed-dim: #10b981;
-
-  --color-surface: #020617;
-  --color-surface-bright: #0f172a;
-  --color-surface-dim: #020617;
-  --color-surface-variant: #0f172a;
-  --color-surface-container-lowest: #02040a;
-  --color-surface-container-low: #070d18;
-  --color-surface-container: #0b1329;
-  --color-surface-container-high: #111c38;
-  --color-surface-container-highest: #1e293b;
-
-  --color-on-surface: #f8fafc;
-  --color-on-surface-variant: #94a3b8;
-  --color-on-background: #f8fafc;
-
-  --color-outline: #334155;
-  --color-outline-variant: #1e293b;
-  --color-border-subtle: #1e293b;
-
-  --color-code-surface: #020617;
-  --color-inverse-surface: #f1f5f9;
-  --color-inverse-on-surface: #030712;
-  --color-error: #ef4444;
-  --color-error-container: #450a0a;
-  --color-background: #020617;
-
-  /* App legacy token fallbacks */
-  --bg-base:        #020617;
-  --bg-card:        #0b1329;
-  --bg-input:       #070d18;
-  --border-subtle:  #1e293b;
-  --border-hover:   rgba(6, 182, 212, 0.45);
-  --accent:         #06B6D4;
-  --accent-light:   #38bdf8;
-  --accent-glow:    rgba(6, 182, 212, 0.25);
+/* ─── Page Dark & Light Mode Tokens ───────────────────────── */
+[data-page-theme="dark"] {
+  --bg-base:        #080f1c;
+  --bg-card:        #0f1e36;
+  --bg-input:       #0a1526;
+  --border-subtle:  rgba(51, 149, 255, 0.16);
+  --border-hover:   rgba(51, 149, 255, 0.35);
+  --accent:         #3395ff;
+  --accent-light:   #60a5fa;
+  --accent-glow:    rgba(51, 149, 255, 0.25);
   --text-primary:   #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted:     #64748b;
+
+  --page-bg:           #080f1c;
+  --page-section-alt:  #0b1422;
+  --page-card:         #0f1e36;
+  --page-card-hover:   #162848;
+  --page-border:       rgba(51, 149, 255, 0.15);
+  --page-border-hover: rgba(51, 149, 255, 0.3);
+  --page-text-primary:   #f1f5f9;
+  --page-text-secondary: #94a3b8;
+  --page-text-muted:     #64748b;
+  --page-accent:         #3395ff;
+  --page-accent-glow:    rgba(51, 149, 255, 0.2);
 }
 
-/* ─── Stitch Matrix Grid & Cyber Glows ────────────────────── */
-.matrix-grid {
-  background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-}
-.cyber-glow-cyan {
-  box-shadow: 0 0 35px -5px rgba(6, 182, 212, 0.25);
-}
-.cyber-glow-emerald {
-  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
-}
-.cyber-glow-blue {
-  box-shadow: 0 0 45px -5px rgba(37, 99, 235, 0.3);
+/* ─── Stitch Design System 1: Refined Slate & Precision Emerald (Light Theme) ── */
+[data-page-theme="light"] {
+  --bg-base:             #f8fafc;
+  --bg-card:             #ffffff;
+  --bg-input:            #f8fafc;
+  --border-subtle:       #e2e8f0;
+  --border-hover:        #cbd5e1;
+  --accent:              #2563eb;
+  --accent-light:        #3b82f6;
+  --accent-glow:         rgba(37, 99, 235, 0.08);
+  --text-primary:        #0f172a;
+  --text-secondary:      #475569;
+  --text-muted:          #94a3b8;
+
+  --page-bg:             #f8fafc;
+  --page-section-alt:    #ffffff;
+  --page-card:           #ffffff;
+  --page-card-hover:     #f8fafc;
+  --page-border:         #e2e8f0;
+  --page-border-hover:   #cbd5e1;
+  --page-text-primary:   #0f172a;
+  --page-text-secondary: #475569;
+  --page-text-muted:     #94a3b8;
+  --page-accent:         #2563eb;
+  --page-accent-glow:    rgba(37, 99, 235, 0.1);
 }
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined' !important;
-  font-weight: normal;
-  font-style: normal;
-  display: inline-block;
-  line-height: 1;
-  text-transform: none;
-  letter-spacing: normal;
-  word-wrap: normal;
-  white-space: nowrap;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+/* ─── Stitch Design System 2: Radical Obsidian Cyber-HUD Variant (Dark Theme) ─ */
+[data-page-theme="dark"] {
+  --bg-base:             #030712;
+  --bg-card:             #0b1424;
+  --bg-input:            #060d1a;
+  --border-subtle:       rgba(6, 182, 212, 0.22);
+  --border-hover:        rgba(6, 182, 212, 0.45);
+  --accent:              #06b6d4;
+  --accent-light:        #38bdf8;
+  --accent-glow:         rgba(6, 182, 212, 0.25);
+  --text-primary:        #f8fafc;
+  --text-secondary:      #94a3b8;
+  --text-muted:          #64748b;
+
+  --page-bg:             #030712;
+  --page-section-alt:    #060d1a;
+  --page-card:           #0b1424;
+  --page-card-hover:     #0f1d35;
+  --page-border:         rgba(6, 182, 212, 0.2);
+  --page-border-hover:   rgba(6, 182, 212, 0.4);
+  --page-text-primary:   #f8fafc;
+  --page-text-secondary: #94a3b8;
+  --page-text-muted:     #64748b;
+  --page-accent:         #06b6d4;
+  --page-accent-glow:    rgba(6, 182, 212, 0.3);
+}
+
+/* ─── Stitch Radical Obsidian Cyber-HUD: Header Overrides ─────────────────── */
+[data-page-theme="dark"] header {
+  background-color: rgba(3, 7, 18, 0.94) !important;
+  border-bottom-color: rgba(6, 182, 212, 0.22) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(6, 182, 212, 0.12) !important;
+  backdrop-filter: blur(16px) !important;
 }
 
 [data-page-theme="dark"] header nav a {
@@ -239,6 +202,22 @@
 [data-page-theme="dark"] .cyber-hud-glow {
   box-shadow: 0 0 25px rgba(6, 182, 212, 0.25), inset 0 0 15px rgba(6, 182, 212, 0.08);
   border-color: rgba(6, 182, 212, 0.4) !important;
+}
+
+/* ─── Stitch Radical Obsidian: Matrix Grid & Named Cyber Glows ─── */
+.matrix-grid {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+.cyber-glow-cyan {
+  box-shadow: 0 0 35px -5px rgba(6, 182, 212, 0.25);
+}
+.cyber-glow-emerald {
+  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
+}
+.cyber-glow-blue {
+  box-shadow: 0 0 45px -5px rgba(37, 99, 235, 0.3);
 }
 
 /* ─── Page-Level Theme Utility Classes ───────────────────────────────────── */
