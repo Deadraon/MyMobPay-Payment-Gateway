@@ -1541,14 +1541,27 @@ export default function SettingsRedesign({
                 {/* 1. Main API Credentials Cards: Live & Sandbox */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {/* LIVE PRIVATE API KEY */}
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between gap-4">
+                  <div className={`p-5 rounded-2xl border transition-all flex flex-col justify-between gap-4 relative overflow-hidden ${
+                    profile?.subscription_status === 'active'
+                      ? 'bg-white border-slate-200 shadow-2xs'
+                      : 'bg-slate-50/80 border-slate-200/90 shadow-2xs'
+                  }`}>
+                    {profile?.subscription_status !== 'active' && (
+                      <div className="absolute top-0 right-0 bg-amber-500 text-white text-[9px] font-extrabold uppercase px-3 py-1 rounded-bl-xl tracking-wider shadow-xs flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" /> Locked
+                      </div>
+                    )}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <h4 className="text-xs font-black uppercase tracking-wider text-blue-600 flex items-center gap-1.5 select-none">
                           <Key className="w-3.5 h-3.5" /> Live Private API Key
                         </h4>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
-                          Production Live
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
+                          profile?.subscription_status === 'active'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                        }`}>
+                          {profile?.subscription_status === 'active' ? 'Production Live' : 'Requires Active Plan'}
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
@@ -1556,43 +1569,77 @@ export default function SettingsRedesign({
                       </p>
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <code className="flex-1 bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-xs font-mono break-all text-slate-700 font-bold select-all">
-                          {showLiveKey
-                            ? `live_${profile?.api_key || '677d9312-a53f-4b96-815f-53e0eee1b292'}`
-                            : `live_••••••••-••••-••••-••••-••••••••${profile?.api_key?.slice(-4) || 'b292'}`}
-                        </code>
-                        <button
-                          type="button"
-                          onClick={() => setShowLiveKey(!showLiveKey)}
-                          className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl transition-all border border-slate-200 cursor-pointer"
-                          title={showLiveKey ? "Hide Key" : "Reveal Key"}
-                        >
-                          {showLiveKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleCopy(`live_${profile?.api_key || '677d9312-a53f-4b96-815f-53e0eee1b292'}`, 'live_key')}
-                          className="p-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all border border-blue-200 cursor-pointer"
-                          title="Copy Live API Key"
-                        >
-                          {copiedKey === 'live_key' ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                        </button>
-                      </div>
+                    {profile?.subscription_status === 'active' ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <code className="flex-1 bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-xs font-mono break-all text-slate-700 font-bold select-all">
+                            {showLiveKey
+                              ? `live_${profile?.api_key || '677d9312-a53f-4b96-815f-53e0eee1b292'}`
+                              : `live_••••••••-••••-••••-••••-••••••••${profile?.api_key?.slice(-4) || 'b292'}`}
+                          </code>
+                          <button
+                            type="button"
+                            onClick={() => setShowLiveKey(!showLiveKey)}
+                            className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl transition-all border border-slate-200 cursor-pointer"
+                            title={showLiveKey ? "Hide Key" : "Reveal Key"}
+                          >
+                            {showLiveKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(`live_${profile?.api_key || '677d9312-a53f-4b96-815f-53e0eee1b292'}`, 'live_key')}
+                            className="p-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all border border-blue-200 cursor-pointer"
+                            title="Copy Live API Key"
+                          >
+                            {copiedKey === 'live_key' ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                          </button>
+                        </div>
 
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase select-none">
-                        <span>Last Used: {profile?.sandbox_mode === false ? 'Active 2 min ago' : 'Active 2 min ago'}</span>
-                        <button
-                          type="button"
-                          onClick={handleRotateApiKey}
-                          disabled={isRotatingKey}
-                          className="text-[10px] font-black text-rose-600 hover:text-rose-800 hover:underline tracking-wider uppercase transition-all cursor-pointer"
-                        >
-                          {isRotatingKey ? 'Rotating...' : 'Rotate Key ↺'}
-                        </button>
+                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase select-none">
+                          <span>Last Used: {profile?.sandbox_mode === false ? 'Active 2 min ago' : 'Active 2 min ago'}</span>
+                          <button
+                            type="button"
+                            onClick={handleRotateApiKey}
+                            disabled={isRotatingKey}
+                            className="text-[10px] font-black text-rose-600 hover:text-rose-800 hover:underline tracking-wider uppercase transition-all cursor-pointer"
+                          >
+                            {isRotatingKey ? 'Rotating...' : 'Rotate Key ↺'}
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="space-y-3 bg-amber-50/60 border border-amber-200/80 rounded-xl p-3.5">
+                        <div className="flex items-center gap-2">
+                          <code className="flex-1 bg-white/80 border border-slate-200 px-3.5 py-2 rounded-xl text-xs font-mono text-slate-400 font-bold select-none blur-[2px]">
+                            live_••••••••-••••-••••-••••-••••••••••••
+                          </code>
+                          <button
+                            type="button"
+                            disabled
+                            className="p-2.5 bg-slate-100 text-slate-400 rounded-xl cursor-not-allowed border border-slate-200 opacity-60"
+                            title="Live Key Locked"
+                          >
+                            <Lock className="w-4 h-4 text-amber-600" />
+                          </button>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1">
+                          <span className="text-[11px] font-medium text-amber-900 leading-snug">
+                            Subscribe or activate your 3-day free trial to unlock your live key.
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (setActiveTab) setActiveTab('subscription');
+                            }}
+                            className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                          >
+                            <Zap className="w-3.5 h-3.5" />
+                            Unlock Live Key (3-Day Trial)
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* SANDBOX PRIVATE API KEY */}

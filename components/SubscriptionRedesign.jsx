@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import {
   CheckCircle,
@@ -32,6 +32,22 @@ export default function SubscriptionRedesign({
   onProfileUpdate,
   setActiveTab
 }) {
+  // ── 3-Day Trial Eligibility Check ─────────────────────────────
+  const hasUsedTrial = useMemo(() => {
+    return Boolean(
+      profile?.setup_progress?.trial_activated_at ||
+      profile?.setup_progress?.plan_type === 'trial_3day' ||
+      profile?.setup_progress?.plan_type === 'autopay_trial' ||
+      profile?.setup_progress?.trial_expired ||
+      profile?.subscription_plan === 'trial' ||
+      profile?.subscription_plan === '3day_trial' ||
+      historyOrders?.some(o => 
+        (o.status === 'verified' || o.status === 'completed' || o.status === 'success') &&
+        (o.note === 'Trial_Setup_3Day' || o.note === 'Autopay_Setup_3DayTrial' || (Number(o.amount) === 1 && !o.note?.includes('Subscription')))
+      )
+    );
+  }, [profile, historyOrders]);
+
   // ── Modal States ──────────────────────────────────────────────
   const [selectedPlanId, setSelectedPlanId] = useState('1month');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -44,6 +60,13 @@ export default function SubscriptionRedesign({
   const [renewUtr, setRenewUtr] = useState('');
   const [activeOrderId, setActiveOrderId] = useState('');
   const [activeAmount, setActiveAmount] = useState(null);
+
+  // Auto-select free trial for new merchants
+  useEffect(() => {
+    if (!hasUsedTrial && profile?.subscription_status !== 'active') {
+      setSelectedPlanId('trial');
+    }
+  }, [hasUsedTrial, profile?.subscription_status]);
 
   // ── Real Subscription Details Computation ─────────────────────
   const subDetails = useMemo(() => {
@@ -143,69 +166,91 @@ export default function SubscriptionRedesign({
   }, [totalVerifiedVolume]);
 
   // ── Plan Definitions ──────────────────────────────────────────
-  const plans = [
-    {
-      id: '1month',
-      title: '1 Month',
-      subtitle: 'Standard monthly billing',
-      amount: 499,
-      durationDays: 30,
-      badge: 'Active / Most Popular',
-      badgeClass: 'bg-blue-600 text-white',
-      features: [
-        'Direct Bank Settlement (0% MDR)',
-        'Real-time UPI QR Generation',
-        'HMAC SHA-256 Webhooks',
-        'Automated Bank Reconciliation'
-      ]
-    },
-    {
-      id: '2months',
-      title: '2 Months',
-      subtitle: 'Bi-monthly discounted renewal',
-      amount: 998,
-      durationDays: 60,
-      badge: 'Saver',
-      badgeClass: 'bg-blue-50 text-blue-700 border border-blue-200',
-      features: [
-        'All Standard Plan features',
-        'Direct Bank Settlement (0% MDR)',
-        'Priority statement parsing',
-        'Zero setup or hidden fees'
-      ]
-    },
-    {
-      id: '3months',
-      title: '3 Months',
-      subtitle: 'Quarterly bulk billing',
-      amount: 1497,
-      durationDays: 90,
-      badge: 'Quarterly',
-      badgeClass: 'bg-blue-50 text-blue-700 border border-blue-200',
-      features: [
-        'All Standard Plan features',
-        'Direct Bank Settlement (0% MDR)',
-        'Multi-account routing support',
-        'Priority email & chat support'
-      ]
-    },
-    {
-      id: 'custom',
-      title: 'Custom Plan',
-      subtitle: 'Enterprise high throughput',
-      amount: 0,
-      durationDays: 365,
-      badge: 'High Volume',
-      badgeClass: 'bg-[#0c2340] text-white',
-      isCustom: true,
-      features: [
-        'Bespoke high-volume routing',
-        'Dedicated matching worker instances',
-        'Custom SLA & account manager',
-        'Sub-merchant console controls'
-      ]
+  const plans = useMemo(() => {
+    const allPlans = [];
+    if (!hasUsedTrial) {
+      allPlans.push({
+        id: 'trial',
+        title: '3-Day Free Trial',
+        subtitle: 'Zero risk • Test live UPI collections',
+        amount: 0,
+        durationDays: 3,
+        badge: '🎁 Free For New Merchants',
+        badgeClass: 'bg-emerald-600 text-white font-extrabold shadow-sm',
+        isTrial: true,
+        features: [
+          'Instant Live Mode Unlock',
+          'Real Live Production API Key',
+          'Zero-MDR Direct Bank Settlement',
+          'Full webhook & dashboard access'
+        ]
+      });
     }
-  ];
+    allPlans.push(
+      {
+        id: '1month',
+        title: '1 Month',
+        subtitle: 'Standard monthly billing',
+        amount: 499,
+        durationDays: 30,
+        badge: 'Active / Most Popular',
+        badgeClass: 'bg-blue-600 text-white',
+        features: [
+          'Direct Bank Settlement (0% MDR)',
+          'Real-time UPI QR Generation',
+          'HMAC SHA-256 Webhooks',
+          'Automated Bank Reconciliation'
+        ]
+      },
+      {
+        id: '2months',
+        title: '2 Months',
+        subtitle: 'Bi-monthly discounted renewal',
+        amount: 998,
+        durationDays: 60,
+        badge: 'Saver',
+        badgeClass: 'bg-blue-50 text-blue-700 border border-blue-200',
+        features: [
+          'All Standard Plan features',
+          'Direct Bank Settlement (0% MDR)',
+          'Priority statement parsing',
+          'Zero setup or hidden fees'
+        ]
+      },
+      {
+        id: '3months',
+        title: '3 Months',
+        subtitle: 'Quarterly bulk billing',
+        amount: 1497,
+        durationDays: 90,
+        badge: 'Quarterly',
+        badgeClass: 'bg-blue-50 text-blue-700 border border-blue-200',
+        features: [
+          'All Standard Plan features',
+          'Direct Bank Settlement (0% MDR)',
+          'Multi-account routing support',
+          'Priority email & chat support'
+        ]
+      },
+      {
+        id: 'custom',
+        title: 'Custom Plan',
+        subtitle: 'Enterprise high throughput',
+        amount: 0,
+        durationDays: 365,
+        badge: 'High Volume',
+        badgeClass: 'bg-[#0c2340] text-white',
+        isCustom: true,
+        features: [
+          'Bespoke high-volume routing',
+          'Dedicated matching worker instances',
+          'Custom SLA & account manager',
+          'Sub-merchant console controls'
+        ]
+      }
+    );
+    return allPlans;
+  }, [hasUsedTrial]);
 
   const selectedPlan = plans.find(p => p.id === selectedPlanId) || plans[0];
 
@@ -312,6 +357,53 @@ export default function SubscriptionRedesign({
     }
   };
 
+  // ── Handle 3-Day Free Trial Direct Activation ─────────────────
+  const handleActivateTrial = async () => {
+    setIsActivating(true);
+    try {
+      const res = await fetch('/api/merchant/subscription/activate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          merchantId: profile?.id,
+          planId: 'trial',
+          planName: '3-Day Free Trial',
+          amount: 0,
+          durationDays: 3,
+        }),
+      });
+
+      const resData = await res.json();
+      if (!res.ok) {
+        throw new Error(resData.error || 'Failed to activate trial');
+      }
+
+      const newExpiry = resData.subscription_expires_at ? new Date(resData.subscription_expires_at) : new Date(Date.now() + 3 * 86400000);
+
+      if (onProfileUpdate) {
+        onProfileUpdate({
+          ...profile,
+          subscription_status: 'active',
+          subscription_plan: 'trial',
+          sandbox_mode: false,
+          subscription_expires_at: newExpiry.toISOString(),
+        });
+      }
+
+      if (onRefreshProfile) {
+        await onRefreshProfile();
+      }
+
+      setShowPaymentModal(false);
+      triggerToast('🎉 3-Day Free Trial activated! Live Mode and Live API Key are now unlocked.');
+    } catch (err) {
+      console.error('Trial activation error:', err);
+      triggerToast(`Could not activate trial: ${err.message || 'Please try again.'}`);
+    } finally {
+      setIsActivating(false);
+    }
+  };
+
 
 
   // ── 100% Real Invoices Data (Zero Fake Info) ─────────────────
@@ -358,6 +450,52 @@ export default function SubscriptionRedesign({
 
   return (
     <div className="flex flex-col max-w-7xl mx-auto w-full pb-8 gap-6 animate-fadeIn font-sans">
+      {/* ═══════════════════════════════════════════════════════════
+         0. 3-DAY FREE TRIAL HERO PROMO BANNER FOR NEW USERS
+         ═══════════════════════════════════════════════════════════ */}
+      {!hasUsedTrial && !subDetails.isActive && (
+        <div className="rounded-2xl p-6 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white shadow-lg relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-400/30">
+          <div className="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="flex items-start gap-4 z-10">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/30 text-white shadow-inner">
+              <Zap className="w-6 h-6 text-amber-300" />
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-bold uppercase tracking-wider mb-2 border border-white/20">
+                🎁 New Merchant Special Offer
+              </div>
+              <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+                Try MyMobPay Live Free for 3 Days
+              </h3>
+              <p className="text-sm text-emerald-100 max-w-xl mt-1 leading-relaxed">
+                Test live collections with 0% MDR direct bank settlement and unlock real production API keys. No payment required upfront!
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 w-full md:w-auto z-10 shrink-0">
+            <button
+              type="button"
+              disabled={isActivating}
+              onClick={handleActivateTrial}
+              className="w-full md:w-auto px-6 py-3 rounded-xl bg-white text-emerald-900 font-bold text-sm shadow-md hover:bg-emerald-50 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+            >
+              {isActivating ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-emerald-700 border-t-transparent rounded-full animate-spin" />
+                  Activating...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4 fill-emerald-600 text-emerald-600" />
+                  Activate 3-Day Free Trial
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ═══════════════════════════════════════════════════════════
          1. HIGH-IMPACT HERO ACTIVE SUBSCRIPTION CARD
          ═══════════════════════════════════════════════════════════ */}
@@ -515,8 +653,8 @@ export default function SubscriptionRedesign({
           </div>
         </div>
 
-        {/* 4 Plan Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Plan Cards */}
+        <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${!hasUsedTrial ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4'}`}>
           {plans.map((plan) => {
             const isSelected = selectedPlanId === plan.id;
             return (
@@ -524,7 +662,11 @@ export default function SubscriptionRedesign({
                 key={plan.id}
                 onClick={() => setSelectedPlanId(plan.id)}
                 className={`cursor-pointer p-5 rounded-2xl bg-white border-2 transition-all flex flex-col justify-between gap-4 relative group ${
-                  isSelected
+                  plan.isTrial
+                    ? isSelected
+                      ? 'border-emerald-600 shadow-md shadow-emerald-500/10'
+                      : 'border-emerald-200 hover:border-emerald-400 shadow-xs'
+                    : isSelected
                     ? 'border-blue-600 shadow-md shadow-blue-500/10'
                     : 'border-slate-200/80 hover:border-blue-300 shadow-xs'
                 }`}
@@ -535,7 +677,7 @@ export default function SubscriptionRedesign({
                       {plan.badge}
                     </span>
                     <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                      isSelected ? 'bg-blue-600' : 'bg-slate-100'
+                      isSelected ? (plan.isTrial ? 'bg-emerald-600' : 'bg-blue-600') : 'bg-slate-100'
                     }`}>
                       <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-white' : 'bg-transparent'}`} />
                     </div>
@@ -548,7 +690,7 @@ export default function SubscriptionRedesign({
 
                   <div className="flex items-baseline gap-1 py-1">
                     <span className="text-2xl font-bold text-[#000d21]">
-                      {plan.isCustom ? 'Custom' : `₹${plan.amount.toLocaleString('en-IN')}`}
+                      {plan.isCustom ? 'Custom' : plan.isTrial ? 'Free' : `₹${plan.amount.toLocaleString('en-IN')}`}
                     </span>
                     <span className="text-xs text-slate-400">
                       {plan.isCustom ? '/ tailored volume' : `/ ${plan.durationDays} days`}
@@ -558,7 +700,7 @@ export default function SubscriptionRedesign({
                   <ul className="flex flex-col gap-2 pt-3 border-t border-slate-100 text-xs text-slate-600">
                     {plan.features.map((feat, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                        <CheckCircle className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${plan.isTrial ? 'text-emerald-600' : 'text-blue-600'}`} />
                         <span className="leading-tight">{feat}</span>
                       </li>
                     ))}
@@ -567,22 +709,33 @@ export default function SubscriptionRedesign({
 
                 <button
                   type="button"
+                  disabled={isActivating}
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedPlanId(plan.id);
-                    if (plan.isCustom) {
+                    if (plan.isTrial) {
+                      handleActivateTrial();
+                    } else if (plan.isCustom) {
                       setShowContactSalesModal(true);
                     } else {
                       setShowPaymentModal(true);
                     }
                   }}
                   className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
-                    isSelected
+                    plan.isTrial
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs shadow-emerald-500/20'
+                      : isSelected
                       ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-xs shadow-blue-500/20'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
-                  {plan.isCustom ? 'Contact Sales' : isSelected ? 'Selected Plan' : `Select ${plan.title}`}
+                  {plan.isTrial
+                    ? (isActivating && selectedPlanId === 'trial' ? 'Activating...' : 'Activate Free Trial')
+                    : plan.isCustom
+                    ? 'Contact Sales'
+                    : isSelected
+                    ? 'Selected Plan'
+                    : `Select ${plan.title}`}
                 </button>
               </div>
             );
@@ -594,15 +747,19 @@ export default function SubscriptionRedesign({
            ═══════════════════════════════════════════════════════════ */}
         <div className="p-4 px-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 w-full sm:w-auto">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-              <ShieldCheck className="w-5 h-5" />
+            <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
+              selectedPlan.isTrial ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-blue-50 border-blue-100 text-blue-600'
+            }`}>
+              {selectedPlan.isTrial ? <Zap className="w-5 h-5 text-emerald-600" /> : <ShieldCheck className="w-5 h-5" />}
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
                 Selected Plan
               </span>
               <span className="text-sm font-bold text-[#000d21]">
-                {selectedPlan.isCustom
+                {selectedPlan.isTrial
+                  ? '3-Day Free Trial (₹0) — Instant Live Mode'
+                  : selectedPlan.isCustom
                   ? 'Enterprise Custom Plan'
                   : `Standard Plan — ${selectedPlan.title} (₹${selectedPlan.amount.toLocaleString('en-IN')})`}
               </span>
@@ -622,17 +779,26 @@ export default function SubscriptionRedesign({
 
             <button
               onClick={() => {
-                if (selectedPlan.isCustom) {
+                if (selectedPlan.isTrial) {
+                  handleActivateTrial();
+                } else if (selectedPlan.isCustom) {
                   setShowContactSalesModal(true);
                 } else {
                   setShowPaymentModal(true);
                 }
               }}
               type="button"
-              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs shadow-xs shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              disabled={isActivating}
+              className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-white font-semibold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                selectedPlan.isTrial
+                  ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20'
+                  : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'
+              }`}
             >
               <Zap className="w-4 h-4" />
-              {selectedPlan.isCustom
+              {selectedPlan.isTrial
+                ? (isActivating ? 'Activating Trial...' : 'Activate 3-Day Free Trial (Free)')
+                : selectedPlan.isCustom
                 ? 'Contact Enterprise Sales'
                 : `Pay ₹${selectedPlan.amount.toLocaleString('en-IN')} via UPI`}
             </button>

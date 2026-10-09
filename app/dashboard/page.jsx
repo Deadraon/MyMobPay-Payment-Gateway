@@ -43,7 +43,7 @@ import {
 
 
 
-  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight
+  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock
 
 
 
@@ -2892,15 +2892,21 @@ export default function DashboardPage() {
 
     if (!user || !profile) return;
 
-
-
     const currentSandbox = profile.sandbox_mode !== false;
-
-
-
     const nextSandbox = !currentSandbox;
 
+    // Lock Live Mode if subscription is not active
+    if (!nextSandbox) {
+      const isExpired = profile?.subscription_expires_at && new Date(profile.subscription_expires_at).getTime() < Date.now();
+      const isSubActive = profile?.subscription_status === 'active' && !isExpired;
+      const isAdmin = profile?.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || profile?.api_key === CONFIG.platformApiKey;
 
+      if (!isSubActive && !isAdmin) {
+        setActiveTab('subscription');
+        alert('🔒 Live Production Mode is locked.\n\nPlease start your 3-Day Free Trial or activate a subscription plan to accept live customer payments and unlock your Live API Key!');
+        return;
+      }
+    }
 
     try {
 
@@ -5601,14 +5607,8 @@ echo "Order Created: " . $data['orderId'];
   const isSubExpired = profile?.subscription_expires_at && new Date(profile.subscription_expires_at).getTime() < Date.now();
   const isInactiveNow = profile?.subscription_status !== 'active' || isSubExpired;
 
-  // Keep showing paywall if merchant is currently inactive OR if they started as inactive and haven't dismissed the payment confirmation screen
-  const shouldShowPaywall = !isAdminMerchant && profile && (
-    isInactiveNow || (wasInactiveOnMount.current === true && !activationDismissed)
-  );
-
-  if (shouldShowPaywall) {
-    return renderPaywallBlocker();
-  }
+  // Paywall blocker removed: Merchants have immediate access to dashboard with Test API key!
+  // Live mode and Live API keys are locked behind subscription/trial.
 
 
 
@@ -9340,9 +9340,19 @@ echo "Order Created: " . $data['orderId'];
                     : 'text-slate-500 hover:text-slate-900'
                 }`}
                 type="button"
+                title={profile?.subscription_status !== 'active' ? 'Live Mode locked - Activate trial or subscribe' : 'Live Mode'}
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Live Mode
+                {profile?.subscription_status === 'active' ? (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                ) : (
+                  <Lock className="w-3.5 h-3.5 text-amber-600" />
+                )}
+                <span>Live Mode</span>
+                {profile?.subscription_status !== 'active' && (
+                  <span className="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-200">
+                    Locked
+                  </span>
+                )}
               </button>
               <button
                 onClick={() => {
@@ -12525,6 +12535,60 @@ echo "Order Created: " . $data['orderId'];
 
 
                                 </div>
+
+
+
+                                {profile?.subscription_status !== 'active' && (
+
+                                  <div className="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 space-y-2">
+
+                                    <div className="flex justify-between items-center">
+
+                                      <span className="text-[10px] font-black text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+
+                                        <Lock className="w-3 h-3 text-amber-600" /> Live Production API Key
+
+                                      </span>
+
+                                      <span className="text-[9px] px-2 py-0.5 rounded font-black uppercase bg-amber-200/80 text-amber-900 border border-amber-300">
+
+                                        Locked
+
+                                      </span>
+
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+
+                                      <code className="flex-1 bg-white/70 border border-amber-200 px-3.5 py-2 rounded-xl text-xs font-mono text-slate-400 font-bold select-none blur-[2px]">
+
+                                        live_••••••••-••••-••••-••••-••••••••••••
+
+                                      </code>
+
+                                      <button 
+
+                                        onClick={() => setActiveTab('subscription')}
+
+                                        className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1 shrink-0 cursor-pointer"
+
+                                      >
+
+                                        <Zap className="w-3.5 h-3.5" /> Unlock (3-Day Trial)
+
+                                      </button>
+
+                                    </div>
+
+                                    <p className="text-[10.5px] text-amber-800 font-medium">
+
+                                      Your Test Key is active for unlimited development. Activate the 3-day free trial on the subscription tab to unlock your live key and start accepting real customer payments.
+
+                                    </p>
+
+                                  </div>
+
+                                )}
 
 
 

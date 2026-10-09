@@ -52,26 +52,44 @@ export async function POST(req) {
       }
     }
 
+    const isTrial = planId === 'trial' || planId === 'trial_3day';
+    if (isTrial) {
+      const alreadyUsed = Boolean(
+        merchant.setup_progress?.trial_activated_at ||
+        merchant.setup_progress?.plan_type === 'trial_3day' ||
+        merchant.setup_progress?.trial_expired
+      );
+      if (alreadyUsed) {
+        return NextResponse.json({
+          error: 'Your 3-day free trial has already been used on this account. Please select a standard subscription plan.',
+          code: 'TRIAL_ALREADY_USED',
+        }, { status: 400 });
+      }
+    }
+
     // 2. Calculate new expiry date
+    const effectiveDays = isTrial ? 3 : durationDays;
     const currentExpiry = merchant.subscription_expires_at ? new Date(merchant.subscription_expires_at) : new Date();
     const baseDate = currentExpiry > new Date() ? currentExpiry : new Date();
-    const newExpiry = new Date(baseDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
+    const newExpiry = new Date(baseDate.getTime() + effectiveDays * 24 * 60 * 60 * 1000);
 
     const nowIso = new Date().toISOString();
     const updatedProgress = {
       ...(merchant.setup_progress || {}),
-      plan_type: planId,
+      plan_type: isTrial ? 'trial_3day' : planId,
       last_payment_at: nowIso,
       subscription_activated_at: nowIso,
+      ...(isTrial ? { trial_activated_at: nowIso } : {}),
     };
 
-    // 3. Update merchant subscription in database
+    // 3. Update merchant subscription in database (unlock live mode on trial/subscription)
     const { error: updateErr } = await supabaseAdmin
       .from('merchants')
       .update({
         subscription_status: 'active',
         subscription_expires_at: newExpiry.toISOString(),
         setup_progress: updatedProgress,
+        sandbox_mode: false,
       })
       .eq('id', merchantId);
 
