@@ -934,224 +934,215 @@ export default function AdminPage() {
   const brandColor = '#3B82F6'; // Unified Website Blue Brand Color
 
   if (!isLoggedIn) {
-    /* LUXURY DUAL-MODE LOGIN WALL SCREEN — themed to match real merchant login */
+    /* LUXURY DUAL-MODE LOGIN WALL SCREEN */
     return (
-      <div className="min-h-screen bg-[#f2f3ff] text-[#131b2e] flex flex-col justify-center items-center px-4 py-12 font-sans relative">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50/20 to-slate-100 text-slate-900 flex flex-col justify-center items-center px-4 py-12 font-sans selection:bg-blue-500/10 relative">
         
-        {/* Subtle ambient glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-[#2c60ff]/5 rounded-full blur-3xl pointer-events-none" />
+        {/* Ambient Top Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="w-full flex flex-col items-center max-w-md">
+        <div className="max-w-md w-full bg-white border border-slate-200/80 rounded-[2.5rem] p-8 sm:p-10 shadow-[0_20px_60px_rgba(15,23,42,0.06)] relative space-y-6 overflow-hidden backdrop-blur-xl">
+          
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500" />
 
-          {/* Top Branding & Institutional Mark */}
-          <div className="flex flex-col items-center mb-5 text-center">
-            <div className="flex items-center justify-center mb-2.5">
-              <MyMobPayLogo className="h-9 sm:h-10 w-auto" textColor="#0f1b2d" />
-            </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eaedff] border border-[#dae2fd]/70 text-[#44474d] text-[11px] font-semibold shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#009d6d] animate-pulse"></span>
-              <span>mymob.tech • Super Admin Portal</span>
+          {/* Logo and Subtitle */}
+          <div className="text-center space-y-2 flex flex-col items-center pt-2">
+            <MyMobPayLogo className="w-40 h-auto" />
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-[10px] font-extrabold uppercase tracking-widest mt-1">
+              <Shield className="w-3.5 h-3.5 text-blue-600" />
+              <span>Super Admin Portal</span>
             </div>
           </div>
 
-          {/* Centered Auth Card Container */}
-          <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200/80">
-            
-            <div className="p-6 sm:p-8 bg-white space-y-5">
+          {/* Error Banner */}
+          {authError && (
+            <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs flex items-center gap-2.5 animate-shake">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <span className="font-semibold leading-relaxed">{authError}</span>
+            </div>
+          )}
 
-              {/* Error Banner */}
-              {authError && (
-                <div className="p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-lg text-xs font-medium flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                  <span className="leading-relaxed">{authError}</span>
-                </div>
-              )}
+          {/* Mode Switcher Tabs */}
+          <div className="flex bg-slate-100/80 p-1.5 rounded-2xl gap-1 border border-slate-200/60">
+            <button
+              type="button"
+              onClick={() => {
+                setLoginMode('totp');
+                setAuthError('');
+              }}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                loginMode === 'totp'
+                  ? 'bg-white text-blue-700 shadow-sm border border-slate-200/60'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <Smartphone className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>Authenticator App</span>
+            </button>
 
-              {/* Mode Switcher Tabs */}
-              <div className="p-1 bg-[#eaedff] rounded-xl grid grid-cols-2 gap-1 border border-[#dae2fd]/70 shadow-xs">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLoginMode('totp');
-                    setAuthError('');
-                  }}
-                  className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
-                    loginMode === 'totp'
-                      ? 'bg-white text-[#0045de] shadow-sm'
-                      : 'text-[#44474d] hover:text-[#131b2e]'
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5 shrink-0" />
-                  <span>Authenticator App</span>
-                </button>
+            <button
+              type="button"
+              onClick={() => {
+                setLoginMode('google');
+                setAuthError('');
+              }}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                loginMode === 'google'
+                  ? 'bg-white text-blue-700 shadow-sm border border-slate-200/60'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
+                <path d="M21.35,11.1H12v2.7h5.38c-0.24,1.28 -0.96,2.37 -2.05,3.1v2.57h3.32c1.94,-1.78 3.05,-4.4 3.05,-7.47c0,-0.3 -0.03,-0.6 -0.08,-0.9Z" fill="#4285F4" />
+                <path d="M12,20.7c2.35,0 4.32,-0.78 5.76,-2.13l-3.32,-2.57c-0.92,0.62 -2.1,0.98 -3.44,0.98c-2.28,0 -4.21,-1.54 -4.9,-3.61H2.68v2.66c1.47,2.92 4.5,4.67 7.92,4.67Z" fill="#34A853" />
+                <path d="M7.1,13.38c-0.18,-0.52 -0.28,-1.09 -0.28,-1.68c0,-0.59 0.1,-1.16 0.28,-1.68V7.36H2.68C2.06,8.6 1.7,10.01 1.7,11.7c0,1.69 0.36,3.1 0.98,4.34l3.74,-2.91c-0.18,-0.52 -0.18,-0.75 -0.32,-1.75Z" fill="#FBBC05" />
+                <path d="M12,5.68c1.28,0 2.43,0.44 3.34,1.3l2.5,-2.5C16.31,3.07 14.34,2.7 12,2.7c-3.42,0 -6.45,1.75 -7.92,4.67l4.4,3.38C9.17,7.22 10.1,5.68 12,5.68Z" fill="#EA4335" />
+              </svg>
+              <span>Google SSO</span>
+            </button>
+          </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLoginMode('google');
-                    setAuthError('');
-                  }}
-                  className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
-                    loginMode === 'google'
-                      ? 'bg-white text-[#0045de] shadow-sm'
-                      : 'text-[#44474d] hover:text-[#131b2e]'
-                  }`}
-                >
-                  <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
-                    <path d="M21.35,11.1H12v2.7h5.38c-0.24,1.28 -0.96,2.37 -2.05,3.1v2.57h3.32c1.94,-1.78 3.05,-4.4 3.05,-7.47c0,-0.3 -0.03,-0.6 -0.08,-0.9Z" fill="#4285F4" />
-                    <path d="M12,20.7c2.35,0 4.32,-0.78 5.76,-2.13l-3.32,-2.57c-0.92,0.62 -2.1,0.98 -3.44,0.98c-2.28,0 -4.21,-1.54 -4.9,-3.61H2.68v2.66c1.47,2.92 4.5,4.67 7.92,4.67Z" fill="#34A853" />
-                    <path d="M7.1,13.38c-0.18,-0.52 -0.28,-1.09 -0.28,-1.68c0,-0.59 0.1,-1.16 0.28,-1.68V7.36H2.68C2.06,8.6 1.7,10.01 1.7,11.7c0,1.69 0.36,3.1 0.98,4.34l3.74,-2.91c-0.18,-0.52 -0.18,-0.75 -0.32,-1.75Z" fill="#FBBC05" />
-                    <path d="M12,5.68c1.28,0 2.43,0.44 3.34,1.3l2.5,-2.5C16.31,3.07 14.34,2.7 12,2.7c-3.42,0 -6.45,1.75 -7.92,4.67l4.4,3.38C9.17,7.22 10.1,5.68 12,5.68Z" fill="#EA4335" />
-                  </svg>
-                  <span>Google SSO</span>
-                </button>
-              </div>
-
-              {authLoading ? (
-                <div className="py-8 flex flex-col items-center justify-center space-y-3">
-                  <RefreshCw className="w-8 h-8 animate-spin text-[#2c60ff]" />
-                  <p className="text-xs font-bold text-[#131b2e]">Verifying administrator credentials...</p>
-                  <p className="text-[11px] text-[#44474d]">Communicating with authorization servers</p>
-                </div>
-              ) : loginMode === 'google' ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-[#eaedff]/60 border border-[#dae2fd] rounded-xl text-center space-y-1">
-                    <p className="text-xs font-bold text-[#131b2e]">One-Click Google Authentication</p>
-                    <p className="text-[11px] text-[#44474d] leading-relaxed font-medium">
-                      Direct instant access for authorized administrator accounts (<code className="text-[10px] bg-white px-1.5 py-0.5 rounded border border-[#dae2fd] text-[#0045de] font-mono">chauhankunal695@gmail.com</code> and authorized owners).
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={handleGoogleLogin}
-                    disabled={authLoading}
-                    className="w-full bg-white hover:bg-[#f2f3ff] border border-slate-300 hover:border-[#2c60ff] text-[#131b2e] font-semibold py-3 px-4 rounded-lg transition-all shadow-sm flex items-center justify-center gap-3 text-xs active:scale-[0.99] cursor-pointer"
-                  >
-                    <svg className="w-4.5 h-4.5 shrink-0" viewBox="0 0 24 24">
-                      <path d="M21.35,11.1H12v2.7h5.38c-0.24,1.28 -0.96,2.37 -2.05,3.1v2.57h3.32c1.94,-1.78 3.05,-4.4 3.05,-7.47c0,-0.3 -0.03,-0.6 -0.08,-0.9Z" fill="#4285F4" />
-                      <path d="M12,20.7c2.35,0 4.32,-0.78 5.76,-2.13l-3.32,-2.57c-0.92,0.62 -2.1,0.98 -3.44,0.98c-2.28,0 -4.21,-1.54 -4.9,-3.61H2.68v2.66c1.47,2.92 4.5,4.67 7.92,4.67Z" fill="#34A853" />
-                      <path d="M7.1,13.38c-0.18,-0.52 -0.28,-1.09 -0.28,-1.68c0,-0.59 0.1,-1.16 0.28,-1.68V7.36H2.68C2.06,8.6 1.7,10.01 1.7,11.7c0,1.69 0.36,3.1 0.98,4.34l3.74,-2.91c-0.18,-0.52 -0.18,-0.75 -0.32,-1.75Z" fill="#FBBC05" />
-                      <path d="M12,5.68c1.28,0 2.43,0.44 3.34,1.3l2.5,-2.5C16.31,3.07 14.34,2.7 12,2.7c-3.42,0 -6.45,1.75 -7.92,4.67l4.4,3.38C9.17,7.22 10.1,5.68 12,5.68Z" fill="#EA4335" />
-                    </svg>
-                    <span>Continue with Admin Google ID</span>
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleLoginSubmit} className="space-y-4">
-                  <div className="p-3.5 bg-[#eaedff]/60 border border-[#dae2fd] rounded-xl flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#2c60ff] text-white flex items-center justify-center shrink-0 shadow-sm">
-                      <Smartphone className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-[#131b2e]">Passwordless 2FA Access</p>
-                      <p className="text-[10px] text-[#44474d] font-medium leading-relaxed">
-                        Enter the dynamic 6-digit code from Google Authenticator or Microsoft Authenticator.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center px-1">
-                      <label className="text-[10px] font-bold text-[#44474d] uppercase tracking-wider block">
-                        6-Digit Security Code
-                      </label>
-                      <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                        <Clock className="w-3 h-3 animate-spin" />
-                        <span>Syncs every 30s</span>
-                      </span>
-                    </div>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={6}
-                      autoFocus
-                      required
-                      placeholder="000000"
-                      value={totpCode}
-                      onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      className="w-full bg-[#f2f3ff] border-2 border-[#dae2fd] rounded-lg px-4 py-3 text-center text-2xl tracking-[0.35em] font-mono font-bold text-[#131b2e] focus:bg-white focus:border-[#2c60ff] focus:ring-2 focus:ring-[#2c60ff]/20 outline-none transition-all placeholder:text-[#74777e] placeholder:tracking-widest"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={authLoading || totpCode.trim().length !== 6}
-                    className="w-full h-12 bg-[#2c60ff] hover:bg-[#0045de] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Verify & Unlock Console</span>
-                  </button>
-
-                  <div className="pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowPairingModal(true)}
-                      className="w-full py-2.5 px-3 bg-[#f2f3ff] hover:bg-[#eaedff] border border-dashed border-[#dae2fd] hover:border-[#2c60ff]/40 rounded-lg text-[11px] font-semibold text-[#44474d] hover:text-[#0045de] transition-all flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <QrCode className="w-3.5 h-3.5 text-[#2c60ff]" />
-                      <span>First time setup? Scan QR Code & View Key</span>
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {/* Secondary links */}
-              <div className="pt-3 border-t border-[#dae2fd]/60 flex flex-col space-y-2 text-center">
-                <a
-                  href="/dashboard"
-                  className="text-xs font-semibold text-[#44474d] hover:text-[#0045de] transition-colors py-1 flex items-center justify-center gap-1.5"
-                >
-                  <span>Switch to Merchant Dashboard</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
-                <p className="text-[10px] text-[#74777e] font-medium">
-                  Secure Gateway • Passwordless TOTP Protected
+          {authLoading ? (
+            <div className="py-8 flex flex-col items-center justify-center space-y-3">
+              <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+              <p className="text-xs font-bold text-slate-700">Verifying administrator credentials...</p>
+              <p className="text-[11px] text-slate-400">Communicating with authorization servers</p>
+            </div>
+          ) : loginMode === 'google' ? (
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-50/60 border border-blue-100 rounded-2xl text-center space-y-1">
+                <p className="text-xs font-bold text-blue-900">One-Click Google Authentication</p>
+                <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
+                  Direct instant access for authorized administrator accounts (<code className="text-[10px] bg-white px-1.5 py-0.5 rounded border text-blue-700 font-mono">chauhankunal695@gmail.com</code> and authorized owners).
                 </p>
               </div>
 
+              <button
+                onClick={handleGoogleLogin}
+                disabled={authLoading}
+                className="w-full bg-white hover:bg-slate-50 border border-slate-300 hover:border-blue-500 text-slate-800 font-extrabold py-3.5 px-4 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-3 text-xs active:scale-[0.99] cursor-pointer"
+              >
+                <svg className="w-4.5 h-4.5 shrink-0" viewBox="0 0 24 24">
+                  <path d="M21.35,11.1H12v2.7h5.38c-0.24,1.28 -0.96,2.37 -2.05,3.1v2.57h3.32c1.94,-1.78 3.05,-4.4 3.05,-7.47c0,-0.3 -0.03,-0.6 -0.08,-0.9Z" fill="#4285F4" />
+                  <path d="M12,20.7c2.35,0 4.32,-0.78 5.76,-2.13l-3.32,-2.57c-0.92,0.62 -2.1,0.98 -3.44,0.98c-2.28,0 -4.21,-1.54 -4.9,-3.61H2.68v2.66c1.47,2.92 4.5,4.67 7.92,4.67Z" fill="#34A853" />
+                  <path d="M7.1,13.38c-0.18,-0.52 -0.28,-1.09 -0.28,-1.68c0,-0.59 0.1,-1.16 0.28,-1.68V7.36H2.68C2.06,8.6 1.7,10.01 1.7,11.7c0,1.69 0.36,3.1 0.98,4.34l3.74,-2.91c-0.18,-0.52 -0.18,-0.75 -0.32,-1.75Z" fill="#FBBC05" />
+                  <path d="M12,5.68c1.28,0 2.43,0.44 3.34,1.3l2.5,-2.5C16.31,3.07 14.34,2.7 12,2.7c-3.42,0 -6.45,1.75 -7.92,4.67l4.4,3.38C9.17,7.22 10.1,5.68 12,5.68Z" fill="#EA4335" />
+                </svg>
+                <span>Continue with Admin Google ID</span>
+              </button>
             </div>
+          ) : (
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <div className="p-3.5 bg-blue-50/60 border border-blue-100 rounded-2xl flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20">
+                  <Smartphone className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-blue-950">Passwordless 2FA Access</p>
+                  <p className="text-[10px] text-slate-500 font-medium">
+                    Enter the dynamic 6-digit code from Google Authenticator or Microsoft Authenticator.
+                  </p>
+                </div>
+              </div>
 
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center px-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                    6-Digit Security Code
+                  </label>
+                  <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <Clock className="w-3 h-3 animate-spin" />
+                    <span>Syncs every 30s</span>
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  autoFocus
+                  required
+                  placeholder="000000"
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-center text-2xl tracking-[0.35em] font-mono font-black text-slate-900 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300 placeholder:tracking-widest"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={authLoading || totpCode.trim().length !== 6}
+                className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-2xl text-xs transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Verify & Unlock Console</span>
+              </button>
+
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowPairingModal(true)}
+                  className="w-full py-2.5 px-3 bg-slate-50 hover:bg-blue-50/70 border border-dashed border-slate-300 hover:border-blue-300 rounded-xl text-[11px] font-bold text-slate-600 hover:text-blue-700 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <QrCode className="w-3.5 h-3.5 text-blue-600" />
+                  <span>First time setup? Scan QR Code & View Key</span>
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Secondary links */}
+          <div className="pt-2 border-t border-slate-100 flex flex-col space-y-2 text-center">
+            <a
+              href="/dashboard"
+              className="text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors py-1 flex items-center justify-center gap-1.5"
+            >
+              <span>Switch to Merchant Dashboard</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </a>
+            <p className="text-[10px] text-slate-400 font-medium">
+              Secure Gateway • Passwordless TOTP Protected
+            </p>
           </div>
 
         </div>
 
         {/* Pairing Assistant Modal */}
         {showPairingModal && (
-          <div className="fixed inset-0 z-50 bg-[#131b2e]/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-            <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#dae2fd] space-y-4 animate-scaleUp">
-              <div className="flex items-center justify-between pb-2 border-b border-[#dae2fd]/60">
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+            <div className="bg-white rounded-[2rem] max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-scaleUp">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-[#eaedff] text-[#0045de]">
+                  <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
                     <Smartphone className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#131b2e]">
+                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">
                       Link Authenticator App
                     </h3>
-                    <p className="text-[10px] text-[#74777e] font-semibold">Google / Microsoft / Authy</p>
+                    <p className="text-[10px] text-slate-400 font-semibold">Google / Microsoft / Authy</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowPairingModal(false)}
-                  className="p-1.5 rounded-lg hover:bg-[#f2f3ff] text-[#74777e] hover:text-[#131b2e] cursor-pointer"
+                  className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div className="flex flex-col items-center gap-3">
-                <div className="bg-white p-3 rounded-xl border border-[#dae2fd] shadow-xs">
+                <div className="bg-white p-3 rounded-2xl border-2 border-slate-100 shadow-sm">
                   <QRCode
                     value={`otpauth://totp/MyMobPay%20Admin:SuperAdmin?secret=${activeTotpSecret}&issuer=MyMobPay`}
                     size={140}
                   />
                 </div>
 
-                <div className="w-full bg-[#f2f3ff] border border-[#dae2fd] rounded-lg p-2.5 flex items-center justify-between">
+                <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between">
                   <div className="min-w-0 pr-2">
-                    <p className="text-[9px] uppercase font-bold text-[#74777e] tracking-wider">Manual Setup Key</p>
-                    <p className="text-xs font-mono font-bold text-[#131b2e] tracking-wider truncate">
+                    <p className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Manual Setup Key</p>
+                    <p className="text-xs font-mono font-black text-slate-900 tracking-wider truncate">
                       {activeTotpSecret}
                     </p>
                   </div>
@@ -1162,15 +1153,15 @@ export default function AdminPage() {
                       setTotpPairCopied(true);
                       setTimeout(() => setTotpPairCopied(false), 2000);
                     }}
-                    className="px-2.5 py-1.5 rounded-lg bg-white border border-[#dae2fd] hover:bg-[#eaedff] text-[#131b2e] hover:text-[#0045de] text-[10px] font-bold flex items-center gap-1 shadow-xs shrink-0 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-blue-50 text-slate-700 hover:text-blue-600 text-[10px] font-bold flex items-center gap-1 shadow-sm shrink-0 cursor-pointer"
                   >
                     {totpPairCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                     <span>{totpPairCopied ? 'Copied' : 'Copy'}</span>
                   </button>
                 </div>
 
-                <div className="w-full space-y-1.5 text-[10px] text-[#44474d] font-medium bg-[#eaedff]/60 p-3 rounded-lg border border-[#dae2fd]">
-                  <p className="font-bold text-[#131b2e]">3-Step Phone Pairing:</p>
+                <div className="w-full space-y-1.5 text-[10px] text-slate-500 font-medium bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                  <p className="font-bold text-blue-900">3-Step Phone Pairing:</p>
                   <ol className="list-decimal list-inside space-y-0.5">
                     <li>Open <b>Google Authenticator</b> on your phone.</li>
                     <li>Tap <b>+</b> &gt; <b>Scan a QR code</b> (or enter key).</li>
@@ -1182,7 +1173,7 @@ export default function AdminPage() {
               <button
                 type="button"
                 onClick={() => setShowPairingModal(false)}
-                className="w-full py-2.5 bg-[#2c60ff] hover:bg-[#0045de] text-white rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-xs"
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm"
               >
                 Done, Back to Login
               </button>
