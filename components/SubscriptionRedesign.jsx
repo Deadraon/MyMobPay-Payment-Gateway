@@ -57,12 +57,6 @@ export default function SubscriptionRedesign({
   const [toastMessage, setToastMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
 
-  // Auto-select free trial for new merchants
-  useEffect(() => {
-    if (!hasUsedTrial && profile?.subscription_status !== 'active') {
-      setSelectedPlanId('trial');
-    }
-  }, [hasUsedTrial, profile?.subscription_status]);
 
   // ── Real Subscription Details Computation ─────────────────────
   const subDetails = useMemo(() => {
@@ -163,26 +157,7 @@ export default function SubscriptionRedesign({
 
   // ── Plan Definitions ──────────────────────────────────────────
   const plans = useMemo(() => {
-    const allPlans = [];
-    if (!hasUsedTrial) {
-      allPlans.push({
-        id: 'trial',
-        title: '3-Day Free Trial',
-        subtitle: 'Zero risk • Test live UPI collections',
-        amount: 0,
-        durationDays: 3,
-        badge: '🎁 Free For New Merchants',
-        badgeClass: 'bg-emerald-600 text-white font-extrabold shadow-sm',
-        isTrial: true,
-        features: [
-          'Instant Live Mode Unlock',
-          'Real Live Production API Key',
-          'Zero-MDR Direct Bank Settlement',
-          'Full webhook & dashboard access'
-        ]
-      });
-    }
-    allPlans.push(
+    return [
       {
         id: '1month',
         title: '1 Month',
@@ -244,9 +219,8 @@ export default function SubscriptionRedesign({
           'Sub-merchant console controls'
         ]
       }
-    );
-    return allPlans;
-  }, [hasUsedTrial]);
+    ];
+  }, []);
 
   const selectedPlan = plans.find(p => p.id === selectedPlanId) || plans[0];
 
@@ -590,7 +564,7 @@ export default function SubscriptionRedesign({
         </div>
 
         {/* Plan Cards */}
-        <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${!hasUsedTrial ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4'}`}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan) => {
             const isSelected = selectedPlanId === plan.id;
             return (

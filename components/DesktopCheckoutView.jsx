@@ -238,6 +238,59 @@ export default function DesktopCheckoutView({
   const [liveAnnouncement, setLiveAnnouncement] = useState('');
   const [successCountdown, setSuccessCountdown] = useState(5);
 
+  // Safeguarded values (declared before any useEffect hooks)
+  const safeBizName = (bizName && bizName !== 'Demo Store') ? bizName : 'Merchant';
+  const safeActiveId = activeId ? String(activeId) : (paramRef ? String(paramRef) : 'APX-98214');
+  const safeUpiId = (!upiId || upiId === 'pending@upi' || !upiId.includes('@')) 
+    ? '9410181307@okbizaxis' 
+    : upiId;
+  const orderRefDisplay = safeActiveId.startsWith('#')
+    ? safeActiveId.replace('#', '')
+    : safeActiveId;
+
+  const sessionDisplay = safeActiveId;
+
+  const numAmt = typeof displayAmt === 'number' && !isNaN(displayAmt)
+    ? displayAmt
+    : (parseFloat(displayAmt) || 1.0);
+
+  const formattedAmount = numAmt.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  const safeMm = mm != null ? String(mm).padStart(2, '0') : '07';
+  const safeSs = ss != null ? String(ss).padStart(2, '0') : '35';
+
+  // Bank transfer details
+  const isBankAvailable = Boolean(
+    hasBankTransfer !== undefined
+      ? hasBankTransfer
+      : (bankAcc && bankIfsc && bankAcc.trim() && bankIfsc.trim())
+  );
+  const displayBankAcc = bankAcc || '';
+  const displayBankIfsc = bankIfsc || '';
+  const displayBankName = bankName || safeBizName;
+
+  // Crypto rates and addresses
+  const cryptoRates = {
+    USDT: {
+      amount: `~ ${(numAmt / 87).toFixed(2)} USDT`,
+      network: 'TRC20',
+      address: cryptoWallet || 'TYsP8a3k8sLmQzK9vN2D6m4E9qB1wX2yZ7',
+    },
+    BTC: {
+      amount: `~ ${(numAmt / 8000000).toFixed(6)} BTC`,
+      network: 'Bitcoin network',
+      address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    },
+    ETH: {
+      amount: `~ ${(numAmt / 280000).toFixed(4)} ETH`,
+      network: 'Ethereum mainnet',
+      address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976',
+    }
+  };
+
   // Bank & UPI status assistance states
   const [bankTransferClicked, setBankTransferClicked] = useState(false);
   const [upiCheckCount, setUpiCheckCount] = useState(0);
@@ -396,59 +449,6 @@ export default function DesktopCheckoutView({
       handleReturn();
     }
   }, [curView, handleReturn]);
-
-  // Safeguarded values
-  const safeBizName = (bizName && bizName !== 'Demo Store') ? bizName : 'Merchant';
-  const safeActiveId = activeId ? String(activeId) : (paramRef ? String(paramRef) : 'APX-98214');
-  const safeUpiId = (!upiId || upiId === 'pending@upi' || !upiId.includes('@')) 
-    ? '9410181307@okbizaxis' 
-    : upiId;
-  const orderRefDisplay = safeActiveId.startsWith('#')
-    ? safeActiveId.replace('#', '')
-    : safeActiveId;
-
-  const sessionDisplay = safeActiveId;
-
-  const numAmt = typeof displayAmt === 'number' && !isNaN(displayAmt)
-    ? displayAmt
-    : (parseFloat(displayAmt) || 1.0);
-
-  const formattedAmount = numAmt.toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-
-  const safeMm = mm != null ? String(mm).padStart(2, '0') : '07';
-  const safeSs = ss != null ? String(ss).padStart(2, '0') : '35';
-
-  // Bank transfer details
-  const isBankAvailable = Boolean(
-    hasBankTransfer !== undefined
-      ? hasBankTransfer
-      : (bankAcc && bankIfsc && bankAcc.trim() && bankIfsc.trim())
-  );
-  const displayBankAcc = bankAcc || '';
-  const displayBankIfsc = bankIfsc || '';
-  const displayBankName = bankName || safeBizName;
-
-  // Crypto rates and addresses
-  const cryptoRates = {
-    USDT: {
-      amount: `~ ${(numAmt / 87).toFixed(2)} USDT`,
-      network: 'TRC20',
-      address: cryptoWallet || 'TYsP8a3k8sLmQzK9vN2D6m4E9qB1wX2yZ7',
-    },
-    BTC: {
-      amount: `~ ${(numAmt / 8000000).toFixed(6)} BTC`,
-      network: 'Bitcoin network',
-      address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
-    },
-    ETH: {
-      amount: `~ ${(numAmt / 280000).toFixed(4)} ETH`,
-      network: 'Ethereum mainnet',
-      address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976',
-    }
-  };
 
   const announce = (msg) => {
     setLiveAnnouncement(msg);

@@ -91,7 +91,8 @@ function PayPageContent() {
   const searchParams  = useSearchParams();
   const router        = useRouter();
 
-  const paramApiKey   = searchParams.get('api_key') || searchParams.get('key') || '';
+  const rawParamApiKey = searchParams.get('api_key') || searchParams.get('key') || '';
+  const paramApiKey   = (rawParamApiKey === 'undefined' || rawParamApiKey === 'null') ? '' : rawParamApiKey;
   const paramAmount   = searchParams.get('amount')   || '';
   const paramProject  = searchParams.get('project')  || searchParams.get('merchant') || searchParams.get('biz') || searchParams.get('business_name') || searchParams.get('store') || '';
   const paramCallback = searchParams.get('callback') || searchParams.get('callback_url') || searchParams.get('redirect_url') || searchParams.get('return_url') || searchParams.get('redirect') || '';
