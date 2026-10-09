@@ -445,13 +445,11 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/email-otp/send', {
+      const res = await fetch('/api/auth/email-link/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: cleanEmail,
-          type: 'link',
-          purpose: 'login',
         }),
       });
 
@@ -957,25 +955,37 @@ export default function LoginPage() {
                   </button>
                 </div>
 
-                {/* In Sign In Mode ONLY: Sub-Tab Switcher (Email OTP vs Password) */}
+                {/* In Sign In Mode ONLY: Sub-Tab Switcher (Email OTP vs Magic Link vs Password) */}
                 {mode === 'signin' && (
-                  <div className="mt-4 p-1 bg-[#eaedff] rounded-lg grid grid-cols-2 gap-1">
+                  <div className="mt-4 p-1 bg-[#eaedff] rounded-xl grid grid-cols-3 gap-1 border border-[#dae2fd]/70 shadow-xs">
                     <button 
                       type="button" 
-                      onClick={() => { setAuthTab('email'); setError(''); setMessage(''); }}
-                      className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                      className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         authTab === 'email' 
                           ? 'bg-white text-[#0045de] shadow-sm' 
                           : 'text-[#44474d] hover:text-[#131b2e]'
                       }`}
                     >
-                      <Mail className="w-3.5 h-3.5" />
+                      <Zap className="w-3.5 h-3.5" />
                       <span>Email OTP</span>
                     </button>
                     <button 
                       type="button" 
+                      onClick={() => { setAuthTab('link'); setError(''); setMessage(''); setLinkSent(false); }}
+                      className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                        authTab === 'link' 
+                          ? 'bg-white text-[#0045de] shadow-sm' 
+                          : 'text-[#44474d] hover:text-[#131b2e]'
+                      }`}
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      <span>Magic Link</span>
+                    </button>
+                    <button 
+                      type="button" 
                       onClick={() => { setAuthTab('password'); setError(''); setMessage(''); }}
-                      className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         authTab === 'password' 
                           ? 'bg-white text-[#0045de] shadow-sm' 
                           : 'text-[#44474d] hover:text-[#131b2e]'
@@ -1075,7 +1085,7 @@ export default function LoginPage() {
                         <div className="text-center pt-2 space-y-2.5">
                           <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-[#eaedff]/50 border border-[#dae2fd]/70 text-[11px] text-[#44474d]">
                             <Zap className="w-3.5 h-3.5 text-[#0045de] shrink-0" />
-                            <span>You can type the 6 digits above or click the sign-in button in your email!</span>
+                            <span>Enter the 6-digit verification code from your email to sign in.</span>
                           </div>
 
                           {emailTimer > 0 ? (
@@ -1092,6 +1102,97 @@ export default function LoginPage() {
                               Didn&apos;t receive email? Resend code
                             </button>
                           )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* ── Sign In: Email Magic Link View (1-Click, No OTP) ── */}
+                {mode === 'signin' && authTab === 'link' && (
+                  <div className="mt-6 flex flex-col space-y-4">
+                    {!linkSent ? (
+                      <>
+                        <div className="flex flex-col space-y-1.5">
+                          <label className="text-xs font-medium text-[#44474d] flex items-center justify-between">
+                            <span>Merchant Email Address</span>
+                            <span className="text-[#0045de] font-semibold flex items-center gap-1 text-[11px]">
+                              <Mail className="w-3.5 h-3.5" /> 1-Click Link
+                            </span>
+                          </label>
+                          <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
+                            <Mail className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                            <input
+                              type="email"
+                              required
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && email.includes('@') && handleSendEmailLink()}
+                              placeholder="merchant@company.com"
+                              className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                            />
+                          </div>
+                          <p className="text-[11px] text-[#74777e] leading-relaxed">
+                            We will send a 1-click magic sign-in link to your email. Just click the link in your email to sign in instantly without entering any codes or passwords.
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={handleSendEmailLink}
+                          disabled={loading || !email.trim() || !email.includes('@')}
+                          className="w-full h-12 bg-[#2c60ff] hover:bg-[#0045de] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-white" />
+                          ) : (
+                            <>
+                              <span>Send Magic Sign-In Link</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </>
+                          )}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center space-y-2">
+                          <div className="w-10 h-10 rounded-full bg-emerald-100 mx-auto flex items-center justify-center text-emerald-600">
+                            <Mail className="w-5 h-5" />
+                          </div>
+                          <h3 className="text-sm font-bold text-emerald-900">Sign-in Link Dispatched!</h3>
+                          <p className="text-xs text-emerald-800 leading-relaxed">
+                            We sent a secure one-click sign-in link to <strong className="font-semibold text-emerald-950">{email}</strong>.
+                          </p>
+                          <p className="text-[11px] text-emerald-700">
+                            Open your email and click the button to log in directly on this device.
+                          </p>
+                        </div>
+
+                        <div className="text-center pt-2 space-y-2.5">
+                          {linkTimer > 0 ? (
+                            <span className="text-xs text-[#74777e] block">
+                              Resend link in <strong className="text-[#131b2e]">{linkTimer}s</strong>
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={handleSendEmailLink}
+                              disabled={loading}
+                              className="text-xs font-semibold text-[#0045de] hover:underline cursor-pointer"
+                            >
+                              Didn&apos;t receive email? Resend sign-in link
+                            </button>
+                          )}
+
+                          <div>
+                            <button
+                              type="button"
+                              onClick={() => { setLinkSent(false); setError(''); setMessage(''); }}
+                              className="text-[11px] text-[#74777e] hover:text-[#131b2e] cursor-pointer"
+                            >
+                              Use a different email address
+                            </button>
+                          </div>
                         </div>
                       </>
                     )}

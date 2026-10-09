@@ -47,7 +47,6 @@ export async function POST(req) {
       await sendMagicLinkEmail({
         to: cleanEmail,
         actionLink,
-        otp: linkData?.properties?.email_otp,
       });
       return NextResponse.json({
         success: true,
