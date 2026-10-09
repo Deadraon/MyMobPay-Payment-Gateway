@@ -1608,16 +1608,16 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Merchant Helpline & Support Strip */}
+            {/* Merchant Support Strip */}
             <div className="mt-3.5 text-center">
-              <p className="text-xs text-[#44474d]">
-                Need assistance? Call merchant support:{' '}
-                <a className="font-bold text-[#131b2e] hover:text-[#0045de]" href="tel:180012369662">
-                  1800-123-MYMOB
-                </a>
-                <span className="mx-2 text-[#c4c6ce]">|</span>
-                <a className="font-semibold text-[#009d6d] hover:underline" href="https://wa.me/919410181307" target="_blank" rel="noopener noreferrer">
-                  Chat on WhatsApp
+              <p className="text-xs text-[#44474d] flex items-center justify-center gap-1.5 flex-wrap">
+                <span>Need assistance? Contact support:</span>
+                <a 
+                  className="font-semibold text-[#0045de] hover:underline inline-flex items-center gap-1" 
+                  href="mailto:support@mymob.tech"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  support@mymob.tech
                 </a>
               </p>
             </div>

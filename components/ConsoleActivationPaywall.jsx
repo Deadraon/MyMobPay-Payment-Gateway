@@ -1087,8 +1087,7 @@ export default function ConsoleActivationPaywall({
               Once you pay the ₹1.00 setup fee or subscription fee using any UPI app (GPay, PhonePe, Paytm), your merchant console automatically activates within 5 seconds.
             </p>
             <div className="p-3 bg-slate-50 rounded-xl text-xs space-y-1 text-slate-700">
-              <p><strong>Merchant Support:</strong> support@mymob.tech</p>
-              <p><strong>WhatsApp Support:</strong> +91 9410181307</p>
+              <p><strong>Merchant Support:</strong> <a href="mailto:support@mymob.tech" className="text-blue-600 hover:underline">support@mymob.tech</a></p>
             </div>
             <button
               onClick={() => setShowHelpModal(false)}
@@ -1117,8 +1116,7 @@ export default function ConsoleActivationPaywall({
               Processing high volumes? Get custom negotiated flat-rate pricing, dedicated account managers, 99.99% SLA, and custom bank routing.
             </p>
             <div className="p-3.5 bg-sky-50/70 border border-sky-100 rounded-xl text-xs space-y-1.5 text-slate-800">
-              <p><strong>Email:</strong> enterprise@mymob.tech</p>
-              <p><strong>Direct Desk:</strong> +91 9410181307</p>
+              <p><strong>Email:</strong> <a href="mailto:enterprise@mymob.tech" className="text-sky-700 hover:underline">enterprise@mymob.tech</a></p>
               <p className="text-[11px] text-sky-700">Response within 2 hours guaranteed.</p>
             </div>
             <div className="flex gap-2">
