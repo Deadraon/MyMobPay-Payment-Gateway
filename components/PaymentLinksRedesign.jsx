@@ -92,37 +92,49 @@ export default function PaymentLinksRedesign({
     setTimeout(() => setToastMessage(null), 3200);
   };
 
-  // Seed sample links if payLinkHistory is empty
+  // Load merchant-scoped payment links (purge legacy un-scoped cross-account key)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mymobpay_payment_links');
+      // Clean up legacy un-scoped key so older browser tests don't leak into new accounts
+      if (localStorage.getItem('mymobpay_payment_links')) {
+        localStorage.removeItem('mymobpay_payment_links');
+      }
+
+      if (!profile?.id) {
+        if (setPayLinkHistory) setPayLinkHistory([]);
+        return;
+      }
+
+      const merchantKey = `mymobpay_payment_links_${profile.id}`;
+      const stored = localStorage.getItem(merchantKey);
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            if (setPayLinkHistory) setPayLinkHistory(parsed);
+          if (Array.isArray(parsed)) {
+            const filtered = parsed.filter((l) => l.merchantId === profile.id);
+            if (setPayLinkHistory) setPayLinkHistory(filtered);
             return;
           }
         } catch (e) {
           console.error('Error parsing stored payment links', e);
         }
       }
-      // If none, initialize with default initial links
+      // Clean default empty list for this new merchant
       if (setPayLinkHistory) {
-        setPayLinkHistory(DEFAULT_INITIAL_LINKS);
-        localStorage.setItem('mymobpay_payment_links', JSON.stringify(DEFAULT_INITIAL_LINKS));
+        setPayLinkHistory([]);
       }
     }
-  }, [setPayLinkHistory]);
+  }, [profile?.id, setPayLinkHistory]);
 
-  // Combine custom history with initial default links if needed
+  // Combine custom history with initial default links if needed (strictly merchant scoped)
   const allLinks = useMemo(() => {
-    const list = Array.isArray(payLinkHistory) && payLinkHistory.length > 0
-      ? payLinkHistory
-      : DEFAULT_INITIAL_LINKS;
+    const list = Array.isArray(payLinkHistory) ? payLinkHistory : [];
+    const merchantScoped = profile?.id
+      ? list.filter((item) => item.merchantId === profile.id)
+      : [];
 
     // Harmonize status with real database orders if matching
-    return list.map((item) => {
+    return merchantScoped.map((item) => {
       // ONLY match orders that belong specifically to this payment link by orderId or external_ref
       const matchingOrder = orders.find(
         (o) =>
@@ -144,7 +156,7 @@ export default function PaymentLinksRedesign({
       }
       return item;
     });
-  }, [payLinkHistory, orders]);
+  }, [payLinkHistory, profile?.id, orders]);
 
   // Expose global preview update helpers for compatibility with mock script
   useEffect(() => {
@@ -360,6 +372,7 @@ export default function PaymentLinksRedesign({
 
     const newLink = {
       id: linkId,
+      merchantId: profile?.id || null,
       orderId: dbOrderId || null,
       purpose: effectivePurpose,
       ref: effectiveRef,
@@ -373,8 +386,8 @@ export default function PaymentLinksRedesign({
 
     const updated = [newLink, ...allLinks];
     if (setPayLinkHistory) setPayLinkHistory(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('mymobpay_payment_links', JSON.stringify(updated));
+    if (typeof window !== 'undefined' && profile?.id) {
+      localStorage.setItem(`mymobpay_payment_links_${profile.id}`, JSON.stringify(updated));
     }
 
     setActiveUrl(generatedUrl);
@@ -442,8 +455,8 @@ export default function PaymentLinksRedesign({
   const handleDeleteLink = (id) => {
     const updated = allLinks.filter((item) => item.id !== id);
     if (setPayLinkHistory) setPayLinkHistory(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('mymobpay_payment_links', JSON.stringify(updated));
+    if (typeof window !== 'undefined' && profile?.id) {
+      localStorage.setItem(`mymobpay_payment_links_${profile.id}`, JSON.stringify(updated));
     }
     showToast('Payment link deleted');
   };

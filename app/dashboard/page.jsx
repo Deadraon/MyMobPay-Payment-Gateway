@@ -1816,42 +1816,34 @@ export default function DashboardPage() {
 
 
   useEffect(() => {
-
-
-
-    const history = localStorage.getItem('mymobpay_payment_links');
-
-
-
-    if (history) {
-
-
-
-      try {
-
-
-
-        setPayLinkHistory(JSON.parse(history));
-
-
-
-      } catch (e) {
-
-
-
-        console.error("Error loading payment links history:", e);
-
-
-
-      }
-
-
-
+    // Purge legacy global key if present to prevent cross-account leak
+    if (typeof window !== 'undefined' && localStorage.getItem('mymobpay_payment_links')) {
+      localStorage.removeItem('mymobpay_payment_links');
     }
 
+    if (!profile?.id) {
+      setPayLinkHistory([]);
+      return;
+    }
 
+    const merchantKey = `mymobpay_payment_links_${profile.id}`;
+    const history = localStorage.getItem(merchantKey);
 
-  }, []);
+    if (history) {
+      try {
+        const parsed = JSON.parse(history);
+        if (Array.isArray(parsed)) {
+          const merchantLinks = parsed.filter(item => item.merchantId === profile.id);
+          setPayLinkHistory(merchantLinks);
+          return;
+        }
+      } catch (e) {
+        console.error("Error loading payment links history:", e);
+      }
+    }
+
+    setPayLinkHistory([]);
+  }, [profile?.id]);
 
 
 
@@ -7160,66 +7152,26 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-      const updatedHistory = [newLink, ...payLinkHistory];
-
-
-
+      const linkWithMerchant = { ...newLink, merchantId: profile?.id };
+      const updatedHistory = [linkWithMerchant, ...payLinkHistory];
       setPayLinkHistory(updatedHistory);
-
-
-
-      localStorage.setItem('mymobpay_payment_links', JSON.stringify(updatedHistory));
-
-
-
+      if (profile?.id) {
+        localStorage.setItem(`mymobpay_payment_links_${profile.id}`, JSON.stringify(updatedHistory));
+      }
     };
-
-
-
-
-
-
 
     const copyToClipboard = (url) => {
-
-
-
       navigator.clipboard.writeText(url);
-
-
-
       setPayLinkCopied(true);
-
-
-
       setTimeout(() => setPayLinkCopied(false), 2000);
-
-
-
     };
 
-
-
-
-
-
-
     const handleDeleteLink = (id) => {
-
-
-
       const updatedHistory = payLinkHistory.filter(item => item.id !== id);
-
-
-
       setPayLinkHistory(updatedHistory);
-
-
-
-      localStorage.setItem('mymobpay_payment_links', JSON.stringify(updatedHistory));
-
-
-
+      if (profile?.id) {
+        localStorage.setItem(`mymobpay_payment_links_${profile.id}`, JSON.stringify(updatedHistory));
+      }
     };
 
 
