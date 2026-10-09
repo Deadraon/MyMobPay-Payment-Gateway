@@ -216,17 +216,31 @@ export default function HomePage() {
       {/* ────────────────────────────────────────────────────────
          ORIGINAL FULL-WIDTH STATIC HEADER WITH MULTI-LAYERED SHADOWS
          ──────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-slate-200 shadow-[0_2px_8px_rgba(0,0,0,0.02),0_6px_20px_rgba(0,0,0,0.04)] transition-all">
-        {/* ── TOP ANNOUNCEMENT BANNER (High Visibility Pure White on Blue) ── */}
-        <div className="w-full bg-[#1d4ed8] text-white text-[11px] sm:text-xs font-medium py-2.5 px-4 flex items-center justify-center gap-2.5 select-none shadow-xs border-b border-blue-800">
-          <span className="inline-flex items-center gap-1.5 bg-white text-blue-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide uppercase shadow-xs flex-shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Live
+      <header className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+        isDark
+          ? 'bg-[#030712]/95 border-b border-cyan-500/25 shadow-[0_4px_30px_rgba(0,0,0,0.85),0_0_20px_rgba(6,182,212,0.15)] backdrop-blur-md'
+          : 'bg-white/95 border-b border-slate-200 shadow-[0_2px_8px_rgba(0,0,0,0.02),0_6px_20px_rgba(0,0,0,0.04)] backdrop-blur-md'
+      }`}>
+        {/* ── TOP ANNOUNCEMENT BANNER ── */}
+        <div className={`w-full text-[11px] sm:text-xs font-medium py-2.5 px-4 flex items-center justify-center gap-2.5 select-none transition-colors duration-300 ${
+          isDark
+            ? 'bg-[#061224] text-cyan-200 border-b border-cyan-500/30'
+            : 'bg-[#1d4ed8] text-white border-b border-blue-800'
+        }`}>
+          <span className={`inline-flex items-center gap-1.5 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide uppercase shadow-xs flex-shrink-0 ${
+            isDark
+              ? 'bg-cyan-950 text-cyan-300 border border-cyan-500/40'
+              : 'bg-white text-blue-700'
+          }`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            {isDark ? 'HUD Online' : 'Live'}
           </span>
-          <span className="text-white font-medium truncate">
-            Direct bank transfer (IMPS / NEFT) with <strong className="text-white font-black underline underline-offset-2">0% gateway fees</strong>.
+          <span className={`${isDark ? 'text-slate-200' : 'text-white'} font-medium truncate`}>
+            Direct bank transfer (IMPS / NEFT) with <strong className={`${isDark ? 'text-cyan-300' : 'text-white'} font-black underline underline-offset-2`}>0% gateway fees</strong>.
           </span>
-          <a href="#pricing-section" className="inline-flex items-center gap-1 text-white hover:text-blue-100 font-bold text-[11px] sm:text-xs transition-colors group ml-1 shrink-0 underline underline-offset-2">
+          <a href="#pricing-section" className={`inline-flex items-center gap-1 font-bold text-[11px] sm:text-xs transition-colors group ml-1 shrink-0 underline underline-offset-2 ${
+            isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-white hover:text-blue-100'
+          }`}>
             <span>Compare savings</span>
             <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
           </a>
@@ -236,33 +250,33 @@ export default function HomePage() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 select-none group">
-            <MyMobPayLogo className="w-48 h-auto" />
+            <MyMobPayLogo className="w-48 h-auto" textColor={isDark ? "#38BDF8" : "#0F172A"} />
           </Link>
 
           {/* Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center gap-8">
             <Link 
               href="#how-it-works"
-              className="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
+              className={`text-sm font-bold transition-colors ${isDark ? 'text-slate-300 hover:text-cyan-400' : 'text-slate-600 hover:text-slate-900'}`}
             >
               How It Works
             </Link>
             <Link 
               href="#developer-section"
-              className="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
+              className={`text-sm font-bold transition-colors ${isDark ? 'text-slate-300 hover:text-cyan-400' : 'text-slate-600 hover:text-slate-900'}`}
             >
               Developers
             </Link>
             <Link 
               href="#pricing-section"
-              className="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
+              className={`text-sm font-bold transition-colors ${isDark ? 'text-slate-300 hover:text-cyan-400' : 'text-slate-600 hover:text-slate-900'}`}
             >
               Pricing
             </Link>
-            <Link href="/terms" className="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
+            <Link href="/terms" className={`text-sm font-bold transition-colors ${isDark ? 'text-slate-300 hover:text-cyan-400' : 'text-slate-600 hover:text-slate-900'}`}>
               Terms
             </Link>
-            <Link href="/privacy" className="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
+            <Link href="/privacy" className={`text-sm font-bold transition-colors ${isDark ? 'text-slate-300 hover:text-cyan-400' : 'text-slate-600 hover:text-slate-900'}`}>
               Privacy
             </Link>
           </nav>
@@ -271,13 +285,21 @@ export default function HomePage() {
           <div className="hidden sm:flex items-center gap-4">
             <Link 
               href="/login" 
-              className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100/60 border border-slate-200 transition-all shadow-[0_2px_6px_rgba(0,0,0,0.02)]"
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                isDark 
+                  ? 'text-cyan-300 bg-cyan-950/40 border-cyan-500/30 hover:bg-cyan-900/50 hover:text-cyan-200' 
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/60 border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.02)]'
+              }`}
             >
               Login
             </Link>
             <Link 
               href="/login"
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold flex items-center gap-1.5 transition-all shadow-[0_4px_14px_rgba(37,99,235,0.25),0_8px_24px_rgba(37,99,235,0.15)] active:scale-98"
+              className={`px-5 py-2.5 text-white rounded-xl text-sm font-bold flex items-center gap-1.5 transition-all active:scale-98 ${
+                isDark 
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-[0_0_20px_rgba(6,182,212,0.4)]' 
+                  : 'bg-blue-600 hover:bg-blue-700 shadow-[0_4px_14px_rgba(37,99,235,0.25),0_8px_24px_rgba(37,99,235,0.15)]'
+              }`}
             >
               Sign Up Now <ArrowRight className="w-4 h-4" />
             </Link>
@@ -286,7 +308,9 @@ export default function HomePage() {
           {/* Mobile hamburger button */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-sm"
+            className={`lg:hidden p-2 rounded-xl transition-colors shadow-sm ${
+              isDark ? 'text-cyan-400 hover:bg-cyan-950/40' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+            }`}
             title="Toggle Menu"
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -297,30 +321,44 @@ export default function HomePage() {
 
       {/* Mobile Drawer Navigation */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 bottom-0 top-20 z-40 bg-white flex flex-col pt-8 px-6 pb-8 animate-fadeIn border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)]">
+        <div className={`lg:hidden fixed inset-x-0 bottom-0 top-20 z-40 flex flex-col pt-8 px-6 pb-8 animate-fadeIn border-t ${
+          isDark 
+            ? 'bg-[#030712] border-cyan-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.9)]' 
+            : 'bg-white border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)]'
+        }`}>
           <div className="flex flex-col space-y-4">
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
+            }} className={`flex items-center justify-between px-4 py-3 rounded-2xl border text-sm font-bold ${
+              isDark ? 'bg-[#0B1424] border-cyan-500/20 text-slate-200' : 'bg-slate-50 border-slate-100 text-slate-800'
+            }`}>
               <span>How It Works</span> <ChevronRight className="w-4 h-4 text-slate-400" />
             </button>
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
+            }} className={`flex items-center justify-between px-4 py-3 rounded-2xl border text-sm font-bold ${
+              isDark ? 'bg-[#0B1424] border-cyan-500/20 text-slate-200' : 'bg-slate-50 border-slate-100 text-slate-800'
+            }`}>
               <span>Subscription Pricing</span> <ChevronRight className="w-4 h-4 text-slate-400" />
             </button>
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
+            }} className={`flex items-center justify-between px-4 py-3 rounded-2xl border text-sm font-bold ${
+              isDark ? 'bg-[#0B1424] border-cyan-500/20 text-slate-200' : 'bg-slate-50 border-slate-100 text-slate-800'
+            }`}>
               <span>Platform Features</span> <ChevronRight className="w-4 h-4 text-slate-400" />
             </button>
-            <Link href="/terms" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
+            <Link href="/terms" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center justify-between px-4 py-3 rounded-2xl border text-sm font-bold ${
+              isDark ? 'bg-[#0B1424] border-cyan-500/20 text-slate-200' : 'bg-slate-50 border-slate-100 text-slate-800'
+            }`}>
               <span>Terms of Service</span> <ChevronRight className="w-4 h-4 text-slate-400" />
             </Link>
-            <Link href="/privacy" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
+            <Link href="/privacy" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center justify-between px-4 py-3 rounded-2xl border text-sm font-bold ${
+              isDark ? 'bg-[#0B1424] border-cyan-500/20 text-slate-200' : 'bg-slate-50 border-slate-100 text-slate-800'
+            }`}>
               <span>Privacy Policy</span> <ChevronRight className="w-4 h-4 text-slate-400" />
             </Link>
           </div>
@@ -331,7 +369,9 @@ export default function HomePage() {
             <Link 
               href="/login" 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full py-3.5 border border-slate-200 text-center font-bold text-slate-700 hover:text-slate-900 rounded-2xl transition-all text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]"
+              className={`w-full py-3.5 border text-center font-bold rounded-2xl transition-all text-sm ${
+                isDark ? 'border-cyan-500/30 text-cyan-300 bg-cyan-950/40' : 'border-slate-200 text-slate-700 bg-white'
+              }`}
             >
               Sign In to Console
             </Link>
@@ -349,12 +389,13 @@ export default function HomePage() {
       {/* ────────────────────────────────────────────────────────
          HERO SECTION WITH PREMIUM CUSTOM GRAPHICS
          ──────────────────────────────────────────────────────── */}
-      {/* ────────────────────────────────────────────────────────
-         FLAGSHIP HERO SECTION (Razorpay-Grade Clean Light Fintech)
-         ──────────────────────────────────────────────────────── */}
-      <section className={`relative mt-20 pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden transition-colors duration-500 ${isDark ? 'bg-[#080f1c]' : 'bg-white'}`}>
+      <section className={`relative mt-20 pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden transition-colors duration-500 ${isDark ? 'bg-[#030712]' : 'bg-white'}`}>
         
-        <div className={`absolute inset-0 [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_20%,#000_70%,transparent_100%)] opacity-50 -z-20 ${isDark ? 'bg-[radial-gradient(#1e293b_1px,transparent_1px)]' : 'bg-[radial-gradient(#e2e8f0_1px,transparent_1px)]'}`} />
+        <div className={`absolute inset-0 [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_20%,#000_70%,transparent_100%)] opacity-50 -z-20 ${
+          isDark 
+            ? 'bg-[radial-gradient(#06b6d4_1px,transparent_1px)] opacity-25' 
+            : 'bg-[radial-gradient(#e2e8f0_1px,transparent_1px)]'
+        }`} />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
@@ -362,32 +403,46 @@ export default function HomePage() {
           <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
             
             {/* Direct P2P Status Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white border border-slate-200/90 rounded-full text-xs font-semibold text-slate-700 shadow-xs animate-fade-up">
+            <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs animate-fade-up ${
+              isDark 
+                ? 'bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 font-mono shadow-[0_0_15px_rgba(6,182,212,0.2)]' 
+                : 'bg-white border border-slate-200/90 text-slate-700'
+            }`}>
               <span className="flex h-2 w-2 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span>Direct UPI & bank transfer rails active · 0% MDR</span>
+              <span>{isDark ? '[NPCI_RAILS_ACTIVE: 0% MDR]' : 'Direct UPI & bank transfer rails active · 0% MDR'}</span>
             </div>
 
             {/* Authoritative Headline with separate animated lines */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-bold text-slate-900 tracking-tight leading-[1.15]">
+            <h1 className={`text-4xl sm:text-5xl lg:text-[54px] font-bold tracking-tight leading-[1.15] ${
+              isDark ? 'text-white' : 'text-slate-900'
+            }`}>
               <span className="block animate-fade-up delay-100">
                 Accept payments directly
               </span>
               <span className="block animate-fade-up delay-200 mt-1">
                 to your bank.
               </span>
-              <span className="block text-blue-600 animate-fade-up delay-300 mt-1 min-h-[1.2em]">
+              <span className={`block animate-fade-up delay-300 mt-1 min-h-[1.2em] ${
+                isDark 
+                  ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-300' 
+                  : 'text-blue-600'
+              }`}>
                 <span className="relative inline-block">
                   {typedLine}
-                  <span className="inline-block w-[3px] h-[0.85em] bg-blue-600 ml-1.5 align-middle animate-pulse" style={{ verticalAlign: 'baseline', marginTop: '-2px' }}>|</span>
+                  <span className={`inline-block w-[3px] h-[0.85em] ml-1.5 align-middle animate-pulse ${
+                    isDark ? 'bg-cyan-400' : 'bg-blue-600'
+                  }`} style={{ verticalAlign: 'baseline', marginTop: '-2px' }}>|</span>
                 </span>
               </span>
             </h1>
 
             {/* Calm, Reassuring Subhead */}
-            <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150">
+            <p className={`text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150 ${
+              isDark ? 'text-slate-300' : 'text-slate-600'
+            }`}>
               Collect direct UPI and IMPS bank transfers with automated real-time reconciliation, signed HMAC webhooks, and 0% intermediary deductions.
             </p>
 
@@ -395,14 +450,22 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fade-up delay-200">
               <Link 
                 href="/login" 
-                className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-98 text-center text-sm flex items-center justify-center gap-2 group"
+                className={`w-full sm:w-auto px-8 py-3.5 text-white font-semibold rounded-xl transition-all active:scale-98 text-center text-sm flex items-center justify-center gap-2 group ${
+                  isDark 
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-[0_0_25px_rgba(6,182,212,0.35)]' 
+                    : 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/25'
+                }`}
               >
                 <span>Sign up now</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <a 
                 href="#how-it-works"
-                className="w-full sm:w-auto px-7 py-3.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold rounded-xl transition-all text-center flex items-center justify-center gap-2 text-sm shadow-xs hover:border-slate-300"
+                className={`w-full sm:w-auto px-7 py-3.5 rounded-xl transition-all text-center flex items-center justify-center gap-2 text-sm shadow-xs border ${
+                  isDark 
+                    ? 'bg-[#0B1424] hover:bg-[#101D34] border-cyan-500/30 text-cyan-200' 
+                    : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300'
+                }`}
               >
                 <span>Explore live checkout</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -410,28 +473,38 @@ export default function HomePage() {
             </div>
 
             {/* Proof Stats Row */}
-            <div className="pt-4 grid grid-cols-3 gap-4 sm:gap-8 max-w-md mx-auto lg:mx-0 border-t border-slate-200/80 text-slate-500 font-medium text-xs animate-fade-up delay-300">
+            <div className={`pt-4 grid grid-cols-3 gap-4 sm:gap-8 max-w-md mx-auto lg:mx-0 border-t font-medium text-xs animate-fade-up delay-300 ${
+              isDark ? 'border-cyan-500/20 text-slate-400' : 'border-slate-200/80 text-slate-500'
+            }`}>
               <div>
-                <p className="text-slate-900 text-3xl font-bold tracking-tight">0%</p>
-                <p className="mt-1 text-xs text-slate-500 font-normal">Transaction fees</p>
+                <p className={`text-3xl font-bold tracking-tight ${
+                  isDark ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300 font-mono' : 'text-slate-900'
+                }`}>0%</p>
+                <p className="mt-1 text-xs font-normal">Transaction fees</p>
               </div>
               <div>
-                <p className="text-slate-900 text-3xl font-bold tracking-tight">T+0</p>
-                <p className="mt-1 text-xs text-slate-500 font-normal">Instant bank credit</p>
+                <p className={`text-3xl font-bold tracking-tight ${
+                  isDark ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300 font-mono' : 'text-slate-900'
+                }`}>T+0</p>
+                <p className="mt-1 text-xs font-normal">Instant bank credit</p>
               </div>
               <div>
-                <p className="text-slate-900 text-3xl font-bold tracking-tight">99.98%</p>
-                <p className="mt-1 text-xs text-slate-500 font-normal">Success rate</p>
+                <p className={`text-3xl font-bold tracking-tight ${
+                  isDark ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-300 font-mono' : 'text-slate-900'
+                }`}>99.98%</p>
+                <p className="mt-1 text-xs font-normal">Success rate</p>
               </div>
             </div>
 
           </div>
 
-          {/* Right Column Custom Render Mockup Graphic (Old Style Phone Scanner) */}
+          {/* Right Column Custom Render Mockup Graphic */}
           <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end animate-scale-up">
             
             {/* Premium Interactive Phone Glow Container */}
-            <div className="phone-glow-container w-full max-w-[340px]">
+            <div className={`phone-glow-container w-full max-w-[340px] ${
+              isDark ? 'p-1 rounded-[46px] bg-gradient-to-b from-cyan-500/30 via-blue-500/10 to-transparent shadow-[0_0_40px_rgba(6,182,212,0.25)]' : ''
+            }`}>
 
               {/* Premium Phone Frame displaying Actual MyMobPay checkout screen */}
               <div className="relative w-full bg-slate-900 border-8 border-slate-800 rounded-[44px] premium-phone-shadow overflow-hidden aspect-[9/18.5] flex flex-col">
