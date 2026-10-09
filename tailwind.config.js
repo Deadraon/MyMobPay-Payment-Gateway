@@ -10,9 +10,6 @@ module.exports = {
       colors: {
         'brand-blue':  '#2563EB',
         'brand-dark':  '#0B192C',
-        'brand-accent-cyan':    '#06B6D4',
-        'brand-accent-emerald': '#10B981',
-        'brand-accent-amber':   '#F59E0B',
         'bg-base':     'var(--bg-base)',
         'bg-card':     'var(--bg-card)',
         'white-pure':  '#ffffff',
