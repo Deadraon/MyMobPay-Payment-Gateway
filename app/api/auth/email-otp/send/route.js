@@ -1,17 +1,30 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin, supabase } from '@/lib/supabase';
 import { sendOtpEmail, sendMagicLinkEmail, isSmtpConfigured } from '@/lib/mailer';
+import { resolveMerchantIdentifier } from '@/lib/resolveIdentifier';
 
 export async function POST(req) {
   try {
     const { email, type = 'otp', purpose = 'login' } = await req.json();
-    const cleanEmail = (email || '').trim().toLowerCase();
+    let cleanEmail = (email || '').trim().toLowerCase();
 
-    if (!cleanEmail || !cleanEmail.includes('@')) {
+    if (!cleanEmail) {
       return NextResponse.json(
-        { error: 'Please enter a valid email address.' },
+        { error: 'Please enter a valid email or Merchant ID.' },
         { status: 400 }
       );
+    }
+
+    // Resolve Merchant ID or UUID to registered email if no '@' provided
+    if (!cleanEmail.includes('@')) {
+      const resolved = await resolveMerchantIdentifier(cleanEmail);
+      if (!resolved) {
+        return NextResponse.json(
+          { error: `No merchant account found for ID "${cleanEmail}". Please check your ID or enter your registered email.` },
+          { status: 404 }
+        );
+      }
+      cleanEmail = resolved;
     }
 
     // 1. Generate the official Supabase OTP code / magic link for this email
@@ -48,6 +61,7 @@ export async function POST(req) {
         });
         return NextResponse.json({
           success: true,
+          email: cleanEmail,
           message: `Direct sign-in link sent to ${cleanEmail}. Check your inbox!`,
         });
       } else {
@@ -59,6 +73,7 @@ export async function POST(req) {
         });
         return NextResponse.json({
           success: true,
+          email: cleanEmail,
           message: `6-digit verification code sent to ${cleanEmail}. Check your inbox!`,
         });
       }
@@ -84,8 +99,9 @@ export async function POST(req) {
 
     return NextResponse.json({
       success: true,
+      email: cleanEmail,
       message: type === 'link' 
-        ? `Sign-in link dispatched to ${cleanEmail}. Check your inbox!`
+        ? `Direct sign-in link sent to ${cleanEmail}. Check your inbox!`
         : `6-digit verification code sent to ${cleanEmail}. Check your inbox!`,
     });
 

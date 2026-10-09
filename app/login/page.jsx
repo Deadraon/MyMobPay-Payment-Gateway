@@ -396,9 +396,9 @@ export default function LoginPage() {
 
   // Email OTP Handler (Strictly OTP code, NO buttons/links)
   const handleSendEmailOtp = async () => {
-    const cleanEmail = email.trim().toLowerCase();
-    if (!cleanEmail || !cleanEmail.includes('@')) {
-      setError('Please enter a valid merchant email address.');
+    let rawIdentifier = email.trim();
+    if (!rawIdentifier) {
+      setError('Please enter your merchant email or Merchant ID.');
       return;
     }
     setError('');
@@ -406,6 +406,23 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      let cleanEmail = rawIdentifier.toLowerCase();
+
+      // If user typed a Merchant ID (MID-XXXX) or UUID instead of email, resolve to email
+      if (!cleanEmail.includes('@')) {
+        const resolveRes = await fetch('/api/auth/resolve-identifier', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: rawIdentifier }),
+        });
+        const resolveData = await resolveRes.json();
+        if (!resolveRes.ok || !resolveData?.email) {
+          throw new Error(resolveData?.error || `No merchant account found for ID "${rawIdentifier}". Please check your ID or enter your registered email.`);
+        }
+        cleanEmail = resolveData.email.toLowerCase();
+        setEmail(cleanEmail);
+      }
+
       const res = await fetch('/api/auth/email-otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -421,10 +438,12 @@ export default function LoginPage() {
         throw new Error(data.error || 'Could not send verification code. Please try again.');
       }
 
+      const finalEmail = data.email || cleanEmail;
+      setEmail(finalEmail);
       setEmailOtpSent(true);
       setEmailOtp('');
       setEmailTimer(45);
-      setMessage(data.message || `6-digit verification code sent to ${cleanEmail}. Check your inbox!`);
+      setMessage(data.message || `6-digit verification code sent to ${finalEmail}. Check your inbox!`);
     } catch (err) {
       console.error('Email OTP send error:', err);
       setError(formatCustomerError(err));
@@ -433,11 +452,11 @@ export default function LoginPage() {
     }
   };
 
-  // Email Link (Magic Link) Handler (Strictly one-click button, NO OTP digits)
+  // Email Link Handler (Strictly one-click button, NO OTP digits)
   const handleSendEmailLink = async () => {
-    const cleanEmail = email.trim().toLowerCase();
-    if (!cleanEmail || !cleanEmail.includes('@')) {
-      setError('Please enter a valid merchant email address.');
+    let rawIdentifier = email.trim();
+    if (!rawIdentifier) {
+      setError('Please enter your merchant email or Merchant ID.');
       return;
     }
     setError('');
@@ -445,6 +464,23 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      let cleanEmail = rawIdentifier.toLowerCase();
+
+      // If user typed a Merchant ID (MID-XXXX) or UUID instead of email, resolve to email
+      if (!cleanEmail.includes('@')) {
+        const resolveRes = await fetch('/api/auth/resolve-identifier', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: rawIdentifier }),
+        });
+        const resolveData = await resolveRes.json();
+        if (!resolveRes.ok || !resolveData?.email) {
+          throw new Error(resolveData?.error || `No merchant account found for ID "${rawIdentifier}". Please check your ID or enter your registered email.`);
+        }
+        cleanEmail = resolveData.email.toLowerCase();
+        setEmail(cleanEmail);
+      }
+
       const res = await fetch('/api/auth/email-link/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -458,9 +494,11 @@ export default function LoginPage() {
         throw new Error(data.error || 'Could not send sign-in link. Please try again.');
       }
 
+      const finalEmail = data.email || cleanEmail;
+      setEmail(finalEmail);
       setLinkSent(true);
       setLinkTimer(45);
-      setMessage(data.message || `Direct sign-in link sent to ${cleanEmail}. Check your inbox!`);
+      setMessage(data.message || `Direct sign-in link sent to ${finalEmail}. Check your inbox!`);
     } catch (err) {
       console.error('Email Link send error:', err);
       setError(formatCustomerError(err));
@@ -474,7 +512,26 @@ export default function LoginPage() {
       setError('Please enter the complete 6-digit verification code.');
       return;
     }
-    const cleanEmail = email.trim().toLowerCase();
+    let cleanEmail = email.trim().toLowerCase();
+
+    // If email state is not yet an email address, resolve it
+    if (!cleanEmail.includes('@')) {
+      try {
+        const resolveRes = await fetch('/api/auth/resolve-identifier', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: email.trim() }),
+        });
+        const resolveData = await resolveRes.json();
+        if (resolveData?.email) {
+          cleanEmail = resolveData.email.toLowerCase();
+          setEmail(cleanEmail);
+        }
+      } catch (e) {
+        // fallback
+      }
+    }
+
     setError('');
     setMessage('');
     setLoading(true);
@@ -992,7 +1049,7 @@ export default function LoginPage() {
                       <>
                         <div className="flex flex-col space-y-1.5">
                           <label className="text-xs font-medium text-[#44474d] flex items-center justify-between">
-                            <span>Merchant Email Address</span>
+                            <span>Merchant Email / ID</span>
                             <span className="text-[#0045de] font-semibold text-[11px]">
                               6-Digit OTP
                             </span>
@@ -1000,24 +1057,24 @@ export default function LoginPage() {
                           <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
                             <Mail className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
                             <input
-                              type="email"
+                              type="text"
                               required
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && email.includes('@') && handleSendEmailOtp()}
-                              placeholder="merchant@company.com"
+                              onKeyDown={(e) => e.key === 'Enter' && email.trim() && handleSendEmailOtp()}
+                              placeholder="merchant@company.com or MID-..."
                               className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
                             />
                           </div>
                           <p className="text-[11px] text-[#74777e] leading-relaxed">
-                            We will send a 6-digit verification code to your email inbox.
+                            We will send a 6-digit verification code to your registered email inbox.
                           </p>
                         </div>
 
                         <button
                           type="button"
                           onClick={handleSendEmailOtp}
-                          disabled={loading || !email.trim() || !email.includes('@')}
+                          disabled={loading || !email.trim()}
                           className="w-full h-12 bg-[#2c60ff] hover:bg-[#0045de] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
@@ -1060,7 +1117,7 @@ export default function LoginPage() {
                             <button
                               type="button"
                               onClick={handleSendEmailLink}
-                              disabled={loading || !email.trim() || !email.includes('@')}
+                              disabled={loading || !email.trim()}
                               className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer disabled:opacity-50 inline-flex items-center gap-1 transition-colors"
                             >
                               <span>Email me a direct login link instead &rarr;</span>
