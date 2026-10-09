@@ -236,9 +236,11 @@ function PayPageContent() {
   const isSetupOrSubscription = isMandate || (orderNote && (orderNote.includes('Trial_Setup') || orderNote.includes('Autopay') || orderNote.includes('Subscription')));
 
   const upiId         = getValidUpiId(merchant);
-  const rawBizName    = (merchant?.business_name && merchant.business_name !== 'Demo Store')
-    ? merchant.business_name
-    : (paramProject || (isPlatformKey || isSetupOrSubscription ? 'MyMobPay' : (CONFIG.businessName && CONFIG.businessName !== 'Demo Store' ? CONFIG.businessName : 'Merchant')));
+  const rawBizName    = (isPlatformKey || isSetupOrSubscription)
+    ? 'MyMobPay'
+    : ((merchant?.business_name && merchant.business_name !== 'Demo Store')
+        ? merchant.business_name
+        : (paramProject || (CONFIG.businessName && CONFIG.businessName !== 'Demo Store' ? CONFIG.businessName : 'Merchant')));
   const bizName       = rawBizName === 'Demo Store' ? (isPlatformKey || isSetupOrSubscription ? 'MyMobPay' : 'Merchant') : rawBizName;
   const bizInitial    = (bizName || 'M').charAt(0).toUpperCase();
   const bankAcc       = (merchant?.bank_account_number || '').trim();
@@ -1104,6 +1106,8 @@ function PayPageContent() {
         <DesktopCheckoutView
           merchant={merchant}
           orderId={orderId}
+          orderNote={orderNote}
+          paramProject={paramProject}
           paramRef={paramRef}
           paramCallback={paramCallback}
           activeId={activeId}
@@ -1321,6 +1325,13 @@ function PayPageContent() {
                               )}
                             </button>
                           </div>
+                        </div>
+                      )}
+
+                      {(paramProject || orderNote) && (
+                        <div className="mob-spec-row">
+                          <span className="mob-spec-k">Plan / Item</span>
+                          <span className="mob-spec-v font-semibold truncate max-w-[180px]">{paramProject || orderNote}</span>
                         </div>
                       )}
 

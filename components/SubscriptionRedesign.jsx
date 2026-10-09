@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import QRCode from 'react-qr-code';
 import {
   CheckCircle,
   Building2,
@@ -49,18 +48,14 @@ export default function SubscriptionRedesign({
     );
   }, [profile, historyOrders]);
 
-  // ── Modal States ──────────────────────────────────────────────
+  // ── Modal & Flow States ───────────────────────────────────────
   const [selectedPlanId, setSelectedPlanId] = useState('1month');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showContactSalesModal, setShowContactSalesModal] = useState(false);
   const [invoiceFilter, setInvoiceFilter] = useState('all'); // 'all', 'paid'
   const [isActivating, setIsActivating] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
-  const [renewUtr, setRenewUtr] = useState('');
-  const [activeOrderId, setActiveOrderId] = useState('');
-  const [activeAmount, setActiveAmount] = useState(null);
 
   // Auto-select free trial for new merchants
   useEffect(() => {
@@ -314,54 +309,6 @@ export default function SubscriptionRedesign({
     window.location.href = `/pay?${params.toString()}`;
   };
 
-  // ── Handle Payment & Plan Activation ──────────────────────────
-  const handleActivatePlan = async () => {
-    setIsActivating(true);
-    try {
-      const res = await fetch('/api/merchant/subscription/activate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          merchantId: profile?.id,
-          orderId: activeOrderId || undefined,
-          planId: selectedPlan.id,
-          planName: selectedPlan.name || selectedPlan.title,
-          amount: activeAmount || selectedPlan.amount,
-          durationDays: selectedPlan.durationDays,
-          utr: renewUtr.trim() || '',
-        }),
-      });
-
-      const resData = await res.json();
-      if (!res.ok) {
-        throw new Error(resData.error || 'Failed to activate plan');
-      }
-
-      const newExpiry = resData.subscription_expires_at ? new Date(resData.subscription_expires_at) : new Date();
-
-      if (onProfileUpdate) {
-        onProfileUpdate({
-          ...profile,
-          subscription_status: 'active',
-          subscription_plan: selectedPlan.id,
-          subscription_expires_at: newExpiry.toISOString(),
-        });
-      }
-
-      if (onRefreshProfile) {
-        await onRefreshProfile();
-      }
-
-      setShowPaymentModal(false);
-      triggerToast(`Payment of ₹${selectedPlan.amount.toLocaleString('en-IN')} verified! License active & GST invoice emailed to your inbox.`);
-    } catch (err) {
-      console.error('Activation error:', err);
-      triggerToast(`Failed to update subscription: ${err.message || 'Please try again.'}`);
-    } finally {
-      setIsActivating(false);
-    }
-  };
-
   // ── Handle 3-Day Free Trial Direct Activation ─────────────────
   const handleActivateTrial = async () => {
     setIsActivating(true);
@@ -399,7 +346,6 @@ export default function SubscriptionRedesign({
         await onRefreshProfile();
       }
 
-      setShowPaymentModal(false);
       triggerToast('🎉 3-Day Free Trial activated! Live Mode and Live API Key are now unlocked.');
     } catch (err) {
       console.error('Trial activation error:', err);
@@ -447,11 +393,7 @@ export default function SubscriptionRedesign({
     return invoiceList;
   }, [invoiceList, invoiceFilter]);
 
-  // UPI Intent String for Real Live QR Code
-  const upiVpa = CONFIG.upiId || '9410181307@okbizaxis';
   const merchantMid = formatMerchantId(profile?.id);
-  const qrString = `upi://pay?pa=${upiVpa}&pn=MyMobPay+License&am=${activeAmount ? Number(activeAmount).toFixed(2) : selectedPlan.amount.toFixed(2)}&tn=Subscription_${selectedPlan.id}_${merchantMid}${activeOrderId ? `_${activeOrderId}` : ''}&cu=INR`;
-  const checkoutUrl = `/pay?api_key=${CONFIG.platformApiKey}&amount=${selectedPlan.amount}&ref=${profile?.id || ''}&note=Subscription_${selectedPlan.id}`;
 
   return (
     <div className="flex flex-col max-w-7xl mx-auto w-full pb-8 gap-6 animate-fadeIn font-sans">
@@ -728,8 +670,8 @@ export default function SubscriptionRedesign({
                     : plan.isCustom
                     ? 'Contact Sales'
                     : isSelected
-                    ? 'Selected Plan'
-                    : `Select ${plan.title}`}
+                    ? `Subscribe & Pay ₹${plan.amount.toLocaleString('en-IN')}`
+                    : `Subscribe (${plan.title})`}
                 </button>
               </div>
             );
@@ -794,7 +736,7 @@ export default function SubscriptionRedesign({
                 ? (isActivating ? 'Activating Trial...' : 'Activate 3-Day Free Trial (Free)')
                 : selectedPlan.isCustom
                 ? 'Contact Enterprise Sales'
-                : `Pay ₹${selectedPlan.amount.toLocaleString('en-IN')} via UPI`}
+                : `Subscribe & Pay ₹${selectedPlan.amount.toLocaleString('en-IN')} via UPI`}
             </button>
           </div>
         </div>

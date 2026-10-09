@@ -199,6 +199,8 @@ export default function DesktopCheckoutView({
   submitUtr,
   utrBusy,
   utrMsg,
+  orderNote,
+  paramProject,
   /* Optional card props */
   cardBrand,
   setCardBrand,
@@ -1023,6 +1025,17 @@ export default function DesktopCheckoutView({
                               </div>
                             </div>
 
+                            {(paramProject || orderNote) && (
+                              <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
+                                <span className="text-on-surface-variant font-medium">
+                                  {lang === 'hi' ? 'योजना / विवरण' : 'Plan / Description'}
+                                </span>
+                                <span className="font-semibold text-on-surface truncate max-w-[220px] sm:max-w-[280px]">
+                                  {paramProject || orderNote}
+                                </span>
+                              </div>
+                            )}
+
                             <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
                               <span className="text-on-surface-variant font-medium">
                                 {lang === 'hi' ? 'दिनांक एवं समय' : 'Order Date'}
@@ -1197,6 +1210,12 @@ export default function DesktopCheckoutView({
                             <span className="text-slate-400 font-bold">TOTAL :</span>
                             <span className="text-slate-900 font-extrabold text-sm font-sans">₹{formattedAmount}</span>
                           </div>
+
+                          {(paramProject || orderNote) && (
+                            <div className="text-[12px] font-bold text-slate-800 mb-1.5 truncate">
+                              {paramProject || orderNote}
+                            </div>
+                          )}
 
                           <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start mb-2">
                             <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200/90 text-[#0045de] px-2.5 py-0.5 rounded-full text-xs font-semibold shadow-2xs">
