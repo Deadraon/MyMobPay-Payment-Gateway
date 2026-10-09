@@ -90,7 +90,7 @@ function formatCustomerError(err) {
 
   // 5. Supabase default email service limits / failures
   if (lower.includes('magic link email') || lower.includes('error sending') || lower.includes('error sending email')) {
-    return 'Email delivery service temporarily reached its hourly limit. Please use "Continue with Google Workspace" or Password login, or try again later.';
+    return 'Email OTP service requires Custom SMTP in Supabase. You can sign up directly with your password below, or log in via the Log In tab.';
   }
 
   // 6. Network / Server errors
@@ -556,12 +556,8 @@ export default function LoginPage() {
     }
 
     if (action === 'signup') {
-      if (!isEmailVerified) {
-        if (!emailOtpSent) {
-          await handleSendEmailOtp();
-          setError('A 6-digit verification code was sent to your email. Please enter it above to verify your email before signup.');
-          return;
-        } else if (emailOtp.length === 6) {
+      if (emailOtpSent && !isEmailVerified) {
+        if (emailOtp.length === 6) {
           // Attempt to verify right now
           const { error: verifyErr } = await supabase.auth.verifyOtp({
             email: email.trim().toLowerCase(),
@@ -574,7 +570,7 @@ export default function LoginPage() {
           }
           setIsEmailVerified(true);
         } else {
-          setError('Please enter the 6-digit verification code sent to your email.');
+          setError('Please enter the 6-digit verification code sent to your email or clear it to continue with password signup.');
           return;
         }
       }
@@ -1133,7 +1129,7 @@ export default function LoginPage() {
                           </span>
                         ) : (
                           <span className="text-[10px] font-medium text-[#74777e]">
-                            Requires OTP verification
+                            Email verification
                           </span>
                         )}
                       </div>
@@ -1190,7 +1186,7 @@ export default function LoginPage() {
                       {/* Sub-text hint when OTP not sent yet */}
                       {!emailOtpSent && !isEmailVerified && (
                         <p className="text-[11px] text-[#74777e]">
-                          Click &quot;Verify Email&quot; to receive a 6-digit code in your email inbox.
+                          Click &quot;Verify Email&quot; for code, or create your account directly below with password.
                         </p>
                       )}
 
