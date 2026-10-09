@@ -993,8 +993,8 @@ export default function LoginPage() {
                         <div className="flex flex-col space-y-1.5">
                           <label className="text-xs font-medium text-[#44474d] flex items-center justify-between">
                             <span>Merchant Email Address</span>
-                            <span className="text-[#0045de] font-semibold flex items-center gap-1 text-[11px]">
-                              <Zap className="w-3.5 h-3.5" /> 6-Digit OTP
+                            <span className="text-[#0045de] font-semibold text-[11px]">
+                              6-Digit OTP
                             </span>
                           </label>
                           <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
@@ -1110,7 +1110,7 @@ export default function LoginPage() {
                         {/* Resend button & optional direct login link */}
                         <div className="text-center pt-2 space-y-2.5">
                           <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-[#eaedff]/50 border border-[#dae2fd]/70 text-[11px] text-[#44474d]">
-                            <Zap className="w-3.5 h-3.5 text-[#0045de] shrink-0" />
+                            <Mail className="w-3.5 h-3.5 text-[#0045de] shrink-0" />
                             <span>Enter the 6-digit verification code from your email to sign in.</span>
                           </div>
 
