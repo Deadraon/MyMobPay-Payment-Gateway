@@ -1104,8 +1104,8 @@ export default function SubscriptionRedesign({
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Merchant MID:</span>
-                  <span className="text-slate-800 font-semibold">
+                  <span className="text-slate-400">Merchant ID:</span>
+                  <span className="text-slate-800 font-semibold font-mono">
                     {merchantMid}
                   </span>
                 </div>

@@ -1062,7 +1062,7 @@ export default function LoginPage() {
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && email.trim() && handleSendEmailOtp()}
-                              placeholder="merchant@company.com or MID-..."
+                              placeholder="merchant@company.com or Merchant ID"
                               className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
                             />
                           </div>
@@ -1222,7 +1222,7 @@ export default function LoginPage() {
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="merchant@company.com or MID-..."
+                          placeholder="merchant@company.com or Merchant ID"
                           className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
                         />
                       </div>
