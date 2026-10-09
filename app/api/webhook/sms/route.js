@@ -6,6 +6,7 @@ import { CONFIG } from '@/lib/config';
 import { triggerMerchantWebhook } from '@/lib/webhook';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { resolveMerchantIdToUuid } from '@/lib/merchantId';
 
 // Constant-time string comparison to prevent timing attacks
 function safeCompare(a, b) {
@@ -180,15 +181,7 @@ export async function POST(request) {
         const merchantMatch = message.match(/(?:Subscription|Trial)_[0-9A-Za-z]+_(?:MID-)?([0-9a-fA-F-]{8,36})/i);
         let targetMerchantId = null;
         if (merchantMatch) {
-          const rawId = merchantMatch[1].replace(/-/g, '').slice(0, 8).toLowerCase();
-          const { data: foundMerchants } = await supabaseAdmin
-            .from('merchants')
-            .select('id')
-            .filter('id', 'ilike', `${rawId}%`)
-            .limit(1);
-          if (foundMerchants && foundMerchants.length > 0) {
-            targetMerchantId = foundMerchants[0].id;
-          }
+          targetMerchantId = await resolveMerchantIdToUuid(merchantMatch[1]);
         }
 
         if (!targetMerchantId) {
