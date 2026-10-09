@@ -1133,7 +1133,7 @@ export default function PaymentLinksRedesign({
 
                 {/* Security footnote */}
                 <p className="text-[10px] font-mono text-center text-slate-400 mt-3 relative z-10">
-                  © 2025 mymobpay (mymob.tech) • PCI-DSS Compliant • 256-Bit SSL Encrypted Passthrough
+                  © 2025 mymobpay (mymob.tech) • Direct Bank Settlement • 256-Bit SSL Encrypted Passthrough
                 </p>
               </section>
             </div>

@@ -1599,12 +1599,12 @@ export default function LoginPage() {
               <span className="hidden sm:inline text-[#c4c6ce]">•</span>
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#0045de]" />
-                <span>RBI PA-Framework Compliant</span>
+                <span>NPCI UPI Standard</span>
               </div>
               <span className="hidden sm:inline text-[#c4c6ce]">•</span>
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#009d6d]" />
-                <span>PCI-DSS Level 1</span>
+                <span>Direct Bank Settlement</span>
               </div>
             </div>
 

@@ -47,11 +47,11 @@ export default function PrivacyPage() {
 
           <section className="space-y-3">
             <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <Lock className="w-4.5 h-4.5 text-blue-600" /> 2. PCI-DSS Compliance & Data Security
+              <Lock className="w-4.5 h-4.5 text-blue-600" /> 2. Zero Cardholder Data & Non-Custodial Security
             </h2>
             <div className="p-4 bg-emerald-50 border border-emerald-200/60 text-emerald-800 rounded-2xl text-xs space-y-2 font-medium">
               <strong className="text-emerald-900 flex items-center gap-1.5 font-bold">
-                <CheckCircle className="w-4 h-4 text-emerald-600" /> PCI-DSS Compliant Isolated Architecture
+                <CheckCircle className="w-4 h-4 text-emerald-600" /> Non-Custodial Isolated Architecture
               </strong>
               <p>
                 Our payment gateway is explicitly designed to handle transactions without collecting or retaining sensitive payment credentials (such as raw bank account passwords, debit card pins, or OTPs). All routing is processed using standard, public UPI Virtual Payment Addresses (VPAs).
