@@ -1,25 +1,4 @@
 import "./globals.css";
-import { Inter, Outfit, DM_Sans } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-dm-sans",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["700", "800"],
-  variable: "--font-outfit",
-});
 
 // ── Next.js 14: viewport config must be a separate export ─────
 export const viewport = {
@@ -179,8 +158,10 @@ export default function RootLayout({ children }) {
         {/* Preload OG banner so it's cached fast */}
         <link rel="preload" as="image" href="/og-banner.png" />
 
-
-
+        {/* Universal Google Fonts: Inter, Outfit, DM Sans */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         {/* JSON-LD Structured Data — WebSite (Signals official site name to Google) */}
         <script
           type="application/ld+json"
@@ -305,7 +286,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body
-        className={`${inter.variable} ${dmSans.variable} ${outfit.variable} ${inter.className} font-sans antialiased bg-slate-50 text-slate-900 selection:bg-blue-500/30 selection:text-white`}
+        className="font-sans antialiased bg-slate-50 text-slate-900 selection:bg-blue-500/30 selection:text-white"
       >
         {children}
       </body>

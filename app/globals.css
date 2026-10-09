@@ -21,7 +21,7 @@
   --success:        #10B981;
   --danger:         #EF4444;
   --warning:        #F59E0B;
-  --font-sans:      'Inter', var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono:      'JetBrains Mono', monospace;
   --radius-card:    12px;
   --radius-input:   8px;
@@ -74,7 +74,7 @@ input:not([type="checkbox"]):not([type="radio"]) {
 
 html { scroll-behavior: smooth; }
 
-body, input, textarea, select, button {
+html, body, h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select {
   font-family: var(--font-sans);
 }
 
