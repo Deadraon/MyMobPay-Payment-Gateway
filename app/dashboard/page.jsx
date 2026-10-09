@@ -9507,24 +9507,6 @@ echo "Order Created: " . $data['orderId'];
               </button>
             </div>
 
-            {/* Admin Console Shortcut */}
-            {isAdminUser && (
-              <button
-                onClick={() => setActiveTab('admin')}
-                type="button"
-                className={`hidden sm:flex items-center gap-2 ${
-                  activeTab === 'admin'
-                    ? 'bg-blue-700 text-white ring-2 ring-blue-400'
-                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
-                } px-3.5 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 text-xs font-extrabold uppercase tracking-wider cursor-pointer border border-blue-400/30 shrink-0`}
-                title="Access SaaS Super Admin Console"
-              >
-                <Shield className="w-3.5 h-3.5 text-blue-200" />
-                <span>Admin Console</span>
-                <span className="text-[9px] bg-white/20 px-1.5 py-0.5 rounded font-black">SUPER</span>
-              </button>
-            )}
-
             <div className="h-8 w-[1px] bg-slate-200 mx-0.5 sm:mx-1"></div>
 
             {/* Profile Dropdown */}
