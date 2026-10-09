@@ -97,17 +97,6 @@ export default function StatusPage() {
 
   useEffect(() => { 
     setMounted(true); 
-    if (typeof document !== 'undefined' && document.referrer) {
-      try {
-        const refUrl = new URL(document.referrer);
-        if (refUrl.origin !== window.location.origin) {
-          localStorage.setItem('last_external_referrer', document.referrer);
-          if (orderId) {
-            localStorage.setItem(`ref_origin_${orderId}`, document.referrer);
-          }
-        }
-      } catch {}
-    }
   }, [orderId]);
 
   useEffect(() => {
@@ -152,38 +141,19 @@ export default function StatusPage() {
     return () => clearInterval(interval);
   }, [orderId, rawOrderId]);
 
-  /* Resolve the original app return URL from order, merchant, or referrer */
+  /* Resolve the original app return URL from order or platform subscriptions */
   const resolveRedirectUrl = () => {
-    // 1. Direct explicit callback from order or localStorage
+    // 1. Direct explicit callback from order or localStorage (only if explicit and not a webhook)
     let target = (typeof window !== 'undefined' && localStorage.getItem(`callback_${orderId}`)) || order?.callback_url;
 
-    // 2. Automatic fallback for Trial and Subscription payments
+    // Safety check: NEVER redirect to any webhook URL or API endpoint
+    if (target && (target.includes('/webhook') || target.includes('/api/'))) {
+      target = null;
+    }
+
+    // 2. Automatic fallback for Trial and Subscription payments (Platform self-service dashboard)
     if (!target && (order?.note === 'Trial_Setup_3Day' || order?.note === 'Autopay_Setup_3DayTrial' || order?.note?.startsWith('Subscription_'))) {
       target = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : '/dashboard';
-    }
-
-    // 3. Fallback to merchant webhook domain / website
-    if (!target && merchant?.webhook_url) {
-      try {
-        const u = new URL(merchant.webhook_url);
-        target = u.origin;
-      } catch {}
-    }
-
-    // 4. Fallback to external document referrer if arriving from an external site/app
-    if (!target && typeof document !== 'undefined' && document.referrer) {
-      try {
-        const refUrl = new URL(document.referrer);
-        if (refUrl.origin !== window.location.origin) {
-          target = document.referrer;
-        }
-      } catch {}
-    }
-
-    // 5. Fallback to stored external referrer in localStorage
-    if (!target && typeof window !== 'undefined') {
-      const storedRef = localStorage.getItem(`ref_origin_${orderId}`) || localStorage.getItem('last_external_referrer');
-      if (storedRef) target = storedRef;
     }
 
     return target || null;
@@ -215,7 +185,7 @@ export default function StatusPage() {
     }
   };
 
-  /* Done button handler — returns to original redirect app, parent window, or history */
+  /* Done button handler — returns to explicit callback or closes/confirms */
   const handleDone = () => {
     const target = resolveRedirectUrl();
     if (target) {
@@ -227,17 +197,6 @@ export default function StatusPage() {
     // If opened in popup / webview with opener, close window to return to parent app
     if (typeof window !== 'undefined' && window.opener && !window.opener.closed) {
       window.close();
-      return;
-    }
-
-    // If browser has history from the originating site/app, navigate back
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      window.history.back();
-      setTimeout(() => {
-        if (typeof window !== 'undefined') {
-          window.close();
-        }
-      }, 500);
       return;
     }
 
@@ -311,6 +270,9 @@ export default function StatusPage() {
 
   const isUtrSubmitted = order.utr && /^\d{12}$/.test(order.utr.trim());
   let callback = (typeof window !== 'undefined' && localStorage.getItem(`callback_${orderId}`)) || order.callback_url;
+  if (callback && (callback.includes('/webhook') || callback.includes('/api/'))) {
+    callback = null;
+  }
   if (!callback && (order?.note === 'Trial_Setup_3Day' || order?.note === 'Autopay_Setup_3DayTrial' || order?.note?.startsWith('Subscription_'))) {
     callback = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : '/dashboard';
   }
@@ -419,12 +381,12 @@ export default function StatusPage() {
                   {redirecting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      <span>Returning to {order.project || merchant?.business_name || (isTrialOrSub ? 'Dashboard' : 'Merchant')}...</span>
+                      <span>{isTrialOrSub ? 'Returning to Dashboard...' : 'Returning to Store...'}</span>
                     </>
                   ) : (
                     <>
                       <Check className="w-4.5 h-4.5 stroke-[2.5]" />
-                      <span>Done • Return to {order.project || merchant?.business_name || (isTrialOrSub ? 'Dashboard' : 'Merchant')}</span>
+                      <span>{isTrialOrSub ? 'Done • Return to Dashboard' : callback ? 'Done • Return to Store' : 'Done • Payment Complete'}</span>
                     </>
                   )}
                 </button>
@@ -437,7 +399,7 @@ export default function StatusPage() {
                   <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200/60 text-center animate-fade-in">
                     <p className="text-xs text-emerald-800 font-bold">✓ Payment Complete</p>
                     <p className="text-[11px] text-slate-600 mt-0.5">
-                      You can safely return to your app or close this browser tab.
+                      You can safely close this browser window or tab.
                     </p>
                   </div>
                 )}

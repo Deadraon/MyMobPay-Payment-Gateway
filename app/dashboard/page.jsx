@@ -12797,7 +12797,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-    "callback_url": "${profile?.webhook_url || 'https://your-server.com/api/callback'}"
+    "callback_url": "https://your-site.com/payment/success"
 
 
 
@@ -12893,7 +12893,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-    "callback_url": "${profile?.webhook_url || 'https://your-server.com/api/callback'}"
+    "callback_url": "https://your-site.com/payment/success"
 
 
 

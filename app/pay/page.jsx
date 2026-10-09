@@ -95,7 +95,8 @@ function PayPageContent() {
   const paramApiKey   = (rawParamApiKey === 'undefined' || rawParamApiKey === 'null') ? '' : rawParamApiKey;
   const paramAmount   = searchParams.get('amount')   || '';
   const paramProject  = searchParams.get('project')  || searchParams.get('merchant') || searchParams.get('biz') || searchParams.get('business_name') || searchParams.get('store') || '';
-  const paramCallback = searchParams.get('callback') || searchParams.get('callback_url') || searchParams.get('redirect_url') || searchParams.get('return_url') || searchParams.get('redirect') || '';
+  const rawParamCallback = searchParams.get('callback') || searchParams.get('callback_url') || searchParams.get('redirect_url') || searchParams.get('return_url') || searchParams.get('redirect') || '';
+  const paramCallback = (rawParamCallback && !rawParamCallback.includes('/webhook') && !rawParamCallback.includes('webhook_url')) ? rawParamCallback : '';
   const paramName     = searchParams.get('name')     || '';
   const paramPhone    = searchParams.get('phone')    || '';
   const paramRef      = searchParams.get('ref')      || '';
@@ -323,6 +324,9 @@ function PayPageContent() {
     const targetId = explicitId || orderId || activeId;
     const cleanId = (targetId || '').trim().replace(/^[-#]+/, '');
     let cb = explicitCallback || (typeof window !== 'undefined' ? (localStorage.getItem(`callback_${cleanId}`) || localStorage.getItem(`callback_${targetId}`) || paramCallback) : '');
+    if (cb && (cb.includes('/webhook') || cb.includes('webhook_url'))) {
+      cb = '';
+    }
 
     // Persist callback URL for the status receipt screen so the Done button can return the user
     if (cb && cleanId && typeof window !== 'undefined') {
@@ -374,7 +378,10 @@ function PayPageContent() {
     setOkTime(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
     const targetId = verifiedId || orderId || activeId;
     const cleanId = (targetId || '').trim().replace(/^[-#]+/, '');
-    const cb = verifiedCallback || (typeof window !== 'undefined' ? (localStorage.getItem(`callback_${cleanId}`) || localStorage.getItem(`callback_${targetId}`) || paramCallback) : '');
+    let cb = verifiedCallback || (typeof window !== 'undefined' ? (localStorage.getItem(`callback_${cleanId}`) || localStorage.getItem(`callback_${targetId}`) || paramCallback) : '');
+    if (cb && (cb.includes('/webhook') || cb.includes('webhook_url'))) {
+      cb = '';
+    }
     if (cb && cleanId && typeof window !== 'undefined') {
       try { localStorage.setItem(`callback_${cleanId}`, cb); } catch {}
     }
@@ -382,7 +389,7 @@ function PayPageContent() {
     if (cleanId) {
       router.replace(`/status/${cleanId}`);
     } else {
-      handleReturn(cleanId, verifiedCallback);
+      handleReturn(cleanId, cb);
     }
   }
 

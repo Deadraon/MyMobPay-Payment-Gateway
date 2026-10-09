@@ -357,7 +357,7 @@ export default function PaymentLinksRedesign({
           ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
           : 'live_mymob_demo_key';
 
-        const finalCallbackUrl = redirectUrl.trim() || profile?.webhook_url || null;
+        const finalCallbackUrl = redirectUrl.trim() || null;
 
         const res = await fetch('/api/orders', {
           method: 'POST',
@@ -391,7 +391,7 @@ export default function PaymentLinksRedesign({
     }
 
     if (!generatedUrl) {
-      const finalCallbackUrl = redirectUrl.trim() || profile?.webhook_url || null;
+      const finalCallbackUrl = redirectUrl.trim() || null;
       const params = new URLSearchParams();
       if (profile?.api_key) params.set('key', profile.api_key);
       if (effectiveAmount) params.set('amount', effectiveAmount.toFixed(2));
@@ -952,7 +952,7 @@ export default function PaymentLinksRedesign({
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                     <span className="text-[10px] text-slate-400 mt-1 block">
-                      Where customers are redirected after clicking &quot;Done&quot;. Defaults to your website or webhook domain.
+                      Where customers are redirected after clicking &quot;Done&quot;. Leave blank if you don&apos;t want to redirect.
                     </span>
                   </div>
                 </div>
