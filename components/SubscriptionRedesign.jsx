@@ -283,32 +283,36 @@ export default function SubscriptionRedesign({
     openTaxInvoiceWindow(inv, profile, subDetails, triggerToast);
   };
 
-  // ── Auto-register pending order when modal opens so bank email/SMS matches ──
-  useEffect(() => {
-    if (!showPaymentModal || !profile?.id || selectedPlan.amount <= 0) return;
-    const createPendingOrder = async () => {
-      try {
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            api_key: CONFIG.platformApiKey,
-            amount: selectedPlan.amount,
-            note: `Subscription_${selectedPlan.id}`,
-            external_ref: profile.id,
-          }),
-        });
-        const data = await res.json();
-        if (data && data.orderId) {
-          setActiveOrderId(data.orderId);
-          if (data.orderAmount) setActiveAmount(data.orderAmount);
-        }
-      } catch (e) {
-        // Silent catch
-      }
-    };
-    createPendingOrder();
-  }, [showPaymentModal, profile?.id, selectedPlan.amount, selectedPlan.id]);
+  // ── Directly open Real Checkout Page with Subscription Details ──
+  const handleProceedToCheckout = (planToUse = selectedPlan) => {
+    if (!planToUse) return;
+    if (planToUse.isTrial) {
+      handleActivateTrial();
+      return;
+    }
+    if (planToUse.isCustom) {
+      setShowContactSalesModal(true);
+      return;
+    }
+
+    const platformKey = CONFIG.platformApiKey || '677d9312-a53f-4b96-815f-53e0eee1b292';
+    const merchantId = profile?.id || '';
+    const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
+    const callbackUrl = `${currentOrigin}/dashboard#subscription`;
+
+    const params = new URLSearchParams({
+      api_key: platformKey,
+      amount: String(planToUse.amount),
+      ref: merchantId,
+      note: `Subscription_${planToUse.id}`,
+      project: `MyMobPay Platform License (${planToUse.title})`,
+      name: profile?.business_name || profile?.user_metadata?.full_name || 'Merchant Owner',
+      phone: profile?.phone || '',
+      callback: callbackUrl,
+    });
+
+    window.location.href = `/pay?${params.toString()}`;
+  };
 
   // ── Handle Payment & Plan Activation ──────────────────────────
   const handleActivatePlan = async () => {
@@ -708,7 +712,7 @@ export default function SubscriptionRedesign({
                     } else if (plan.isCustom) {
                       setShowContactSalesModal(true);
                     } else {
-                      setShowPaymentModal(true);
+                      handleProceedToCheckout(plan);
                     }
                   }}
                   className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
@@ -774,7 +778,7 @@ export default function SubscriptionRedesign({
                 } else if (selectedPlan.isCustom) {
                   setShowContactSalesModal(true);
                 } else {
-                  setShowPaymentModal(true);
+                  handleProceedToCheckout(selectedPlan);
                 }
               }}
               type="button"
@@ -1023,148 +1027,7 @@ export default function SubscriptionRedesign({
 
 
 
-      {/* ═══════════════════════════════════════════════════════════
-         MODAL 3: DIRECT UPI RENEWAL CHECKOUT
-         ═══════════════════════════════════════════════════════════ */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 z-50 bg-[#000d21]/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden animate-scaleUp">
-            {/* Modal Header */}
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
-                  <CreditCard className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold text-[#000d21]">Direct UPI Checkout</span>
-                  <span className="text-[10px] text-slate-400">MyMobPay Platform License</span>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowPaymentModal(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-colors"
-                type="button"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-6 flex flex-col gap-4 items-center text-center">
-              <div className="flex flex-col gap-1 items-center">
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                  Amount Due (0% Gateway Fee)
-                </span>
-                <div className="text-3xl font-bold text-[#000d21]">
-                  ₹{selectedPlan.amount.toLocaleString('en-IN')}.00
-                </div>
-                <span className="text-xs text-blue-600 font-semibold">
-                  Standard Plan — {selectedPlan.title} Renewal
-                </span>
-              </div>
-
-              {/* Dynamic QR Container */}
-              <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs flex flex-col items-center gap-3">
-                <div className="relative p-2 bg-white rounded-lg">
-                  <QRCode
-                    value={qrString}
-                    size={176}
-                    level="Q"
-                    style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-                    viewBox="0 0 256 256"
-                  />
-                  {/* Centered QR Badge with Blue & Orange M Logo */}
-                  <div className="absolute inset-0 m-auto w-9 h-9 rounded-xl bg-white shadow-md flex items-center justify-center border border-slate-100 p-1 pointer-events-none">
-                    <svg width="22" height="20" viewBox="0 0 38 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M 7 28.5 V 13.5 C 7 7.5 12 5.5 16 8.5 L 19 19" stroke="#0284C7" strokeWidth="5.2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M 19 19 L 22 8.5 C 26 5.5 31 7.5 31 13.5 V 28.5" stroke="#FF7800" strokeWidth="5.2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-[10px] text-blue-700 font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping" />
-                  Scan with any UPI app (GPay, PhonePe, Paytm, BHIM)
-                </div>
-              </div>
-
-              {/* Real UPI VPA & Merchant MID */}
-              <div className="flex flex-col gap-1.5 w-full text-left bg-slate-50 border border-slate-200/80 p-3.5 rounded-xl text-xs">
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-400">UPI VPA:</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-slate-800 font-semibold">{upiVpa}</span>
-                    <button
-                      onClick={() => handleCopy(upiVpa, 'vpa_copy')}
-                      className="text-slate-400 hover:text-slate-700 p-0.5"
-                      title="Copy VPA"
-                      type="button"
-                    >
-                      {copiedKey === 'vpa_copy' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Merchant ID:</span>
-                  <span className="text-slate-800 font-semibold font-mono">
-                    {merchantMid}
-                  </span>
-                </div>
-              </div>
-
-              {/* Go to Website Live Checkout Button */}
-              <a
-                href={checkoutUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs flex items-center justify-center gap-2 transition-colors border border-slate-200"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
-                Open Live Checkout Page
-              </a>
-
-              {/* Optional 12-Digit Bank UTR Input */}
-              <div className="w-full text-left space-y-1">
-                <label className="text-[11px] font-semibold text-slate-600 flex items-center justify-between">
-                  <span>12-Digit Bank UTR / UPI Ref:</span>
-                  <span className="text-[10px] text-emerald-600 font-bold">Auto-matches receipt</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 628013441782"
-                  value={renewUtr}
-                  onChange={(e) => setRenewUtr(e.target.value.replace(/[^0-9A-Za-z]/g, ''))}
-                  className="w-full px-3 py-2 text-xs font-mono font-semibold bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-400"
-                  maxLength={22}
-                />
-              </div>
-
-              {/* Confirm / Activate Button */}
-              <button
-                onClick={handleActivatePlan}
-                disabled={isActivating}
-                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs shadow-blue-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
-                type="button"
-              >
-                {isActivating ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Verifying &amp; Updating Subscription...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="w-4 h-4" />
-                    I Have Paid — Activate Plan
-                  </>
-                )}
-              </button>
-
-              <span className="text-[10px] text-slate-400">
-                Instant activation through direct UPI bank settlement.
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modal 3 removed permanently in favor of real live /pay checkout page */}
 
       {/* ═══════════════════════════════════════════════════════════
          MODAL 4: CONTACT ENTERPRISE SALES MODAL
