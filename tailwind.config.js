@@ -87,7 +87,7 @@ module.exports = {
         'currency-display': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '700' }],
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'var(--font-inter)', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       borderRadius: {
