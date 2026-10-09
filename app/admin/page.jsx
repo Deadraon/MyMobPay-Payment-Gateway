@@ -55,25 +55,17 @@ import {
 
 const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-primary)' }) => (
   <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300 hover:scale-[1.02]`}>
-    {/* Dual-Color M Mark (Blue Left, Orange Right) */}
-    <g transform="translate(4, 3)">
-      <path
-        d="M 7 28.5 V 13.5 C 7 7.5 12 5.5 16 8.5 L 19 19"
-        stroke="#0284C7"
-        strokeWidth="5.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M 19 19 L 22 8.5 C 26 5.5 31 7.5 31 13.5 V 28.5"
-        stroke="#FF7800"
-        strokeWidth="5.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </g>
+    {/* 3D Ribbon M Mark */}
+    <image
+      href="/logos/mymobpay_mark.png"
+      x="2"
+      y="2"
+      width="38"
+      height="36"
+      preserveAspectRatio="xMidYMid meet"
+    />
     <text
-      x="46"
+      x="44"
       y="27"
       fontFamily="'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
       fontWeight="800"

@@ -9,37 +9,17 @@ import React from 'react';
  */
 export function MyMobPayMark({ className = 'w-6 h-6', ...props }) {
   return (
-    <svg
-      viewBox="0 0 38 34"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-label="MyMobPay Mark"
+    <img
+      src="/logos/mymobpay_mark.png"
+      alt="MyMobPay Mark"
+      className={`object-contain select-none ${className}`}
       {...props}
-    >
-      {/* Left Blue Stroke */}
-      <path
-        d="M 6.5 28.5 V 13 C 6.5 7.2 11.5 5 15.5 8.2 L 19 18.5"
-        stroke="#0284C7"
-        strokeWidth="5.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Right Orange Stroke */}
-      <path
-        d="M 19 18.5 L 22.5 8.2 C 26.5 5 31.5 7.2 31.5 13 V 28.5"
-        stroke="#FF7800"
-        strokeWidth="5.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    />
   );
 }
 
 /**
- * MyMobPayLogo — Full Brand Logo with Blue/Orange M Mark before "MyMobPay"
- * Clean SVG implementation that drops cleanly into any existing MyMobPayLogo instance.
+ * MyMobPayLogo — Full Brand Logo with Blue/Orange M Ribbon Mark + "MyMobPay"
  */
 export function MyMobPayLogo({
   className = 'w-48 h-auto',
@@ -54,26 +34,17 @@ export function MyMobPayLogo({
       className={`transition-transform duration-200 select-none ${className}`}
       {...props}
     >
-      {/* M Mark (Left Blue, Right Orange) */}
-      <g transform="translate(2, 3)">
-        <path
-          d="M 6.5 28.5 V 13 C 6.5 7.2 11.5 5 15.5 8.2 L 19 18.5"
-          stroke="#0284C7"
-          strokeWidth="5.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M 19 18.5 L 22.5 8.2 C 26.5 5 31.5 7.2 31.5 13 V 28.5"
-          stroke="#FF7800"
-          strokeWidth="5.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </g>
+      <image
+        href="/logos/mymobpay_mark.png"
+        x="2"
+        y="2"
+        width="38"
+        height="36"
+        preserveAspectRatio="xMidYMid meet"
+      />
       {/* Wordmark: MyMobPay */}
       <text
-        x="43"
+        x="44"
         y="27"
         fontFamily="'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
         fontWeight="800"
@@ -91,7 +62,7 @@ export function MyMobPayLogo({
  * MyMobPayQrBadge — Center logo badge overlay for UPI QR codes
  * Placed in the dead center of the QR code with white backing and soft shadow.
  */
-export function MyMobPayQrBadge({ size = 32, markSize = 20, className = '' }) {
+export function MyMobPayQrBadge({ size = 32, markSize = 22, className = '' }) {
   return (
     <div
       className={`absolute inset-0 m-auto rounded-xl bg-white shadow-md flex items-center justify-center border border-slate-100/90 pointer-events-none ${className}`}
@@ -101,10 +72,13 @@ export function MyMobPayQrBadge({ size = 32, markSize = 20, className = '' }) {
         padding: '3px',
       }}
     >
-      <MyMobPayMark
+      <img
+        src="/logos/mymobpay_mark.png"
+        alt="MyMobPay"
         style={{
           width: `${markSize}px`,
           height: `${markSize}px`,
+          objectFit: 'contain',
           display: 'block',
         }}
       />

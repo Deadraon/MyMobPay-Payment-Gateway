@@ -15,24 +15,7 @@ const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutVi
 /* ── Original MyMobPay Website Logo (Dual-color Blue/Orange M mark + MyMobPay) ── */
 const MyMobPayLogo = () => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 8, lineHeight: 1, userSelect: 'none' }}>
-    <svg width="28" height="25" viewBox="0 0 38 34" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-      {/* Left Blue Stroke */}
-      <path
-        d="M 7 28.5 V 13.5 C 7 7.5 12 5.5 16 8.5 L 19 19"
-        stroke="#0284C7"
-        strokeWidth="5.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Right Orange Stroke */}
-      <path
-        d="M 19 19 L 22 8.5 C 26 5.5 31 7.5 31 13.5 V 28.5"
-        stroke="#FF7800"
-        strokeWidth="5.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <img src="/logos/mymobpay_mark.png" alt="MyMobPay" width="28" height="25" style={{ height: 26, width: "auto", objectFit: "contain", flexShrink: 0 }} />
     <span style={{
       fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       fontWeight: 800,
