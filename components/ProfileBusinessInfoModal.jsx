@@ -64,6 +64,42 @@ export default function ProfileBusinessInfoModal({
     setErrorMessage('');
   }, [profile, user, isOpen]);
 
+  // Lock background scrolling while modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    // Lock any dashboard overflow-y-auto containers behind the modal
+    const scrollContainers = document.querySelectorAll('.overflow-y-auto');
+    const lockedContainers = [];
+    scrollContainers.forEach((el) => {
+      if (!el.closest('#profile-business-modal-card')) {
+        lockedContainers.push({ el, prev: el.style.overflow });
+        el.style.overflow = 'hidden';
+      }
+    });
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      lockedContainers.forEach(({ el, prev }) => {
+        el.style.overflow = prev;
+      });
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   // Merchant ID formatting - single unified display format
@@ -142,6 +178,7 @@ export default function ProfileBusinessInfoModal({
       onClick={onClose}
     >
       <div 
+        id="profile-business-modal-card"
         className="bg-white border border-slate-200/90 rounded-2xl shadow-2xl flex flex-col w-full max-w-xl overflow-hidden max-h-[92vh] animate-scaleUp"
         onClick={(e) => e.stopPropagation()}
       >
@@ -241,7 +278,7 @@ export default function ProfileBusinessInfoModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-6 py-4 space-y-4 overscroll-contain">
           {saveSuccess && (
             <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />

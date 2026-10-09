@@ -10135,7 +10135,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-        <div className="flex-1 p-4 md:p-10 overflow-y-auto">
+        <div className={`flex-1 p-4 md:p-10 ${isBusinessInfoModalOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
 
 
 
