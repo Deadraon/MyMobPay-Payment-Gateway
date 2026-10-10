@@ -1,30 +1,25 @@
 <div align="center">
 
-<a href="https://mymob.tech" target="_blank">
-  <img src="public/icon.png" alt="MyMobPay Logo" width="100" height="100" style="border-radius: 20px;" />
-</a>
+<img src="public/icon.png" alt="MyMobPay Logo" width="100" height="100" style="border-radius: 20px;" />
 
 # ⚡ MyMobPay
 ### Direct-to-Bank UPI Payment Gateway Infrastructure with 0% Transaction Fees
 **The Next-Generation Non-Custodial Payment Gateway Built for Indian SaaS Founders, Builders & Developers.**
 
-[![Live Production](https://img.shields.io/badge/Production-https%3A%2F%2Fmymob.tech-2563EB?style=for-the-badge&logo=google-chrome&logoColor=white)](https://mymob.tech)
-[![Merchant Dashboard](https://img.shields.io/badge/Merchant_Console-mymob.tech%2Fdashboard-10B981?style=for-the-badge&logo=vercel&logoColor=white)](https://mymob.tech/dashboard)
-[![Customer Checkout](https://img.shields.io/badge/Live_Checkout-mymob.tech%2Fpay-6366F1?style=for-the-badge)](https://mymob.tech/pay)
-[![Security Rating](https://img.shields.io/badge/Security_Rating-Grade_A%2B_Enterprise-059669?style=for-the-badge&logo=cloudflare&logoColor=white)](https://mymob.tech)
-[![License](https://img.shields.io/badge/License-Proprietary-gray?style=for-the-badge)](https://mymob.tech)
+[![Demo](https://img.shields.io/badge/Demo-Localhost%3A3000-2563EB?style=for-the-badge&logo=google-chrome&logoColor=white)](http://localhost:3000)
+[![Merchant Dashboard](https://img.shields.io/badge/Merchant_Console-localhost%3A3000%2Fdashboard-10B981?style=for-the-badge)](http://localhost:3000/dashboard)
+[![Customer Checkout](https://img.shields.io/badge/Live_Checkout-localhost%3A3000%2Fpay-6366F1?style=for-the-badge)](http://localhost:3000/pay)
+[![Architecture](https://img.shields.io/badge/Architecture-Non--Custodial_P2P-059669?style=for-the-badge)]()
+[![Hackathon](https://img.shields.io/badge/Hackathon-Final_Round_Project-F59E0B?style=for-the-badge)]()
 
 <br />
 
-<a href="https://mymob.tech" target="_blank">
-  <img src="public/og-banner.png" alt="MyMobPay Platform Banner" width="800" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
-</a>
+<img src="public/og-banner.png" alt="MyMobPay Platform Banner" width="800" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
 
 <br />
 <br />
 
-> 🌐 **Official Domain**: [https://mymob.tech](https://mymob.tech) | **Brand Key**: `mymobpay`  
-> 🔍 **Google Verified**: Search `mymobpay upi payment` on Google to see the official **Google AI Overview** featuring MyMobPay.
+> 🚀 **Hackathon Showcase**: Full-stack running locally on `http://localhost:3000` | **Architecture**: Non-Custodial Direct UPI (Zero Commission)
 
 </div>
 
@@ -60,7 +55,7 @@ Yet traditional aggregators (Razorpay, Cashfree, PayU, Stripe India) extract **2
 ```
 ┌─────────────────┐       1. Initiates Order        ┌──────────────────────┐
 │  Customer Web   │ ──────────────────────────────> │    MyMobPay Core     │
-│   Application   │ <────────────────────────────── │   (https://mymob.tech)
+│   Application   │ <────────────────────────────── │ (http://localhost:3000)
 └─────────────────┘      2. Generates Dynamic QR    └──────────────────────┘
         │                & Unique Reference Code                │
         │                                                       │
@@ -200,7 +195,7 @@ Create a `.env.local` file in the root directory:
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-NEXT_PUBLIC_APP_URL=https://mymob.tech
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ### 4. Run the development server
@@ -211,17 +206,15 @@ Visit `http://localhost:3000` to view the application.
 
 ---
 
-## 🌐 Production Endpoints
+## 🌐 Application Endpoints (Localhost Demonstration)
 
-| URL Path | Description | Access |
+| Endpoint Path | Description | Access |
 |---|---|---|
-| `https://mymob.tech/` | Official Landing Page & Feature Showcase | Public |
-| `https://mymob.tech/pay` | Dynamic Universal UPI Checkout & QR Generator | Public |
-| `https://mymob.tech/login` | Merchant Login & Google Workspace SSO | Public |
-| `https://mymob.tech/dashboard` | Real-time Analytics, API Keys & Webhooks Console | Authenticated |
-| `https://mymob.tech/admin` | Master Administrative Control Center | Super Admin |
-| `https://mymob.tech/sitemap.xml` | Dynamic Search Engine Sitemap | Public / Crawlers |
-| `https://mymob.tech/robots.txt` | Crawler Directives & Indexing Rules | Public / Crawlers |
+| `http://localhost:3000/` | Landing Page & Feature Showcase | Public |
+| `http://localhost:3000/pay` | Dynamic Universal UPI Checkout & QR Generator | Public |
+| `http://localhost:3000/login` | Merchant Login & Account Access | Public |
+| `http://localhost:3000/dashboard` | Real-time Analytics, API Keys & Webhooks Console | Authenticated |
+| `http://localhost:3000/admin` | Master Administrative Control Center | Super Admin |
 
 ---
 
