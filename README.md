@@ -185,8 +185,8 @@ export async function handleWebhook(req, res) {
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Deadraon/Upi_payment-page.git
-cd Upi_payment-page/upi-payment-gateway
+git clone https://github.com/Deadraon/MyMobPay.git
+cd MyMobPay
 ```
 
 ### 2. Install dependencies
