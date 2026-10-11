@@ -7,6 +7,7 @@ import QRCode from 'react-qr-code';
 import dynamic from 'next/dynamic';
 import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
+import { formatRefId } from '@/lib/orderId';
 
 const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutView'), {
   ssr: false,
@@ -1125,7 +1126,7 @@ function PayPageContent() {
           <div style={{ background: '#f8fafc', borderRadius: 16, border: '1px solid #e2e8f0', padding: '16px 18px', textAlign: 'left', marginBottom: 24, fontSize: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 10, borderBottom: '1px dashed #e2e8f0' }}>
               <span style={{ color: '#64748b', fontWeight: 600 }}>Order ID</span>
-              <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0f172a' }}>{activeOrderId}</span>
+              <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0f172a' }} title={activeOrderId}>{formatRefId(activeOrderId)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px dashed #e2e8f0' }}>
               <span style={{ color: '#64748b', fontWeight: 600 }}>Amount Settled</span>
@@ -1240,7 +1241,7 @@ function PayPageContent() {
               {activeId && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: displayAmt ? 10 : 0, borderBottom: displayAmt ? '1px dashed #e2e8f0' : 'none' }}>
                   <span style={{ color: '#64748b', fontWeight: 600 }}>Order ID</span>
-                  <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0f172a' }}>{activeId}</span>
+                  <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0f172a' }} title={activeId}>{formatRefId(activeId)}</span>
                 </div>
               )}
               {displayAmt && (
@@ -1720,7 +1721,7 @@ function PayPageContent() {
                         <div className="mob-spec-row">
                           <span className="mob-spec-k">Order ID</span>
                           <div className="mob-spec-v-wrap">
-                            <code className="mob-spec-code">{activeId}</code>
+                            <code className="mob-spec-code" title={activeId}>{formatRefId(activeId)}</code>
                             <button
                               type="button"
                               onClick={handleCopyOrderId}
@@ -2720,7 +2721,7 @@ function PayPageContent() {
                 </p>
 
                 <div className="rcp" style={{ textAlign: 'left', margin: '16px 0', background: '#f8fafc', padding: '16px', borderRadius: 16, border: '1px solid #e2e8f0' }}>
-                  <div><span>Order Reference</span><span style={{ fontFamily: 'monospace', fontWeight: 700 }}>{activeId || 'DEMO'}</span></div>
+                  <div><span>Order Reference</span><span style={{ fontFamily: 'monospace', fontWeight: 700 }} title={activeId}>{formatRefId(activeId) || 'DEMO'}</span></div>
                   <div><span>Amount Paid</span><span style={{ color: '#059669', fontWeight: 800 }}>{fmtInr(displayAmt)}</span></div>
                   <div><span>Payment Method</span><span>{selectedMethod === 'card' ? 'Credit / Debit Card' : selectedMethod === 'bank' ? 'Direct Bank Transfer' : selectedMethod === 'crypto' ? 'Crypto USDT (TRC20)' : selectedMethod === 'cod' ? 'Cash on Delivery (COD)' : 'UPI Instant Settlement'}</span></div>
                   <div><span>Transaction Status</span><span style={{ color: '#059669', fontWeight: 700 }}>✓ Verified & Paid</span></div>

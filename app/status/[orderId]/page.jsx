@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { formatRefId } from '@/lib/orderId';
 import {
   CheckCircle, XCircle, Loader2, IndianRupee,
   Key, Calendar, ShieldCheck, RefreshCw,
@@ -25,16 +26,19 @@ const AnimatedCheck = () => (
 );
 
 /* ── Receipt row ───────────────────────────────────────────── */
-const Row = ({ label, value, mono = false, green = false, badge = false }) => (
+const Row = ({ label, value, displayValue, mono = false, green = false, badge = false, title }) => (
   <div className="flex justify-between items-center py-2.5 border-b border-slate-100 last:border-0">
     <span className="text-[11px] text-slate-400 font-semibold tracking-wide">{label}</span>
     {badge ? (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-600">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" /> {value}
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" /> {displayValue || value}
       </span>
     ) : (
-      <span className={`text-xs font-semibold text-right max-w-[60%] break-all ${mono ? 'font-mono text-[11px] tracking-wide' : ''} ${green ? 'text-emerald-600 font-bold' : 'text-slate-800'}`}>
-        {value}
+      <span
+        title={title || (typeof value === 'string' ? value : undefined)}
+        className={`text-xs font-semibold text-right max-w-[60%] break-all ${mono ? 'font-mono text-[11px] tracking-wide' : ''} ${green ? 'text-emerald-600 font-bold' : 'text-slate-800'}`}
+      >
+        {displayValue || value}
       </span>
     )}
   </div>
@@ -347,7 +351,7 @@ export default function StatusPage() {
                 </div>
               </div>
               <div className="mx-5 mb-4 rounded-xl bg-slate-50 border border-slate-100 px-4 py-1">
-                <Row label="Order ID" value={orderId} mono />
+                <Row label="Order ID" value={orderId} displayValue={formatRefId(orderId)} mono />
                 <Row label="Amount" value={`₹${parseFloat(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`} green />
                 <Row label="Method" value={isCodOrder ? 'Cash on Delivery (Physical)' : (order.method || (order?.utr?.length > 30 ? 'Crypto' : 'UPI'))} />
                 <Row label="Status" value={isCodOrder ? 'Order Placed' : 'Verified'} badge />
@@ -423,7 +427,7 @@ export default function StatusPage() {
               </div>
             </div>
             <div className="mx-5 mb-4 rounded-xl bg-slate-50 border border-slate-100 px-4 py-1">
-              <Row label="Order ID" value={orderId} mono />
+              <Row label="Order ID" value={orderId} displayValue={formatRefId(orderId)} mono />
               <Row label="Amount" value={`₹${parseFloat(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`} />
             </div>
             <div className="px-5 pb-6">
@@ -503,7 +507,7 @@ export default function StatusPage() {
                   {parseFloat(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
               </div>
-              <Row label="Order ID" value={orderId} mono />
+              <Row label="Order ID" value={orderId} displayValue={formatRefId(orderId)} mono />
               <Row label="Method" value={order.method || 'UPI'} />
               {order.project && <Row label="Project" value={order.project} />}
             </div>

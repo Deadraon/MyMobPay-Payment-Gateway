@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { MyMobPayLogo, MyMobPayMark } from '@/components/MyMobPayLogo';
+import { formatRefId } from '@/lib/orderId';
 
 /* ── Instant Inline Vector Icons (0ms render time, no font loading delays, no text ligatures) ── */
 const IconVerifiedUser = ({ className = "w-[18px] h-[18px]" }) => (
@@ -244,9 +245,10 @@ export default function DesktopCheckoutView({
   const safeUpiId = (!upiId || upiId === 'pending@upi' || !upiId.includes('@')) 
     ? '9410181307@okbizaxis' 
     : upiId;
-  const orderRefDisplay = safeActiveId.startsWith('#')
-    ? safeActiveId.replace('#', '')
+  const rawOrderRef = safeActiveId.startsWith('#')
+    ? safeActiveId.replace(/^#+/, '')
     : safeActiveId;
+  const orderRefDisplay = formatRefId(rawOrderRef);
 
   const sessionDisplay = safeActiveId;
 
@@ -544,7 +546,7 @@ export default function DesktopCheckoutView({
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Order Reference</span>
-            <span className="font-mono text-xs font-bold text-slate-900">{orderRefDisplay}</span>
+            <span className="font-mono text-xs font-bold text-slate-900" title={rawOrderRef}>{orderRefDisplay}</span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Merchant Name</span>
@@ -754,7 +756,7 @@ export default function DesktopCheckoutView({
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-primary-fixed-dim text-body-sm mt-0.5">
-                      <span>Order {orderRefDisplay.startsWith('MMP_') ? orderRefDisplay : `#${orderRefDisplay}`}</span>
+                      <span title={rawOrderRef}>Order {orderRefDisplay.startsWith('MMP_') ? orderRefDisplay : `#${orderRefDisplay}`}</span>
                     </div>
                   </div>
                 </div>
@@ -1016,18 +1018,21 @@ export default function DesktopCheckoutView({
 
                           {/* Itemized Specification Rows */}
                           <div className="p-4 sm:p-5 space-y-3 text-xs">
-                            <div className="flex items-center justify-between py-1 border-b border-surface-container-low">
-                              <span className="text-on-surface-variant font-medium">
+                            <div className="flex items-center justify-between py-1 border-b border-surface-container-low min-w-0">
+                              <span className="text-on-surface-variant font-medium whitespace-nowrap mr-3 shrink-0">
                                 {lang === 'hi' ? 'ऑर्डर संदर्भ' : 'Order Reference'}
                               </span>
-                              <div className="flex items-center gap-1.5">
-                                <code className="font-mono font-bold text-on-surface bg-surface-container-low px-2 py-0.5 rounded text-[11.5px] select-all">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <code
+                                  className="font-mono font-bold text-on-surface bg-surface-container-low px-2 py-0.5 rounded text-[11.5px] select-all truncate max-w-[170px] sm:max-w-[210px]"
+                                  title={rawOrderRef}
+                                >
                                   {orderRefDisplay}
                                 </code>
                                 <button
                                   type="button"
-                                  onClick={() => handleCopyText(orderRefDisplay, 'orderId')}
-                                  className="focus-ring p-1 rounded hover:bg-surface-container text-secondary transition-colors cursor-pointer"
+                                  onClick={() => handleCopyText(rawOrderRef, 'orderId')}
+                                  className="focus-ring p-1 rounded hover:bg-surface-container text-secondary transition-colors cursor-pointer shrink-0"
                                   title="Copy Order Reference"
                                   aria-label="Copy Order Reference"
                                 >
@@ -1752,7 +1757,7 @@ export default function DesktopCheckoutView({
                 <IconHelp className="w-[15px] h-[15px] flex-shrink-0" />
                 <span>Need help with payment?</span>
               </button>
-              <span className="text-label-sm font-mono text-[12px]">Session ID: {sessionDisplay}</span>
+              <span className="text-label-sm font-mono text-[12px]" title={safeActiveId}>Session ID: {formatRefId(sessionDisplay)}</span>
             </div>
 
           </div>
