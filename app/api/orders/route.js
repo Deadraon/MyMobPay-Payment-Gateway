@@ -96,6 +96,16 @@ export async function POST(request) {
         // If an order with this external_ref was already paid / verified:
         const paidOrder = existingOrders.find(o => o.status === 'verified' || o.status === 'completed' || o.status === 'paid');
         if (paidOrder) {
+          const paidTime = new Date(paidOrder.verified_at || paidOrder.created_at).getTime();
+          const isPost24h = !isNaN(paidTime) && (Date.now() - paidTime) > (24 * 60 * 60 * 1000);
+          if (isPost24h) {
+            return NextResponse.json({
+              error: 'This payment link has closed and is no longer available.',
+              code: 'NOT_FOUND',
+              status: 'not_found'
+            }, { status: 404 });
+          }
+
           return NextResponse.json({
             error: 'This payment order has already been completed and settled.',
             code: 'ALREADY_PAID',
@@ -302,9 +312,24 @@ export async function GET(request) {
     }
 
     const paidTime = new Date(order.verified_at || order.created_at).getTime();
-    const isPostPaymentExpired = (order.status === 'verified' || order.status === 'completed' || order.status === 'paid') &&
-      !isNaN(paidTime) &&
-      (Date.now() - paidTime) > (24 * 60 * 60 * 1000);
+    const isPaid = order.status === 'verified' || order.status === 'completed' || order.status === 'paid';
+    const isPostPaymentExpired = isPaid && !isNaN(paidTime) && (Date.now() - paidTime) > (24 * 60 * 60 * 1000);
+
+    // If order was paid > 24 hours ago, expire the link completely (404 NOT_FOUND)
+    if (isPostPaymentExpired) {
+      return NextResponse.json({
+        error: 'This payment link has closed and is no longer available.',
+        code: 'NOT_FOUND',
+        status: 'not_found'
+      }, {
+        status: 404,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+    }
 
     // Fetch matching merchant branding settings and UPI ID
     const { data: merchant } = await supabaseAdmin

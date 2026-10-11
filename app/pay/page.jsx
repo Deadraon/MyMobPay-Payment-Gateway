@@ -471,6 +471,12 @@ function PayPageContent() {
 
         // Paid
         if (data.code === 'PAID' || data.status === 'paid') {
+          const paidTime = new Date(data.paid_at || data.created_at).getTime();
+          const isPost24h = data.isPostPaymentExpired || (!isNaN(paidTime) && (Date.now() - paidTime) > (24 * 60 * 60 * 1000));
+          if (isPost24h) {
+            setCurView('vNotFound');
+            return;
+          }
           setPaidOrderData({
             amount: data.amount_in_rupees || (Number(data.amount) / 100).toFixed(2),
             orderId: data.order_id || routeToken,
@@ -607,6 +613,12 @@ function PayPageContent() {
         if (!isMounted) return;
 
         if (data.status === 'verified' || data.status === 'completed' || data.status === 'paid') {
+          const paidTime = new Date(data.verified_at || data.created_at).getTime();
+          const isPost24h = data.isPostPaymentExpired || (!isNaN(paidTime) && (Date.now() - paidTime) > (24 * 60 * 60 * 1000));
+          if (isPost24h) {
+            setCurView('vNotFound');
+            return;
+          }
           setPaidOrderData(data);
           setCurView('vPaidExpired');
           return;
@@ -1132,28 +1144,37 @@ function PayPageContent() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {activeOrderId && (
-              <button
-                type="button"
-                onClick={() => {
-                  router.push(`/status/${activeOrderId}`);
-                }}
-                style={{
-                  width: '100%',
-                  padding: '13px 20px',
-                  borderRadius: 14,
-                  border: 'none',
-                  background: '#0f172a',
-                  color: '#ffffff',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  transition: 'background 0.2s',
-                }}
-              >
-                View Payment Receipt
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.print();
+                }
+              }}
+              style={{
+                width: '100%',
+                padding: '13px 20px',
+                borderRadius: 14,
+                border: 'none',
+                background: '#0f172a',
+                color: '#ffffff',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9" />
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                <rect x="6" y="14" width="12" height="8" />
+              </svg>
+              Print Receipt
+            </button>
 
             <button
               type="button"
