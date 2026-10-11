@@ -1,7 +1,11 @@
 <div align="center">
 
 <a href="https://mymob.tech" target="_blank">
-  <img src="public/icon.png" alt="MyMobPay Logo" width="100" height="100" style="border-radius: 20px;" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/logos/logo_horizontal_white.png">
+    <source media="(prefers-color-scheme: light)" srcset="public/logos/logo.png">
+    <img src="public/logos/logo.png" alt="MyMobPay Logo" width="300" />
+  </picture>
 </a>
 
 # ⚡ MyMobPay

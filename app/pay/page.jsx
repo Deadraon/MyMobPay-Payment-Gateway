@@ -13,15 +13,22 @@ const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutVi
 });
 
 /* ── Original MyMobPay Website Logo (Dual-color Blue/Orange M mark + MyMobPay) ── */
-const MyMobPayLogo = () => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 8, lineHeight: 1, userSelect: 'none' }}>
-    <img src="/logos/mymobpay_mark.png" alt="MyMobPay" width="28" height="25" style={{ height: 26, width: "auto", objectFit: "contain", flexShrink: 0 }} />
+const MyMobPayLogo = ({ textColor = '#0f172a', size = 24 }) => (
+  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 9, lineHeight: 1, userSelect: 'none' }}>
+    <img
+      src="/logos/mymobpay_mark.png"
+      alt="MyMobPay"
+      width="28"
+      height="26"
+      style={{ height: 26, width: "auto", objectFit: "contain", flexShrink: 0 }}
+    />
     <span style={{
       fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       fontWeight: 800,
-      fontSize: 24,
-      color: 'var(--head)',
+      fontSize: size,
+      color: textColor || '#0f172a',
       letterSpacing: '-0.02em',
+      display: 'inline-block',
     }}>MyMobPay</span>
   </div>
 );
@@ -1056,7 +1063,7 @@ function PayPageContent() {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f4f6fa', fontFamily: "'Outfit', -apple-system, sans-serif", padding: 20 }}>
         <div style={{ background: '#fff', borderRadius: 24, padding: '36px 28px', maxWidth: 400, width: '100%', textAlign: 'center', boxShadow: '0 10px 30px -4px rgba(16, 24, 40, 0.08)', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-            <MyMobPayLogo />
+            <MyMobPayLogo textColor="#0f172a" />
           </div>
           <div style={{ position: 'relative', width: 48, height: 48, margin: '0 auto 16px' }}>
             <svg width="48" height="48" viewBox="0 0 48 48" style={{ animation: 'spin 0.8s linear infinite' }}>
@@ -1086,7 +1093,7 @@ function PayPageContent() {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0b1329', fontFamily: "'Outfit', -apple-system, sans-serif", padding: '24px 16px' }}>
         <div style={{ background: '#ffffff', borderRadius: 28, padding: '36px 28px', maxWidth: 440, width: '100%', textAlign: 'center', boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.35)', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-            <MyMobPayLogo />
+            <MyMobPayLogo textColor="#0f172a" />
           </div>
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#ecfdf5', border: '1px solid #a7f3d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#059669' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -1190,7 +1197,7 @@ function PayPageContent() {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0b1329', fontFamily: "'Outfit', -apple-system, sans-serif", padding: '24px 16px' }}>
         <div style={{ background: '#ffffff', borderRadius: 28, padding: '36px 28px', maxWidth: 440, width: '100%', textAlign: 'center', boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.35)', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-            <MyMobPayLogo />
+            <MyMobPayLogo textColor="#0f172a" />
           </div>
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#fff1f2', border: '1px solid #fecdd3', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#e11d48' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1267,7 +1274,7 @@ function PayPageContent() {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0b1329', fontFamily: "'Outfit', -apple-system, sans-serif", padding: '24px 16px' }}>
         <div style={{ background: '#ffffff', borderRadius: 28, padding: '36px 28px', maxWidth: 440, width: '100%', textAlign: 'center', boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.35)', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-            <MyMobPayLogo />
+            <MyMobPayLogo textColor="#0f172a" />
           </div>
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: isCancelled ? '#f1f5f9' : '#fff1f2', border: `1px solid ${isCancelled ? '#cbd5e1' : '#fecdd3'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: isCancelled ? '#475569' : '#e11d48' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1330,7 +1337,7 @@ function PayPageContent() {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0b1329', fontFamily: "'Outfit', -apple-system, sans-serif", padding: '24px 16px' }}>
         <div style={{ background: '#ffffff', borderRadius: 28, padding: '36px 28px', maxWidth: 440, width: '100%', textAlign: 'center', boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.35)', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-            <MyMobPayLogo />
+            <MyMobPayLogo textColor="#0f172a" />
           </div>
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#64748b' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1385,7 +1392,7 @@ function PayPageContent() {
         <header>
           <div className="logo">
             <Link href="/" style={{ textDecoration: 'none' }}>
-              <MyMobPayLogo />
+              <MyMobPayLogo textColor="#0f172a" />
             </Link>
           </div>
           <div className="secure">
@@ -1595,7 +1602,7 @@ function PayPageContent() {
           <>
             <div className="hd">
               <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-                <MyMobPayLogo />
+                <MyMobPayLogo textColor="#0f172a" />
               </Link>
               <div className="sec">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">

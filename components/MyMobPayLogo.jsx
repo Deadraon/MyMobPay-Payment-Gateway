@@ -23,7 +23,7 @@ export function MyMobPayMark({ className = 'w-6 h-6', ...props }) {
  */
 export function MyMobPayLogo({
   className = 'w-48 h-auto',
-  textColor = 'var(--text-primary)',
+  textColor = 'var(--text-primary, #0f172a)',
   ...props
 }) {
   return (
