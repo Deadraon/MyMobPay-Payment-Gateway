@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { verifyAdminAuth } from '@/lib/adminSettings';
 
-// One-time migration endpoint — run once then remove
+// Protected migration endpoint
 // GET /api/admin/migrate
-export async function GET() {
+export async function GET(request) {
   try {
+    const isAuthorized = await verifyAdminAuth(request);
+    if (!isAuthorized) {
+      return NextResponse.json({ error: 'Unauthorized: Access Denied' }, { status: 401 });
+    }
     // Add new columns for universal gateway support
     const migrations = [
       `ALTER TABLE orders ADD COLUMN IF NOT EXISTS project text`,

@@ -43,10 +43,8 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { password, merchantId, action, status } = body;
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-
-    const isAuthorized = (await verifyAdminAuth(request)) || (password && password === adminPassword);
+    const { merchantId, action, status } = body;
+    const isAuthorized = await verifyAdminAuth(request);
 
     // Verify admin access
     if (!isAuthorized) {

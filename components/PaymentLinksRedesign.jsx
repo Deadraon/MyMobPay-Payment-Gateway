@@ -185,7 +185,7 @@ export default function PaymentLinksRedesign({
           amount: o.amount ? Number(o.amount).toFixed(2) : '0.00',
           status: (o.status === 'verified' || o.status === 'paid' || o.status === 'completed') ? 'Paid' : (o.status === 'failed' || o.status === 'expired') ? 'Expired' : 'Pending',
           createdAt: o.created_at || new Date().toISOString(),
-          url: `${host}/pay?order_id=${encodeURIComponent(o.id)}&key=${apiKey}&amount=${Number(o.amount || 0).toFixed(2)}&ref=${encodeURIComponent(o.external_ref || o.id)}&note=${encodeURIComponent(o.note || '')}`
+          url: `${host}/pay?order_id=${encodeURIComponent(o.id)}&amount=${Number(o.amount || 0).toFixed(2)}&ref=${encodeURIComponent(o.external_ref || o.id)}&note=${encodeURIComponent(o.note || '')}`
         });
       }
     });

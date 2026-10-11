@@ -50,7 +50,6 @@ import {
   Sparkles,
   Smartphone,
   ShieldCheck,
-  QrCode,
   ArrowLeft
 } from 'lucide-react';
 
@@ -81,12 +80,10 @@ const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-prima
 
 export default function AdminConsole({ user, profile, onBackToMerchant }) {
   // Auth states
-  const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (typeof window !== 'undefined') {
       return sessionStorage.getItem('admin_google_logged_in') === 'true' || 
-             !!sessionStorage.getItem('admin_token') || 
-             !!sessionStorage.getItem('admin_pwd');
+             !!sessionStorage.getItem('admin_token');
     }
     return false;
   });
@@ -115,9 +112,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
 
   // Passwordless Login UI states
   const [loginMode, setLoginMode] = useState('totp'); // 'totp' | 'google'
-  const [showPairingModal, setShowPairingModal] = useState(false);
-  const [activeTotpSecret, setActiveTotpSecret] = useState('MYMOBPAYADMINSEC');
-  const [totpPairCopied, setTotpPairCopied] = useState(false);
 
   // Modern Toast notification state
   const [toast, setToast] = useState(null);
@@ -163,7 +157,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   
   // Verification states
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
-  const [verificationPassword, setVerificationPassword] = useState('');
   const [pendingAction, setPendingAction] = useState(null);
   
   // Settings API states
@@ -199,12 +192,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   });
   const [codeActionLoading, setCodeActionLoading] = useState(false);
 
-  // Helper to dynamically build authorization headers (admin session token vs OAuth token vs password)
+  // Helper to dynamically build authorization headers (admin session token vs OAuth token)
   const getAuthHeaders = useCallback(async () => {
     const headers = {};
     const adminToken = sessionStorage.getItem('admin_token');
     const isGoogleLoggedIn = sessionStorage.getItem('admin_google_logged_in') === 'true';
-    const savedPwd = sessionStorage.getItem('admin_pwd') || password;
 
     if (isGoogleLoggedIn) {
       const { data: { session } } = await supabase.auth.getSession();
@@ -217,11 +209,9 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     } else if (adminToken) {
       headers['Authorization'] = `Bearer ${adminToken}`;
       headers['x-admin-token'] = adminToken;
-    } else if (savedPwd) {
-      headers['x-admin-password'] = savedPwd;
     }
     return headers;
-  }, [password]);
+  }, []);
 
   // Fetch Platform settings configurations
   const fetchSettings = useCallback(async (isSilent = false) => {
@@ -284,7 +274,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          password: password || undefined,
           action: 'create_gift_code',
           code: newGiftCode.code.trim().toUpperCase(),
           discountType: newGiftCode.discountType,
@@ -316,7 +305,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          password: password || undefined,
           action: 'delete_gift_code',
           code
         })
@@ -341,7 +329,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          password: password || undefined,
           action: 'extend_subscription',
           merchantId: selectedMerchantForEdit.id,
           days: Number(extendDays) || 30,
@@ -537,19 +524,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     }
   }, [isLoggedIn, handleRefreshAll]);
 
-  // Fetch active TOTP configuration for pairing assistant
-  useEffect(() => {
-    if (!isLoggedIn) {
-      fetch('/api/admin/login')
-        .then(r => r.json())
-        .then(d => {
-          if (d?.activeSecret) {
-            setActiveTotpSecret(d.activeSecret);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [isLoggedIn]);
 
   // Passwordless Authenticator App submission login (Option 2)
   const handleLoginSubmit = async (e) => {
@@ -613,10 +587,8 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   // Logout
   const handleLogout = async () => {
     sessionStorage.removeItem('admin_token');
-    sessionStorage.removeItem('admin_pwd');
     sessionStorage.removeItem('admin_google_logged_in');
     await supabase.auth.signOut();
-    setPassword('');
     setIsLoggedIn(false);
     setRequire2fa(false);
     setTotpCode('');
@@ -635,7 +607,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          password: password || undefined,
           merchantId,
           action: 'toggleSubscription',
           status: newStatus
@@ -662,7 +633,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          password: password || undefined,
           orderId,
           action,
           utr: utrVal
@@ -688,7 +658,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   // Trigger modal validation for settings changes
   const openVerification = (action) => {
     setPendingAction(action);
-    setVerificationPassword('');
     setIsVerificationModalOpen(true);
     setSettingsError('');
     setSettingsSuccess('');
@@ -729,7 +698,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     } finally {
       setSettingsLoading(false);
       setPendingAction(null);
-      setVerificationPassword('');
     }
   };
 
@@ -744,7 +712,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          password: password || undefined,
           action: 'generate_totp'
         })
       });
@@ -1048,109 +1015,24 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
                   <span>Verify Code</span>
                 </button>
 
-                <div className="pt-1 text-center space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowPairingModal(true)}
-                    className="text-xs font-semibold text-[#0045de] hover:underline transition-all inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <QrCode className="w-3.5 h-3.5" />
-                    <span>Setup Authenticator App</span>
-                  </button>
-
-                  {onBackToMerchant && (
-                    <div className="pt-2 border-t border-slate-100">
-                      <button
-                        type="button"
-                        onClick={onBackToMerchant}
-                        className="text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <ArrowLeft className="w-3.5 h-3.5" />
-                        <span>Return to Merchant Dashboard</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
+                {onBackToMerchant && (
+                  <div className="pt-2 text-center border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={onBackToMerchant}
+                      className="text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Return to Merchant Dashboard</span>
+                    </button>
+                  </div>
+                )}
               </form>
             )}
 
           </div>
 
         </div>
-
-        {/* Pairing Assistant Modal */}
-        {showPairingModal && (
-          <div className="fixed inset-0 z-50 bg-[#131b2e]/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-            <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#dae2fd] space-y-4 animate-scaleUp">
-              <div className="flex items-center justify-between pb-2 border-b border-[#dae2fd]/60">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-[#eaedff] text-[#0045de]">
-                    <Smartphone className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#131b2e]">
-                      Link Authenticator App
-                    </h3>
-                    <p className="text-[10px] text-[#74777e] font-semibold">Google / Microsoft / Authy</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowPairingModal(false)}
-                  className="p-1.5 rounded-lg hover:bg-[#f2f3ff] text-[#74777e] hover:text-[#131b2e] cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="flex flex-col items-center gap-3">
-                <div className="bg-white p-3 rounded-xl border border-[#dae2fd] shadow-xs">
-                  <QRCode
-                    value={`otpauth://totp/MyMobPay%20Admin:SuperAdmin?secret=${activeTotpSecret}&issuer=MyMobPay`}
-                    size={140}
-                  />
-                </div>
-
-                <div className="w-full bg-[#f2f3ff] border border-[#dae2fd] rounded-lg p-2.5 flex items-center justify-between">
-                  <div className="min-w-0 pr-2">
-                    <p className="text-[9px] uppercase font-bold text-[#74777e] tracking-wider">Manual Setup Key</p>
-                    <p className="text-xs font-mono font-bold text-[#131b2e] tracking-wider truncate">
-                      {activeTotpSecret}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(activeTotpSecret);
-                      setTotpPairCopied(true);
-                      setTimeout(() => setTotpPairCopied(false), 2000);
-                    }}
-                    className="px-2.5 py-1.5 rounded-lg bg-white border border-[#dae2fd] hover:bg-[#eaedff] text-[#131b2e] hover:text-[#0045de] text-[10px] font-bold flex items-center gap-1 shadow-xs shrink-0 cursor-pointer"
-                  >
-                    {totpPairCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                    <span>{totpPairCopied ? 'Copied' : 'Copy'}</span>
-                  </button>
-                </div>
-
-                <div className="w-full space-y-1.5 text-[10px] text-[#44474d] font-medium bg-[#eaedff]/60 p-3 rounded-lg border border-[#dae2fd]">
-                  <p className="font-bold text-[#131b2e]">3-Step Phone Pairing:</p>
-                  <ol className="list-decimal list-inside space-y-0.5">
-                    <li>Open <b>Google Authenticator</b> on your phone.</li>
-                    <li>Tap <b>+</b> &gt; <b>Scan a QR code</b> (or enter key).</li>
-                    <li>Type the 6-digit code on the login screen to enter!</li>
-                  </ol>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowPairingModal(false)}
-                className="w-full py-2.5 bg-[#2c60ff] hover:bg-[#0045de] text-white rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-xs"
-              >
-                Done, Back to Login
-              </button>
-            </div>
-          </div>
-        )}
 
       </div>
     );
@@ -3066,7 +2948,6 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
                     onClick={() => {
                       setIsVerificationModalOpen(false);
                       setPendingAction(null);
-                      setVerificationPassword('');
                     }}
                     className="flex-1 py-3 border border-slate-200 hover:bg-slate-50 text-slate-500 font-bold rounded-xl text-xs transition-all"
                   >

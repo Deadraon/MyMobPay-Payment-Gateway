@@ -8,10 +8,8 @@ export async function POST(request) {
     const body = await request.json();
     const { password, orderId, action, utr } = body;
 
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-    const isAuthorized = (await verifyAdminAuth(request)) || (password && password === adminPassword);
+    const isAuthorized = await verifyAdminAuth(request);
 
-    // Verify password
     if (!isAuthorized) {
       return NextResponse.json({ error: 'Unauthorized: Access Denied' }, { status: 401 });
     }

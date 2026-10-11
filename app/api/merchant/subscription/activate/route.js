@@ -68,6 +68,44 @@ export async function POST(req) {
           code: 'TRIAL_ALREADY_USED',
         }, { status: 400 });
       }
+    } else {
+      // SECURITY: Paid subscriptions MUST be backed by a verified order or authorized admin session
+      const { verifyAdminAuth } = await import('@/lib/adminSettings');
+      const isAdmin = await verifyAdminAuth(req);
+
+      if (!isAdmin) {
+        const orderLookupId = body.orderId || null;
+        let verifiedOrder = null;
+
+        if (orderLookupId) {
+          const { data: ord } = await supabaseAdmin
+            .from('orders')
+            .select('id, amount, status, merchant_id, external_ref')
+            .eq('id', orderLookupId)
+            .eq('status', 'verified')
+            .maybeSingle();
+          if (ord && (ord.merchant_id === actualMerchantId || ord.external_ref === actualMerchantId)) {
+            verifiedOrder = ord;
+          }
+        } else if (cleanUtr) {
+          const { data: ord } = await supabaseAdmin
+            .from('orders')
+            .select('id, amount, status, merchant_id, external_ref')
+            .eq('utr', cleanUtr)
+            .eq('status', 'verified')
+            .maybeSingle();
+          if (ord && (ord.merchant_id === actualMerchantId || ord.external_ref === actualMerchantId)) {
+            verifiedOrder = ord;
+          }
+        }
+
+        if (!verifiedOrder) {
+          return NextResponse.json({
+            error: 'Paid subscription activation requires a verified transaction or active administrator authorization.',
+            code: 'UNVERIFIED_PAYMENT'
+          }, { status: 403 });
+        }
+      }
     }
 
     // 2. Calculate new expiry date

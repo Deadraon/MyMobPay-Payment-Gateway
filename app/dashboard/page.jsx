@@ -5253,7 +5253,8 @@ export default function DashboardPage() {
 
 
 
-    return `${host}/pay?api_key=${key}&amount=${linkAmount}&note=${encodeURIComponent(linkNote)}`;
+    const project = profile?.business_name ? encodeURIComponent(profile.business_name) : '';
+    return `${host}/pay?project=${project}&amount=${linkAmount}&note=${encodeURIComponent(linkNote)}`;
 
 
 
@@ -5385,7 +5386,7 @@ const createOrder = async () => {
 
 
 
-  // Redirect customer to: \`https://your-domain.com/pay?api_key=${profile?.api_key || 'YOUR_API_KEY'}&amount=\${data.orderAmount}&ref=\${data.orderId}\`
+  // Redirect customer to: \`https://your-domain.com/pay?order_id=\${data.orderId}\`
 
 
 
@@ -13007,7 +13008,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-                                    {`https://mymob.tech/pay?api_key=${profile?.api_key ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key : 'YOUR_API_KEY'}&amount=${parseFloat(linkAmount) || 500.00}&ref=YOUR_ORDER_ID`}
+                                    {`https://mymob.tech/pay?order_id=YOUR_ORDER_ID`}
 
 
 

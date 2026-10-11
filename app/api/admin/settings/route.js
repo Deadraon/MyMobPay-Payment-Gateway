@@ -48,13 +48,9 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { password, action } = body;
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-
-    // Verification check for sensitive actions: valid bearer token or admin password
-    const isAuthorized = (await verifyAdminAuth(request)) || (password && password === adminPassword);
+    const isAuthorized = await verifyAdminAuth(request);
     if (!isAuthorized) {
-      return NextResponse.json({ error: 'Unauthorized: Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized: Access Denied' }, { status: 401 });
     }
 
     const adminMerchant = await ensureAdminMerchant();

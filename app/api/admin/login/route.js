@@ -9,17 +9,13 @@ import {
 } from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
-// GET: Check Authenticator configuration status
+// GET: Check Authenticator configuration status (Safe: NEVER expose secrets publicly)
 export async function GET() {
   try {
     const settings = await getAdminSettings();
-    const hasCustomSecret = !!settings.totp_secret && settings.totp_secret !== DEFAULT_ADMIN_TOTP_SECRET;
     return NextResponse.json({
       success: true,
-      hasCustomSecret,
-      defaultSecret: DEFAULT_ADMIN_TOTP_SECRET,
-      activeSecret: settings.totp_secret || DEFAULT_ADMIN_TOTP_SECRET,
-      totpEnabled: true
+      totpEnabled: settings.totp_enabled !== false
     });
   } catch (e) {
     return NextResponse.json({ success: false }, { status: 500 });
@@ -104,18 +100,7 @@ export async function POST(request) {
       });
     }
 
-    // 3. Fallback: Optional legacy password verification (for server recovery/dev)
-    if (password) {
-      const isDev = process.env.NODE_ENV !== 'production';
-      const adminPassword = process.env.ADMIN_PASSWORD || (isDev ? 'admin123' : null);
 
-      if (adminPassword && password === adminPassword) {
-        const adminToken = createAdminSessionToken();
-        return NextResponse.json({ success: true, token: adminToken });
-      }
-
-      return NextResponse.json({ error: 'Incorrect credentials.' }, { status: 401 });
-    }
 
     return NextResponse.json({ 
       error: 'Please enter your 6-digit Authenticator code or sign in with Google.' 
