@@ -262,6 +262,21 @@ export default function DesktopCheckoutView({
   const safeMm = mm != null ? String(mm).padStart(2, '0') : '07';
   const safeSs = ss != null ? String(ss).padStart(2, '0') : '35';
 
+  const formatCountdown = (totalSecs) => {
+    if (totalSecs == null || totalSecs <= 0) return `${safeMm}:${safeSs}`;
+    if (totalSecs >= 3600) {
+      const h = Math.floor(totalSecs / 3600);
+      const remM = Math.floor((totalSecs % 3600) / 60);
+      const s = totalSecs % 60;
+      return `${h}h ${remM}m ${s < 10 ? '0' : ''}${s}s`;
+    }
+    const m = Math.floor(totalSecs / 60);
+    const s = totalSecs % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
+  const timerDisplayStr = formatCountdown(timeLeft);
+
   // Bank transfer details
   const isBankAvailable = Boolean(
     hasBankTransfer !== undefined
@@ -943,7 +958,7 @@ export default function DesktopCheckoutView({
                         </span>
                         <span className="font-mono font-bold text-xs text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200/70 inline-flex items-center gap-1.5">
                           <IconSchedule className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                          {safeMm}:{safeSs}
+                          {timerDisplayStr}
                         </span>
                       </div>
                     </div>
@@ -1221,7 +1236,7 @@ export default function DesktopCheckoutView({
                             <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200/90 text-[#0045de] px-2.5 py-0.5 rounded-full text-xs font-semibold shadow-2xs">
                               <IconSchedule className="w-3.5 h-3.5 text-[#0045de] flex-shrink-0" />
                               <span className="font-mono font-bold" id="qrTimer">
-                                Expires in {safeMm}:{safeSs}
+                                Expires in {timerDisplayStr}
                               </span>
                             </div>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200/60">

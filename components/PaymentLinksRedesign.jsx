@@ -185,7 +185,7 @@ export default function PaymentLinksRedesign({
           amount: o.amount ? Number(o.amount).toFixed(2) : '0.00',
           status: (o.status === 'verified' || o.status === 'paid' || o.status === 'completed') ? 'Paid' : (o.status === 'failed' || o.status === 'expired') ? 'Expired' : 'Pending',
           createdAt: o.created_at || new Date().toISOString(),
-          url: `${host}/pay?key=${apiKey}&amount=${Number(o.amount || 0).toFixed(2)}&ref=${encodeURIComponent(o.external_ref || o.id)}&note=${encodeURIComponent(o.note || '')}`
+          url: `${host}/pay?order_id=${encodeURIComponent(o.id)}&key=${apiKey}&amount=${Number(o.amount || 0).toFixed(2)}&ref=${encodeURIComponent(o.external_ref || o.id)}&note=${encodeURIComponent(o.note || '')}`
         });
       }
     });
@@ -201,14 +201,26 @@ export default function PaymentLinksRedesign({
       );
 
       if (matchingOrder) {
+        const orderId = matchingOrder.id;
+        let updatedUrl = item.url;
+        try {
+          if (updatedUrl && updatedUrl.includes('/pay?')) {
+            const u = new URL(updatedUrl);
+            if (!u.searchParams.has('order_id')) {
+              u.searchParams.set('order_id', orderId);
+              updatedUrl = u.toString();
+            }
+          }
+        } catch {}
+
         if (matchingOrder.status === 'verified' || matchingOrder.status === 'completed' || matchingOrder.status === 'paid') {
-          return { ...item, status: 'Paid', orderId: matchingOrder.id };
+          return { ...item, status: 'Paid', orderId, url: updatedUrl };
         }
         if (matchingOrder.status === 'failed' || matchingOrder.status === 'expired') {
-          return { ...item, status: 'Expired', orderId: matchingOrder.id };
+          return { ...item, status: 'Expired', orderId, url: updatedUrl };
         }
         if (matchingOrder.status === 'pending') {
-          return { ...item, status: 'Pending', orderId: matchingOrder.id };
+          return { ...item, status: 'Pending', orderId, url: updatedUrl };
         }
       }
       return item;
@@ -1241,10 +1253,27 @@ export default function PaymentLinksRedesign({
                         </div>
                         <div className="truncate">
                           <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Shareable Payment URL</div>
-                          <div className="text-xs font-mono font-medium text-slate-700 truncate">{activeUrl}</div>
+                          <a
+                            href={activeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-mono font-medium text-blue-600 hover:text-blue-700 hover:underline truncate block"
+                            title={activeUrl}
+                          >
+                            {activeUrl}
+                          </a>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <a
+                          href={activeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all"
+                          title="Open Payment Link"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
                         <button
                           type="button"
                           onClick={() => shareWhatsApp(generatedLinkData)}
@@ -1417,11 +1446,17 @@ export default function PaymentLinksRedesign({
                   return (
                     <tr key={link.id} className="hover:bg-slate-50/70 transition-colors">
                       {/* Link ID */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-semibold text-slate-900 text-xs">
-                            {link.id}
-                          </span>
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono font-semibold text-blue-600 hover:text-blue-700 hover:underline text-xs"
+                            title={link.id}
+                          >
+                            {link.id.length > 18 ? `${link.id.slice(0, 8)}…${link.id.slice(-6)}` : link.id}
+                          </a>
                           <button
                             onClick={() => copyText(link.id, 'Link ID')}
                             className="text-slate-400 hover:text-blue-600 transition-colors p-0.5 rounded"
@@ -1438,19 +1473,19 @@ export default function PaymentLinksRedesign({
                       </td>
 
                       {/* Description & Purpose */}
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col max-w-xs">
+                      <td className="py-4 px-6 max-w-[200px]">
+                        <div className="flex flex-col">
                           <span className="font-medium text-slate-900 truncate" title={link.purpose}>
                             {link.purpose}
                           </span>
-                          <span className="text-[11px] font-mono text-slate-400">
+                          <span className="text-[11px] font-mono text-slate-400 truncate" title={link.orderId || link.ref || link.id}>
                             {link.orderId || link.ref || link.id}
                           </span>
                         </div>
                       </td>
 
                       {/* Customer */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 whitespace-nowrap">
                         <div className="flex flex-col">
                           <span className="font-medium text-slate-900">
                             {link.customerName || 'Direct Customer'}
@@ -1462,7 +1497,7 @@ export default function PaymentLinksRedesign({
                       </td>
 
                       {/* Amount */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 whitespace-nowrap">
                         <div className="flex flex-col">
                           <span className="font-bold text-slate-900 tabular-nums">
                             {isFlex ? (
@@ -1482,7 +1517,7 @@ export default function PaymentLinksRedesign({
                       </td>
 
                       {/* Created Date */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 whitespace-nowrap">
                         <span className="text-xs text-slate-500">
                           {new Date(link.createdAt).toLocaleDateString('en-IN', {
                             day: '2-digit',
@@ -1496,7 +1531,7 @@ export default function PaymentLinksRedesign({
                       </td>
 
                       {/* Status & Expiry */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 whitespace-nowrap">
                         <div className="flex flex-col gap-1">
                           {link.status === 'Paid' && (
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold border border-emerald-200/60 w-fit">
@@ -1529,18 +1564,18 @@ export default function PaymentLinksRedesign({
                             </span>
                           )}
 
-                          {/* Expiry countdown / timestamp */}
+                          {/* Expiry countdown / timestamp with explicit Date and Time */}
                           {link.expiresAt && (
-                            <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
-                              <Clock className="w-3 h-3 text-slate-400" />
+                            <span className="text-[10px] text-slate-500 flex items-center gap-1 font-mono whitespace-nowrap">
+                              <Clock className="w-3 h-3 text-slate-400 shrink-0" />
                               {new Date(link.expiresAt).getTime() > Date.now() ? (
                                 link.status === 'Paid' ? (
                                   'Completed'
                                 ) : (
-                                  `Exp: ${new Date(link.expiresAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`
+                                  `Exp: ${new Date(link.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}, ${new Date(link.expiresAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`
                                 )
                               ) : (
-                                'Expired'
+                                `Expired: ${new Date(link.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`
                               )}
                             </span>
                           )}
@@ -1548,7 +1583,7 @@ export default function PaymentLinksRedesign({
                       </td>
 
                       {/* Actions */}
-                      <td className="py-4 px-6 text-right">
+                      <td className="py-4 px-6 text-right whitespace-nowrap min-w-[150px]">
                         <div className="flex items-center justify-end gap-1">
                           {/* Cancel link button for Active links */}
                           {(link.status === 'Active' || link.status === 'Pending') && (

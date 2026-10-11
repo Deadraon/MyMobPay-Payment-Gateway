@@ -82,9 +82,69 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Merchant account is inactive or expired. Please subscribe or activate trial to accept live payments.' }, { status: 403 });
     }
 
+    // 2. If external_ref is provided (e.g. from payment links), check for existing orders
+    if (external_ref) {
+      const cleanRef = String(external_ref).trim();
+      const { data: existingOrders } = await supabaseAdmin
+        .from('orders')
+        .select('*')
+        .eq('merchant_id', merchant.id)
+        .ilike('external_ref', cleanRef)
+        .order('created_at', { ascending: false });
+
+      if (existingOrders && existingOrders.length > 0) {
+        // If an order with this external_ref was already paid / verified:
+        const paidOrder = existingOrders.find(o => o.status === 'verified' || o.status === 'completed' || o.status === 'paid');
+        if (paidOrder) {
+          return NextResponse.json({
+            error: 'This payment order has already been completed and settled.',
+            code: 'ALREADY_PAID',
+            status: 'paid',
+            orderId: paidOrder.id,
+            amount: paidOrder.amount
+          }, { status: 400 });
+        }
+
+        // Check if matching payment link is expired
+        const plToken = cleanRef.split(':')[0];
+        const { data: pl } = await supabaseAdmin
+          .from('payment_links')
+          .select('status, expires_at')
+          .or(`token.eq.${plToken},metadata->>custom_ref.eq.${plToken}`)
+          .maybeSingle();
+
+        if (pl) {
+          const isPlExpired = pl.status === 'expired' || pl.status === 'cancelled' ||
+            (pl.expires_at && new Date(pl.expires_at).getTime() < Date.now());
+          if (isPlExpired) {
+            return NextResponse.json({
+              error: 'This payment link has expired and cannot accept payments.',
+              code: 'EXPIRED',
+              status: 'expired'
+            }, { status: 410 });
+          }
+        }
+
+        // If latest order is still active pending (< 15 mins), reuse it!
+        const latestOrder = existingOrders[0];
+        const ageMs = Date.now() - new Date(latestOrder.created_at).getTime();
+        if (latestOrder.status === 'pending' && ageMs < 15 * 60 * 1000) {
+          return NextResponse.json({
+            orderId: latestOrder.id,
+            order_id: latestOrder.id,
+            orderAmount: latestOrder.amount,
+            amount: latestOrder.amount,
+            status: 'pending',
+            mode: latestOrder.mode,
+            note: latestOrder.note
+          }, { status: 200 });
+        }
+      }
+    }
+
     let finalAmount = parseFloat(amount);
 
-    // 2. Auto-cancel: expire all pending orders older than 15 minutes FOR THIS MERCHANT
+    // 3. Auto-cancel: expire all pending orders older than 15 minutes FOR THIS MERCHANT
     const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
     await supabaseAdmin
       .from('orders')
@@ -93,7 +153,7 @@ export async function POST(request) {
       .eq('merchant_id', merchant.id)
       .lt('created_at', fifteenMinutesAgo);
 
-    // 3. Fetch all active pending orders FOR THIS MERCHANT to ensure a unique amount offset
+    // 4. Fetch all active pending orders FOR THIS MERCHANT to ensure a unique amount offset
     const { data: pendingOrders } = await supabaseAdmin
       .from('orders')
       .select('amount')
@@ -102,7 +162,7 @@ export async function POST(request) {
 
     const pendingAmounts = new Set(pendingOrders?.map(o => parseFloat(o.amount).toFixed(2)) || []);
 
-    // 4. Find the first unique amount by adding a paise offset (e.g., 2.00, 2.01, 2.02)
+    // 5. Find the first unique amount by adding a paise offset (e.g., 2.00, 2.01, 2.02)
     let offset = 0;
     const requestedAmount = parseFloat(amount);
     while (offset < 100) {
@@ -114,7 +174,7 @@ export async function POST(request) {
       offset++;
     }
 
-    // 5. Generate a cryptographically secure Order ID (Format: MMP_<YYYYMMDD>_<12-char random base62>)
+    // 6. Generate a cryptographically secure Order ID (Format: MMP_<YYYYMMDD>_<12-char random base62>)
     // E.g. MMP_20260927_8F3kQ9zR2x1A
     let orderId = '';
     const requestedOrderId = (body.order_id || body.orderId || '').trim().replace(/^[-#]+/, '');
@@ -124,7 +184,7 @@ export async function POST(request) {
       orderId = generateOrderId();
     }
 
-    // 6. Insert order into Supabase linked to the merchant
+    // 7. Insert order into Supabase linked to the merchant
     const { data, error } = await supabaseAdmin
       .from('orders')
       .insert([
@@ -161,10 +221,10 @@ export async function POST(request) {
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const rawId = searchParams.get('id');
+    const rawId = searchParams.get('id') || searchParams.get('order_id') || searchParams.get('ref');
 
     if (!rawId) {
-      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Order ID or reference is required' }, { status: 400 });
     }
 
     const cleanId = rawId.trim().replace(/^[-#]+/, '');
@@ -178,17 +238,67 @@ export async function GET(request) {
 
     if (res1.data) {
       order = res1.data;
-    } else if (cleanId !== rawId) {
+    } else {
+      // Case-insensitive fallback lookup by ID
       const res2 = await supabaseAdmin
         .from('orders')
         .select('id, amount, status, note, created_at, verified_at, mode, utr, merchant_id, project, callback_url, external_ref')
-        .eq('id', rawId)
+        .ilike('id', cleanId)
         .maybeSingle();
-      order = res2.data;
+
+      if (res2.data) {
+        order = res2.data;
+      } else {
+        // Fallback lookup by external_ref (e.g. pl_h5x982jz)
+        const res3 = await supabaseAdmin
+          .from('orders')
+          .select('id, amount, status, note, created_at, verified_at, mode, utr, merchant_id, project, callback_url, external_ref')
+          .ilike('external_ref', cleanId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (res3.data) {
+          order = res3.data;
+        }
+      }
     }
 
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    // ── Auto-expire pending orders older than 15 minutes ──
+    if (order.status === 'pending') {
+      const createdAtMs = new Date(order.created_at).getTime();
+      const ageMs = Date.now() - createdAtMs;
+      if (!isNaN(createdAtMs) && ageMs > 15 * 60 * 1000) {
+        await supabaseAdmin
+          .from('orders')
+          .update({ status: 'expired' })
+          .eq('id', order.id);
+        order.status = 'expired';
+      }
+    }
+
+    // ── Check matching payment link status if external_ref is linked ──
+    if (order.external_ref && order.status === 'pending') {
+      const cleanRef = order.external_ref.split(':')[0];
+      const { data: pl } = await supabaseAdmin
+        .from('payment_links')
+        .select('status, expires_at')
+        .or(`token.eq.${cleanRef},metadata->>custom_ref.eq.${cleanRef}`)
+        .maybeSingle();
+
+      if (pl) {
+        const isPlExpired = pl.status === 'expired' || pl.status === 'cancelled' ||
+          (pl.expires_at && new Date(pl.expires_at).getTime() < Date.now());
+        if (isPlExpired) {
+          await supabaseAdmin.from('orders').update({ status: 'expired' }).eq('id', order.id);
+          order.status = 'expired';
+        } else if (pl.status === 'paid') {
+          order.status = 'paid';
+        }
+      }
     }
 
     const paidTime = new Date(order.verified_at || order.created_at).getTime();

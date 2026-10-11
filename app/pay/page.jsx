@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
 import dynamic from 'next/dynamic';
@@ -90,6 +90,7 @@ const UPI_CHIPS = [
 function PayPageContent() {
   const searchParams  = useSearchParams();
   const router        = useRouter();
+  const params        = useParams();
 
   const rawParamApiKey = searchParams.get('api_key') || searchParams.get('key') || '';
   const paramApiKey   = (rawParamApiKey === 'undefined' || rawParamApiKey === 'null') ? '' : rawParamApiKey;
@@ -108,11 +109,10 @@ function PayPageContent() {
   const paramMethod   = searchParams.get('method')   || searchParams.get('payment_method') || '';
   const cleanParamMethod = ['upi', 'card', 'bank', 'crypto', 'cod'].includes((paramMethod || '').toLowerCase()) ? (paramMethod || '').toLowerCase() : null;
 
-  useEffect(() => {
-    if (paramToken && /^[0-9a-fA-F]{48,}$/.test(paramToken.trim())) {
-      router.replace(`/pay/${paramToken.trim()}`);
-    }
-  }, [paramToken, router]);
+  const routeToken    = (params?.token || paramToken || '').trim();
+  const hasToken      = Boolean(routeToken && /^[0-9a-fA-F]{24,}$/.test(routeToken));
+  const [tokenExpiredData, setTokenExpiredData] = useState(null);
+  const [tokenError, setTokenError] = useState(null);
 
   /* Core state */
   const [merchant,     setMerchant]     = useState(null);
@@ -157,8 +157,8 @@ function PayPageContent() {
   const [codBusy,      setCodBusy]      = useState(false);
   const [codMsg,       setCodMsg]       = useState('');
 
-  /* View navigation: 'vChecking' | 'vPaidExpired' | 'vPay' | 'vOk' | 'vExp' */
-  const [curView,      setCurView]      = useState(cleanParamOrderId ? 'vChecking' : 'vPay');
+  /* View navigation: 'vChecking' | 'vPaidExpired' | 'vPay' | 'vOk' | 'vExp' | 'vNotFound' | 'vTokenExpired' */
+  const [curView,      setCurView]      = useState((cleanParamOrderId || hasToken || paramRef) ? 'vChecking' : 'vPay');
   const [paidOrderData, setPaidOrderData] = useState(null);
   const [checkMsg,     setCheckMsg]     = useState('');
   const [isChecking,   setIsChecking]   = useState(false);
@@ -412,17 +412,9 @@ function PayPageContent() {
     }
   }, []);
 
-  /* ── Auto-create / Hydrate order ── */
+  /* ── Auto-create / Hydrate order (only when not loading via token or pre-existing ref/order) ── */
   useEffect(() => {
-    if (autoCreated.current) return;
-
-    if (cleanParamOrderId) {
-      autoCreated.current = true;
-      setOrderId(cleanParamOrderId);
-      if (paramAmount) setOrderAmount(parseFloat(paramAmount));
-      if (paramCallback) localStorage.setItem(`callback_${cleanParamOrderId}`, paramCallback);
-      return;
-    }
+    if (autoCreated.current || hasToken || cleanParamOrderId || paramRef) return;
 
     if (paramAmount && parseFloat(paramAmount) > 0) {
       autoCreated.current = true;
@@ -437,48 +429,212 @@ function PayPageContent() {
         paramLid
       );
     }
-  }, [cleanParamOrderId, paramAmount]);
+  }, [cleanParamOrderId, paramAmount, paramRef, hasToken]);
 
-  /* ── Immediate Status Check for Existing Order (Prevent showing checkout for already-paid links) ── */
+  /* ── Token-based Payment Link Loader (Opens official checkout page for active tokens) ── */
   useEffect(() => {
-    if (!cleanParamOrderId) return;
+    if (!hasToken) return;
 
     let isMounted = true;
-    fetch(`/api/orders?id=${encodeURIComponent(cleanParamOrderId)}&_t=${Date.now()}`, {
+    setCurView('vChecking');
+
+    async function loadTokenLink() {
+      try {
+        const res = await fetch(`/api/pay/${encodeURIComponent(routeToken)}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache, no-store' }
+        });
+        const data = await res.json();
+
+        if (!isMounted) return;
+
+        // 404: Not Found
+        if (res.status === 404) {
+          setTokenError(data.error || 'Payment link not found or invalid.');
+          setCurView('vNotFound');
+          return;
+        }
+
+        // 410: Expired or Cancelled
+        if (res.status === 410 || data.code === 'EXPIRED' || data.code === 'CANCELLED') {
+          setTokenExpiredData(data);
+          setCurView('vTokenExpired');
+          return;
+        }
+
+        // Paid
+        if (data.code === 'PAID' || data.status === 'paid') {
+          setPaidOrderData({
+            amount: data.amount_in_rupees || (Number(data.amount) / 100).toFixed(2),
+            orderId: data.order_id || routeToken,
+            verified_at: data.paid_at,
+            title: data.title,
+            merchant_name: data.merchant_name
+          });
+          setCurView('vPaidExpired');
+          return;
+        }
+
+        // Active link -> Transition to processing and hydrate official checkout
+        if (res.ok && (data.status === 'active' || data.success)) {
+          let finalOrderId = data.order_id || null;
+          let finalAmount = parseFloat(data.amount_in_rupees || (Number(data.amount) / 100).toFixed(2));
+
+          try {
+            const startRes = await fetch(`/api/pay/${encodeURIComponent(routeToken)}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            const startData = await startRes.json();
+            if (startRes.ok && startData.order_id) {
+              finalOrderId = startData.order_id;
+              if (startData.amount_in_rupees) {
+                finalAmount = parseFloat(startData.amount_in_rupees);
+              }
+            }
+          } catch (e) {
+            console.warn('Session init warning:', e);
+          }
+
+          if (!isMounted) return;
+
+          setOrderId(finalOrderId || routeToken);
+          setOrderAmount(finalAmount);
+          if (data.title) setOrderNote(data.title);
+          if (data.customer_name) setCustName(data.customer_name);
+          if (data.customer_phone) setCustPhone(data.customer_phone);
+
+          if (data.merchant) {
+            setMerchant(prev => ({
+              ...prev,
+              ...data.merchant,
+              id: data.merchant_id || prev?.id
+            }));
+          }
+
+          if (data.remaining_seconds && data.remaining_seconds > 0) {
+            setTimeLeft(data.remaining_seconds);
+          }
+
+          setCurView('vPay');
+        } else {
+          setTokenError(data.error || 'Unable to load payment link.');
+          setCurView('vNotFound');
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        setTokenError('Failed to connect to gateway server.');
+        setCurView('vNotFound');
+      }
+    }
+
+    loadTokenLink();
+
+    return () => { isMounted = false; };
+  }, [hasToken, routeToken]);
+
+  /* ── Continuous Countdown Timer for Token-based Links ── */
+  useEffect(() => {
+    if (!hasToken || curView === 'vExp' || curView === 'vOk' || curView === 'vPaidExpired' || curView === 'vTokenExpired' || curView === 'vNotFound') return;
+    if (timeLeft <= 0) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setCurView('vExp');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [hasToken, curView, timeLeft]);
+
+  /* ── Immediate Status Check for Existing Order or Ref (Prevent showing checkout for already-paid or expired links) ── */
+  useEffect(() => {
+    if (hasToken) return;
+    const lookupTarget = cleanParamOrderId || paramRef;
+    if (!lookupTarget) return;
+
+    let isMounted = true;
+    setCurView('vChecking');
+
+    fetch(`/api/orders?id=${encodeURIComponent(lookupTarget)}&_t=${Date.now()}`, {
       cache: 'no-store',
       headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
     })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
+      .then(async res => {
         if (!isMounted) return;
-        if (data) {
-          if (data.status === 'verified' || data.status === 'completed' || data.status === 'paid') {
-            if (data.isPostPaymentExpired) {
-              setPaidOrderData(data);
-              setCurView('vPaidExpired');
-              return;
-            }
-            // Already paid! Immediately go to the status screen (Screen 2)
-            handleReturn(data.orderId || cleanParamOrderId, data.callback_url);
-            return;
-          }
-          if (data.status === 'expired') {
+        if (!res.ok) {
+          if (res.status === 410) {
             setCurView('vExp');
             return;
           }
-          if (data.amount != null) setOrderAmount(parseFloat(data.amount));
-          if (data.note) setOrderNote(data.note);
-          if (data.mode) setOrderMode(data.mode);
-          if (data.merchant) setMerchant(prev => ({ ...prev, ...data.merchant }));
+          if (cleanParamOrderId) {
+            setCurView('vNotFound');
+            return;
+          }
+          // If only paramRef was given and doesn't exist yet, auto-create can initialize
+          if (paramAmount && parseFloat(paramAmount) > 0 && !autoCreated.current) {
+            autoCreated.current = true;
+            createOrder(
+              parseFloat(paramAmount),
+              paramName,
+              paramPhone,
+              paramRef,
+              paramNote,
+              paramCallback,
+              paramProject,
+              paramLid
+            );
+            setCurView('vPay');
+            return;
+          }
+          setCurView('vNotFound');
+          return;
         }
+
+        const data = await res.json();
+        if (!isMounted) return;
+
+        if (data.status === 'verified' || data.status === 'completed' || data.status === 'paid') {
+          setPaidOrderData(data);
+          setCurView('vPaidExpired');
+          return;
+        }
+        if (data.status === 'expired' || data.status === 'cancelled') {
+          setCurView('vExp');
+          return;
+        }
+        if (data.created_at && data.status === 'pending') {
+          const ageMs = Date.now() - new Date(data.created_at).getTime();
+          if (!isNaN(ageMs) && ageMs > 15 * 60 * 1000) {
+            setCurView('vExp');
+            return;
+          }
+        }
+        autoCreated.current = true;
+        if (data.orderId) setOrderId(data.orderId);
+        if (data.amount != null) setOrderAmount(parseFloat(data.amount));
+        if (data.note) setOrderNote(data.note);
+        if (data.mode) setOrderMode(data.mode);
+        if (data.merchant) setMerchant(prev => ({ ...prev, ...data.merchant }));
         setCurView('vPay');
       })
       .catch(() => {
-        if (isMounted) setCurView('vPay');
+        if (isMounted) {
+          if (cleanParamOrderId) {
+            setCurView('vNotFound');
+          } else {
+            setCurView('vPay');
+          }
+        }
       });
 
     return () => { isMounted = false; };
-  }, [cleanParamOrderId]);
+  }, [hasToken, cleanParamOrderId, paramRef, paramAmount]);
 
   /* ── Real-time order verification polling + Supabase Realtime (Instant push & zero cache) ── */
   useEffect(() => {
@@ -916,14 +1072,14 @@ function PayPageContent() {
   }
 
   /* ───────────────────────────────────────────────────────────
-     PAID EXPIRED VIEW (Link expired 24h after settlement)
+     PAID EXPIRED VIEW (Order already completed & settled)
   ─────────────────────────────────────────────────────────── */
   if (curView === 'vPaidExpired') {
     const paidAmt = paidOrderData?.amount ? parseFloat(paidOrderData.amount).toFixed(2) : displayAmt;
     const paidDt = paidOrderData?.verified_at || paidOrderData?.created_at;
     const formattedPaidTime = paidDt
       ? new Date(paidDt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })
-      : 'Within 24 hours';
+      : 'Settled';
     const activeOrderId = paidOrderData?.orderId || cleanParamOrderId;
 
     return (
@@ -932,19 +1088,19 @@ function PayPageContent() {
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
             <MyMobPayLogo />
           </div>
-          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#fffbeb', border: '1px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#d97706' }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#ecfdf5', border: '1px solid #a7f3d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#059669' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
           </div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: '#fef3c7', color: '#b45309', fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 10 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b' }} />
-            Link Expired
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: '#d1fae5', color: '#047857', fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 10 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
+            Already Settled
           </div>
-          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.02em' }}>Payment Link Expired</h2>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.02em' }}>Payment Already Completed</h2>
           <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px', lineHeight: 1.5 }}>
-            This payment link expired 24 hours after completion. The payment was already settled.
+            This payment order has already been verified and settled. Duplicate or additional payments cannot be made for this order.
           </p>
 
           <div style={{ background: '#f8fafc', borderRadius: 16, border: '1px solid #e2e8f0', padding: '16px 18px', textAlign: 'left', marginBottom: 24, fontSize: 12 }}>
@@ -956,7 +1112,7 @@ function PayPageContent() {
               <span style={{ color: '#64748b', fontWeight: 600 }}>Amount Settled</span>
               <span style={{ fontWeight: 800, color: '#059669', fontSize: 13 }}>₹{paidAmt}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px dashed #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: paidOrderData?.utr ? '1px dashed #e2e8f0' : 'none' }}>
               <span style={{ color: '#64748b', fontWeight: 600 }}>Settled On</span>
               <span style={{ color: '#334155', fontWeight: 600 }}>{formattedPaidTime}</span>
             </div>
@@ -968,23 +1124,118 @@ function PayPageContent() {
             )}
           </div>
 
-          <p style={{ fontSize: 11, color: '#94a3b8', margin: '0 0 20px', lineHeight: 1.4 }}>
-            🔒 For security and compliance, completed payment sessions cannot be reopened or re-paid after 24 hours.
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {activeOrderId && (
+              <button
+                type="button"
+                onClick={() => {
+                  router.push(`/status/${activeOrderId}`);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '13px 20px',
+                  borderRadius: 14,
+                  border: 'none',
+                  background: '#0f172a',
+                  color: '#ffffff',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}
+              >
+                View Payment Receipt
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => {
+                const cb = paidOrderData?.callback_url || paramCallback;
+                if (cb) {
+                  window.location.href = cb;
+                  return;
+                }
+                if (typeof window !== 'undefined' && window.history.length > 1) {
+                  window.history.back();
+                  return;
+                }
+                if (typeof window !== 'undefined') window.location.href = '/';
+              }}
+              style={{
+                width: '100%',
+                padding: '12px 20px',
+                borderRadius: 14,
+                border: '1px solid #e2e8f0',
+                background: '#f8fafc',
+                color: '#475569',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {paidOrderData?.callback_url ? 'Return to Merchant' : 'Close'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ───────────────────────────────────────────────────────────
+     EXPIRED ORDER VIEW (Session or link timed out)
+  ─────────────────────────────────────────────────────────── */
+  if (curView === 'vExp') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0b1329', fontFamily: "'Outfit', -apple-system, sans-serif", padding: '24px 16px' }}>
+        <div style={{ background: '#ffffff', borderRadius: 28, padding: '36px 28px', maxWidth: 440, width: '100%', textAlign: 'center', boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.35)', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+            <MyMobPayLogo />
+          </div>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#fff1f2', border: '1px solid #fecdd3', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#e11d48' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: '#ffe4e6', color: '#be123c', fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 10 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e11d48' }} />
+            Session Expired
+          </div>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.02em' }}>Payment Session Expired</h2>
+          <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px', lineHeight: 1.5 }}>
+            This checkout session has expired. For security and fraud prevention, payment links and orders cannot accept payments after expiration.
           </p>
+
+          {(activeId || displayAmt) && (
+            <div style={{ background: '#f8fafc', borderRadius: 16, border: '1px solid #e2e8f0', padding: '16px 18px', textAlign: 'left', marginBottom: 24, fontSize: 12 }}>
+              {activeId && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: displayAmt ? 10 : 0, borderBottom: displayAmt ? '1px dashed #e2e8f0' : 'none' }}>
+                  <span style={{ color: '#64748b', fontWeight: 600 }}>Order ID</span>
+                  <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0f172a' }}>{activeId}</span>
+                </div>
+              )}
+              {displayAmt && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: activeId ? 10 : 0 }}>
+                  <span style={{ color: '#64748b', fontWeight: 600 }}>Amount Due</span>
+                  <span style={{ fontWeight: 800, color: '#0f172a', fontSize: 13 }}>₹{parseFloat(displayAmt).toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+          )}
 
           <button
             type="button"
             onClick={() => {
-              const cb = paidOrderData?.callback_url || paramCallback;
-              if (cb) {
-                window.location.href = cb;
+              if (paramCallback) {
+                window.location.href = paramCallback;
                 return;
               }
               if (typeof window !== 'undefined' && window.history.length > 1) {
                 window.history.back();
                 return;
               }
-              if (typeof window !== 'undefined') window.close();
+              if (typeof window !== 'undefined') window.location.href = '/';
             }}
             style={{
               width: '100%',
@@ -999,7 +1250,126 @@ function PayPageContent() {
               transition: 'background 0.2s',
             }}
           >
-            {paidOrderData?.callback_url ? 'Return to Merchant' : 'Done'}
+            {paramCallback ? 'Return to Merchant' : 'Close'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ───────────────────────────────────────────────────────────
+     TOKEN LINK EXPIRED VIEW
+  ─────────────────────────────────────────────────────────── */
+  if (curView === 'vTokenExpired') {
+    const expCode = tokenExpiredData?.code || 'EXPIRED';
+    const isCancelled = expCode === 'CANCELLED';
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0b1329', fontFamily: "'Outfit', -apple-system, sans-serif", padding: '24px 16px' }}>
+        <div style={{ background: '#ffffff', borderRadius: 28, padding: '36px 28px', maxWidth: 440, width: '100%', textAlign: 'center', boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.35)', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+            <MyMobPayLogo />
+          </div>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: isCancelled ? '#f1f5f9' : '#fff1f2', border: `1px solid ${isCancelled ? '#cbd5e1' : '#fecdd3'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: isCancelled ? '#475569' : '#e11d48' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: isCancelled ? '#e2e8f0' : '#ffe4e6', color: isCancelled ? '#334155' : '#be123c', fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 10 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: isCancelled ? '#64748b' : '#e11d48' }} />
+            {isCancelled ? 'Link Cancelled' : 'Link Expired'}
+          </div>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
+            {isCancelled ? 'Payment Link Cancelled' : 'Payment Link Expired'}
+          </h2>
+          <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px', lineHeight: 1.5 }}>
+            {isCancelled
+              ? 'This payment link was cancelled by the merchant.'
+              : 'This payment link has reached its validity expiration limit and is no longer payable. Please contact the merchant to request a new link.'}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (tokenExpiredData?.redirect_url) {
+                window.location.href = tokenExpiredData.redirect_url;
+                return;
+              }
+              if (typeof window !== 'undefined' && window.history.length > 1) {
+                window.history.back();
+                return;
+              }
+              if (typeof window !== 'undefined') window.location.href = '/';
+            }}
+            style={{
+              width: '100%',
+              padding: '13px 20px',
+              borderRadius: 14,
+              border: 'none',
+              background: '#0f172a',
+              color: '#ffffff',
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+            }}
+          >
+            {tokenExpiredData?.redirect_url ? 'Return to Merchant' : 'Close'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ───────────────────────────────────────────────────────────
+     NOT FOUND VIEW
+  ─────────────────────────────────────────────────────────── */
+  if (curView === 'vNotFound') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0b1329', fontFamily: "'Outfit', -apple-system, sans-serif", padding: '24px 16px' }}>
+        <div style={{ background: '#ffffff', borderRadius: 28, padding: '36px 28px', maxWidth: 440, width: '100%', textAlign: 'center', boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.35)', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+            <MyMobPayLogo />
+          </div>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#64748b' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: '#f1f5f9', color: '#475569', fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 10 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#94a3b8' }} />
+            Invalid Session
+          </div>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.02em' }}>Transaction Not Found</h2>
+          <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px', lineHeight: 1.5 }}>
+            {tokenError || 'The payment session or link could not be found. Please check the URL or ask the merchant to regenerate the payment link.'}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 1) {
+                window.history.back();
+                return;
+              }
+              if (typeof window !== 'undefined') window.location.href = '/';
+            }}
+            style={{
+              width: '100%',
+              padding: '13px 20px',
+              borderRadius: 14,
+              border: 'none',
+              background: '#0f172a',
+              color: '#ffffff',
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+            }}
+          >
+            Go to Homepage
           </button>
         </div>
       </div>

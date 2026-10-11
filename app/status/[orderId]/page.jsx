@@ -108,12 +108,17 @@ export default function StatusPage() {
         const res1 = await supabase.from('orders').select('*').eq('id', orderId).maybeSingle();
         if (res1.data) {
           data = res1.data;
-        } else if (rawOrderId && rawOrderId !== orderId) {
-          const res2 = await supabase.from('orders').select('*').eq('id', rawOrderId).maybeSingle();
-          data = res2.data;
-          dbErr = res2.error;
         } else {
-          dbErr = res1.error;
+          const res2 = await supabase.from('orders').select('*').ilike('id', orderId).maybeSingle();
+          if (res2.data) {
+            data = res2.data;
+          } else if (rawOrderId && rawOrderId !== orderId) {
+            const res3 = await supabase.from('orders').select('*').ilike('id', rawOrderId).maybeSingle();
+            data = res3.data;
+            dbErr = res3.error;
+          } else {
+            dbErr = res1.error;
+          }
         }
 
         if (!data) throw dbErr || new Error('Not found');
