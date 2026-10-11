@@ -269,6 +269,24 @@ export async function GET(request) {
           .maybeSingle();
         if (res3.data) {
           order = res3.data;
+        } else if (cleanId.length >= 24) {
+          // Fallback lookup: if cleanId is a payment link token
+          const { data: pl } = await supabaseAdmin
+            .from('payment_links')
+            .select('order_id')
+            .eq('token', cleanId)
+            .maybeSingle();
+
+          if (pl?.order_id) {
+            const { data: plOrder } = await supabaseAdmin
+              .from('orders')
+              .select('id, amount, status, note, created_at, verified_at, mode, utr, merchant_id, project, callback_url, external_ref')
+              .eq('id', pl.order_id)
+              .maybeSingle();
+            if (plOrder) {
+              order = plOrder;
+            }
+          }
         }
       }
     }

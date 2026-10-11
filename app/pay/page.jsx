@@ -490,7 +490,7 @@ function PayPageContent() {
         }
 
         // Active link -> Transition to processing and hydrate official checkout
-        if (res.ok && (data.status === 'active' || data.success)) {
+        if (res.ok && (data.status === 'active' || data.status === 'processing' || data.success)) {
           let finalOrderId = data.order_id || null;
           let finalAmount = parseFloat(data.amount_in_rupees || (Number(data.amount) / 100).toFixed(2));
 

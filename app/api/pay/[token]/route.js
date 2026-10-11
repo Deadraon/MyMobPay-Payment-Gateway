@@ -96,14 +96,41 @@ export async function GET(request, { params }) {
       }
 
       if (usability.code === 'PROCESSING') {
+        const now = Date.now();
+        const expiresAtMs = new Date(link.expires_at).getTime();
+        const remainingSeconds = Math.max(0, Math.floor((expiresAtMs - now) / 1000));
+
         return NextResponse.json(
           {
-            error: usability.message,
-            code: 'PROCESSING',
-            merchant_name: safeMerchantName,
-            status: 'processing'
+            success: true,
+            token: link.token,
+            order_id: link.order_id,
+            amount: Number(link.amount),
+            amount_in_rupees: paiseToRupees(link.amount),
+            currency: link.currency || 'INR',
+            title: link.title || 'Direct Payment',
+            description: link.description || '',
+            customer_name: link.customer_name || '',
+            customer_phone: link.customer_phone || '',
+            link_type: link.link_type,
+            status: 'processing',
+            expires_at: link.expires_at,
+            remaining_seconds: remainingSeconds,
+            merchant: {
+              business_name: safeMerchantName,
+              upi_id: safeUpiId,
+              theme_color: merchant?.theme_color || '#2563EB',
+              bank_account_number: merchant?.bank_account_number ? `...${String(merchant.bank_account_number).slice(-4)}` : null,
+              bank_name: merchant?.bank_name || null,
+              bank_ifsc: merchant?.bank_ifsc || null
+            }
           },
-          { status: 409 }
+          {
+            status: 200,
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
+            }
+          }
         );
       }
 
@@ -198,19 +225,8 @@ export async function POST(request, { params }) {
     const orderId = link.order_id || generateOrderId();
     const amountInRupees = parseFloat(paiseToRupees(link.amount));
 
-    // 4. Atomically set status to 'processing' (only if still active and not expired)
-    const transitionResult = await transitionLinkToProcessing(token, orderId);
-    if (!transitionResult.success) {
-      return NextResponse.json(
-        {
-          error: transitionResult.error || 'Payment link expired or is no longer active.',
-          code: 'TRANSITION_FAILED'
-        },
-        { status: 410 }
-      );
-    }
-
-    // 5. Create or sync order record in public.orders
+    // 4. Create or sync order record in public.orders FIRST
+    // (Must exist in orders table first to satisfy foreign key constraint payment_links_order_id_fkey)
     const { data: existingOrder } = await supabaseAdmin
       .from('orders')
       .select('id')
@@ -218,7 +234,7 @@ export async function POST(request, { params }) {
       .maybeSingle();
 
     if (!existingOrder) {
-      await supabaseAdmin
+      const { error: insertErr } = await supabaseAdmin
         .from('orders')
         .insert([
           {
@@ -234,6 +250,34 @@ export async function POST(request, { params }) {
             mode: 'live'
           }
         ]);
+
+      if (insertErr) {
+        console.error('[API Pay Token POST] Failed to insert order:', insertErr);
+        return NextResponse.json({ error: 'Failed to initialize order.' }, { status: 500 });
+      }
+    }
+
+    // 5. Update payment link record
+    if (link.link_type !== 'shared') {
+      const transitionResult = await transitionLinkToProcessing(token, orderId);
+      if (!transitionResult.success) {
+        return NextResponse.json(
+          {
+            error: transitionResult.error || 'Payment link expired or is no longer active.',
+            code: 'TRANSITION_FAILED'
+          },
+          { status: 410 }
+        );
+      }
+    } else {
+      // Shared links stay active for multi-use, but bind current order_id
+      await supabaseAdmin
+        .from('payment_links')
+        .update({
+          order_id: orderId,
+          updated_at: new Date().toISOString()
+        })
+        .eq('token', token);
     }
 
     // 6. Fetch merchant VPA
