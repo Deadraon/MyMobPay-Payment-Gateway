@@ -2,10 +2,6 @@
   "crons": [
     {
       "path": "/api/cron/expire-links",
-      "schedule": "* * * * *"
-    },
-    {
-      "path": "/api/cron/cancel-expired",
       "schedule": "0 0 * * *"
     }
   ]
