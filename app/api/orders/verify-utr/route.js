@@ -4,6 +4,7 @@ import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { triggerMerchantWebhook } from '@/lib/webhook';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
+import { generateOrderId } from '@/lib/orderId';
 
 export async function POST(request) {
   try {
@@ -72,7 +73,7 @@ export async function POST(request) {
           if (!order) {
             // Auto-create order for this payment link so UTR submission is never lost
             const { paiseToRupees } = await import('@/lib/paymentLinks');
-            const newOrderId = `MMP_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_${pl.token.slice(0, 12)}`;
+            const newOrderId = generateOrderId('order');
             const amountInRupees = parseFloat(paiseToRupees(pl.amount));
 
             const { data: createdOrd } = await supabaseAdmin

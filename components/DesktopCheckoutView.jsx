@@ -756,7 +756,7 @@ export default function DesktopCheckoutView({
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-primary-fixed-dim text-body-sm mt-0.5">
-                      <span title={rawOrderRef}>Order {orderRefDisplay.startsWith('MMP_') ? orderRefDisplay : `#${orderRefDisplay}`}</span>
+                      <span title={rawOrderRef}>Order {(orderRefDisplay.startsWith('order_') || orderRefDisplay.startsWith('pay_') || orderRefDisplay.startsWith('MMP_') || orderRefDisplay.startsWith('mmp_')) ? orderRefDisplay : `#${orderRefDisplay}`}</span>
                     </div>
                   </div>
                 </div>

@@ -58,7 +58,7 @@ export async function POST(request) {
 
     // 2. Check for order ID in text
     if (!matchedOrder) {
-      const orderMatch = textToParse.match(/\b(MMP_[0-9A-Za-z_]+)\b/i);
+      const orderMatch = textToParse.match(/\b((?:order_|pay_|mmp_|MMP_)[0-9A-Za-z_]+)\b/i);
       if (orderMatch) {
         const { data: oByRef } = await supabaseAdmin
           .from('orders')

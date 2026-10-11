@@ -275,8 +275,8 @@ export default function TransactionsRedesign({
     }
 
     const headers = [
-      'Transaction ID',
-      'Order ID',
+      'Order / Transaction ID',
+      'Merchant Ref',
       'Date',
       'Time',
       'Amount (INR)',
@@ -291,8 +291,8 @@ export default function TransactionsRedesign({
     const rows = filteredOrders.map(o => {
       const dt = o.created_at ? new Date(o.created_at) : new Date();
       return [
-        `txn_${(o.id || '').slice(0, 8)}`,
-        o.order_id || o.id,
+        `"${(o.id || o.order_id || '').replace(/"/g, '""')}"`,
+        `"${(o.external_ref || 'N/A').replace(/"/g, '""')}"`,
         dt.toLocaleDateString('en-IN'),
         dt.toLocaleTimeString('en-IN'),
         o.amount || '0',
@@ -818,7 +818,7 @@ export default function TransactionsRedesign({
           <table className="w-full text-left border-collapse table-auto">
             <thead className="bg-slate-50 border-b border-slate-200/80">
               <tr className="text-slate-500 text-[11px] uppercase tracking-wider font-bold">
-                <th className="py-3.5 px-5 text-left font-extrabold">TRANSACTION &amp; ORDER</th>
+                <th className="py-3.5 px-5 text-left font-extrabold">ORDER &amp; TRANSACTION ID</th>
                 <th className="py-3.5 px-4 text-left font-extrabold">RAIL</th>
                 <th className="py-3.5 px-4 text-left font-extrabold">CUSTOMER</th>
                 <th className="py-3.5 px-4 text-left font-extrabold">BANK REF / UTR</th>
@@ -838,24 +838,40 @@ export default function TransactionsRedesign({
                   const timeFormatted = dateStr.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
                   const dateFormatted = dateStr.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
 
+                  const canonicalId = order.id || order.order_id || '';
+
                   return (
                     <tr
                       key={order.id}
                       onClick={() => setSelectedOrder(order)}
                       className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
                     >
-                      {/* Transaction & Order */}
+                      {/* Order & Transaction ID */}
                       <td className="py-3.5 px-5">
                         <div className="flex flex-col gap-0.5">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-xs font-bold text-[#0c2340] group-hover:text-blue-600 transition-colors">
-                              txn_{(order.id || '').replace(/^order_|^MMP_\d{8}_/, '').slice(0, 8)}
-                            </span>
-                            <span className="text-slate-300">•</span>
-                            <span className="text-[11px] font-mono text-slate-500">
-                              {order.order_id || order.id}
-                            </span>
+                          <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-[#0c2340] group-hover:text-blue-600 transition-colors">
+                            <span>{canonicalId}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCopy(canonicalId, `id_${order.id}`);
+                              }}
+                              className="text-slate-300 hover:text-slate-600 p-0.5 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Copy ID"
+                              type="button"
+                            >
+                              {copiedKey === `id_${order.id}` ? (
+                                <Check className="w-3 h-3 text-emerald-600" />
+                              ) : (
+                                <Copy className="w-3 h-3" />
+                              )}
+                            </button>
                           </div>
+                          {order.external_ref && order.external_ref !== canonicalId && !order.external_ref.startsWith('pl_') && (
+                            <span className="text-[11px] font-mono text-slate-400 font-medium truncate max-w-[200px]" title={`Merchant Ref: ${order.external_ref}`}>
+                              Ref: {order.external_ref}
+                            </span>
+                          )}
                           <span className="text-[10px] text-slate-400 font-medium">
                             {dateFormatted}, {timeFormatted}
                           </span>

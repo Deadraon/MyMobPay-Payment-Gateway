@@ -7,6 +7,7 @@ import { triggerMerchantWebhook } from '@/lib/webhook';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { resolveMerchantIdToUuid } from '@/lib/merchantId';
+import { generateOrderId } from '@/lib/orderId';
 
 // Constant-time string comparison to prevent timing attacks
 function safeCompare(a, b) {
@@ -126,7 +127,7 @@ export async function POST(request) {
 
     // 2. Check if Order ID is referenced directly in the SMS text
     if (!matchedOrder) {
-      const orderMatch = message.match(/\b(MMP_[0-9A-Za-z_]+)\b/i);
+      const orderMatch = message.match(/\b((?:order_|pay_|mmp_|MMP_)[0-9A-Za-z_]+)\b/i);
       if (orderMatch) {
         const { data: oByRef } = await supabaseAdmin
           .from('orders')
@@ -208,7 +209,7 @@ export async function POST(request) {
 
         if (!matchedOrder) {
           // Auto-create order for this payment link so payment is attributed to the correct merchant
-          const newOrderId = `MMP_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_${link.token.slice(0, 12)}`;
+          const newOrderId = generateOrderId('order');
           const { data: createdOrd } = await supabaseAdmin
             .from('orders')
             .insert({
@@ -262,7 +263,7 @@ export async function POST(request) {
 
         if (targetMerchantId) {
           const planId = amount >= 1400 ? '3m' : '1m';
-          const orderId = `MMP_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_AUTO_${Date.now().toString().slice(-4)}`;
+          const orderId = generateOrderId('order');
           
           const { data: autoOrder } = await supabaseAdmin.from('orders').insert({
             id: orderId,
