@@ -19,6 +19,7 @@ import { supabase } from '@/lib/supabase';
 
 
 import { CONFIG } from '@/lib/config';
+import { generateOrderId } from '@/lib/orderId';
 
 
 
@@ -5713,7 +5714,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-    const payUrl = `/pay?api_key=${CONFIG.platformApiKey}&amount=${total}&ref=${profile?.id}&note=Subscription_${months}Month`;
+    const payUrl = `/pay?api_key=${CONFIG.platformApiKey}&amount=${total}&ref=${profile?.id}&note=Subscription_${months}Month&order_id=${generateOrderId('order')}`;
 
 
 

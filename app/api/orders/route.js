@@ -83,7 +83,10 @@ export async function POST(request) {
     }
 
     // 2. If external_ref is provided (e.g. from payment links), check for existing orders
-    if (external_ref) {
+    // NOTE: Subscriptions & renewals are recurring and must NOT be blocked by past verified orders.
+    const isSubscriptionOrder = Boolean(note && (note.startsWith('Subscription_') || note.includes('Subscription') || note.includes('Trial_Setup') || note.includes('Autopay_Setup')));
+
+    if (external_ref && !isSubscriptionOrder) {
       const cleanRef = String(external_ref).trim();
       const { data: existingOrders } = await supabaseAdmin
         .from('orders')
@@ -147,6 +150,33 @@ export async function POST(request) {
             status: 'pending',
             mode: latestOrder.mode,
             note: latestOrder.note
+          }, { status: 200 });
+        }
+      }
+    } else if (external_ref && isSubscriptionOrder) {
+      // For subscription checkouts: if an active pending subscription order exists with same amount within 15 min, reuse it
+      const cleanRef = String(external_ref).trim();
+      const { data: existingSubOrders } = await supabaseAdmin
+        .from('orders')
+        .select('*')
+        .eq('merchant_id', merchant.id)
+        .ilike('external_ref', cleanRef)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (existingSubOrders && existingSubOrders.length > 0) {
+        const latestPending = existingSubOrders[0];
+        const ageMs = Date.now() - new Date(latestPending.created_at).getTime();
+        if (ageMs < 15 * 60 * 1000 && Math.abs(parseFloat(latestPending.amount) - numAmount) < 1) {
+          return NextResponse.json({
+            orderId: latestPending.id,
+            order_id: latestPending.id,
+            orderAmount: latestPending.amount,
+            amount: latestPending.amount,
+            status: 'pending',
+            mode: latestPending.mode,
+            note: latestPending.note
           }, { status: 200 });
         }
       }

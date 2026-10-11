@@ -22,6 +22,7 @@ import { supabase } from '@/lib/supabase';
 import { CONFIG } from '@/lib/config';
 import { openTaxInvoiceWindow } from '@/lib/invoiceGenerator';
 import { formatMerchantId } from '@/lib/merchantId';
+import { generateOrderId } from '@/lib/orderId';
 
 export default function SubscriptionRedesign({
   profile = {},
@@ -53,6 +54,7 @@ export default function SubscriptionRedesign({
   const [showContactSalesModal, setShowContactSalesModal] = useState(false);
   const [invoiceFilter, setInvoiceFilter] = useState('all'); // 'all', 'paid'
   const [isActivating, setIsActivating] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
 
@@ -252,7 +254,7 @@ export default function SubscriptionRedesign({
   };
 
   // ── Directly open Real Checkout Page with Subscription Details ──
-  const handleProceedToCheckout = (planToUse = selectedPlan) => {
+  const handleProceedToCheckout = async (planToUse = selectedPlan) => {
     if (!planToUse) return;
     if (planToUse.isTrial) {
       handleActivateTrial();
@@ -267,19 +269,43 @@ export default function SubscriptionRedesign({
     const merchantId = profile?.id || '';
     const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
     const callbackUrl = `${currentOrigin}/dashboard#subscription`;
+    const newOrderId = generateOrderId('order');
 
-    const params = new URLSearchParams({
-      api_key: platformKey,
-      amount: String(planToUse.amount),
-      ref: merchantId,
-      note: `Subscription_${planToUse.id}`,
-      project: `MyMobPay Platform License (${planToUse.title})`,
-      name: profile?.business_name || profile?.user_metadata?.full_name || 'Merchant Owner',
-      phone: profile?.phone || '',
-      callback: callbackUrl,
-    });
+    setIsCheckingOut(true);
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: newOrderId,
+          api_key: platformKey,
+          amount: planToUse.amount,
+          note: `Subscription_${planToUse.id}`,
+          project: `MyMobPay Platform License (${planToUse.title})`,
+          customer_name: profile?.business_name || profile?.user_metadata?.full_name || 'Merchant Owner',
+          customer_phone: profile?.phone || '',
+          callback_url: callbackUrl,
+          external_ref: merchantId,
+        })
+      });
 
-    window.location.href = `/pay?${params.toString()}`;
+      const data = await res.json();
+      const targetOrderId = data?.order_id || data?.orderId || newOrderId;
+      window.location.href = `/pay?order_id=${encodeURIComponent(targetOrderId)}`;
+    } catch {
+      const params = new URLSearchParams({
+        order_id: newOrderId,
+        api_key: platformKey,
+        amount: String(planToUse.amount),
+        ref: merchantId,
+        note: `Subscription_${planToUse.id}`,
+        project: `MyMobPay Platform License (${planToUse.title})`,
+        name: profile?.business_name || profile?.user_metadata?.full_name || 'Merchant Owner',
+        phone: profile?.phone || '',
+        callback: callbackUrl,
+      });
+      window.location.href = `/pay?${params.toString()}`;
+    }
   };
 
   // ── Handle 3-Day Free Trial Direct Activation ─────────────────
@@ -618,7 +644,7 @@ export default function SubscriptionRedesign({
 
                 <button
                   type="button"
-                  disabled={isActivating}
+                  disabled={isActivating || isCheckingOut}
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedPlanId(plan.id);
@@ -642,6 +668,8 @@ export default function SubscriptionRedesign({
                     ? (isActivating && selectedPlanId === 'trial' ? 'Activating...' : 'Activate Free Trial')
                     : plan.isCustom
                     ? 'Contact Sales'
+                    : (isCheckingOut && selectedPlanId === plan.id)
+                    ? 'Redirecting to Checkout...'
                     : isSelected
                     ? `Subscribe & Pay ₹${plan.amount.toLocaleString('en-IN')}`
                     : `Subscribe (${plan.title})`}

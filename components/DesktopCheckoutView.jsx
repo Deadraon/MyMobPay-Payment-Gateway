@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { MyMobPayLogo, MyMobPayMark } from '@/components/MyMobPayLogo';
-import { formatRefId } from '@/lib/orderId';
+import { formatRefId, generateOrderId } from '@/lib/orderId';
 
 /* ── Instant Inline Vector Icons (0ms render time, no font loading delays, no text ligatures) ── */
 const IconVerifiedUser = ({ className = "w-[18px] h-[18px]" }) => (
@@ -241,7 +241,7 @@ export default function DesktopCheckoutView({
 
   // Safeguarded values (declared before any useEffect hooks)
   const safeBizName = (bizName && bizName !== 'Demo Store') ? bizName : 'Merchant';
-  const safeActiveId = activeId ? String(activeId) : (paramRef ? String(paramRef) : 'APX-98214');
+  const safeActiveId = activeId ? String(activeId) : (paramRef ? String(paramRef) : generateOrderId('order'));
   const safeUpiId = (!upiId || upiId === 'pending@upi' || !upiId.includes('@')) 
     ? '9410181307@okbizaxis' 
     : upiId;

@@ -7,7 +7,7 @@ import QRCode from 'react-qr-code';
 import dynamic from 'next/dynamic';
 import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
-import { formatRefId } from '@/lib/orderId';
+import { formatRefId, generateOrderId } from '@/lib/orderId';
 
 const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutView'), {
   ssr: false,
@@ -226,10 +226,10 @@ function PayPageContent() {
   const [okTime,       setOkTime]       = useState('');
 
   const autoCreated = useRef(false);
-  const [tempId, setTempId] = useState('A7F2-9C41');
+  const [tempId, setTempId] = useState(() => generateOrderId('order'));
 
   useEffect(() => {
-    setTempId(Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase());
+    setTempId(generateOrderId('order'));
     try {
       const d = new Intl.DateTimeFormat('en-IN', {
         day: 'numeric',
@@ -842,11 +842,13 @@ function PayPageContent() {
   /* ── Order creation API call ── */
   async function createOrder(amt, name, phone, ref, note, callback, project, lid) {
     setLoading(true); setError('');
+    const preOrderId = tempId || generateOrderId('order');
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          order_id: preOrderId,
           api_key: paramApiKey || CONFIG.platformApiKey,
           amount: amt,
           customer_name: name,
@@ -861,7 +863,7 @@ function PayPageContent() {
       });
       const data = await res.json();
       if (res.ok && data) {
-        const id = data.order_id || data.orderId;
+        const id = data.order_id || data.orderId || preOrderId;
         const am = data.amount ?? data.orderAmount;
         if (id) {
           setOrderId(id);
