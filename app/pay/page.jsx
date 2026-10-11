@@ -933,10 +933,11 @@ function PayPageContent() {
     if (!utr.trim()) return;
     setUtrBusy(true); setUtrMsg('');
     try {
+      const targetId = activeId || orderId || linkToken || routeToken || cleanParamOrderId || paramRef;
       const r = await fetch('/api/orders/verify-utr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: activeId, utr: utr.trim() })
+        body: JSON.stringify({ order_id: targetId, utr: utr.trim() })
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Failed');
@@ -944,7 +945,7 @@ function PayPageContent() {
         setUtrMsg('✓ Payment verified! Redirecting…');
         handleSuccess();
       } else {
-        setUtrMsg(d.message || 'UTR recorded. Checking in background…');
+        setUtrMsg(d.message || '✓ UTR saved! Verification is in progress.');
       }
     } catch (err) {
       setUtrMsg(err.message);
@@ -2083,6 +2084,19 @@ function PayPageContent() {
                         </button>
                       </div>
 
+                      {/* 7b. Mobile UTR Direct Entry Toggle */}
+                      {!showUtr && !mobUpiDelayed && mobUpiCheckCount < 1 && (
+                        <div style={{ textAlign: 'center', marginTop: 8 }}>
+                          <button
+                            type="button"
+                            onClick={() => setShowUtr(true)}
+                            style={{ background: 'none', border: 0, color: '#0284c7', fontSize: 12, fontWeight: 600, textDecoration: 'underline', cursor: 'pointer', padding: '4px 8px' }}
+                          >
+                            Already transferred? Enter 12-digit UTR manually
+                          </button>
+                        </div>
+                      )}
+
                       {/* 8. Live Real-Time Verification Status & UTR Drawer (Hidden by default; appears if payment takes >45s or user checks status) */}
                       {(isChecking || mobUpiDelayed || mobUpiCheckCount >= 1 || showUtr) && (
                         <div style={{
@@ -2165,11 +2179,11 @@ function PayPageContent() {
                                     gap: 6
                                   }}
                                 >
-                                  {utrBusy ? '…' : 'Verify'}
+                                  {utrBusy ? '…' : 'Submit UTR'}
                                 </button>
                               </div>
                               {utrMsg && (
-                                <p style={{ margin: '6px 0 0', fontSize: 11.5, fontWeight: 600, color: utrMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
+                                <p style={{ margin: '6px 0 0', fontSize: 11.5, fontWeight: 600, color: (utrMsg.startsWith('✓') || utrMsg.toLowerCase().includes('saved') || utrMsg.toLowerCase().includes('in progress')) ? '#059669' : '#dc2626' }}>
                                   {utrMsg}
                                 </p>
                               )}

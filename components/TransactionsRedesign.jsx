@@ -74,6 +74,58 @@ export default function TransactionsRedesign({
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
+  // ── Order Status Management (Mark as Paid / Unpaid) ─────────────
+  const [orderStatusBusy, setOrderStatusBusy] = useState(false);
+  const [orderStatusMsg, setOrderStatusMsg] = useState('');
+
+  const handleUpdateOrderStatus = async (orderId, action) => {
+    if (!orderId || orderStatusBusy) return;
+    setOrderStatusBusy(true);
+    setOrderStatusMsg('');
+    try {
+      const apiKey = profile?.api_key
+        ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
+        : (profile?.api_key || '');
+
+      const res = await fetch('/api/merchant/orders/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify({
+          orderId,
+          action,
+          utr: selectedOrder?.customer_utr || selectedOrder?.utr
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update order status');
+      }
+
+      setOrderStatusMsg(data.message || `Order marked as ${action === 'verify' ? 'Paid' : 'Unpaid'}`);
+      if (data.order && selectedOrder) {
+        setSelectedOrder(prev => ({
+          ...prev,
+          status: data.order.status,
+          utr: data.order.utr,
+          customer_utr: data.order.customer_utr || prev?.customer_utr,
+          verified_at: data.order.verified_at
+        }));
+      }
+
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (err) {
+      setOrderStatusMsg(err.message);
+    } finally {
+      setOrderStatusBusy(false);
+    }
+  };
+
   // ── Time Filter Helper ────────────────────────────────────────
   const isWithinTimeRange = (dateStr, range) => {
     if (!dateStr) return true;
@@ -849,7 +901,7 @@ export default function TransactionsRedesign({
                                 e.stopPropagation();
                                 handleCopy(order.utr, `utr_${order.id}`);
                               }}
-                              className="text-slate-300 hover:text-slate-600 p-0.5"
+                              className="text-slate-300 hover:text-slate-600 p-0.5 cursor-pointer"
                               title="Copy UTR"
                               type="button"
                             >
@@ -859,6 +911,31 @@ export default function TransactionsRedesign({
                                 <Copy className="w-3 h-3" />
                               )}
                             </button>
+                          </div>
+                        ) : order.customer_utr ? (
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-amber-800 bg-amber-50/90 px-2 py-0.5 rounded border border-amber-200/90 w-fit">
+                              <span>UTR: {order.customer_utr}</span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCopy(order.customer_utr, `cust_utr_${order.id}`);
+                                }}
+                                className="text-amber-500 hover:text-amber-800 p-0.5 cursor-pointer"
+                                title="Copy Customer Submitted UTR"
+                                type="button"
+                              >
+                                {copiedKey === `cust_utr_${order.id}` ? (
+                                  <Check className="w-3 h-3 text-emerald-600" />
+                                ) : (
+                                  <Copy className="w-3 h-3" />
+                                )}
+                              </button>
+                            </div>
+                            <span className="text-[10px] text-amber-600 font-semibold flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                              User Submitted UTR
+                            </span>
                           </div>
                         ) : isProcessing ? (
                           <div className="flex items-center gap-1.5 text-amber-600 text-xs font-mono font-medium">
@@ -1081,9 +1158,37 @@ export default function TransactionsRedesign({
                 </div>
                 <div className="p-3 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col">
                   <span className="text-[10px] text-slate-400 uppercase font-bold">Bank UTR / Ref</span>
-                  <span className="text-xs font-mono font-bold text-slate-800 mt-1">
-                    {selectedOrder.utr || 'Awaiting UTR'}
-                  </span>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs font-mono font-bold text-slate-800">
+                      {selectedOrder.utr || 'Awaiting Bank UTR'}
+                    </span>
+                    {selectedOrder.utr && (
+                      <button
+                        onClick={() => handleCopy(selectedOrder.utr, 'modal_utr')}
+                        className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer"
+                        type="button"
+                        title="Copy UTR"
+                      >
+                        {copiedKey === 'modal_utr' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                      </button>
+                    )}
+                  </div>
+                  {selectedOrder.customer_utr && (
+                    <div className="mt-2 pt-2 border-t border-slate-200/70 flex items-center justify-between">
+                      <span className="text-[10px] text-amber-700 font-bold">Customer UTR:</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs font-mono font-bold text-amber-800">{selectedOrder.customer_utr}</span>
+                        <button
+                          onClick={() => handleCopy(selectedOrder.customer_utr, 'modal_cust_utr')}
+                          className="text-amber-500 hover:text-amber-800 p-0.5 cursor-pointer"
+                          type="button"
+                          title="Copy Customer UTR"
+                        >
+                          {copiedKey === 'modal_cust_utr' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="p-3 bg-slate-50/60 rounded-xl border border-slate-100 flex flex-col">
                   <span className="text-[10px] text-slate-400 uppercase font-bold">Customer Name</span>
@@ -1126,25 +1231,61 @@ export default function TransactionsRedesign({
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-              <button
-                onClick={() => {
-                  const receiptText = `MyMobPay Receipt\nOrder: ${selectedOrder.order_id || selectedOrder.id}\nAmount: ₹${selectedOrder.amount}\nUTR: ${selectedOrder.utr || 'Pending'}\nStatus: ${selectedOrder.status}`;
-                  handleCopy(receiptText, 'modal_receipt');
-                }}
-                className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-xs"
-                type="button"
-              >
-                {copiedKey === 'modal_receipt' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                Copy Audit Trail
-              </button>
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs transition-colors shadow-xs"
-                type="button"
-              >
-                Close
-              </button>
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col gap-3">
+              {orderStatusMsg && (
+                <div className={`text-xs font-semibold px-3 py-1.5 rounded-lg text-center ${
+                  orderStatusMsg.toLowerCase().includes('failed') || orderStatusMsg.toLowerCase().includes('error')
+                    ? 'bg-red-50 text-red-700 border border-red-200'
+                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                }`}>
+                  {orderStatusMsg}
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  onClick={() => {
+                    const receiptText = `MyMobPay Receipt\nOrder: ${selectedOrder.order_id || selectedOrder.id}\nAmount: ₹${selectedOrder.amount}\nUTR: ${selectedOrder.utr || selectedOrder.customer_utr || 'Pending'}\nStatus: ${selectedOrder.status}`;
+                    handleCopy(receiptText, 'modal_receipt');
+                  }}
+                  className="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+                  type="button"
+                >
+                  {copiedKey === 'modal_receipt' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  Copy Trail
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {selectedOrder.status === 'pending' ? (
+                    <button
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'verify')}
+                      disabled={orderStatusBusy}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
+                      type="button"
+                    >
+                      {orderStatusBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                      Mark as Paid
+                    </button>
+                  ) : (selectedOrder.status === 'verified' || selectedOrder.status === 'paid') ? (
+                    <button
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'unpaid')}
+                      disabled={orderStatusBusy}
+                      className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
+                      type="button"
+                    >
+                      {orderStatusBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
+                      Mark as Unpaid
+                    </button>
+                  ) : null}
+
+                  <button
+                    onClick={() => { setSelectedOrder(null); setOrderStatusMsg(''); }}
+                    className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold text-xs transition-colors cursor-pointer"
+                    type="button"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

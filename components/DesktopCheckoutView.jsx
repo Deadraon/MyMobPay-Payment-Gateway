@@ -1344,7 +1344,20 @@ export default function DesktopCheckoutView({
                           {!isChecking && <IconArrowForward className="w-4 h-4 flex-shrink-0" />}
                         </button>
 
-                        {/* UTR & Delayed Verification Assistance (Hidden by default; appears if payment takes >45s or user checks status) */}
+                        {/* Always accessible UTR toggle */}
+                        {!showUtr && !upiDelayed && upiCheckCount < 1 && (
+                          <div className="flex justify-center pt-1">
+                            <button
+                              type="button"
+                              onClick={() => setShowUtr && setShowUtr(true)}
+                              className="text-[12px] font-semibold text-secondary hover:underline cursor-pointer flex items-center gap-1"
+                            >
+                              Already paid? Enter 12-digit UTR manually
+                            </button>
+                          </div>
+                        )}
+
+                        {/* UTR & Delayed Verification Assistance */}
                         {(upiDelayed || upiCheckCount >= 1 || showUtr) && (
                           <div className="mt-2 animate-fade-in">
                             {checkMsg && checkMsg.startsWith('✓') ? (
@@ -1390,12 +1403,16 @@ export default function DesktopCheckoutView({
                                     className="h-9 px-3.5 rounded-lg bg-secondary text-on-secondary text-xs font-semibold hover:bg-[#0038b7] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-2xs"
                                     id="verifyUtrDesktopBtn"
                                   >
-                                    {utrBusy ? '…' : 'Verify UTR'}
+                                    {utrBusy ? '…' : 'Submit UTR'}
                                   </button>
                                 </div>
 
                                 {utrMsg && (
-                                  <p className={`text-xs font-semibold ${utrMsg.startsWith('✓') ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                  <p className={`text-xs font-semibold ${
+                                    utrMsg.startsWith('✓') || utrMsg.toLowerCase().includes('saved') || utrMsg.toLowerCase().includes('in progress')
+                                      ? 'text-emerald-600'
+                                      : 'text-rose-600'
+                                  }`}>
                                     {utrMsg}
                                   </p>
                                 )}

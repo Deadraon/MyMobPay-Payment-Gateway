@@ -161,20 +161,82 @@ export async function POST(request) {
       }
     }
 
+    // 3c. Check if an active or processing payment link matches this amount
+    if (!matchedOrder) {
+      const amountInPaise = Math.round(amount * 100);
+      let plQuery = supabaseAdmin
+        .from('payment_links')
+        .select('*')
+        .in('status', ['active', 'processing'])
+        .eq('amount', amountInPaise);
+
+      if (!isAdminMerchant) {
+        plQuery = plQuery.eq('merchant_id', merchant.id);
+      }
+
+      const { data: matchedLinks } = await plQuery
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (matchedLinks && matchedLinks.length > 0) {
+        const link = matchedLinks[0];
+        let linkOrderId = link.order_id;
+
+        if (linkOrderId) {
+          const { data: existingOrd } = await supabaseAdmin
+            .from('orders')
+            .select('*')
+            .eq('id', linkOrderId)
+            .maybeSingle();
+          if (existingOrd) {
+            matchedOrder = existingOrd;
+          }
+        }
+
+        if (!matchedOrder) {
+          // Auto-create order for this payment link so payment is attributed to the correct merchant
+          const newOrderId = `MMP_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_${link.token.slice(0, 12)}`;
+          const { data: createdOrd } = await supabaseAdmin
+            .from('orders')
+            .insert({
+              id: newOrderId,
+              merchant_id: link.merchant_id,
+              amount: amount,
+              method: 'UPI',
+              note: link.title || 'Payment Link Checkout',
+              external_ref: `pl_${link.token.slice(0, 12)}`,
+              customer_utr: utr,
+              status: 'pending',
+              mode: 'live'
+            })
+            .select()
+            .single();
+
+          if (createdOrd) {
+            matchedOrder = createdOrd;
+            await supabaseAdmin
+              .from('payment_links')
+              .update({ order_id: newOrderId, updated_at: new Date().toISOString() })
+              .eq('id', link.id);
+          }
+        }
+      }
+    }
+
     if (!matchedOrder) {
       // Smart Fallback for Platform Subscription payments:
       // If a merchant scanned the QR directly from another device and no order was pre-created:
-      const isSubAmount = amount === 499 || amount === 1497 || amount === 1 || (amount >= 495 && amount <= 505);
-      if (isAdminMerchant && isSubAmount) {
-        // Look for merchant ID encoded in email remark/body (e.g. Subscription_1m_5DsTENhw5LQxQC)
-        const merchantMatch = emailBody.match(/(?:Subscription|Trial)_[0-9A-Za-z]+_([0-9A-Za-z-]{8,36})/i);
+      const isSubAmount = amount === 499 || amount === 1497 || (amount >= 495 && amount <= 505);
+      const hasSubscriptionKeyword = /(?:Subscription|Platform\s*Plan|Monthly\s*Plan|Trial)/i.test(emailBody);
+      const merchantMatch = emailBody.match(/(?:Subscription|Trial)_[0-9A-Za-z]+_([0-9A-Za-z-]{8,36})/i);
+      if (isAdminMerchant && (merchantMatch || (hasSubscriptionKeyword && isSubAmount))) {
         let targetMerchantId = null;
         if (merchantMatch) {
           targetMerchantId = await resolveMerchantIdToUuid(merchantMatch[1]);
         }
 
-        // If not found in remarks, match the most recent expired or renewing merchant
-        if (!targetMerchantId) {
+        // Only if explicit subscription keyword is present, match the most recent expired or renewing merchant
+        if (!targetMerchantId && hasSubscriptionKeyword) {
           const { data: candidateMerchants } = await supabaseAdmin
             .from('merchants')
             .select('id')
@@ -187,7 +249,7 @@ export async function POST(request) {
         }
 
         if (targetMerchantId) {
-          const planId = amount >= 1400 ? '3m' : amount === 1 ? 'trial' : '1m';
+          const planId = amount >= 1400 ? '3m' : '1m';
           const orderId = `MMP_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_AUTO_${Date.now().toString().slice(-4)}`;
           
           const { data: autoOrder } = await supabaseAdmin.from('orders').insert({
