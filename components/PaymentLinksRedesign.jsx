@@ -58,7 +58,10 @@ export default function PaymentLinksRedesign({
   const [railUpi, setRailUpi] = useState(true);
   const [railImps, setRailImps] = useState(true);
   const [railCrypto, setRailCrypto] = useState(false);
-  const [linkValidity, setLinkValidity] = useState('7d');
+  const [linkType, setLinkType] = useState('shared');
+  const [linkValidity, setLinkValidity] = useState('24h');
+  const [customValidityMinutes, setCustomValidityMinutes] = useState('');
+  const [actionLoadingId, setActionLoadingId] = useState(null);
   const [redirectUrl, setRedirectUrl]   = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(true);
@@ -70,7 +73,7 @@ export default function PaymentLinksRedesign({
   const [generatedLinkData, setGeneratedLinkData] = useState(null);
 
   // Filter and Search states
-  const [statusFilter, setStatusFilter] = useState('All'); // All, Paid, Pending, Expired
+  const [statusFilter, setStatusFilter] = useState('All'); // All, Active, Paid, Expired, Cancelled
   const [searchQuery, setSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState('Last 30 Days');
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -92,10 +95,47 @@ export default function PaymentLinksRedesign({
     setTimeout(() => setToastMessage(null), 3200);
   };
 
+  // Fetch database payment links
+  const fetchDbLinks = async () => {
+    if (!profile?.api_key && !profile?.id) return;
+    try {
+      const apiKey = profile?.api_key ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key : '';
+      const res = await fetch('/api/payment-links?limit=100', {
+        headers: { 'x-api-key': apiKey }
+      });
+      const json = await res.json();
+      if (res.ok && Array.isArray(json?.data)) {
+        const mapped = json.data.map((l) => ({
+          id: l.token,
+          token: l.token,
+          merchantId: profile?.id,
+          orderId: l.order_id,
+          purpose: l.title || 'Payment',
+          ref: l.token,
+          customerName: l.customer_name || 'Direct Customer',
+          customerPhone: l.customer_phone || '--',
+          amount: l.amount_in_rupees || (Number(l.amount) / 100).toFixed(2),
+          status: l.status.charAt(0).toUpperCase() + l.status.slice(1),
+          createdAt: l.created_at,
+          expiresAt: l.expires_at,
+          paidAt: l.paid_at,
+          expiredAt: l.expired_at,
+          cancelledAt: l.cancelled_at,
+          remainingSeconds: l.remaining_seconds,
+          linkType: l.link_type,
+          url: l.payment_url
+        }));
+        if (setPayLinkHistory) setPayLinkHistory(mapped);
+        return;
+      }
+    } catch (e) {
+      console.warn('Error fetching DB links:', e);
+    }
+  };
+
   // Load merchant-scoped payment links (purge legacy un-scoped cross-account key)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Clean up legacy un-scoped key so older browser tests don't leak into new accounts
       if (localStorage.getItem('mymobpay_payment_links')) {
         localStorage.removeItem('mymobpay_payment_links');
       }
@@ -105,26 +145,9 @@ export default function PaymentLinksRedesign({
         return;
       }
 
-      const merchantKey = `mymobpay_payment_links_${profile.id}`;
-      const stored = localStorage.getItem(merchantKey);
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
-            const filtered = parsed.filter((l) => l.merchantId === profile.id);
-            if (setPayLinkHistory) setPayLinkHistory(filtered);
-            return;
-          }
-        } catch (e) {
-          console.error('Error parsing stored payment links', e);
-        }
-      }
-      // Clean default empty list for this new merchant
-      if (setPayLinkHistory) {
-        setPayLinkHistory([]);
-      }
+      fetchDbLinks();
     }
-  }, [profile?.id, setPayLinkHistory]);
+  }, [profile?.id, profile?.api_key]);
 
   // Combine custom history with initial default links if needed (strictly merchant scoped)
   const allLinks = useMemo(() => {
@@ -245,9 +268,11 @@ export default function PaymentLinksRedesign({
   const filteredLinks = useMemo(() => {
     return allLinks.filter((link) => {
       // Status filter
+      if (statusFilter === 'Active' && link.status !== 'Active' && link.status !== 'Pending' && link.status !== 'Processing') return false;
       if (statusFilter === 'Paid' && link.status !== 'Paid') return false;
       if (statusFilter === 'Pending' && link.status !== 'Pending' && link.status !== 'Partial') return false;
       if (statusFilter === 'Expired' && link.status !== 'Expired') return false;
+      if (statusFilter === 'Cancelled' && link.status !== 'Cancelled') return false;
 
       // Search query filter
       if (searchQuery.trim() !== '') {
@@ -336,113 +361,164 @@ export default function PaymentLinksRedesign({
     window.open(waUrl, '_blank');
   };
 
-  // Handle Create Payment Link
+  // Handle Create Payment Link via API
   const handleCreateLink = async (e) => {
     if (e) e.preventDefault();
     setIsGenerating(true);
 
-    const linkId = 'pl_' + Math.random().toString(36).substring(2, 10);
-    const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
     const effectiveAmount = amount ? parseFloat(amount) : null;
     const effectivePurpose = purpose.trim() || 'Payment for Services';
-    const effectiveRef = refCode.trim() || generateRandomOrderId();
+    const finalCallbackUrl = redirectUrl.trim() || null;
+    const apiKey = profile?.api_key
+      ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
+      : 'live_mymob_demo_key';
 
-    let generatedUrl = '';
-    let dbOrderId = '';
-
-    // Attempt real database order creation if amount is positive
-    if (effectiveAmount && effectiveAmount > 0) {
-      try {
-        const apiKey = profile?.api_key
-          ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
-          : 'live_mymob_demo_key';
-
-        const finalCallbackUrl = redirectUrl.trim() || null;
-
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            api_key: apiKey,
-            amount: effectiveAmount,
-            note: effectivePurpose,
-            customer_name: customerName || '',
-            customer_phone: customerPhone || '',
-            external_ref: linkId,
-            project: profile?.business_name || 'MyMobPay Merchant',
-            method: 'LINK',
-            callback_url: finalCallbackUrl,
-          }),
-        });
-
-        const data = await res.json();
-        if (res.ok && data?.orderId) {
-          dbOrderId = data.orderId;
-          const params = new URLSearchParams();
-          params.set('order_id', data.orderId);
-          params.set('amount', effectiveAmount.toFixed(2));
-          if (effectiveRef) params.set('ref', effectiveRef);
-          if (finalCallbackUrl) params.set('callback', finalCallbackUrl);
-          generatedUrl = `${host}/pay?${params.toString()}`;
-        }
-      } catch (err) {
-        console.warn('API order pre-generation skipped, falling back to dynamic link', err);
+    let expireInVal = linkValidity;
+    if (linkValidity === 'custom') {
+      const parsedCustom = parseInt(customValidityMinutes, 10);
+      if (isNaN(parsedCustom) || parsedCustom < 5 || parsedCustom > 43200) {
+        showToast('Custom expiry must be between 5 minutes and 30 days (43,200 min).');
+        setIsGenerating(false);
+        return;
       }
+      expireInVal = parsedCustom;
     }
 
-    if (!generatedUrl) {
-      const finalCallbackUrl = redirectUrl.trim() || null;
-      const params = new URLSearchParams();
-      if (profile?.api_key) params.set('key', profile.api_key);
-      if (effectiveAmount) params.set('amount', effectiveAmount.toFixed(2));
-      params.set('note', effectivePurpose);
-      params.set('lid', linkId);
-      if (effectiveRef) params.set('ref', effectiveRef);
-      if (customerName) params.set('name', customerName);
-      if (customerPhone) params.set('phone', customerPhone);
-      if (finalCallbackUrl) params.set('callback', finalCallbackUrl);
-      generatedUrl = `${host}/pay?${params.toString()}`;
+    try {
+      const res = await fetch('/api/payment-links', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify({
+          amount: effectiveAmount,
+          title: effectivePurpose,
+          customer_name: customerName || '',
+          customer_phone: customerPhone || '',
+          link_type: linkType,
+          expire_in: expireInVal,
+          redirect_url: finalCallbackUrl,
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || 'Failed to generate link');
+        setIsGenerating(false);
+        return;
+      }
+
+      const generatedUrl = data.payment_url;
+      const newToken = data.token;
+
+      const newLinkItem = {
+        id: newToken,
+        token: newToken,
+        merchantId: profile?.id || null,
+        purpose: effectivePurpose,
+        ref: newToken,
+        customerName: customerName.trim() || 'Direct Customer',
+        customerPhone: customerPhone.trim() || '--',
+        amount: data.amount_in_rupees || (effectiveAmount ? effectiveAmount.toFixed(2) : '0.00'),
+        status: 'Active',
+        createdAt: data.created_at || new Date().toISOString(),
+        expiresAt: data.expires_at,
+        linkType: data.link_type,
+        url: generatedUrl,
+      };
+
+      const updated = [newLinkItem, ...allLinks];
+      if (setPayLinkHistory) setPayLinkHistory(updated);
+
+      setActiveUrl(generatedUrl);
+      setActiveLinkId(newToken);
+      setGeneratedLinkData({
+        url: generatedUrl,
+        id: newToken,
+        amount: effectiveAmount,
+        purpose: effectivePurpose,
+        ref: newToken,
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
+      });
+      setIsGenerating(false);
+      showToast('Payment link generated with expiry timer! Ready to dispatch.');
+
+      // Update DOM preview element if present
+      const prevUrl = document.getElementById('preview-url');
+      if (prevUrl) prevUrl.innerText = generatedUrl;
+    } catch (err) {
+      console.warn('API call failed:', err);
+      showToast('Failed to create payment link: ' + err.message);
+      setIsGenerating(false);
     }
+  };
 
-    const newLink = {
-      id: linkId,
-      merchantId: profile?.id || null,
-      orderId: dbOrderId || null,
-      purpose: effectivePurpose,
-      ref: effectiveRef,
-      customerName: customerName.trim() || 'Direct Customer',
-      customerPhone: customerPhone.trim() || '--',
-      amount: effectiveAmount ? effectiveAmount.toFixed(2) : 'Flexible',
-      status: 'Pending',
-      createdAt: new Date().toISOString(),
-      url: generatedUrl,
-    };
-
-    const updated = [newLink, ...allLinks];
-    if (setPayLinkHistory) setPayLinkHistory(updated);
-    if (typeof window !== 'undefined' && profile?.id) {
-      localStorage.setItem(`mymobpay_payment_links_${profile.id}`, JSON.stringify(updated));
+  // Handle Cancel Active Payment Link
+  const handleCancelLink = async (link) => {
+    const token = link?.token || link?.id;
+    if (!token) return;
+    setActionLoadingId(token);
+    try {
+      const apiKey = profile?.api_key
+        ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
+        : '';
+      const res = await fetch('/api/payment-links/cancel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify({ token })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast('Payment link cancelled successfully.');
+        fetchDbLinks();
+      } else {
+        showToast(data.error || 'Failed to cancel link');
+      }
+    } catch (e) {
+      showToast('Error cancelling link: ' + e.message);
+    } finally {
+      setActionLoadingId(null);
     }
+  };
 
-    setActiveUrl(generatedUrl);
-    setActiveLinkId(linkId);
-    setGeneratedLinkData({
-      url: generatedUrl,
-      id: linkId,
-      orderId: dbOrderId || linkId,
-      amount: effectiveAmount,
-      purpose: effectivePurpose,
-      ref: effectiveRef,
-      customerName: customerName.trim(),
-      customerPhone: customerPhone.trim(),
-    });
-    setIsGenerating(false);
-
-    showToast('Payment link generated successfully! Ready to dispatch.');
-
-    // Update DOM preview element if present
-    const prevUrl = document.getElementById('preview-url');
-    if (prevUrl) prevUrl.innerText = generatedUrl;
+  // Handle Regenerate Expired Payment Link (creates a brand new token, keeps old dead)
+  const handleRegenerateLink = async (link) => {
+    const token = link?.token || link?.id;
+    if (!token) return;
+    setActionLoadingId(token);
+    try {
+      const apiKey = profile?.api_key
+        ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
+        : '';
+      const res = await fetch('/api/payment-links/regenerate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify({ token })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast('New payment link generated! Original link remains expired.');
+        if (data.payment_url) {
+          setActiveUrl(data.payment_url);
+          setActiveLinkId(data.token);
+        }
+        fetchDbLinks();
+      } else {
+        showToast(data.error || 'Failed to regenerate link');
+      }
+    } catch (e) {
+      showToast('Error regenerating link: ' + e.message);
+    } finally {
+      setActionLoadingId(null);
+    }
   };
 
   // Export CSV
@@ -922,21 +998,81 @@ export default function PaymentLinksRedesign({
                     </label>
                   </div>
 
-                  {/* Validity Segmented Selector */}
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="text-xs text-slate-500 font-medium">Link Validity:</span>
-                    <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl">
-                      {[{ label: '24 Hours', val: '24h' }, { label: '3 Days', val: '3d' }, { label: '7 Days', val: '7d' }, { label: '30 Days', val: '30d' }].map((opt) => (
+                  {/* Link Type Selector */}
+                  <div className="pt-2">
+                    <label className="text-xs text-slate-500 font-medium block mb-1.5">Link Mode / Type:</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { setLinkType('shared'); setLinkValidity('24h'); }}
+                        className={`p-2.5 rounded-xl border text-left transition-all ${
+                          linkType === 'shared'
+                            ? 'border-blue-500 bg-blue-50/40 text-blue-900 font-semibold shadow-xs'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                        }`}
+                      >
+                        <span className="block text-xs font-bold">Shared Link</span>
+                        <span className="block text-[10px] text-slate-500">WhatsApp/SMS/Email • 24h Default</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setLinkType('checkout'); setLinkValidity('15m'); }}
+                        className={`p-2.5 rounded-xl border text-left transition-all ${
+                          linkType === 'checkout'
+                            ? 'border-blue-500 bg-blue-50/40 text-blue-900 font-semibold shadow-xs'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                        }`}
+                      >
+                        <span className="block text-xs font-bold">Live QR / Checkout</span>
+                        <span className="block text-[10px] text-slate-500">Live QR Session • 15m Default</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Validity Presets & Custom Selector */}
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs text-slate-500 font-medium">Expiry Duration:</span>
+                      <span className="text-[10px] text-slate-400 font-mono">5 MINS - 30 DAYS</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+                      {[
+                        { label: '15 Min', val: '15m' },
+                        { label: '1 Hour', val: '1h' },
+                        { label: '24 Hours', val: '24h' },
+                        { label: '7 Days', val: '7d' },
+                        { label: 'Custom', val: 'custom' },
+                      ].map((opt) => (
                         <button
                           key={opt.val}
                           type="button"
                           onClick={() => setLinkValidity(opt.val)}
-                          className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${linkValidity === opt.val ? 'bg-white text-blue-600 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'}`}
+                          className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                            linkValidity === opt.val
+                              ? 'bg-white text-blue-600 shadow-sm font-semibold'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
                         >
-                          {linkValidity === opt.val ? `Expires in ${opt.label}` : opt.label}
+                          {opt.label}
                         </button>
                       ))}
                     </div>
+
+                    {/* Custom Minutes Input */}
+                    {linkValidity === 'custom' && (
+                      <div className="mt-2.5 flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="5"
+                          max="43200"
+                          placeholder="Duration in minutes (e.g. 45)"
+                          value={customValidityMinutes}
+                          onChange={(e) => setCustomValidityMinutes(e.target.value)}
+                          className="w-48 px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                        <span className="text-xs text-slate-500">minutes (Min 5m, Max 43,200m / 30d)</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Return / Redirect URL */}
@@ -1153,9 +1289,10 @@ export default function PaymentLinksRedesign({
           <div className="flex items-center gap-2">
             {[
               { id: 'All', label: 'All', count: allLinks.length },
+              { id: 'Active', label: 'Active', count: allLinks.filter((l) => l.status === 'Active' || l.status === 'Pending').length },
               { id: 'Paid', label: 'Paid', count: allLinks.filter((l) => l.status === 'Paid').length },
-              { id: 'Pending', label: 'Pending', count: allLinks.filter((l) => l.status === 'Pending' || l.status === 'Partial').length },
               { id: 'Expired', label: 'Expired', count: allLinks.filter((l) => l.status === 'Expired').length },
+              { id: 'Cancelled', label: 'Cancelled', count: allLinks.filter((l) => l.status === 'Cancelled').length },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -1358,37 +1495,87 @@ export default function PaymentLinksRedesign({
                         </span>
                       </td>
 
-                      {/* Status */}
+                      {/* Status & Expiry */}
                       <td className="py-4 px-6">
-                        {link.status === 'Paid' && (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold border border-emerald-200/60">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Paid
-                          </span>
-                        )}
-                        {link.status === 'Pending' && (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                            Pending
-                          </span>
-                        )}
-                        {link.status === 'Partial' && (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200/60">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                            Partial
-                          </span>
-                        )}
-                        {link.status === 'Expired' && (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold border border-rose-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                            Expired
-                          </span>
-                        )}
+                        <div className="flex flex-col gap-1">
+                          {link.status === 'Paid' && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold border border-emerald-200/60 w-fit">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                              Paid
+                            </span>
+                          )}
+                          {(link.status === 'Active' || link.status === 'Pending') && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200/60 w-fit">
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                              Active
+                            </span>
+                          )}
+                          {link.status === 'Processing' && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold border border-amber-200/60 w-fit">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-spin"></span>
+                              Processing
+                            </span>
+                          )}
+                          {link.status === 'Expired' && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold border border-rose-200 w-fit">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                              Expired
+                            </span>
+                          )}
+                          {link.status === 'Cancelled' && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200 w-fit">
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                              Cancelled
+                            </span>
+                          )}
+
+                          {/* Expiry countdown / timestamp */}
+                          {link.expiresAt && (
+                            <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
+                              <Clock className="w-3 h-3 text-slate-400" />
+                              {new Date(link.expiresAt).getTime() > Date.now() ? (
+                                link.status === 'Paid' ? (
+                                  'Completed'
+                                ) : (
+                                  `Exp: ${new Date(link.expiresAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`
+                                )
+                              ) : (
+                                'Expired'
+                              )}
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       {/* Actions */}
                       <td className="py-4 px-6 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          {/* Cancel link button for Active links */}
+                          {(link.status === 'Active' || link.status === 'Pending') && (
+                            <button
+                              onClick={() => handleCancelLink(link)}
+                              disabled={actionLoadingId === (link.token || link.id)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                              title="Cancel Active Link"
+                              type="button"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+
+                          {/* Regenerate button for Expired links (creates new token) */}
+                          {(link.status === 'Expired' || link.status === 'Cancelled') && (
+                            <button
+                              onClick={() => handleRegenerateLink(link)}
+                              disabled={actionLoadingId === (link.token || link.id)}
+                              className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                              title="Regenerate Link (Creates New Token)"
+                              type="button"
+                            >
+                              <RotateCcw className={`w-4 h-4 ${actionLoadingId === (link.token || link.id) ? 'animate-spin' : ''}`} />
+                            </button>
+                          )}
+
                           <button
                             onClick={() => copyText(link.url, 'Payment Link')}
                             className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"

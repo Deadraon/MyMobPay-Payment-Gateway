@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { triggerMerchantWebhook } from '@/lib/webhook';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
+import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
 
 export async function POST(request) {
   try {
@@ -120,6 +121,13 @@ export async function POST(request) {
         } catch (subErr) {
           console.error('Subscription process error on UTR verify:', subErr);
         }
+      }
+
+      // Synchronize verification with associated payment link (idempotent, honors late payments)
+      try {
+        await syncOrderVerificationToPaymentLink(order.id, cleanUtr);
+      } catch (linkSyncErr) {
+        console.error('Payment link sync error on UTR verify:', linkSyncErr);
       }
 
       // Trigger outbound merchant webhook

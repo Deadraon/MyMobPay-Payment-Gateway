@@ -102,10 +102,17 @@ function PayPageContent() {
   const paramRef      = searchParams.get('ref')      || '';
   const paramNote     = searchParams.get('note')     || '';
   const paramLid      = searchParams.get('lid')      || '';
+  const paramToken    = searchParams.get('token')    || '';
   const paramOrderId  = searchParams.get('order_id') || searchParams.get('id') || '';
   const cleanParamOrderId = (paramOrderId || '').trim().replace(/^[-#]+/, '');
   const paramMethod   = searchParams.get('method')   || searchParams.get('payment_method') || '';
   const cleanParamMethod = ['upi', 'card', 'bank', 'crypto', 'cod'].includes((paramMethod || '').toLowerCase()) ? (paramMethod || '').toLowerCase() : null;
+
+  useEffect(() => {
+    if (paramToken && /^[0-9a-fA-F]{48,}$/.test(paramToken.trim())) {
+      router.replace(`/pay/${paramToken.trim()}`);
+    }
+  }, [paramToken, router]);
 
   /* Core state */
   const [merchant,     setMerchant]     = useState(null);

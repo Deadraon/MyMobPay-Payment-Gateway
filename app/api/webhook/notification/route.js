@@ -4,6 +4,7 @@ import { parseTransactionText } from '@/lib/parseSms';
 import { CONFIG } from '@/lib/config';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { triggerMerchantWebhook } from '@/lib/webhook';
+import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
 
 export async function POST(request) {
   try {
@@ -145,6 +146,13 @@ export async function POST(request) {
 
     // Call subscription renewal and trial activation check
     await checkAndProcessSubscription(updatedOrder, '');
+
+    // Synchronize verification with associated payment link (idempotent, honors late payments)
+    try {
+      await syncOrderVerificationToPaymentLink(matchedOrder.id, utr);
+    } catch (linkSyncErr) {
+      console.error('Payment link sync error on notification webhook:', linkSyncErr);
+    }
 
     // Trigger outbound webhook safely
     await triggerMerchantWebhook(matchedOrder.id);

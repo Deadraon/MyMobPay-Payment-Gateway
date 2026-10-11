@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { triggerMerchantWebhook } from '@/lib/webhook';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
+import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
 
 export async function POST(request) {
   try {
@@ -59,6 +60,7 @@ export async function POST(request) {
 
       if (!updateErr && updatedOrder) {
         try {
+          await syncOrderVerificationToPaymentLink(order.id, mockUtr);
           await triggerMerchantWebhook(order.id);
         } catch (whErr) {
           console.error('Webhook error on test order check-status:', whErr);
@@ -100,6 +102,7 @@ export async function POST(request) {
 
         if (!updateErr && updatedOrder) {
           try {
+            await syncOrderVerificationToPaymentLink(order.id, cleanCustomerUtr);
             await checkAndProcessSubscription(updatedOrder, '');
             await triggerMerchantWebhook(order.id);
           } catch (e) {
@@ -177,6 +180,7 @@ export async function POST(request) {
 
             if (!updateErr && updatedOrder) {
               try {
+                await syncOrderVerificationToPaymentLink(order.id, foundUtr);
                 await checkAndProcessSubscription(updatedOrder, '');
                 await triggerMerchantWebhook(order.id);
               } catch (e) {
