@@ -10095,7 +10095,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-        <div className={`flex-1 p-3.5 sm:p-6 md:p-10 pb-24 md:pb-10 ${isAnyModalOrDrawerOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+        <div className={`flex-1 p-3.5 sm:p-6 md:p-10 pb-8 md:pb-10 ${isAnyModalOrDrawerOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
 
 
 
@@ -23274,64 +23274,7 @@ async function checkOrderStatus(orderId) {
         onProfileUpdated={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
       />
 
-      {/* ── Mobile Bottom Navigation Bar (Ultra-responsive Native App Feel) ── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 px-2 py-1 flex items-center justify-around shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
-        <button
-          type="button"
-          onClick={() => setActiveTab('overview')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
-            activeTab === 'overview' ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700 font-medium'
-          }`}
-        >
-          <LayoutDashboard className={`w-5 h-5 ${activeTab === 'overview' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span className="text-[10px] mt-0.5">Overview</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('payment-links')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
-            activeTab === 'payment-links' ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700 font-medium'
-          }`}
-        >
-          <LinkIcon className={`w-5 h-5 ${activeTab === 'payment-links' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span className="text-[10px] mt-0.5">Links</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('transactions')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
-            activeTab === 'transactions' ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700 font-medium'
-          }`}
-        >
-          <CreditCard className={`w-5 h-5 ${activeTab === 'transactions' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span className="text-[10px] mt-0.5">Orders</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setSettingsCategory('banking');
-            setActiveTab('settings');
-          }}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
-            activeTab === 'settings' ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700 font-medium'
-          }`}
-        >
-          <Briefcase className={`w-5 h-5 ${activeTab === 'settings' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span className="text-[10px] mt-0.5">Settings</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-slate-400 hover:text-slate-700 font-medium transition-all cursor-pointer"
-        >
-          <Menu className="w-5 h-5 stroke-2" />
-          <span className="text-[10px] mt-0.5">More</span>
-        </button>
-      </nav>
+      
 
     </div>
 
