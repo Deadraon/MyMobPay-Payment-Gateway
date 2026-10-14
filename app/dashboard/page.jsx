@@ -527,6 +527,30 @@ export default function DashboardPage() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
+  // Unified modal/drawer open flag for scroll lock and background freezing
+  const isAnyModalOrDrawerOpen = Boolean(
+    isNotificationOpen ||
+    isMobileMenuOpen ||
+    isProfileDropdownOpen ||
+    isBusinessInfoModalOpen ||
+    isProfileModalOpen ||
+    showOnboardingWizard
+  );
+
+  // Prevent background scrolling when any mobile drawer, notification flyout, or modal is active
+  useEffect(() => {
+    if (isAnyModalOrDrawerOpen) {
+      const originalOverflow = document.body.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.touchAction = originalTouchAction;
+      };
+    }
+  }, [isAnyModalOrDrawerOpen]);
+
 
 
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -1665,54 +1689,8 @@ export default function DashboardPage() {
       supabase.removeChannel(merchantChannel);
     };
   }, [user]);
+  // Mobile menu scroll lock handled by unified isAnyModalOrDrawerOpen effect
 
-
-
-
-
-
-
-  // Lock scroll when mobile menu is open
-
-
-
-  useEffect(() => {
-
-
-
-    if (isMobileMenuOpen) {
-
-
-
-      document.body.style.overflow = 'hidden';
-
-
-
-    } else {
-
-
-
-      document.body.style.overflow = 'unset';
-
-
-
-    }
-
-
-
-    return () => {
-
-
-
-      document.body.style.overflow = 'unset';
-
-
-
-    };
-
-
-
-  }, [isMobileMenuOpen]);
 
 
 
@@ -9627,86 +9605,97 @@ echo "Order Created: " . $data['orderId'];
                 {/* Notifications Flyout Panel */}
                 {isNotificationOpen && (
                   <>
-                    {/* Mobile backdrop to dismiss on outside tap */}
+                    {/* Mobile backdrop to dismiss on outside tap and block background touch scrolling */}
                     <div
-                      className="fixed inset-0 z-40 bg-slate-900/20 sm:hidden"
+                      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs sm:bg-transparent"
                       onClick={() => setIsNotificationOpen(false)}
+                      onTouchMove={(e) => e.preventDefault()}
                     />
-                    <div className="fixed left-3 right-3 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2.5 w-auto sm:w-80 md:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden animate-scaleUp">
-                    <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-[#0c2340]">Activity &amp; Notifications</span>
-                        <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full font-mono">
-                          {orders.slice(0, 5).length}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => setIsNotificationOpen(false)}
-                        className="text-slate-400 hover:text-slate-600 p-1"
-                        type="button"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
-                      {orders.slice(0, 5).map((order) => {
-                        const isPaid = order.status === 'verified' || order.status === 'paid';
-                        return (
-                          <div
-                            key={order.id}
-                            onClick={() => {
-                              setActiveTab('transactions');
-                              setIsNotificationOpen(false);
-                            }}
-                            className="p-3.5 hover:bg-slate-50 transition-colors cursor-pointer flex items-start gap-3"
-                          >
-                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                              isPaid ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
-                            }`}>
-                              {isPaid ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
-                            </div>
-                            <div className="flex flex-col flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-1">
-                                <span className="text-xs font-bold text-slate-800 truncate">
-                                  {isPaid ? `Payment Received: ₹${order.amount}` : `Pending Checkout: ₹${order.amount}`}
-                                </span>
-                                <span className="text-[10px] text-slate-400 font-mono">
-                                  {order.created_at ? new Date(order.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                                {order.customer_name || 'Customer'} • {order.utr ? `UTR: ${order.utr}` : (order.order_id || 'Awaiting verification')}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-
-                      {orders.length === 0 && (
-                        <div className="p-6 text-center text-xs text-slate-400">
-                          No recent activity or notifications.
+                    <div 
+                      className="fixed left-2.5 right-2.5 top-[62px] sm:left-auto sm:right-0 sm:top-full sm:mt-2.5 sm:w-80 md:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[80vh] sm:max-h-[500px]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {/* Panel Header */}
+                      <div className="shrink-0 px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#0c2340]">Activity &amp; Notifications</span>
+                          <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full font-mono">
+                            {orders.slice(0, 8).length}
+                          </span>
                         </div>
-                      )}
-                    </div>
+                        <button
+                          onClick={() => setIsNotificationOpen(false)}
+                          className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-200/60 transition-colors cursor-pointer"
+                          type="button"
+                          aria-label="Close notifications"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
 
-                    <div className="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <button
-                        onClick={() => {
-                          setActiveTab('transactions');
-                          setIsNotificationOpen(false);
-                        }}
-                        className="text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1"
-                        type="button"
+                      {/* Scrollable list with explicit iOS touch scrolling */}
+                      <div 
+                        className="flex-1 overflow-y-auto overscroll-contain divide-y divide-slate-100 touch-pan-y"
+                        style={{ WebkitOverflowScrolling: 'touch' }}
                       >
-                        View all transactions
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="text-[10px] text-slate-400 font-mono">Rails Operational</span>
+                        {orders.slice(0, 8).map((order) => {
+                          const isPaid = order.status === 'verified' || order.status === 'paid';
+                          return (
+                            <div
+                              key={order.id}
+                              onClick={() => {
+                                setActiveTab('transactions');
+                                setIsNotificationOpen(false);
+                              }}
+                              className="p-3.5 hover:bg-slate-50 active:bg-blue-50/50 transition-colors cursor-pointer flex items-start gap-3"
+                            >
+                              <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                                isPaid ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
+                              }`}>
+                                {isPaid ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                              </div>
+                              <div className="flex flex-col flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-xs font-bold text-slate-800 truncate">
+                                    {isPaid ? `Payment Received: ₹${order.amount}` : `Pending Checkout: ₹${order.amount}`}
+                                  </span>
+                                  <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                                    {order.created_at ? new Date(order.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                                  {order.customer_name || 'Customer'} • {order.utr ? `UTR: ${order.utr}` : (order.order_id || 'Awaiting verification')}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {orders.length === 0 && (
+                          <div className="p-8 text-center text-xs text-slate-400">
+                            No recent activity or notifications.
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="shrink-0 p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <button
+                          onClick={() => {
+                            setActiveTab('transactions');
+                            setIsNotificationOpen(false);
+                          }}
+                          className="text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1 cursor-pointer py-1"
+                          type="button"
+                        >
+                          <span>View all transactions</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-[10px] text-slate-400 font-mono">Rails Operational</span>
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
               </div>
 
               {/* Docs / Help Icon */}
@@ -9752,72 +9741,76 @@ echo "Order Created: " . $data['orderId'];
                 <>
                   {/* Mobile backdrop */}
                   <div
-                    className="fixed inset-0 z-40 bg-transparent sm:hidden"
+                    className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs sm:bg-transparent"
                     onClick={() => setIsProfileDropdownOpen(false)}
+                    onTouchMove={(e) => e.preventDefault()}
                   />
-                  <div className="fixed right-3 top-[60px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-24px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 animate-scaleUp">
-                  <div className="px-4 py-2.5 border-b border-slate-100 flex flex-col gap-0.5">
-                    <p className="text-xs font-bold text-slate-900 truncate">
-                      {profile?.business_name || profile?.owner_name || 'Merchant'}
-                    </p>
-                    <p className="text-[11px] font-mono text-slate-400 truncate">
-                      {user?.email || 'merchant@mymob.tech'}
-                    </p>
+                  <div 
+                    className="fixed right-2.5 top-[62px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="px-4 py-2.5 border-b border-slate-100 flex flex-col gap-0.5">
+                      <p className="text-xs font-bold text-slate-900 truncate">
+                        {profile?.business_name || profile?.owner_name || 'Merchant'}
+                      </p>
+                      <p className="text-[11px] font-mono text-slate-400 truncate">
+                        {user?.email || 'merchant@mymob.tech'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        setIsBusinessInfoModalOpen(true);
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
+                    >
+                      <User className="w-4 h-4 text-slate-400" />
+                      Profile &amp; Business Info
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        setSettingsCategory('settlement');
+                        setActiveTab('settings');
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
+                    >
+                      <Building2 className="w-4 h-4 text-slate-400" />
+                      Bank Settlement Account
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        setSettingsCategory('api');
+                        setActiveTab('settings');
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
+                    >
+                      <Key className="w-4 h-4 text-slate-400" />
+                      API Keys &amp; Webhooks
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        setProfileModalTab('security');
+                        setIsProfileModalOpen(true);
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
+                    >
+                      <Shield className="w-4 h-4 text-slate-400" />
+                      Security &amp; Password
+                    </button>
+                    <div className="border-t border-slate-100 my-1"></div>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full text-left px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 flex items-center gap-2.5 font-bold transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 text-red-500" />
+                      Sign Out
+                    </button>
                   </div>
-                  <button
-                    onClick={() => {
-                      setIsProfileDropdownOpen(false);
-                      setIsBusinessInfoModalOpen(true);
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors"
-                  >
-                    <User className="w-4 h-4 text-slate-400" />
-                    Profile &amp; Business Info
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsProfileDropdownOpen(false);
-                      setSettingsCategory('settlement');
-                      setActiveTab('settings');
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors"
-                  >
-                    <Building2 className="w-4 h-4 text-slate-400" />
-                    Bank Settlement Account
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsProfileDropdownOpen(false);
-                      setSettingsCategory('api');
-                      setActiveTab('settings');
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors"
-                  >
-                    <Key className="w-4 h-4 text-slate-400" />
-                    API Keys &amp; Webhooks
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsProfileDropdownOpen(false);
-                      setProfileModalTab('security');
-                      setIsProfileModalOpen(true);
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors"
-                  >
-                    <Shield className="w-4 h-4 text-slate-400" />
-                    Security &amp; Password
-                  </button>
-                  <div className="border-t border-slate-100 my-1"></div>
-                  <button
-                    onClick={handleSignOut}
-                    className="w-full text-left px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 flex items-center gap-2.5 font-bold transition-colors"
-                  >
-                    <LogOut className="w-4 h-4 text-red-500" />
-                    Sign Out
-                  </button>
-                </div>
-              </>
-            )}
+                </>
+              )}
             </div>
           </div>
         </header>
@@ -9827,6 +9820,7 @@ echo "Order Created: " . $data['orderId'];
           <div 
             className="md:hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex transition-opacity animate-fade-in"
             onClick={() => setIsMobileMenuOpen(false)}
+            onTouchMove={(e) => { if (e.target === e.currentTarget) e.preventDefault(); }}
           >
             <div 
               className="w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between p-5 sm:p-6 select-none overflow-hidden animate-slide-right"
@@ -9872,7 +9866,7 @@ echo "Order Created: " . $data['orderId'];
                 </button>
 
                 {/* Navigation Links */}
-                <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto">
+                <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto overscroll-contain touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
                   {/* Pinned: Subscription */}
                   <button
                     onClick={() => {
@@ -10101,7 +10095,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-        <div className={`flex-1 p-3.5 sm:p-6 md:p-10 pb-24 md:pb-10 ${isBusinessInfoModalOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+        <div className={`flex-1 p-3.5 sm:p-6 md:p-10 pb-24 md:pb-10 ${isAnyModalOrDrawerOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
 
 
 

@@ -58,6 +58,31 @@ export default function SubscriptionRedesign({
   const [toastMessage, setToastMessage] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
 
+  // Lock background body and parent container scroll when subscription details or sales modal is active
+  useEffect(() => {
+    if (showDetailsModal || showContactSalesModal) {
+      const origOverflow = document.body.style.overflow;
+      const origTouchAction = document.body.style.touchAction;
+      const scrollableContainers = document.querySelectorAll('.overflow-y-auto');
+      scrollableContainers.forEach((el) => {
+        el.dataset.prevOverflow = el.style.overflow;
+        el.style.overflow = 'hidden';
+      });
+
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+
+      return () => {
+        document.body.style.overflow = origOverflow;
+        document.body.style.touchAction = origTouchAction;
+        scrollableContainers.forEach((el) => {
+          el.style.overflow = el.dataset.prevOverflow || '';
+          delete el.dataset.prevOverflow;
+        });
+      };
+    }
+  }, [showDetailsModal, showContactSalesModal]);
+
 
   // ── Real Subscription Details Computation ─────────────────────
   const subDetails = useMemo(() => {
@@ -818,10 +843,19 @@ export default function SubscriptionRedesign({
          MODAL 1: MANAGE SUBSCRIPTION (FULL CURRENT DETAILS)
          ═══════════════════════════════════════════════════════════ */}
       {showDetailsModal && (
-        <div className="fixed inset-0 z-50 bg-[#000d21]/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden animate-scaleUp">
-            {/* Modal Header */}
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+        <div 
+          className="fixed inset-0 z-50 bg-[#000d21]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+          onClick={() => setShowDetailsModal(false)}
+          onTouchMove={(e) => {
+            if (e.target === e.currentTarget) e.preventDefault();
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden animate-scaleUp"
+          >
+            {/* Modal Header (Fixed at top) */}
+            <div className="shrink-0 px-5 sm:px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
                   <Info className="w-4 h-4" />
@@ -833,15 +867,19 @@ export default function SubscriptionRedesign({
               </div>
               <button
                 onClick={() => setShowDetailsModal(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-colors cursor-pointer"
                 type="button"
+                aria-label="Close dialog"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 flex flex-col gap-5">
+            {/* Modal Body (Scrollable with iOS momentum touch) */}
+            <div 
+              className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 flex flex-col gap-4 touch-pan-y"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               {/* Primary Status Card */}
               <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-100 flex items-center justify-between">
                 <div className="flex flex-col">
@@ -914,35 +952,35 @@ export default function SubscriptionRedesign({
                   </span>
                 </div>
               </div>
+            </div>
 
-              {/* Modal Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
+            {/* Modal Action Buttons (Fixed at bottom - Never Cut Off!) */}
+            <div className="shrink-0 p-4 sm:px-6 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <button
+                onClick={handleDownloadInvoice}
+                type="button"
+                className="text-blue-600 hover:text-blue-700 text-xs font-semibold cursor-pointer py-1 flex items-center gap-1"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Download GST Tax Invoice
+              </button>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                 <button
-                  onClick={handleDownloadInvoice}
+                  onClick={() => setShowDetailsModal(false)}
                   type="button"
-                  className="text-blue-600 hover:text-blue-700 text-xs font-semibold cursor-pointer py-1 flex items-center gap-1"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  Download GST Tax Invoice
+                  Close
                 </button>
-
-                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                  <button
-                    onClick={() => setShowDetailsModal(false)}
-                    type="button"
-                    className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
-                  >
-                    Close
-                  </button>
-                  <button
-                    onClick={scrollToPlans}
-                    type="button"
-                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
-                  >
-                    Extend or Upgrade Plan
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                <button
+                  onClick={scrollToPlans}
+                  type="button"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  Extend or Upgrade Plan
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           </div>
@@ -957,19 +995,32 @@ export default function SubscriptionRedesign({
          MODAL 4: CONTACT ENTERPRISE SALES MODAL
          ═══════════════════════════════════════════════════════════ */}
       {showContactSalesModal && (
-        <div className="fixed inset-0 z-50 bg-[#000d21]/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden animate-scaleUp">
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+        <div 
+          className="fixed inset-0 z-50 bg-[#000d21]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+          onClick={() => setShowContactSalesModal(false)}
+          onTouchMove={(e) => {
+            if (e.target === e.currentTarget) e.preventDefault();
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden animate-scaleUp"
+          >
+            <div className="shrink-0 px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
               <h3 className="text-sm font-bold text-[#000d21]">Enterprise &amp; High-Throughput</h3>
               <button
                 onClick={() => setShowContactSalesModal(false)}
-                className="text-slate-400 hover:text-slate-700 p-1"
+                className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"
                 type="button"
+                aria-label="Close dialog"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-6 flex flex-col gap-4 text-xs">
+            <div 
+              className="flex-1 overflow-y-auto overscroll-contain p-6 flex flex-col gap-4 text-xs touch-pan-y"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               <p className="text-slate-600 leading-relaxed">
                 Need high throughput transaction routing (&gt; 5,000 txns/day), dedicated parsing workers, or bespoke sub-merchant architecture?
               </p>
