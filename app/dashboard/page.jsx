@@ -9314,7 +9314,7 @@ echo "Order Created: " . $data['orderId'];
                         {/* ═══════════════════════════════════════════════════════════
            HEADER (Unified Single Top Bar with Notifications Flyout)
            ═══════════════════════════════════════════════════════════ */}
-        <header className="fixed top-0 left-0 md:left-64 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] h-14 sm:h-16 md:h-20">
+        <header className="fixed top-0 left-0 md:left-64 right-0 bg-white border-b border-slate-200 z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] h-14 sm:h-16 md:h-20">
           <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0">
             {/* Mobile Hamburger Toggle */}
             <button
@@ -9443,7 +9443,13 @@ echo "Order Created: " . $data['orderId'];
 
                 {/* Notifications Flyout Panel */}
                 {isNotificationOpen && (
-                  <div className="absolute right-[-8px] sm:right-0 mt-2 sm:mt-3 w-[calc(100vw-24px)] sm:w-80 md:w-96 max-w-sm bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-scaleUp">
+                  <>
+                    {/* Mobile backdrop to dismiss on outside tap */}
+                    <div
+                      className="fixed inset-0 z-40 bg-slate-900/20 sm:hidden"
+                      onClick={() => setIsNotificationOpen(false)}
+                    />
+                    <div className="fixed left-3 right-3 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2.5 w-auto sm:w-80 md:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden animate-scaleUp">
                     <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-[#0c2340]">Activity &amp; Notifications</span>
@@ -9516,7 +9522,8 @@ echo "Order Created: " . $data['orderId'];
                       <span className="text-[10px] text-slate-400 font-mono">Rails Operational</span>
                     </div>
                   </div>
-                )}
+                </>
+              )}
               </div>
 
               {/* Docs / Help Icon */}
@@ -9559,7 +9566,13 @@ echo "Order Created: " . $data['orderId'];
 
               {/* Dropdown Menu Modal */}
               {isProfileDropdownOpen && (
-                <div className="absolute right-[-6px] sm:right-0 mt-2 sm:mt-3 w-[calc(100vw-32px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 animate-scaleUp">
+                <>
+                  {/* Mobile backdrop */}
+                  <div
+                    className="fixed inset-0 z-40 bg-transparent sm:hidden"
+                    onClick={() => setIsProfileDropdownOpen(false)}
+                  />
+                  <div className="fixed right-3 top-[60px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-24px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 animate-scaleUp">
                   <div className="px-4 py-2.5 border-b border-slate-100 flex flex-col gap-0.5">
                     <p className="text-xs font-bold text-slate-900 truncate">
                       {profile?.business_name || profile?.owner_name || 'Merchant'}
@@ -9620,7 +9633,8 @@ echo "Order Created: " . $data['orderId'];
                     Sign Out
                   </button>
                 </div>
-              )}
+              </>
+            )}
             </div>
           </div>
         </header>
