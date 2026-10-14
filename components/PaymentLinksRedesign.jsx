@@ -671,7 +671,8 @@ export default function PaymentLinksRedesign({
           ══════════════════════════════════════════════════════════ */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Card 1: Total Collected */}
-        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-blue-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold truncate">
               Total Collected
@@ -689,7 +690,8 @@ export default function PaymentLinksRedesign({
         </div>
 
         {/* Card 2: Active Links */}
-        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-amber-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold truncate">
               Active Links
@@ -705,7 +707,8 @@ export default function PaymentLinksRedesign({
         </div>
 
         {/* Card 3: Paid Links */}
-        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold truncate">
               Paid Links
@@ -723,7 +726,8 @@ export default function PaymentLinksRedesign({
         </div>
 
         {/* Card 4: Average Ticket */}
-        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-purple-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold truncate">
               Average Ticket

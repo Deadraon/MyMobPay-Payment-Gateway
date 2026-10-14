@@ -355,7 +355,7 @@ export default function DashboardOverviewRedesign({
         <section className="col-span-12 xl:col-span-3 flex flex-col gap-4">
           
           {/* Merchant Passport Card (100% Real Live Data - Dark Obsidian Theme matching Total Processed) */}
-          <div className="bg-[#0c2340] text-white rounded-xl border border-slate-800 p-5 shadow-sm relative overflow-hidden">
+          <div className="bg-[#0c2340] text-white rounded-xl border border-slate-800 p-5 shadow-sm relative overflow-hidden group">
             <div className="flex gap-3.5 items-center mb-4">
               {/* Real Merchant Monogram/Logo */}
               <div
@@ -453,10 +453,11 @@ export default function DashboardOverviewRedesign({
                 </span>
               </div>
             </div>
+            <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-blue-400/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           </div>
 
           {/* Monolith: Total Processed (Real Live Volume) */}
-          <div className="bg-[#0c2340] text-white rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+          <div className="bg-[#0c2340] text-white rounded-xl p-5 shadow-sm relative overflow-hidden group flex flex-col justify-between min-h-[140px]">
             <div className="flex items-center justify-between">
               <p className="text-[#b3c7ec] text-xs font-semibold uppercase tracking-wider">
                 Total Processed
@@ -475,12 +476,13 @@ export default function DashboardOverviewRedesign({
                   : 'Gross settled & active gateway flow'}
               </p>
             </div>
+            <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-[#07883b]/20 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           </div>
 
           {/* Compact Bento Pair: Real Transaction Count & Settled Volume */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
             {/* Real Transaction Count & Multi-Rail Breakdown (UPI, Bank, Crypto) */}
-            <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm flex flex-col justify-between">
+            <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm flex flex-col justify-between relative overflow-hidden group">
               <div className="flex items-center justify-between">
                 <p className="text-[#547092] text-xs font-semibold uppercase tracking-wider">
                   Transaction Count
@@ -489,6 +491,7 @@ export default function DashboardOverviewRedesign({
                   {successCount} Success
                 </span>
               </div>
+              <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-blue-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
               <div className="mt-3">
                 <div className="flex items-baseline justify-between">
                   <p className="text-[#0f141a] text-2xl font-bold tracking-tight font-mono">
@@ -606,7 +609,7 @@ export default function DashboardOverviewRedesign({
             </div>
 
             {/* Real Settled Volume */}
-            <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm flex flex-col justify-between">
+            <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm flex flex-col justify-between relative overflow-hidden group">
               <div className="flex items-center justify-between">
                 <p className="text-[#547092] text-xs font-medium uppercase tracking-wider">
                   Settled Volume
@@ -615,6 +618,7 @@ export default function DashboardOverviewRedesign({
                   T+0 Direct
                 </span>
               </div>
+              <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
               <div className="mt-3">
                 <p className="text-[#0f141a] text-2xl font-bold tracking-tight font-mono">
                   ₹ {settledVolume.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -637,7 +641,7 @@ export default function DashboardOverviewRedesign({
               setActiveTab?.('settings');
             }}
             title="Manage API Keys & Payout Webhooks"
-            className="w-full bg-[#eaedff] hover:bg-[#dfe4ff] active:scale-[0.99] border border-[#dae2fd] rounded-xl p-4 flex items-center justify-between shadow-xs transition-all text-left cursor-pointer group"
+            className="w-full bg-[#eaedff] hover:bg-[#dfe4ff] active:scale-[0.99] border border-[#dae2fd] rounded-xl p-4 flex items-center justify-between shadow-xs transition-all text-left cursor-pointer group relative overflow-hidden"
           >
             <div className="flex items-center gap-3">
               <ShieldCheck className="w-5 h-5 text-[#0045de] shrink-0 group-hover:scale-110 transition-transform" />
@@ -963,7 +967,7 @@ export default function DashboardOverviewRedesign({
         <section className="col-span-12 xl:col-span-3 flex flex-col gap-4">
           
           {/* Telemetry Card: Gateway Telemetry */}
-          <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm">
+          <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm relative overflow-hidden group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-xs font-bold uppercase tracking-wider text-[#0f141a]">
                 Gateway Telemetry
@@ -994,10 +998,11 @@ export default function DashboardOverviewRedesign({
                 </span>
               </div>
             </div>
+            <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           </div>
 
           {/* Bank Settlement Rail Card (Real Live Account) */}
-          <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm">
+          <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm relative overflow-hidden group">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div className="size-8 rounded-lg bg-[#e8edf2] flex items-center justify-center text-[#0c2340]">
@@ -1045,10 +1050,11 @@ export default function DashboardOverviewRedesign({
                 <span className="font-medium text-[#0f141a] font-mono">{dailyCapDisplay}</span>
               </div>
             </div>
+            <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-teal-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           </div>
 
           {/* Compact Quick Settlement Control Stack */}
-          <div className="bg-gradient-to-br from-[#0c2340] to-[#1a3a60] text-white rounded-xl p-5 shadow-sm">
+          <div className="bg-gradient-to-br from-[#0c2340] to-[#1a3a60] text-white rounded-xl p-5 shadow-sm relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-wider text-[#b3c7ec]">
                 Direct Pass-Through
@@ -1084,6 +1090,7 @@ export default function DashboardOverviewRedesign({
               <span>View Bank Routing Rules</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
+            <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-[#4edea3]/15 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
           </div>
 
         </section>

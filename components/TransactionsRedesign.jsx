@@ -504,7 +504,7 @@ export default function TransactionsRedesign({
               <span className="text-[10px] sm:text-xs text-slate-400 font-medium truncate">vs T-1</span>
             </div>
           </div>
-          <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform"></div>
+          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-blue-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
         </div>
 
         {/* Metric 2: Settled Volume */}
@@ -527,7 +527,7 @@ export default function TransactionsRedesign({
               </span>
             </div>
           </div>
-          <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-emerald-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform"></div>
+          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
         </div>
 
         {/* Metric 3: Successful Conversions */}
@@ -553,7 +553,7 @@ export default function TransactionsRedesign({
               </span>
             </div>
           </div>
-          <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform"></div>
+          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-indigo-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
         </div>
 
         {/* Metric 4: Settlement Velocity */}
@@ -579,14 +579,15 @@ export default function TransactionsRedesign({
               </span>
             </div>
           </div>
-          <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-amber-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform"></div>
+          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-amber-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
          3. DYNAMIC FILTER CONTROL MATRIX
          ═══════════════════════════════════════════════════════════ */}
-      <div className="bg-white p-4 lg:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col gap-4">
+      <div className="bg-white p-4 lg:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col gap-4 relative overflow-hidden group">
+        <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-blue-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
         {/* Status Selection Tabs & Time Quick Selector */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/70 overflow-x-auto no-scrollbar w-full sm:w-auto">
@@ -757,7 +758,8 @@ export default function TransactionsRedesign({
       {/* ═══════════════════════════════════════════════════════════
          4. SETTLEMENT INTEGRITY ASSURANCE STRIP
          ═══════════════════════════════════════════════════════════ */}
-      <div className="bg-slate-100/80 border border-slate-200/80 px-5 py-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-800 shadow-xs">
+      <div className="bg-slate-100/80 border border-slate-200/80 px-5 py-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-800 shadow-xs relative overflow-hidden group">
+        <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
         <div className="flex items-center gap-3.5">
           <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center text-emerald-600 shadow-xs flex-shrink-0">
             <ShieldCheck className="w-5 h-5" />

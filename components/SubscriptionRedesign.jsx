@@ -524,7 +524,8 @@ export default function SubscriptionRedesign({
         {/* 4 Hero Metric Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Tile 1: Current Plan */}
-          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70">
+          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
             <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
               Current Plan
             </span>
@@ -541,7 +542,8 @@ export default function SubscriptionRedesign({
           </div>
 
           {/* Tile 2: Next Renewal Date */}
-          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70">
+          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-indigo-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
             <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
               Next Renewal Date
             </span>
@@ -557,7 +559,8 @@ export default function SubscriptionRedesign({
           </div>
 
           {/* Tile 3: Direct Settlement Target */}
-          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70">
+          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
             <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
               Direct Settlement Target
             </span>
@@ -579,7 +582,8 @@ export default function SubscriptionRedesign({
           </div>
 
           {/* Tile 4: Gateway Fee Saved */}
-          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70">
+          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
             <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
               Gateway Fee Saved
             </span>
@@ -631,7 +635,17 @@ export default function SubscriptionRedesign({
                     : 'border-slate-200/80 hover:border-blue-300 shadow-xs'
                 }`}
               >
-                <div className="flex flex-col gap-3">
+                {/* Accent Corner Bubble matching Plan Color */}
+                <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300 ${
+                  plan.isTrial
+                    ? 'bg-emerald-500/10'
+                    : plan.isCustom
+                    ? 'bg-amber-500/10'
+                    : plan.id === '3months' || plan.id === '2months'
+                    ? 'bg-indigo-500/10'
+                    : 'bg-blue-500/10'
+                }`} />
+                <div className="flex flex-col gap-3 relative z-10">
                   <div className="flex items-center justify-between">
                     <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${plan.badgeClass}`}>
                       {plan.badge}
