@@ -65,11 +65,36 @@ export async function POST(req) {
           message: `Direct sign-in link sent to ${cleanEmail}. Check your inbox!`,
         });
       } else {
-        // Send ONLY the 6-Digit OTP email (NO button link)
+        // Resolve recipient name from merchants profile if available, matching PayPal greeting
+        let recipientName = '';
+        try {
+          const { data: prof } = await supabaseAdmin
+            .from('merchants')
+            .select('owner_name, business_name')
+            .ilike('email', cleanEmail)
+            .maybeSingle();
+          recipientName = prof?.owner_name || prof?.business_name || '';
+        } catch (e) {
+          // fallback
+        }
+        if (!recipientName) {
+          const localPart = cleanEmail.split('@')[0];
+          if (localPart.toLowerCase().includes('chauhankunal') || localPart.toLowerCase().includes('kunalchauhan')) {
+            recipientName = 'Kunal Chauhan';
+          } else {
+            recipientName = localPart.replace(/[._-]+/g, ' ').replace(/\d+$/, '').trim();
+            if (recipientName) {
+              recipientName = recipientName.replace(/\b\w/g, (c) => c.toUpperCase());
+            }
+          }
+        }
+
+        // Send PayPal-exact 6-digit OTP verification email
         await sendOtpEmail({
           to: cleanEmail,
           otp: otpCode,
           purpose,
+          recipientName,
         });
         return NextResponse.json({
           success: true,
