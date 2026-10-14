@@ -9607,532 +9607,278 @@ echo "Order Created: " . $data['orderId'];
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex">
-            <div className="w-72 bg-white h-full shadow-2xl flex flex-col justify-between p-6 animate-fadeIn">
-              <div className="flex flex-col gap-5">
-                <div className="flex items-center justify-between">
+          <div 
+            className="md:hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex transition-opacity animate-fade-in"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <div 
+              className="w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between p-5 sm:p-6 select-none overflow-hidden animate-slide-right"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col gap-4 min-h-0 flex-1">
+                {/* Drawer Header: Logo + Close */}
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <MyMobPayLogo className="w-36 h-auto" textColor="#0c2340" />
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-1.5 text-slate-400 hover:text-slate-800 rounded-lg hover:bg-slate-100"
+                    className="p-2 text-slate-400 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
                     type="button"
+                    aria-label="Close menu"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
-                <nav className="flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-200px)]">
-                  {[
-                    { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-                    { id: 'payment-links', label: 'Payment Links', icon: LinkIcon },
-                    { id: 'transactions', label: 'Transactions', icon: CreditCard },
-                    { id: 'connections', label: 'Connections', icon: LinkIcon },
-                    { id: 'developer', label: 'Developer API', icon: BookOpen },
-                    { id: 'playground', label: 'Playground', icon: Sparkles },
-                    { id: 'settings', label: 'Settings', icon: Briefcase },
-                    { id: 'setup-guide', label: 'Setup Guide', icon: BookOpen },
-                    { id: 'subscription', label: 'Subscription', icon: Crown }
-                  ].map((item) => {
-                    const IconComp = item.icon;
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => {
-                          setActiveTab(item.id);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                          activeTab === item.id
-                            ? 'bg-blue-50 text-blue-600 border border-blue-100'
-                            : 'text-slate-600 hover:bg-slate-50'
-                        }`}
-                      >
-                        <IconComp className="w-4.5 h-4.5 shrink-0" />
-                        {item.label}
-                      </button>
-                    );
-                  })}
+                {/* Profile Card Quick Access */}
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsBusinessInfoModalOpen(true);
+                  }}
+                  className="w-full flex items-center gap-3 p-3 bg-slate-50 hover:bg-blue-50/50 border border-slate-200/80 hover:border-blue-200 rounded-2xl transition-all text-left cursor-pointer group shrink-0"
+                  title="View Profile and Settings"
+                  type="button"
+                >
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0"
+                    style={{ backgroundColor: profile?.theme_color || '#3B82F6' }}
+                  >
+                    {merchantInitials || 'M'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                      {profile?.business_name || profile?.owner_name || 'My Business'}
+                    </p>
+                    <p className="text-[11px] font-mono text-slate-500 truncate">{user?.email || 'merchant@mymob.tech'}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+
+                {/* Navigation Links */}
+                <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto">
+                  {/* Pinned: Subscription */}
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleScrollToSubscription();
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold ${
+                      activeTab === 'subscription'
+                        ? 'bg-blue-600/15 text-blue-700 border-blue-500/30 shadow-xs'
+                        : profile?.subscription_status === 'active'
+                        ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/25 hover:bg-emerald-500/15'
+                        : 'bg-amber-500/10 text-amber-700 border-amber-500/25 hover:bg-amber-500/15'
+                    }`}
+                  >
+                    <Crown className={`w-4 h-4 shrink-0 ${
+                      activeTab === 'subscription'
+                        ? 'text-blue-600'
+                        : profile?.subscription_status === 'active'
+                        ? 'text-emerald-600'
+                        : 'text-amber-500'
+                    }`} />
+                    <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
+                      {profile?.subscription_status === 'active' ? 'Premium Active' : 'Premium Subscription'}
+                    </span>
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${
+                      profile?.subscription_status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'
+                    }`} />
+                  </button>
+
+                  {/* Pinned: Super Admin Console (if Super Admin) */}
                   {isAdminUser && (
                     <button
                       onClick={() => {
                         setActiveTab('admin');
-                        setIsProfileDropdownOpen(false);
+                        setIsMobileMenuOpen(false);
                       }}
                       type="button"
-                      className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-blue-600 bg-blue-50/50 hover:bg-blue-100/50 border border-blue-100 mt-1 text-left cursor-pointer"
+                      className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 ${
+                        activeTab === 'admin'
+                          ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-300'
+                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent'
+                      }`}
+                      title="Access SaaS Super Admin Console"
                     >
-                      <Shield className="w-4.5 h-4.5 text-blue-600" />
-                      Admin Console
+                      <Shield className="w-3.5 h-3.5 text-blue-200" />
+                      <span className="flex-1 text-left font-black tracking-wide text-[11px]">Admin Console</span>
+                      <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-black uppercase">Root</span>
                     </button>
                   )}
+
+                  <div className="h-px bg-slate-100 my-2" />
+
+                  {/* Category: General */}
+                  <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                    General
+                  </p>
+                  <button
+                    onClick={() => {
+                      setActiveTab('overview');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'overview'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Overview
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('payment-links');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'payment-links'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Payment Links
+                  </button>
+
+                  {/* Category: Reports */}
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                    Reports
+                  </p>
+                  <button
+                    onClick={() => {
+                      setActiveTab('transactions');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'transactions'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Transactions
+                  </button>
+
+                  {/* Category: Integrations */}
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                    Integrations
+                  </p>
+                  <button
+                    onClick={() => {
+                      setActiveTab('connections');
+                      setIntegrationTarget('email_forwarding');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'connections'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'connections' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Connections
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('developer');
+                      if (integrationTarget === 'email_forwarding') {
+                        setIntegrationTarget('website');
+                      }
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'developer'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Developer API
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('playground');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'playground'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <Sparkles className={`w-4 h-4 shrink-0 ${activeTab === 'playground' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Playground
+                  </button>
+
+                  {/* Category: Settings */}
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                    Settings &amp; Guides
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSettingsCategory('banking');
+                      setActiveTab('settings');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'settings'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Settings
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('setup-guide');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'setup-guide'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === 'setup-guide' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    0 to 100 Setup Guide
+                  </button>
                 </nav>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center gap-2 text-xs font-bold text-red-600 hover:text-red-700"
-                  type="button"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </button>
-                <span className="text-[11px] font-mono text-slate-400">v2.1</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Mobile Navigation Drawer (Razorpay Style) */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden fixed inset-x-0 bottom-0 top-[64px] z-30 bg-white/70 backdrop-blur-lg flex flex-col pt-6 px-6 pb-6 animate-fadeIn overflow-y-auto">
-            {/* Mobile Admin Banner */}
-            {isAdminUser && (
-              <button
-                onClick={() => {
-                  setActiveTab('admin');
-                  setIsMobileMenuOpen(false);
-                }}
-                type="button"
-                className="w-full flex items-center justify-between p-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-md mb-4 border border-blue-400/30 shrink-0 cursor-pointer text-left"
-                title="Open SaaS Super Admin Console"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Shield className="w-4 h-4 text-blue-200" />
-                  <span className="text-xs font-black uppercase tracking-wider">Super Admin Console</span>
+              {/* Drawer Footer */}
+              <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
+                <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>API Live Rails</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">v2.1</span>
                 </div>
-                <span className="text-[9px] bg-white/20 px-2 py-0.5 rounded font-black">ROOT</span>
-              </button>
-            )}
-
-            {/* Drawer Header Info */}
-
-
-
-            <button
-
-
-
-              onClick={() => {
-
-
-
-                setIsMobileMenuOpen(false);
-
-
-
-                setIsBusinessInfoModalOpen(true);
-
-
-
-              }}
-
-
-
-              className="w-full flex items-center gap-3 mb-6 p-3 bg-slate-50 hover:bg-blue-50/40 border border-slate-200 hover:border-blue-300 rounded-2xl transition-all text-left cursor-pointer select-none"
-
-
-
-              title="Edit Profile Settings"
-
-
-
-            >
-
-
-
-              <div 
-
-
-
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0"
-
-
-
-                style={{ backgroundColor: profile?.theme_color || '#3B82F6' }}
-
-
-
-              >
-
-
-
-                {profile?.owner_name ? profile.owner_name.charAt(0).toUpperCase() : profile?.business_name ? profile.business_name.charAt(0).toUpperCase() : 'M'}
-
-
-
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleSignOut();
+                  }}
+                  type="button"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors border border-red-100/60"
+                >
+                  <LogOut className="w-3.5 h-3.5" /> Sign Out
+                </button>
               </div>
-
-
-
-              <div className="flex-1 min-w-0">
-
-
-
-                <p className="text-sm font-bold text-slate-900 truncate">{profile?.owner_name || profile?.business_name || 'My Profile'}</p>
-
-
-
-                <p className="text-[10px] font-medium text-slate-500 truncate">{user?.email}</p>
-
-
-
-              </div>
-
-
-
-            </button>
-
-
-
-
-
-
-
-            {/* Navigation Options */}
-
-
-
-            <div className="flex flex-col space-y-2">
-
-
-
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-1">Menu Navigation</p>
-
-
-
-              {/* Subscription button — top of mobile nav */}
-
-
-
-              <button
-
-
-
-                onClick={() => {
-
-
-
-                  setIsMobileMenuOpen(false);
-
-
-
-                  handleScrollToSubscription();
-
-
-
-                }}
-
-
-
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all border ${
-
-
-
-                  activeTab === 'subscription'
-
-
-
-                    ? 'bg-blue-50 text-blue-700 border-blue-100 shadow-sm shadow-blue-500/5'
-
-
-
-                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm'
-
-
-
-                }`}
-
-
-
-              >
-
-
-
-                <Crown className={`w-4 h-4 shrink-0 ${activeTab === 'subscription' ? 'text-blue-600' : 'text-slate-400'}`} />
-
-
-
-                <span className="flex-1 text-left font-black tracking-wide">
-
-
-
-                  {profile?.subscription_status === 'active' ? 'Premium Active' : 'Premium Subscription'}
-
-
-
-                </span>
-
-
-
-                <span className={`w-1.5 h-1.5 rounded-full ${profile?.subscription_status === 'active' ? 'bg-emerald-500' : 'bg-amber-400'}`} />
-
-
-
-              </button>
-
-
-
-              <div className="border-t border-slate-100 my-3" />
-
-
-
-              {[
-
-
-
-                { type: 'header', label: 'General' },
-
-
-
-                { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-                { id: 'setup-guide', label: '0 to 100 Setup Guide', icon: Compass },
-
-
-
-                { id: 'payment-links', label: 'Payment Links', icon: LinkIcon },
-
-
-
-                { type: 'header', label: 'Reports' },
-
-
-
-                { id: 'transactions', label: 'Transactions', icon: CreditCard },
-
-
-
-                { type: 'header', label: 'Integrations' },
-
-
-
-                { id: 'connections', label: 'Connections', icon: LinkIcon },
-
-
-
-                { id: 'developer', label: 'Developer API', icon: BookOpen },
-
-
-
-                { id: 'playground', label: 'Playground', icon: Sparkles },
-
-
-
-                { type: 'header', label: 'Settings' },
-
-
-
-                { id: 'settings', label: 'Settings', icon: Briefcase },
-
-
-
-              ].map((item, idx) => {
-
-
-
-                if (item.type === 'header') {
-
-
-
-                  return (
-
-
-
-                    <p key={`mh-${idx}`} className="text-[10px] font-black text-slate-450 uppercase tracking-widest px-3 mt-4 mb-1 select-none">
-
-
-
-                      {item.label}
-
-
-
-                    </p>
-
-
-
-                  );
-
-
-
-                }
-
-
-
-                const Icon = item.icon;
-
-
-
-                return (
-
-
-
-                  <button
-
-
-
-                    key={item.id}
-
-
-
-                    onClick={() => {
-
-
-
-                      setActiveTab(item.id);
-
-
-
-                      setIsMobileMenuOpen(false);
-
-
-
-                      if (item.id === 'connections') {
-
-
-
-                        setIntegrationTarget('email_forwarding');
-
-
-
-                      } else if (item.id === 'developer' && integrationTarget === 'email_forwarding') {
-
-
-
-                        setIntegrationTarget('website');
-
-
-
-                      }
-
-
-
-                    }}
-
-
-
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border ${
-
-
-
-                      activeTab === item.id 
-
-
-
-                        ? 'bg-blue-50 text-blue-700 border-blue-100 shadow-sm shadow-blue-500/5' 
-
-
-
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border-transparent'
-
-
-
-                    }`}
-
-
-
-                  >
-
-
-
-                    <Icon className="w-4.5 h-4.5 shrink-0" />
-
-
-
-                    <span>{item.label}</span>
-
-
-
-                  </button>
-
-
-
-                );
-
-
-
-              })}
-
-
-
             </div>
-
-
-
-
-
-
-
-            <div className="flex-1"></div>
-
-
-
-
-
-
-
-            {/* Drawer Sign Out */}
-
-
-
-            <div className="pt-6 border-t border-slate-100">
-
-
-
-              <button 
-
-
-
-                onClick={handleSignOut}
-
-
-
-                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl transition-all text-xs font-bold text-slate-700 shadow-sm"
-
-
-
-              >
-
-
-
-                <LogOut className="w-4 h-4 text-slate-500" />
-
-
-
-                <span>Sign Out Account</span>
-
-
-
-              </button>
-
-
-
-            </div>
-
-
-
           </div>
-
-
-
         )}
-
-
-
-
-
-
-
-        {/* Desktop Sticky Header / Navbar */}
-
-
-
-        
-
-
-
-
-
-
 
         {/* Main Body */}
 
