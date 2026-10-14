@@ -9303,7 +9303,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-      <main className="md:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] pt-20">
+      <main className="md:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] pt-14 sm:pt-16 md:pt-20">
 
 
 
@@ -9314,20 +9314,25 @@ echo "Order Created: " . $data['orderId'];
                         {/* ═══════════════════════════════════════════════════════════
            HEADER (Unified Single Top Bar with Notifications Flyout)
            ═══════════════════════════════════════════════════════════ */}
-        <header className="fixed top-0 left-0 md:left-64 right-0 bg-white border-b border-slate-200 z-40 flex items-center justify-between px-4 sm:px-6 lg:px-8 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] h-20">
-          <div className="flex items-center gap-3 sm:gap-6">
+        <header className="fixed top-0 left-0 md:left-64 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] h-14 sm:h-16 md:h-20">
+          <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0">
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0"
               type="button"
               title="Toggle Menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* Live Mode / Test Mode Switcher */}
-            <div className="flex items-center bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/70 shadow-inner">
+            {/* Mobile Brand Logo */}
+            <div className="md:hidden flex items-center shrink-0">
+              <MyMobPayLogo className="w-28 sm:w-32 h-auto" textColor="#0c2340" />
+            </div>
+
+            {/* Live Mode / Test Mode Switcher (Desktop) */}
+            <div className="hidden sm:flex items-center bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/70 shadow-inner">
               <button
                 onClick={() => {
                   if (profile?.sandbox_mode !== false) toggleSandboxMode();
@@ -9398,7 +9403,22 @@ echo "Order Created: " . $data['orderId'];
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4 lg:gap-5">
+          <div className="flex items-center gap-2 sm:gap-4 lg:gap-5 shrink-0">
+            {/* Mobile Mode Switcher Pill */}
+            <button
+              onClick={toggleSandboxMode}
+              className={`sm:hidden flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all shrink-0 ${
+                profile?.sandbox_mode === false
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80 shadow-2xs'
+                  : 'bg-amber-50 text-amber-700 border-amber-200/80 shadow-2xs'
+              }`}
+              type="button"
+              title={profile?.sandbox_mode === false ? 'Live Mode Active' : 'Test Sandbox Mode Active'}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${profile?.sandbox_mode === false ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span>{profile?.sandbox_mode === false ? 'Live' : 'Test'}</span>
+            </button>
+
             <div className="flex items-center gap-1 sm:gap-2">
               {/* Notification Bell with Real Dropdown Flyout */}
               <div className="relative">
@@ -9423,7 +9443,7 @@ echo "Order Created: " . $data['orderId'];
 
                 {/* Notifications Flyout Panel */}
                 {isNotificationOpen && (
-                  <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-scaleUp">
+                  <div className="absolute right-[-8px] sm:right-0 mt-2 sm:mt-3 w-[calc(100vw-24px)] sm:w-80 md:w-96 max-w-sm bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-scaleUp">
                     <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-[#0c2340]">Activity &amp; Notifications</span>
@@ -9539,7 +9559,7 @@ echo "Order Created: " . $data['orderId'];
 
               {/* Dropdown Menu Modal */}
               {isProfileDropdownOpen && (
-                <div className="absolute right-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 animate-scaleUp">
+                <div className="absolute right-[-6px] sm:right-0 mt-2 sm:mt-3 w-[calc(100vw-32px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 animate-scaleUp">
                   <div className="px-4 py-2.5 border-b border-slate-100 flex flex-col gap-0.5">
                     <p className="text-xs font-bold text-slate-900 truncate">
                       {profile?.business_name || profile?.owner_name || 'Merchant'}
@@ -9857,7 +9877,7 @@ echo "Order Created: " . $data['orderId'];
               </div>
 
               {/* Drawer Footer */}
-              <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
+              <div className="pt-3.5 pb-8 sm:pb-3.5 border-t border-slate-100 flex flex-col gap-2.5">
                 <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -9884,7 +9904,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-        <div className={`flex-1 p-4 md:p-10 ${isBusinessInfoModalOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+        <div className={`flex-1 p-3.5 sm:p-6 md:p-10 ${isBusinessInfoModalOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
 
 
 

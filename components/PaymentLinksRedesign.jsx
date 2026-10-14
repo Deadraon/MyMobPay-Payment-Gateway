@@ -66,6 +66,7 @@ export default function PaymentLinksRedesign({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [mobileStudioTab, setMobileStudioTab] = useState('configure'); // 'configure' | 'preview'
 
   // Active generated preview link (null until user clicks generate)
   const [activeUrl, setActiveUrl] = useState('');
@@ -445,6 +446,7 @@ export default function PaymentLinksRedesign({
 
       setActiveUrl(generatedUrl);
       setActiveLinkId(newToken);
+      setMobileStudioTab('preview');
       setGeneratedLinkData({
         url: generatedUrl,
         id: newToken,
@@ -665,75 +667,75 @@ export default function PaymentLinksRedesign({
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-          SUMMARY KPI CARDS
+          SUMMARY KPI CARDS (2x2 on Mobile, 4x1 on Desktop)
           ══════════════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Card 1: Total Collected */}
-        <div className="p-5 rounded-xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold truncate">
               Total Collected
             </span>
-            <TrendingUp className="w-4 h-4 text-slate-400" />
+            <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
           </div>
-          <div className="mt-3 flex flex-col">
-            <span className="text-2xl text-slate-900 tracking-tight font-bold">
+          <div className="mt-2 sm:mt-3 flex flex-col">
+            <span className="text-lg sm:text-2xl text-slate-900 tracking-tight font-extrabold truncate">
               ₹ {metrics.totalCollected.toLocaleString('en-IN', { minimumFractionDigits: 0 })}
             </span>
-            <span className="text-xs text-slate-500 mt-1">
+            <span className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 truncate">
               {metrics.totalCount > 0 ? `Across ${metrics.totalCount} paid link${metrics.totalCount !== 1 ? 's' : ''}` : 'No payments yet'}
             </span>
           </div>
         </div>
 
         {/* Card 2: Active Links */}
-        <div className="p-5 rounded-xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold truncate">
               Active Links
             </span>
-            <Clock className="w-4 h-4 text-slate-400" />
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
           </div>
-          <div className="mt-3 flex flex-col">
-            <span className="text-2xl text-slate-900 tracking-tight font-bold">
+          <div className="mt-2 sm:mt-3 flex flex-col">
+            <span className="text-lg sm:text-2xl text-slate-900 tracking-tight font-extrabold truncate">
               {metrics.activeLinks}
             </span>
-            <span className="text-xs text-slate-500 mt-1">Awaiting customer payment</span>
+            <span className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 truncate">Awaiting payment</span>
           </div>
         </div>
 
         {/* Card 3: Paid Links */}
-        <div className="p-5 rounded-xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold truncate">
               Paid Links
             </span>
-            <CheckCircle className="w-4 h-4 text-emerald-600" />
+            <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
           </div>
-          <div className="mt-3 flex flex-col">
-            <span className="text-2xl text-slate-900 tracking-tight font-bold">
+          <div className="mt-2 sm:mt-3 flex flex-col">
+            <span className="text-lg sm:text-2xl text-slate-900 tracking-tight font-extrabold truncate">
               {metrics.paidLinks}
             </span>
-            <span className="text-xs text-emerald-600 font-medium mt-1">
-              {metrics.conversionRate}% Conversion rate
+            <span className="text-[10px] sm:text-xs text-emerald-600 font-medium mt-0.5 sm:mt-1 truncate">
+              {metrics.conversionRate}% Conversion
             </span>
           </div>
         </div>
 
         {/* Card 4: Average Ticket */}
-        <div className="p-5 rounded-xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider text-slate-500 font-semibold truncate">
               Average Ticket
             </span>
-            <Receipt className="w-4 h-4 text-slate-400" />
+            <Receipt className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
           </div>
-          <div className="mt-3 flex flex-col">
-            <span className="text-2xl text-slate-900 tracking-tight font-bold">
+          <div className="mt-2 sm:mt-3 flex flex-col">
+            <span className="text-lg sm:text-2xl text-slate-900 tracking-tight font-extrabold truncate">
               {metrics.avgTicket > 0 ? `₹ ${metrics.avgTicket.toLocaleString('en-IN')}` : '—'}
             </span>
-            <span className="text-xs text-slate-500 mt-1">
-              {metrics.paidLinks > 0 ? 'Per successful payment' : 'No paid links yet'}
+            <span className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 truncate">
+              {metrics.paidLinks > 0 ? 'Per payment' : 'No paid links yet'}
             </span>
           </div>
         </div>
@@ -777,11 +779,40 @@ export default function PaymentLinksRedesign({
               </div>
             </header>
 
+            {/* Mobile Studio Tab Selector (Visible only on lg:hidden) */}
+            <div className="lg:hidden flex border-b border-slate-100 bg-slate-50/70 p-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setMobileStudioTab('configure')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  mobileStudioTab === 'configure'
+                    ? 'bg-white text-blue-600 shadow-xs border border-slate-200/80'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Sliders className="w-3.5 h-3.5" />
+                <span>Configure Link</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileStudioTab('preview')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  mobileStudioTab === 'preview'
+                    ? 'bg-white text-blue-600 shadow-xs border border-slate-200/80'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Live Preview</span>
+                {activeUrl && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+              </button>
+            </div>
+
             {/* Main Split Studio Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[680px]">
 
               {/* ── LEFT COLUMN: Configuration Form ── */}
-              <section className="lg:col-span-7 p-6 lg:p-8 space-y-6 border-b lg:border-b-0 lg:border-r border-slate-100" data-purpose="builder-form">
+              <section className={`lg:col-span-7 p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 border-b lg:border-b-0 lg:border-r border-slate-100 ${mobileStudioTab === 'preview' ? 'hidden lg:block' : 'block'}`} data-purpose="builder-form">
 
                 {/* 1. Amount */}
                 <div className="space-y-2">
@@ -1134,7 +1165,7 @@ export default function PaymentLinksRedesign({
               </section>
 
               {/* ── RIGHT COLUMN: Live Customer Checkout Preview ── */}
-              <section className="lg:col-span-5 bg-slate-100/70 p-6 lg:p-8 flex flex-col justify-between items-center relative overflow-hidden" data-purpose="recipient-simulator">
+              <section className={`lg:col-span-5 bg-slate-100/70 p-4 sm:p-6 lg:p-8 flex flex-col justify-between items-center relative overflow-hidden ${mobileStudioTab === 'configure' ? 'hidden lg:flex' : 'flex'}`} data-purpose="recipient-simulator">
                 {/* Ambient glow blobs */}
                 <div className="absolute -right-20 -top-20 w-60 h-60 bg-blue-200 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
                 <div className="absolute -left-20 -bottom-20 w-60 h-60 bg-emerald-100 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
@@ -1313,9 +1344,9 @@ export default function PaymentLinksRedesign({
           ══════════════════════════════════════════════════════════ */}
       <div className="flex flex-col bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200/80">
         {/* Filter bar */}
-        <div className="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          {/* Status Tabs */}
-          <div className="flex items-center gap-2">
+        <div className="p-3.5 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+          {/* Status Tabs (Touch scrollable on mobile) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
             {[
               { id: 'All', label: 'All', count: allLinks.length },
               { id: 'Active', label: 'Active', count: allLinks.filter((l) => l.status === 'Active' || l.status === 'Pending').length },
@@ -1360,7 +1391,7 @@ export default function PaymentLinksRedesign({
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="h-9 pl-9 pr-4 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-64 transition-colors"
+                className="h-9 pl-9 pr-4 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full sm:w-64 transition-colors"
               />
               {searchQuery && (
                 <button
@@ -1396,8 +1427,8 @@ export default function PaymentLinksRedesign({
           </div>
         </div>
 
-        {/* Table Content */}
-        <div className="overflow-x-auto">
+        {/* Table Content (Desktop View) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200/80">
               <tr>
@@ -1655,6 +1686,144 @@ export default function PaymentLinksRedesign({
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Payment Links Card List (Visible only on md:hidden) */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {paginatedLinks.length === 0 ? (
+            <div className="py-10 px-4 text-center text-slate-400">
+              <div className="flex flex-col items-center justify-center gap-2">
+                <LinkIcon className="w-8 h-8 text-slate-300" />
+                <p className="font-semibold text-slate-700 text-xs">No payment links found</p>
+                <p className="text-[11px] text-slate-400">Create a link above or clear filters.</p>
+              </div>
+            </div>
+          ) : (
+            paginatedLinks.map((link) => {
+              const numAmt = parseFloat(link.amount);
+              const isFlex = isNaN(numAmt) || link.amount === 'Flexible';
+              const isCopied = copiedId === link.id || copiedId === link.url;
+
+              return (
+                <div key={link.id} className="p-4 flex flex-col gap-3 bg-white hover:bg-slate-50/60 transition-colors">
+                  {/* Top Bar: ID + Status */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="font-mono text-xs font-bold text-blue-600 truncate max-w-[160px] sm:max-w-[200px]">
+                        {link.id}
+                      </span>
+                      <button
+                        onClick={() => copyText(link.id, 'Link ID')}
+                        className="text-slate-400 hover:text-blue-600 p-1 rounded-md shrink-0"
+                        title="Copy Link ID"
+                        type="button"
+                      >
+                        {copiedId === link.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+
+                    {/* Status Badge */}
+                    <div className="shrink-0">
+                      {link.status === 'Paid' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-bold border border-emerald-200/60">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          Paid
+                        </span>
+                      )}
+                      {(link.status === 'Active' || link.status === 'Pending') && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold border border-blue-200/60">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                          Active
+                        </span>
+                      )}
+                      {link.status === 'Processing' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-bold border border-amber-200/60">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-spin"></span>
+                          Processing
+                        </span>
+                      )}
+                      {link.status === 'Expired' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 text-[11px] font-bold border border-rose-200">
+                          Expired
+                        </span>
+                      )}
+                      {link.status === 'Cancelled' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold border border-slate-200">
+                          Cancelled
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Middle: Purpose & Amount */}
+                  <div className="flex items-baseline justify-between gap-2">
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-bold text-slate-900 truncate" title={link.purpose}>
+                        {link.purpose || 'Payment Link'}
+                      </span>
+                      <span className="text-[11px] text-slate-500 truncate">
+                        {link.customerName || 'Direct Customer'} {link.customerPhone ? `• ${link.customerPhone}` : ''}
+                      </span>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-base font-extrabold text-slate-900 font-mono">
+                        {isFlex ? 'Flexible' : `₹ ${numAmt.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Timestamps */}
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-50">
+                    <span>
+                      Created: {new Date(link.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </span>
+                    {link.expiresAt && (
+                      <span className="text-slate-500">
+                        {new Date(link.expiresAt).getTime() > Date.now()
+                          ? `Exp: ${new Date(link.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}, ${new Date(link.expiresAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`
+                          : 'Expired'}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Touch Action Bar */}
+                  <div className="grid grid-cols-3 gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => copyText(link.url, 'Payment Link')}
+                      className={`py-2 px-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all ${
+                        copiedId === link.url
+                          ? 'bg-emerald-600 text-white border-emerald-600'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      {copiedId === link.url ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedId === link.url ? 'Copied' : 'Copy'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => shareWhatsApp(link)}
+                      className="py-2 px-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100/70 transition-all"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>WhatsApp</span>
+                    </button>
+
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="py-2 px-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 bg-slate-900 text-white hover:bg-slate-800 transition-all"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Open</span>
+                    </a>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         {/* Pagination Footer */}

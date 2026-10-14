@@ -480,106 +480,103 @@ export default function TransactionsRedesign({
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-         2. KPI METRIC STRIP (4 Core Rail Performance Pillars)
+         2. KPI METRIC STRIP (2x2 on Mobile, 4x1 on Desktop)
          ═══════════════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Metric 1: Total Volume */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-all">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider font-bold text-slate-500">
-              Total Volume {timeFilter === 'all' ? 'Overall' : timeFilter === 'today' ? 'Today' : timeFilter === '7days' ? 'Last 7 Days' : 'Period'}
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-slate-500 truncate">
+              Total Volume
             </span>
-            <span className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <CreditCard className="w-4 h-4" />
+            <span className="p-1.5 sm:p-2 rounded-xl bg-blue-50 text-blue-600 shrink-0">
+              <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
-            <span className="text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono">
-              ₹ {kpiMetrics.totalVolume.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          <div className="mt-2 sm:mt-4 flex flex-col gap-0.5 sm:gap-1">
+            <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono truncate">
+              ₹ {kpiMetrics.totalVolume.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[11px] px-2 py-0.5 rounded-md font-bold flex items-center gap-0.5">
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md font-bold flex items-center gap-0.5">
                 <TrendingUp className="w-3 h-3" /> {kpiMetrics.growthDelta}
               </span>
-              <span className="text-xs text-slate-400 font-medium">vs yesterday (T-1)</span>
+              <span className="text-[10px] sm:text-xs text-slate-400 font-medium truncate">vs T-1</span>
             </div>
           </div>
           <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform"></div>
         </div>
 
         {/* Metric 2: Settled Volume */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-all">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider font-bold text-slate-500">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-slate-500 truncate">
               Settled to Bank
             </span>
-            <span className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
-              <Building2 className="w-4 h-4" />
+            <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
+              <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
-            <span className="text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono">
-              ₹ {kpiMetrics.settledVolume.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          <div className="mt-2 sm:mt-4 flex flex-col gap-0.5 sm:gap-1">
+            <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono truncate">
+              ₹ {kpiMetrics.settledVolume.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[11px] px-2 py-0.5 rounded-md font-bold">
-                100% Direct Settlement
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md font-bold truncate">
+                Direct T+0
               </span>
-              <span className="text-xs text-slate-400 font-medium">Zero Escrow</span>
             </div>
           </div>
           <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-emerald-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform"></div>
         </div>
 
         {/* Metric 3: Successful Conversions */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-all">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider font-bold text-slate-500">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-slate-500 truncate">
               Successful Inflow
             </span>
-            <span className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <CheckCircle2 className="w-4 h-4" />
+            <span className="p-1.5 sm:p-2 rounded-xl bg-blue-50 text-blue-600 shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono">
+          <div className="mt-2 sm:mt-4 flex flex-col gap-0.5 sm:gap-1">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono truncate">
                 {kpiMetrics.successfulTxns.toLocaleString('en-IN')}
               </span>
-              <span className="text-xs text-slate-400 font-medium">txns</span>
+              <span className="text-[10px] sm:text-xs text-slate-400 font-medium">txns</span>
             </div>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[11px] px-2 py-0.5 rounded-md font-bold">
-                {kpiMetrics.conversionRate}% Conversion
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md font-bold truncate">
+                {kpiMetrics.conversionRate}% Conv.
               </span>
-              <span className="text-xs text-slate-400 font-medium">Bank-grade SLA</span>
             </div>
           </div>
           <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform"></div>
         </div>
 
         {/* Metric 4: Settlement Velocity */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-all">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider font-bold text-slate-500">
-              Avg. Credit Velocity
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-slate-500 truncate">
+              Credit Velocity
             </span>
-            <span className="p-2 rounded-xl bg-amber-50 text-amber-600">
-              <Zap className="w-4 h-4" />
+            <span className="p-1.5 sm:p-2 rounded-xl bg-amber-50 text-amber-600 shrink-0">
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono">
+          <div className="mt-2 sm:mt-4 flex flex-col gap-0.5 sm:gap-1">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono truncate">
                 142
               </span>
-              <span className="text-xs text-slate-400 font-medium">ms</span>
+              <span className="text-[10px] sm:text-xs text-slate-400 font-medium">ms</span>
             </div>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="bg-slate-100 text-slate-700 text-[11px] px-2 py-0.5 rounded-md font-bold">
-                T+0 IMPS Direct
+              <span className="bg-slate-100 text-slate-700 text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md font-bold truncate">
+                T+0 Direct
               </span>
-              <span className="text-xs text-slate-400 font-medium">Real-time RTGS/IMPS</span>
             </div>
           </div>
           <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-amber-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform"></div>
@@ -592,7 +589,7 @@ export default function TransactionsRedesign({
       <div className="bg-white p-4 lg:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col gap-4">
         {/* Status Selection Tabs & Time Quick Selector */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
-          <div className="flex flex-wrap items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/70">
+          <div className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/70 overflow-x-auto no-scrollbar w-full sm:w-auto">
             <button
               onClick={() => { setStatusTab('all'); setCurrentPage(1); }}
               type="button"
@@ -814,7 +811,8 @@ export default function TransactionsRedesign({
          5. TRANSACTION LEDGER TABLE COMPONENT
          ═══════════════════════════════════════════════════════════ */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse table-auto">
             <thead className="bg-slate-50 border-b border-slate-200/80">
               <tr className="text-slate-500 text-[11px] uppercase tracking-wider font-bold">
@@ -1036,6 +1034,116 @@ export default function TransactionsRedesign({
           </table>
         </div>
 
+        {/* Mobile Transactions Card View (Visible only on md:hidden) */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {paginatedOrders.length > 0 ? (
+            paginatedOrders.map((order) => {
+              const pill = getAppPill(order);
+              const isSettled = order.status === 'verified' || order.status === 'paid';
+              const isProcessing = order.status === 'pending';
+              const isFailed = order.status === 'rejected' || order.status === 'failed' || order.status === 'expired';
+              const dateStr = order.created_at ? new Date(order.created_at) : new Date();
+              const timeFormatted = dateStr.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+              const dateFormatted = dateStr.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+              const canonicalId = order.id || order.order_id || '';
+
+              return (
+                <div
+                  key={order.id}
+                  onClick={() => setSelectedOrder(order)}
+                  className="p-3.5 sm:p-4 flex flex-col gap-2.5 hover:bg-slate-50/80 active:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  {/* Top Bar: Order ID + Status */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="font-mono text-xs font-bold text-[#0c2340] truncate max-w-[160px] sm:max-w-[200px]">
+                        {canonicalId}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCopy(canonicalId, `id_${order.id}`);
+                        }}
+                        className="text-slate-400 hover:text-slate-700 p-1 rounded-md shrink-0"
+                        title="Copy ID"
+                        type="button"
+                      >
+                        {copiedKey === `id_${order.id}` ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+
+                    {/* Status Badge */}
+                    <div className="shrink-0">
+                      {isSettled && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                          Auto-Settled
+                        </span>
+                      )}
+                      {isProcessing && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200/70">
+                          <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />
+                          Processing
+                        </span>
+                      )}
+                      {isFailed && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200/70">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                          Failed
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Middle: Customer + Method + Amount */}
+                  <div className="flex items-baseline justify-between gap-2">
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-[#0c2340] truncate">
+                        {order.customer_name || 'Direct Customer'}
+                      </span>
+                      <span className="text-[11px] text-slate-400 truncate">
+                        {order.customer_phone ? `+91 ${order.customer_phone.slice(0, 5)} ••••${order.customer_phone.slice(-2)}` : (order.customer_email || 'Verified Inflow')}
+                      </span>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="font-mono font-extrabold text-sm text-[#0c2340]">
+                        ₹ {Number(order.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Bottom: Rail & Timestamps */}
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-50">
+                    <div className="flex items-center gap-1.5">
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${pill.bg} ${pill.text}`}>
+                        {pill.label}
+                      </span>
+                      {order.utr ? (
+                        <span className="text-slate-600 font-bold truncate max-w-[120px]">
+                          UTR: {order.utr}
+                        </span>
+                      ) : order.customer_utr ? (
+                        <span className="text-amber-700 font-bold bg-amber-50 px-1.5 py-0.2 rounded truncate max-w-[120px]">
+                          UTR: {order.customer_utr}
+                        </span>
+                      ) : null}
+                    </div>
+                    <span className="text-slate-400 shrink-0">
+                      {dateFormatted}, {timeFormatted}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="py-10 px-4 text-center text-slate-400">
+              <Receipt className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-xs font-semibold text-slate-700">No transactions found</p>
+              <p className="text-[11px] text-slate-400 mt-1">Try clearing filters or changing dates.</p>
+            </div>
+          )}
+        </div>
+
         {/* ═══════════════════════════════════════════════════════════
            6. PAGINATION & LEDGER FOOTER CONTROLS
            ═══════════════════════════════════════════════════════════ */}
@@ -1112,7 +1220,7 @@ export default function TransactionsRedesign({
          ═══════════════════════════════════════════════════════════ */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden animate-scaleUp">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden animate-scaleUp">
             {/* Modal Header */}
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
               <div className="flex items-center gap-3">
@@ -1134,7 +1242,7 @@ export default function TransactionsRedesign({
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 flex flex-col gap-4 text-xs">
+            <div className="p-4 sm:p-6 flex flex-col gap-3.5 sm:gap-4 text-xs overflow-y-auto flex-1">
               {/* Amount & Status Card */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
                 <div className="flex flex-col">

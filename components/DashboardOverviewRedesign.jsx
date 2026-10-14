@@ -650,8 +650,8 @@ export default function DashboardOverviewRedesign({
         <section className="col-span-12 xl:col-span-6 flex flex-col gap-4">
           
           {/* Filter Chips & Operational Bar */}
-          <div className="bg-white border border-[#d2dae5] rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 shadow-sm">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="bg-white border border-[#d2dae5] rounded-xl p-2.5 sm:p-3 flex items-center justify-between gap-2 shadow-sm">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 sm:pb-0 min-w-0">
               
               {/* All Transactions */}
               <button
@@ -738,8 +738,8 @@ export default function DashboardOverviewRedesign({
               </span>
             </div>
 
-            {/* Table Content (Guaranteed single screen fit via table-fixed & proportional widths) */}
-            <div className="overflow-x-auto w-full">
+            {/* Table Content (Desktop View: hidden on mobile) */}
+            <div className="hidden sm:block overflow-x-auto w-full">
               <table className="w-full table-fixed text-left border-collapse min-w-[520px]">
                 <colgroup>
                   <col className="w-[21%]" />
@@ -849,6 +849,60 @@ export default function DashboardOverviewRedesign({
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Settlement Cards (Visible only on sm:hidden) */}
+            <div className="sm:hidden divide-y divide-[#e8edf2]">
+              {filteredTransactions.length > 0 ? (
+                filteredTransactions.map((txn, index) => (
+                  <div
+                    key={txn.fullId || txn.id || index}
+                    onClick={() => setActiveTab?.('transactions')}
+                    className="p-3.5 flex flex-col gap-2 hover:bg-blue-50/40 transition-colors active:bg-blue-50/60 cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-bold text-[#0f141a] truncate" title={txn.id}>
+                        {txn.id}
+                      </span>
+                      {txn.status === 'Success' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-[#07883b] border border-emerald-200 shrink-0">
+                          Success
+                        </span>
+                      )}
+                      {txn.status === 'Pending' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
+                          Pending
+                        </span>
+                      )}
+                      {(txn.status === 'Refunded' || txn.status === 'Failed') && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 shrink-0">
+                          {txn.status}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-medium text-[#0f141a] truncate max-w-[190px]">
+                        {txn.customer || 'Direct Customer'}
+                      </span>
+                      <span className="text-xs font-bold font-mono text-[#0f141a]">
+                        ₹ {txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-[#547092]">
+                      <span className="font-mono">{txn.date}</span>
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#e8edf2] text-[#0f141a] text-[10px] font-semibold font-mono">
+                        {txn.method}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-8 px-4 text-center text-[#547092]">
+                  <Inbox className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                  <p className="text-xs font-semibold text-slate-700">No transactions found</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Incoming payments will record here in real-time.</p>
+                </div>
+              )}
             </div>
 
             {/* Ledger Footer Summary Strip */}
