@@ -1988,10 +1988,10 @@ export default function PaymentLinksRedesign({
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab?.('developer')}
+            onClick={() => setActiveTab?.('settings')}
             className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-all shadow-sm shadow-blue-500/20"
           >
-            View Webhook Logs
+            API Settings
           </button>
         </div>
       </div>
