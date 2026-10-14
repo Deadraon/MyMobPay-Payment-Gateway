@@ -625,7 +625,7 @@ export default function SubscriptionRedesign({
               <div
                 key={plan.id}
                 onClick={() => setSelectedPlanId(plan.id)}
-                className={`cursor-pointer p-5 rounded-2xl bg-white border-2 transition-all flex flex-col justify-between gap-4 relative group ${
+                className={`cursor-pointer p-5 rounded-2xl bg-white border-2 transition-all flex flex-col justify-between gap-4 relative overflow-hidden group ${
                   plan.isTrial
                     ? isSelected
                       ? 'border-emerald-600 shadow-md shadow-emerald-500/10'
