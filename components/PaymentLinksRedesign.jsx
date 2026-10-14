@@ -1219,7 +1219,17 @@ export default function PaymentLinksRedesign({
                   {/* QR Code & Settlement Info */}
                   <div className="p-5 flex flex-col items-center justify-center bg-white space-y-4">
                     {/* Live QR Code with Center Dual-Color M Logo */}
-                    <div className="relative p-3 bg-white rounded-2xl border-2 border-slate-100 shadow-sm cursor-pointer">
+                    <div
+                      onClick={() => {
+                        const url = activeUrl || previewUrlDynamic;
+                        if (url) {
+                          navigator.clipboard?.writeText(url);
+                          showToast('Payment link copied to clipboard!');
+                        }
+                      }}
+                      title="Tap to copy payment link URL"
+                      className="relative p-3 bg-white hover:bg-slate-50 rounded-2xl border-2 border-slate-100 shadow-sm cursor-pointer active:scale-95 transition-all"
+                    >
                       <QRCode
                         value={activeUrl || previewUrlDynamic}
                         size={140}
@@ -1265,7 +1275,7 @@ export default function PaymentLinksRedesign({
                     <span className="text-[11px] font-mono text-slate-500">
                       {linkValidity === '24h' ? 'Auto-expires in 24 hours' : linkValidity === '3d' ? 'Auto-expires in 3 days' : linkValidity === '7d' ? 'Auto-expires in 7 days' : linkValidity === '30d' ? 'Auto-expires in 30 days' : 'No expiry'}
                     </span>
-                    <span className="text-blue-600 font-medium text-[11px] hover:underline cursor-pointer">Support</span>
+                    <a href="mailto:support@mymob.tech" className="text-blue-600 font-medium text-[11px] hover:underline cursor-pointer">Support</a>
                   </div>
                 </div>
 

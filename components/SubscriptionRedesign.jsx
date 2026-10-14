@@ -707,7 +707,8 @@ export default function SubscriptionRedesign({
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+        {/* Desktop Table (Visible on md and up) */}
+        <div className="hidden md:block overflow-x-auto rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <table className="w-full text-left text-xs text-slate-700">
             <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
               <tr>
@@ -768,6 +769,48 @@ export default function SubscriptionRedesign({
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Invoice Cards (Visible only on md:hidden) */}
+        <div className="md:hidden flex flex-col gap-3">
+          {filteredInvoices.length === 0 ? (
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 text-center text-slate-400">
+              <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-xs font-semibold text-slate-700">No billing records found</p>
+              <p className="text-[11px] text-slate-400 mt-1">Official GST invoices will appear here automatically after renewal.</p>
+            </div>
+          ) : (
+            filteredInvoices.map((inv, idx) => (
+              <div key={idx} className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-xs font-bold text-[#000d21]">
+                    #{inv.ref}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold text-[10px]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                    {inv.status}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-600 font-medium">{inv.plan}</span>
+                  <span className="font-bold text-[#000d21] text-sm">
+                    ₹{Number(inv.amount).toLocaleString('en-IN')}.00
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-2.5 border-t border-slate-100">
+                  <span>Settled: {inv.date}</span>
+                  <button
+                    onClick={() => handleDownloadInvoice(inv)}
+                    type="button"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-600 font-bold text-xs hover:bg-blue-100 transition-colors cursor-pointer active:scale-95"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Invoice PDF</span>
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

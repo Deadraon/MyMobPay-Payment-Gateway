@@ -432,10 +432,18 @@ export default function DashboardOverviewRedesign({
                     Verified
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 font-medium text-amber-400">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSettingsCategory?.('business');
+                      setActiveTab?.('settings');
+                    }}
+                    title="Configure business & KYC information in Settings"
+                    className="inline-flex items-center gap-1 font-semibold text-amber-400 hover:text-amber-300 transition-colors cursor-pointer"
+                  >
                     <AlertCircle className="w-3.5 h-3.5" />
-                    Pending Setup
-                  </span>
+                    Pending Setup &rarr;
+                  </button>
                 )}
               </div>
               <div className="flex justify-between items-center">
@@ -622,11 +630,22 @@ export default function DashboardOverviewRedesign({
           </div>
 
           {/* Quick Action Deck: Instant Payout API Node */}
-          <div className="bg-[#eaedff] border border-[#dae2fd] rounded-xl p-4 flex items-center justify-between shadow-xs">
+          <button
+            type="button"
+            onClick={() => {
+              setSettingsCategory?.('api');
+              setActiveTab?.('settings');
+            }}
+            title="Manage API Keys & Payout Webhooks"
+            className="w-full bg-[#eaedff] hover:bg-[#dfe4ff] active:scale-[0.99] border border-[#dae2fd] rounded-xl p-4 flex items-center justify-between shadow-xs transition-all text-left cursor-pointer group"
+          >
             <div className="flex items-center gap-3">
-              <ShieldCheck className="w-5 h-5 text-[#0045de] shrink-0" />
+              <ShieldCheck className="w-5 h-5 text-[#0045de] shrink-0 group-hover:scale-110 transition-transform" />
               <div>
-                <p className="text-xs font-bold text-[#0f141a]">Instant Payout API</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-[#0f141a]">Instant Payout API</p>
+                  <span className="text-[10px] text-blue-600 font-semibold group-hover:underline">Configure &rarr;</span>
+                </div>
                 <p className="text-[11px] text-[#547092]">
                   {profile?.api_key ? 'Node active on Mumbai AWS-South' : 'API Key Pending Configuration'}
                 </p>
@@ -639,7 +658,7 @@ export default function DashboardOverviewRedesign({
                   : 'bg-amber-400 ring-4 ring-amber-200'
               }`}
             />
-          </div>
+          </button>
 
         </section>
 
@@ -854,48 +873,62 @@ export default function DashboardOverviewRedesign({
             {/* Mobile Settlement Cards (Visible only on sm:hidden) */}
             <div className="sm:hidden divide-y divide-[#e8edf2]">
               {filteredTransactions.length > 0 ? (
-                filteredTransactions.map((txn, index) => (
-                  <div
-                    key={txn.fullId || txn.id || index}
-                    onClick={() => setActiveTab?.('transactions')}
-                    className="p-3.5 flex flex-col gap-2 hover:bg-blue-50/40 transition-colors active:bg-blue-50/60 cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-xs font-bold text-[#0f141a] truncate" title={txn.id}>
-                        {txn.id}
-                      </span>
-                      {txn.status === 'Success' && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-[#07883b] border border-emerald-200 shrink-0">
-                          Success
+                <>
+                  {filteredTransactions.slice(0, 6).map((txn, index) => (
+                    <div
+                      key={txn.fullId || txn.id || index}
+                      onClick={() => setActiveTab?.('transactions')}
+                      className="p-3.5 flex flex-col gap-2 hover:bg-blue-50/40 transition-colors active:bg-blue-50/60 cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-xs font-bold text-[#0f141a] truncate" title={txn.id}>
+                          {txn.id}
                         </span>
-                      )}
-                      {txn.status === 'Pending' && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
-                          Pending
+                        {txn.status === 'Success' && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-[#07883b] border border-emerald-200 shrink-0">
+                            Success
+                          </span>
+                        )}
+                        {txn.status === 'Pending' && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
+                            Pending
+                          </span>
+                        )}
+                        {(txn.status === 'Refunded' || txn.status === 'Failed') && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 shrink-0">
+                            {txn.status}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-medium text-[#0f141a] truncate max-w-[190px]">
+                          {txn.customer || 'Direct Customer'}
                         </span>
-                      )}
-                      {(txn.status === 'Refunded' || txn.status === 'Failed') && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 shrink-0">
-                          {txn.status}
+                        <span className="text-xs font-bold font-mono text-[#0f141a]">
+                          ₹ {txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
-                      )}
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-[#547092]">
+                        <span className="font-mono">{txn.date}</span>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#e8edf2] text-[#0f141a] text-[10px] font-semibold font-mono">
+                          {txn.method}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-[#0f141a] truncate max-w-[190px]">
-                        {txn.customer || 'Direct Customer'}
-                      </span>
-                      <span className="text-xs font-bold font-mono text-[#0f141a]">
-                        ₹ {txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </span>
+                  ))}
+                  {filteredTransactions.length > 6 && (
+                    <div className="p-3 bg-slate-50/70 text-center">
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab?.('transactions')}
+                        className="w-full py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-blue-50 text-blue-600 font-bold text-xs transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98]"
+                      >
+                        <span>View All {filteredTransactions.length} Transactions</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-[#547092]">
-                      <span className="font-mono">{txn.date}</span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#e8edf2] text-[#0f141a] text-[10px] font-semibold font-mono">
-                        {txn.method}
-                      </span>
-                    </div>
-                  </div>
-                ))
+                  )}
+                </>
               ) : (
                 <div className="py-8 px-4 text-center text-[#547092]">
                   <Inbox className="w-8 h-8 text-slate-300 mx-auto mb-2" />
@@ -1064,7 +1097,7 @@ export default function DashboardOverviewRedesign({
       {/* ─── BANK ROUTING RULES POPUP MODAL ─── */}
       {showRoutingRules && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-[#0c2340] text-white">
               <div className="flex items-center gap-3">
@@ -1086,7 +1119,7 @@ export default function DashboardOverviewRedesign({
             </div>
 
             {/* Content */}
-            <div className="p-6 space-y-4 text-xs">
+            <div className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
               <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>

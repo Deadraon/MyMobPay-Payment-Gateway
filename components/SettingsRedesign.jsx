@@ -875,9 +875,37 @@ export default function SettingsRedesign({
       {/* ═══════════════════════════════════════════════════════════
           MASTER-DETAIL SPLIT VIEWPORT (Solid White Panels)
           ═══════════════════════════════════════════════════════════ */}
-      <div className="flex flex-col lg:flex-row items-start gap-6 w-full">
-        {/* ─── LEFT MASTER NAVIGATION (260px, Solid White) ─── */}
-        <aside className="w-full lg:w-[260px] shrink-0 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col p-3.5 gap-4">
+      <div className="flex flex-col lg:flex-row items-start gap-4 lg:gap-6 w-full">
+        {/* ─── MOBILE CATEGORIES SELECTOR (Horizontal touch scroll) ─── */}
+        <div className="lg:hidden w-full overflow-x-auto no-scrollbar flex items-center gap-2 pb-1">
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setActiveCategory(cat.id)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                <span>{cat.label}</span>
+                {cat.badge && (
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    {cat.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ─── LEFT MASTER NAVIGATION (260px, Solid White on Desktop) ─── */}
+        <aside className="hidden lg:flex w-[260px] shrink-0 bg-white rounded-2xl border border-slate-200 shadow-xs flex-col p-3.5 gap-4">
           {/* Sub-menu Search */}
           <div className="relative">
             <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />

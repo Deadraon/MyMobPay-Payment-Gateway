@@ -9050,6 +9050,189 @@ echo "Order Created: " . $data['orderId'];
     );
   }
 
+  const renderSetupGuidePanel = () => {
+    const isUpiConnected = Boolean(profile?.upi_id && profile?.upi_id !== 'pending@upi');
+    const isEmailForwardingActive = Boolean(profile?.setup_progress?.email_forwarding);
+    const hasBankLinked = Boolean(profile?.bank_name || profile?.bank_account_number);
+    const isWebhookActive = Boolean(profile?.webhook_url);
+
+    return (
+      <div className="space-y-6 animate-fadeIn font-sans">
+        {/* Hero Card */}
+        <div className="bg-gradient-to-br from-[#0c2340] via-[#102d54] to-[#1a3a60] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-blue-300" />
+                <span>Zero-Fee Setup Blueprint</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
+                0 to 100 Production Setup Guide
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                Connect your receiving UPI handle and bank account to collect instant customer payments with 0% gateway fees. Every payment settles straight to your account in T+0 real time.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowOnboardingWizard(true)}
+              className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 text-[#0c2340] font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0 cursor-pointer"
+            >
+              <Zap className="w-4 h-4 text-blue-600 fill-current" />
+              <span>Launch Interactive Setup Wizard</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 5-Phase Steps */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Phase 1: Direct Bank & UPI Settlement */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  Phase 1: Receiving Node
+                </span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isUpiConnected || hasBankLinked ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+                  {isUpiConnected || hasBankLinked ? 'Connected' : 'Action Required'}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-600" />
+                Direct UPI ID &amp; Bank Settlement Rail
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Specify your commercial or personal UPI handle (e.g. yourname@okaxis). Customer UPI payments credit directly to this account with zero intermediary hold.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSettingsCategory('banking');
+                setActiveTab('settings');
+              }}
+              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>{isUpiConnected ? 'Manage Receiving UPI / Bank' : 'Configure UPI Receiving Handle'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Phase 2: Notification Listener */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Phase 2: Auto-Verification
+                </span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isEmailForwardingActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+                  {isEmailForwardingActive ? 'Verified' : 'Setup Required'}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-indigo-600" />
+                Bank Email Auto-Forwarding Listener
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Set up an auto-forwarding rule in your Gmail so bank deposit notifications match orders in under 500ms without requiring expensive aggregators.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowOnboardingWizard(true)}
+              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>{isEmailForwardingActive ? 'View Listener Status' : 'Connect Auto-Forwarding Rule'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Phase 3: Instant Payment Links */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  Phase 3: No-Code Collection
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  Ready
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <LinkIcon className="w-4 h-4 text-emerald-600" />
+                Create One-Click UPI Payment Links
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Generate instant checkout links and QR codes to share on WhatsApp, email, or invoices. Customers scan with any UPI app to complete checkout.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveTab('payment-links')}
+              className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>Launch Payment Links Studio</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Phase 4: API & Webhooks */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200">
+                  Phase 4: Developer Integration
+                </span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isWebhookActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
+                  {isWebhookActive ? 'Webhook Configured' : 'Optional'}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Code className="w-4 h-4 text-violet-600" />
+                REST APIs &amp; HMAC Webhooks
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Plug our REST API into your Node.js, Python, or Next.js app. Receive instant cryptographic webhook events as soon as UPI payments settle.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSettingsCategory('api');
+                setActiveTab('settings');
+              }}
+              className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>Manage API Keys &amp; Webhooks</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Phase 5 Banner: Live Playground */}
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-blue-600" />
+              <h4 className="text-sm font-bold text-slate-900">Phase 5: Sandbox Playground Simulation</h4>
+            </div>
+            <p className="text-xs text-slate-600">
+              Test customer checkout flows, UPI QR generation, and webhook event delivery before going live with real money.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab('playground')}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 shadow-sm cursor-pointer"
+          >
+            <span>Open Sandbox Playground</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
 
 
 
@@ -9529,7 +9712,7 @@ echo "Order Created: " . $data['orderId'];
               {/* Docs / Help Icon */}
               <button
                 onClick={() => setActiveTab('setup-guide')}
-                className="p-2.5 text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
+                className="hidden sm:flex items-center justify-center p-2.5 text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
                 title="Documentation & Setup Guide"
                 type="button"
               >
@@ -9918,7 +10101,7 @@ echo "Order Created: " . $data['orderId'];
 
 
 
-        <div className={`flex-1 p-3.5 sm:p-6 md:p-10 ${isBusinessInfoModalOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+        <div className={`flex-1 p-3.5 sm:p-6 md:p-10 pb-24 md:pb-10 ${isBusinessInfoModalOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
 
 
 
@@ -23096,6 +23279,65 @@ async function checkOrderStatus(orderId) {
         profile={profile}
         onProfileUpdated={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
       />
+
+      {/* ── Mobile Bottom Navigation Bar (Ultra-responsive Native App Feel) ── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 px-2 py-1 flex items-center justify-around shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
+        <button
+          type="button"
+          onClick={() => setActiveTab('overview')}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'overview' ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700 font-medium'
+          }`}
+        >
+          <LayoutDashboard className={`w-5 h-5 ${activeTab === 'overview' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span className="text-[10px] mt-0.5">Overview</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('payment-links')}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'payment-links' ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700 font-medium'
+          }`}
+        >
+          <LinkIcon className={`w-5 h-5 ${activeTab === 'payment-links' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span className="text-[10px] mt-0.5">Links</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('transactions')}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'transactions' ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700 font-medium'
+          }`}
+        >
+          <CreditCard className={`w-5 h-5 ${activeTab === 'transactions' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span className="text-[10px] mt-0.5">Orders</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSettingsCategory('banking');
+            setActiveTab('settings');
+          }}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'settings' ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700 font-medium'
+          }`}
+        >
+          <Briefcase className={`w-5 h-5 ${activeTab === 'settings' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span className="text-[10px] mt-0.5">Settings</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-slate-400 hover:text-slate-700 font-medium transition-all cursor-pointer"
+        >
+          <Menu className="w-5 h-5 stroke-2" />
+          <span className="text-[10px] mt-0.5">More</span>
+        </button>
+      </nav>
 
     </div>
 
