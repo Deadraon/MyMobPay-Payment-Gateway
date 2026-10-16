@@ -100,7 +100,7 @@ export async function POST(req) {
         verified: true,
         accountExists: false,
         phone: dbPhone,
-        message: 'Phone verified! No account found. Please complete signup.',
+        message: purpose === 'signup' ? 'WhatsApp number verified successfully!' : 'Phone verified! No account found. Please complete signup.',
       });
     }
 
