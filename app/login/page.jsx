@@ -341,7 +341,8 @@ export default function LoginPage() {
       interval = setInterval(() => {
         setQrTimer(prev => {
           if (prev <= 1) {
-            setQrChallenge('mymob-auth-' + Math.random().toString(36).substring(2, 9));
+            setQrChallenge('mymob-auth-' + crypto.randomUUID());
+
             return 45;
           }
           return prev - 1;

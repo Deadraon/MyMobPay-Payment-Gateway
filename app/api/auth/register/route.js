@@ -2,9 +2,21 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendWelcomeEmail } from '@/lib/mailer';
 import { formatMerchantId } from '@/lib/merchantId';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(req) {
+  // VULN-06 fix: Rate limit — max 10 register attempts per IP per minute
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`auth_register_${clientIp}`, 10, 60 * 1000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many registration attempts. Please wait a minute and try again.' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+    );
+  }
+
   try {
+
     const { email, password, businessName, upiId, phone } = await req.json();
 
     if (!email || !email.includes('@')) {
@@ -38,11 +50,10 @@ export async function POST(req) {
       // Check if user already exists
       const errMsg = createError.message?.toLowerCase() || '';
       if (errMsg.includes('already') || createError.code === 'email_exists' || createError.status === 422) {
-        // Find existing user in auth.users (e.g. created during the email OTP verification step)
-        const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
-        const existingUser = usersData?.users?.find(
-          (u) => u.email?.toLowerCase() === cleanEmail
-        );
+        // Look up the existing user directly by email (O(1), no full scan)
+        const { data: existingUserData, error: lookupErr } = await supabaseAdmin.auth.admin.getUserByEmail(cleanEmail);
+        const existingUser = existingUserData?.user ?? null;
+
 
         if (existingUser) {
           // Update the user's password and metadata with the registration data

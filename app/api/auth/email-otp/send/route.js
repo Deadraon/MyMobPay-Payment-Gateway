@@ -2,9 +2,21 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin, supabase } from '@/lib/supabase';
 import { sendOtpEmail, sendMagicLinkEmail, isSmtpConfigured } from '@/lib/mailer';
 import { resolveMerchantIdentifier } from '@/lib/resolveIdentifier';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(req) {
+  // VULN-06 fix: Rate limit — max 5 OTP sends per IP per minute
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`auth_otp_${clientIp}`, 5, 60 * 1000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many verification requests. Please wait a minute before requesting another code.' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+    );
+  }
+
   try {
+
     const { email, type = 'otp', purpose = 'login' } = await req.json();
     let cleanEmail = (email || '').trim().toLowerCase();
 
