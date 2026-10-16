@@ -85,10 +85,11 @@ export async function POST(req) {
     const { data: merchant, error: merchantFetchErr } = await supabaseAdmin
       .from('merchants')
       .select('id, phone_number, phone_verified')
-      .eq('phone_number', cleanPhone)
-      .single();
+      .or(`phone_number.eq.${cleanPhone},phone_number.eq.${dbPhone},phone_number.eq.91${cleanPhone}`)
+      .limit(1)
+      .maybeSingle();
 
-    if (merchantFetchErr && merchantFetchErr.code !== 'PGRST116') {
+    if (merchantFetchErr) {
       console.error('[WA OTP VERIFY] Merchant lookup error:', merchantFetchErr);
     }
 
@@ -112,28 +113,34 @@ export async function POST(req) {
         .eq('id', merchant.id);
     }
 
-    // ── Generate a short-lived custom login token (magic-link style) ─
-    // We use Supabase admin to create a sign-in link for the merchant's auth user
-    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
-      type: 'magiclink',
-      email: undefined,
-      options: { data: { phone_verified: true } },
-    });
+    // ── Generate Supabase magiclink token for seamless client sign-in ─
+    let userEmail = null;
+    let tokenHash = null;
+    let actionLink = null;
+    try {
+      const { data: userData } = await supabaseAdmin.auth.admin.getUserById(merchant.id);
+      userEmail = userData?.user?.email || null;
+      if (userEmail) {
+        const { data: linkData } = await supabaseAdmin.auth.admin.generateLink({
+          type: 'magiclink',
+          email: userEmail,
+        });
+        tokenHash = linkData?.properties?.hashed_token || null;
+        actionLink = linkData?.properties?.action_link || null;
+      }
+    } catch (linkEx) {
+      console.warn('[WA OTP VERIFY] generateLink warning:', linkEx?.message);
+    }
 
-    // Fallback: return a session token by signing in via service role
-    // Since Supabase doesn't natively support phone-only auth without Twilio,
-    // we return a verified=true marker and a short-lived signed session token
-    // that the client uses to call a "session exchange" endpoint.
-    
-    // Create a short-lived session token (signed JSON with expiry)
+    // Short-lived session token (HMAC signed)
     const sessionPayload = {
       merchantId: merchant.id,
+      email: userEmail,
       phone: dbPhone,
       verifiedAt: Date.now(),
-      expiresAt: Date.now() + 5 * 60 * 1000, // 5 min to complete login
+      expiresAt: Date.now() + 5 * 60 * 1000,
     };
 
-    // Sign with SUPABASE_SERVICE_KEY as HMAC secret
     const { createHmac } = await import('crypto');
     const payloadStr = JSON.stringify(sessionPayload);
     const sig = createHmac('sha256', process.env.SUPABASE_SERVICE_KEY || 'mymobpay-secret')
@@ -146,7 +153,10 @@ export async function POST(req) {
       verified: true,
       accountExists: true,
       merchantId: merchant.id,
+      email: userEmail,
       phone: dbPhone,
+      tokenHash,
+      actionLink,
       sessionToken,
       message: 'WhatsApp OTP verified! Signing you in...',
     });

@@ -29,6 +29,37 @@ export async function POST(req) {
     const e164Phone = `91${cleanPhone}`;      // WhatsApp needs this format
     const dbPhone   = `+91${cleanPhone}`;     // Stored in DB with +
 
+    // ── Check account existence based on purpose ────────────────────
+    if (purpose === 'signup') {
+      const { data: existingPhoneMerchant } = await supabaseAdmin
+        .from('merchants')
+        .select('id, phone_number')
+        .or(`phone_number.eq.${cleanPhone},phone_number.eq.${dbPhone},phone_number.eq.91${cleanPhone}`)
+        .limit(1)
+        .maybeSingle();
+
+      if (existingPhoneMerchant) {
+        return NextResponse.json({
+          error: 'This WhatsApp mobile number is already registered to another account. Please use a different number or log in.',
+          code: 'phone_exists',
+        }, { status: 409 });
+      }
+    } else if (purpose === 'login') {
+      const { data: existingMerchant } = await supabaseAdmin
+        .from('merchants')
+        .select('id, phone_number')
+        .or(`phone_number.eq.${cleanPhone},phone_number.eq.${dbPhone},phone_number.eq.91${cleanPhone}`)
+        .limit(1)
+        .maybeSingle();
+
+      if (!existingMerchant) {
+        return NextResponse.json({
+          error: 'No merchant account registered with this WhatsApp number. Please sign up first.',
+          code: 'user_not_found',
+        }, { status: 404 });
+      }
+    }
+
     // ── Rate limiting: max 5 OTPs per hour per phone ────────────────
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
     const { count: recentCount } = await supabaseAdmin

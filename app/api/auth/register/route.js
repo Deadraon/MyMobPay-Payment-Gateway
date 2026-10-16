@@ -105,6 +105,39 @@ export async function POST(req) {
       }, { status: 400 });
     }
 
+    // ── 5b. Check if Phone Number is already registered ─────────────
+    const { data: phoneConflict } = await supabaseAdmin
+      .from('merchants')
+      .select('id')
+      .or(`phone_number.eq.${cleanPhone},phone_number.eq.+91${cleanPhone},phone_number.eq.91${cleanPhone}`)
+      .neq('id', existingUser.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (phoneConflict) {
+      return NextResponse.json({
+        error: 'This WhatsApp mobile number is already registered to another account. Please use a different number or log in.',
+        code: 'phone_exists',
+      }, { status: 409 });
+    }
+
+    // ── 5c. Check if Settlement UPI ID is already registered ────────
+    const { data: upiConflict } = await supabaseAdmin
+      .from('merchants')
+      .select('id')
+      .ilike('upi_id', finalUpiId)
+      .neq('upi_id', 'pending@upi')
+      .neq('id', existingUser.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (upiConflict) {
+      return NextResponse.json({
+        error: `Settlement UPI ID "${finalUpiId}" is already registered by another merchant. Please enter your unique UPI address.`,
+        code: 'upi_exists',
+      }, { status: 409 });
+    }
+
     // ── 6. Update user's credentials and verified metadata ──────────
     const userId = existingUser.id;
     const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(userId, {

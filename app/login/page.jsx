@@ -212,7 +212,7 @@ function OtpBoxInput({ value, onChange, disabled }) {
 export default function LoginPage() {
   const router = useRouter();
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
-  const [authTab, setAuthTab] = useState('email'); // 'email' (Email OTP) | 'link' (Email Link) | 'password'
+  const [authTab, setAuthTab] = useState('whatsapp'); // 'whatsapp' (WhatsApp OTP - DEFAULT) | 'email' (Email OTP) | 'password'
 
   // Email OTP
   const [email, setEmail] = useState('');
@@ -221,11 +221,7 @@ export default function LoginPage() {
   const [emailTimer, setEmailTimer] = useState(45);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
-  // Email Link (Magic Link)
-  const [linkSent, setLinkSent] = useState(false);
-  const [linkTimer, setLinkTimer] = useState(45);
-
-  // Phone / WhatsApp OTP (preserved)
+  // Phone / WhatsApp OTP (Default login method)
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
@@ -322,14 +318,6 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [emailOtpSent, emailTimer]);
 
-  // Email Link countdown timer
-  useEffect(() => {
-    let interval = null;
-    if (linkSent && linkTimer > 0) {
-      interval = setInterval(() => setLinkTimer(prev => prev - 1), 1000);
-    }
-    return () => clearInterval(interval);
-  }, [linkSent, linkTimer]);
 
   // WhatsApp OTP Countdown timer
   useEffect(() => {
@@ -439,6 +427,21 @@ export default function LoginPage() {
         setEmail(cleanEmail);
       }
 
+      // Pre-check email uniqueness before sending OTP in signup mode
+      if (mode === 'signup') {
+        const checkRes = await fetch('/api/auth/check-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail }),
+        });
+        const checkData = await checkRes.json();
+        if (!checkRes.ok || checkData.available === false) {
+          setError(checkData.error || 'This email address is already registered. Please log in instead.');
+          setLoading(false);
+          return;
+        }
+      }
+
       const res = await fetch('/api/auth/email-otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -462,61 +465,6 @@ export default function LoginPage() {
       setMessage(data.message || `6-digit verification code sent to ${finalEmail}. Check your inbox!`);
     } catch (err) {
       console.error('Email OTP send error:', err);
-      setError(formatCustomerError(err));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Email Link Handler (Strictly one-click button, NO OTP digits)
-  const handleSendEmailLink = async () => {
-    let rawIdentifier = email.trim();
-    if (!rawIdentifier) {
-      setError('Please enter your merchant email or Merchant ID.');
-      return;
-    }
-    setError('');
-    setMessage('');
-    setLoading(true);
-
-    try {
-      let cleanEmail = rawIdentifier.toLowerCase();
-
-      // If user typed a Merchant ID (MID-XXXX) or UUID instead of email, resolve to email
-      if (!cleanEmail.includes('@')) {
-        const resolveRes = await fetch('/api/auth/resolve-identifier', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identifier: rawIdentifier }),
-        });
-        const resolveData = await resolveRes.json();
-        if (!resolveRes.ok || !resolveData?.email) {
-          throw new Error(resolveData?.error || `No merchant account found for ID "${rawIdentifier}". Please check your ID or enter your registered email.`);
-        }
-        cleanEmail = resolveData.email.toLowerCase();
-        setEmail(cleanEmail);
-      }
-
-      const res = await fetch('/api/auth/email-link/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: cleanEmail,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Could not send sign-in link. Please try again.');
-      }
-
-      const finalEmail = data.email || cleanEmail;
-      setEmail(finalEmail);
-      setLinkSent(true);
-      setLinkTimer(45);
-      setMessage(data.message || `Direct sign-in link sent to ${finalEmail}. Check your inbox!`);
-    } catch (err) {
-      console.error('Email Link send error:', err);
       setError(formatCustomerError(err));
     } finally {
       setLoading(false);
@@ -616,9 +564,20 @@ export default function LoginPage() {
       }
 
       setMessage('WhatsApp OTP verified! Signing you in...');
-      // Use session token to sign in via Supabase email magic-link or direct
-      // For now, redirect — dashboard middleware will check session
-      setTimeout(() => router.push('/dashboard'), 800);
+      if (data.tokenHash) {
+        try {
+          const { error: sessionError } = await supabase.auth.verifyOtp({
+            token_hash: data.tokenHash,
+            type: 'magiclink',
+          });
+          if (sessionError) {
+            console.warn('Session verification notice:', sessionError);
+          }
+        } catch (sessEx) {
+          console.warn('verifyOtp error:', sessEx);
+        }
+      }
+      setTimeout(() => router.push('/dashboard'), 600);
     } catch (err) {
       setError(err?.message || 'Network error during OTP verification.');
     } finally {
@@ -638,6 +597,19 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // In Sign Up mode, pre-check if mobile number is already registered
+      const checkRes = await fetch('/api/auth/check-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: cleanPhone }),
+      });
+      const checkData = await checkRes.json();
+      if (!checkRes.ok || checkData.available === false) {
+        setError(checkData.error || 'This WhatsApp mobile number is already registered to another account. Please use a different number or log in.');
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch('/api/auth/whatsapp-otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -756,6 +728,27 @@ export default function LoginPage() {
       if (!upiId.trim() || !upiId.includes('@')) {
         setError('Please enter a valid Settlement UPI ID (e.g. store@upi, name@okaxis) where customer payments will route.');
         return;
+      }
+
+      // ── Pre-check all registration details before proceeding ──
+      try {
+        const checkRes = await fetch('/api/auth/check-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email.trim().toLowerCase(),
+            phone: cleanPhone,
+            upiId: upiId.trim().toLowerCase(),
+          }),
+        });
+        const checkData = await checkRes.json();
+        if (!checkRes.ok || checkData.available === false) {
+          isRegistrationSubmittedRef.current = false;
+          setError(checkData.error || 'Some details are already registered. Please check email, mobile number, or UPI ID.');
+          return;
+        }
+      } catch (checkErr) {
+        console.warn('Registration pre-check error:', checkErr);
       }
 
       // ── Enforce Email OTP Verification ──
@@ -1128,20 +1121,29 @@ export default function LoginPage() {
                   </button>
                 </div>
 
-                {/* In Sign In Mode ONLY: Sub-Tab Switcher (Email OTP vs Password) */}
+                {/* In Sign In Mode ONLY: Sub-Tab Switcher (WhatsApp OTP vs Password) */}
                 {mode === 'signin' && (
                   <div className="mt-4 p-1 bg-[#eaedff] rounded-lg grid grid-cols-2 gap-1 border border-[#dae2fd]/70 shadow-xs">
                     <button 
                       type="button" 
-                      onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                      onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
                       className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                        authTab === 'email' 
+                        authTab === 'whatsapp' || authTab === 'email'
                           ? 'bg-white text-[#0045de] shadow-sm' 
                           : 'text-[#44474d] hover:text-[#131b2e]'
                       }`}
                     >
-                      <Mail className="w-3.5 h-3.5" />
-                      <span>Email OTP</span>
+                      {authTab === 'email' ? (
+                        <>
+                          <Mail className="w-3.5 h-3.5 text-[#0045de]" />
+                          <span>Email OTP</span>
+                        </>
+                      ) : (
+                        <>
+                          <MessageCircle className="w-3.5 h-3.5 text-[#009d6d]" />
+                          <span>WhatsApp OTP</span>
+                        </>
+                      )}
                     </button>
                     <button 
                       type="button" 
@@ -1158,7 +1160,146 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* ── Sign In: Email OTP View ── */}
+                {/* ── Sign In: WhatsApp OTP View (DEFAULT) ── */}
+                {mode === 'signin' && authTab === 'whatsapp' && (
+                  <div className="mt-6 flex flex-col space-y-4">
+                    {!otpSent ? (
+                      <>
+                        <div className="flex flex-col space-y-1.5">
+                          <label className="text-xs font-medium text-[#44474d] flex items-center justify-between">
+                            <span>WhatsApp Mobile Number</span>
+                            <span className="text-[#009d6d] font-semibold text-[11px] flex items-center gap-1">
+                              <MessageCircle className="w-3 h-3" />
+                              Instant WhatsApp OTP
+                            </span>
+                          </label>
+                          <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-emerald-500">
+                            <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#131b2e] text-xs font-bold border-r border-[#dae2fd]">
+                              <span className="text-base leading-none">🇮🇳</span>
+                              <span>+91</span>
+                            </div>
+                            <input
+                              type="tel"
+                              maxLength={10}
+                              required
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                              onKeyDown={(e) => e.key === 'Enter' && phone.trim().replace(/\D/g, '').length === 10 && triggerOtpFlow('whatsapp')}
+                              placeholder="10-digit WhatsApp number"
+                              className="w-full bg-transparent py-2.5 pl-3 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-mono"
+                            />
+                          </div>
+                          <p className="text-[11px] text-[#74777e] leading-relaxed">
+                            We will send a 6-digit verification code directly to your WhatsApp.
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => triggerOtpFlow('whatsapp')}
+                          disabled={loading || phone.trim().replace(/\D/g, '').length !== 10}
+                          className="w-full h-12 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-white" />
+                          ) : (
+                            <>
+                              <MessageCircle className="w-4 h-4" />
+                              <span>Send WhatsApp OTP</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </>
+                          )}
+                        </button>
+
+                        {/* Blue line at bottom to switch to Email OTP */}
+                        <div className="text-center pt-2 border-t border-[#dae2fd]/60">
+                          <button
+                            type="button"
+                            onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                            className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                          >
+                            <span>Prefer email? Sign in with Email OTP &rarr;</span>
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50/70 border border-emerald-200">
+                          <div className="flex items-center gap-2 text-xs text-[#131b2e] font-medium">
+                            <MessageCircle className="w-4 h-4 text-[#009d6d] shrink-0" />
+                            <span>OTP sent to WhatsApp <strong className="text-emerald-700">+91 {phone}</strong></span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => { setOtpSent(false); setOtp(''); setError(''); setMessage(''); }}
+                            className="text-[11px] text-[#0045de] font-semibold hover:underline cursor-pointer"
+                          >
+                            Change
+                          </button>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium text-[#44474d] text-center block">
+                            Enter 6-digit WhatsApp Verification Code
+                          </label>
+                          <OtpBoxInput value={otp} onChange={setOtp} disabled={loading} />
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={handleVerifyOtp}
+                          disabled={loading || otp.length !== 6}
+                          className="w-full h-12 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-white" />
+                          ) : (
+                            <>
+                              <span>Verify OTP &amp; Enter Dashboard</span>
+                              <CheckCircle2 className="w-4 h-4" />
+                            </>
+                          )}
+                        </button>
+
+                        {/* Resend button & blue line at bottom */}
+                        <div className="text-center pt-2 space-y-2.5">
+                          <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-emerald-50/50 border border-emerald-200/70 text-[11px] text-[#44474d]">
+                            <MessageCircle className="w-3.5 h-3.5 text-[#009d6d] shrink-0" />
+                            <span>Enter the 6-digit code received on your WhatsApp number.</span>
+                          </div>
+
+                          {otpTimer > 0 ? (
+                            <span className="text-xs text-[#74777e] block">
+                              Resend code in <strong className="text-[#131b2e]">{otpTimer}s</strong>
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => triggerOtpFlow('whatsapp')}
+                              disabled={loading}
+                              className="text-xs font-semibold text-[#009d6d] hover:underline cursor-pointer"
+                            >
+                              Didn&apos;t receive WhatsApp code? Resend OTP
+                            </button>
+                          )}
+
+                          {/* Blue line at bottom */}
+                          <div className="pt-2 border-t border-[#dae2fd]/60">
+                            <button
+                              type="button"
+                              onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                              className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                            >
+                              <span>Prefer email? Sign in with Email OTP &rarr;</span>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* ── Sign In: Email OTP View (Alternative via Blue Line) ── */}
                 {mode === 'signin' && authTab === 'email' && (
                   <div className="mt-6 flex flex-col space-y-4">
                     {!emailOtpSent ? (
@@ -1203,42 +1344,15 @@ export default function LoginPage() {
                           )}
                         </button>
 
-                        {/* Optional direct login link with small down blue text */}
-                        <div className="text-center pt-1.5">
-                          {linkSent ? (
-                            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-center space-y-1">
-                              <p className="text-xs font-bold text-emerald-800 flex items-center justify-center gap-1">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>Direct login link sent to {email}</span>
-                              </p>
-                              <p className="text-[11px] text-emerald-700">
-                                Check your email and click the button to log in directly.
-                              </p>
-                              {linkTimer > 0 ? (
-                                <span className="text-[10px] text-slate-500 block pt-0.5">
-                                  Resend in {linkTimer}s
-                                </span>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={handleSendEmailLink}
-                                  disabled={loading}
-                                  className="text-[11px] font-semibold text-[#0045de] hover:underline cursor-pointer"
-                                >
-                                  Resend direct link
-                                </button>
-                              )}
-                            </div>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={handleSendEmailLink}
-                              disabled={loading || !email.trim()}
-                              className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer disabled:opacity-50 inline-flex items-center gap-1 transition-colors"
-                            >
-                              <span>Email me a direct login link instead &rarr;</span>
-                            </button>
-                          )}
+                        {/* Blue line at bottom to switch to WhatsApp OTP */}
+                        <div className="text-center pt-2 border-t border-[#dae2fd]/60">
+                          <button
+                            type="button"
+                            onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
+                            className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                          >
+                            <span>Prefer WhatsApp? Sign in with WhatsApp OTP &rarr;</span>
+                          </button>
                         </div>
                       </>
                     ) : (
@@ -1280,7 +1394,7 @@ export default function LoginPage() {
                           )}
                         </button>
 
-                        {/* Resend button & optional direct login link */}
+                        {/* Resend button & blue line at bottom */}
                         <div className="text-center pt-2 space-y-2.5">
                           <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-[#eaedff]/50 border border-[#dae2fd]/70 text-[11px] text-[#44474d]">
                             <Mail className="w-3.5 h-3.5 text-[#0045de] shrink-0" />
@@ -1302,23 +1416,15 @@ export default function LoginPage() {
                             </button>
                           )}
 
-                          {/* Optional direct login link with small down blue text */}
+                          {/* Blue line at bottom */}
                           <div className="pt-2 border-t border-[#dae2fd]/60">
-                            {linkSent ? (
-                              <p className="text-[11px] text-emerald-700 font-semibold flex items-center justify-center gap-1">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>Direct login link dispatched to your email!</span>
-                              </p>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={handleSendEmailLink}
-                                disabled={loading}
-                                className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
-                              >
-                                <span>Prefer not to enter code? Email me a direct login link &rarr;</span>
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
+                              className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                            >
+                              <span>Prefer WhatsApp? Sign in with WhatsApp OTP &rarr;</span>
+                            </button>
                           </div>
                         </div>
                       </>
@@ -1582,6 +1688,24 @@ export default function LoginPage() {
                           required
                           value={upiId}
                           onChange={(e) => setUpiId(e.target.value)}
+                          onBlur={async () => {
+                            const cleanUpi = upiId.trim().toLowerCase();
+                            if (cleanUpi.includes('@') && cleanUpi.length >= 5) {
+                              try {
+                                const checkRes = await fetch('/api/auth/check-details', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ upiId: cleanUpi }),
+                                });
+                                const checkData = await checkRes.json();
+                                if (!checkRes.ok || checkData.available === false) {
+                                  setError(checkData.error || 'Settlement UPI ID is already registered by another merchant.');
+                                }
+                              } catch (e) {
+                                // ignore
+                              }
+                            }
+                          }}
                           placeholder="e.g. merchant@okhdfcbank"
                           className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-mono"
                         />
