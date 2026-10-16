@@ -1,5 +1,5 @@
 -- ==============================================================================
--- 🔐 MyMobPay Enterprise Database Security Hardening Script
+-- 🔐 MyMobPay Enterprise Database Security Hardening Script (Fixed)
 -- ==============================================================================
 -- Run this script in your Supabase SQL Editor:
 -- Dashboard -> SQL Editor -> New Query -> Paste & Click "RUN"
@@ -9,7 +9,7 @@
 -- 2. Adds and indexes api_key_hash on the merchants table
 -- 3. Automatically populates SHA-256 hashes for all existing merchant API keys
 -- 4. Enables Row Level Security (RLS) on all sensitive tables
--- 5. Implements strict least-privilege access policies
+-- 5. Implements strict least-privilege access policies with safe type-casting
 -- ==============================================================================
 
 -- 1. Enable Cryptographic Functions
@@ -30,13 +30,13 @@ END $$;
 
 CREATE INDEX IF NOT EXISTS idx_merchants_api_key_hash ON public.merchants(api_key_hash);
 
--- 3. Backfill SHA-256 Hashes for All Existing Merchant API Keys
+-- 3. Backfill SHA-256 Hashes for All Existing Merchant API Keys (with explicit ::text casting)
 UPDATE public.merchants
 SET api_key_hash = encode(digest(
   CASE 
-    WHEN api_key LIKE 'live_%' THEN SUBSTRING(api_key FROM 6)
-    WHEN api_key LIKE 'test_%' THEN SUBSTRING(api_key FROM 6)
-    ELSE api_key 
+    WHEN api_key::text LIKE 'live_%' THEN SUBSTRING(api_key::text FROM 6)
+    WHEN api_key::text LIKE 'test_%' THEN SUBSTRING(api_key::text FROM 6)
+    ELSE api_key::text 
   END, 'sha256'), 'hex')
 WHERE api_key IS NOT NULL AND (api_key_hash IS NULL OR api_key_hash = '');
 
@@ -68,28 +68,31 @@ DROP POLICY IF EXISTS "Public can view active order by exact ID" ON public.order
 DROP POLICY IF EXISTS "Block anon access to email_logs" ON public.email_logs;
 DROP POLICY IF EXISTS "Block anon access to sms_logs" ON public.sms_logs;
 DROP POLICY IF EXISTS "Block anon access to webhook_logs" ON public.webhook_logs;
+DROP POLICY IF EXISTS "Merchants can view own email logs" ON public.email_logs;
+DROP POLICY IF EXISTS "Merchants can view own payment links" ON public.payment_links;
+DROP POLICY IF EXISTS "Public can view active payment link by token" ON public.payment_links;
 
--- 6. Apply Strict Least-Privilege Policies
+-- 6. Apply Strict Least-Privilege Policies (with safe ::text comparisons)
 
 -- MERCHANTS TABLE: Logged-in merchants can only see and update their own record
 CREATE POLICY "Merchants can read own profile" 
 ON public.merchants 
 FOR SELECT 
 TO authenticated 
-USING (auth.uid() = id);
+USING (auth.uid()::text = id::text);
 
 CREATE POLICY "Merchants can update own profile" 
 ON public.merchants 
 FOR UPDATE 
 TO authenticated 
-USING (auth.uid() = id);
+USING (auth.uid()::text = id::text);
 
 -- ORDERS TABLE: Merchants view their own orders; Public checkout can read order by exact ID
 CREATE POLICY "Merchants can view own orders" 
 ON public.orders 
 FOR SELECT 
 TO authenticated 
-USING (auth.uid() = merchant_id);
+USING (auth.uid()::text = merchant_id::text);
 
 CREATE POLICY "Public can view active order by exact ID" 
 ON public.orders 
@@ -97,7 +100,7 @@ FOR SELECT
 TO anon 
 USING (true);
 
--- LOGS TABLES: Strictly locked down (accessible only by service_role backend handlers)
+-- LOGS & PAYMENT LINKS TABLES: Locked down to merchant / service_role
 -- Note: Supabase service_role automatically bypasses RLS, ensuring all server API routes work smoothly.
 DO $$ 
 BEGIN
@@ -106,7 +109,7 @@ BEGIN
     ON public.email_logs 
     FOR SELECT 
     TO authenticated 
-    USING (auth.uid() = merchant_id);
+    USING (auth.uid()::text = merchant_id::text);
   END IF;
 
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'payment_links') THEN
@@ -114,7 +117,7 @@ BEGIN
     ON public.payment_links 
     FOR ALL 
     TO authenticated 
-    USING (auth.uid() = merchant_id);
+    USING (auth.uid()::text = merchant_id::text);
 
     CREATE POLICY "Public can view active payment link by token" 
     ON public.payment_links 
