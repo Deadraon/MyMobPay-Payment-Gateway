@@ -325,6 +325,23 @@ export async function POST(request) {
 
     // 7. Trigger merchant outbound webhook safely
     await triggerMerchantWebhook(matchedOrder.id);
+
+    // 8. Send WhatsApp receipt if customer phone exists
+    const targetPhone = updatedOrder.customer_phone || updatedOrder.customer_whatsapp || matchedOrder.customer_phone;
+    if (targetPhone) {
+      try {
+        const { sendWhatsAppPaymentReceipt } = await import('@/lib/whatsapp');
+        await sendWhatsAppPaymentReceipt({
+          toPhone: targetPhone,
+          orderId: updatedOrder.id,
+          amount: updatedOrder.amount,
+          utr: utr,
+          businessName: merchant.business_name || 'MyMobPay'
+        });
+      } catch (waErr) {
+        console.warn('[WA RECEIPT] Could not send receipt from email webhook:', waErr.message);
+      }
+    }
     
     // Log the successful match!
     await logEmail('matched');

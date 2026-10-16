@@ -180,6 +180,23 @@ export async function POST(request) {
         console.error('Webhook error on payments/utr:', wErr);
       }
 
+      // Send instant WhatsApp payment receipt if customer phone exists
+      const targetPhone = data.customer_phone || data.customer_whatsapp || order.customer_phone;
+      if (targetPhone) {
+        try {
+          const { sendWhatsAppPaymentReceipt } = await import('@/lib/whatsapp');
+          await sendWhatsAppPaymentReceipt({
+            toPhone: targetPhone,
+            orderId: data.id,
+            amount: data.amount,
+            utr: cleanUtr,
+            businessName: order.merchant_name || 'MyMobPay'
+          });
+        } catch (waErr) {
+          console.warn('[WA RECEIPT] Could not send receipt on payments/utr:', waErr.message);
+        }
+      }
+
       return NextResponse.json({
         success: true,
         verified: true,

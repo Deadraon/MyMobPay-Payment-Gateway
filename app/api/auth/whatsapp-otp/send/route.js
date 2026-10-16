@@ -1,15 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createHash, randomInt } from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
-
-// ── Meta WhatsApp Cloud API config ──────────────────────────────────
-// Set these in .env.local:
-//   WHATSAPP_ACCESS_TOKEN=<your Meta permanent access token>
-//   WHATSAPP_PHONE_NUMBER_ID=<your phone number ID from Meta developer portal>
-//   WHATSAPP_TEMPLATE_NAME=otp_login   (create this template in Meta Business Manager)
-const WA_ACCESS_TOKEN  = process.env.WHATSAPP_ACCESS_TOKEN;
-const WA_PHONE_ID      = process.env.WHATSAPP_PHONE_NUMBER_ID;
-const WA_API_VERSION   = 'v19.0';
+import { sendWhatsAppOtp, isWhatsAppConfigured } from '@/lib/whatsapp';
 
 // OTP config
 const OTP_EXPIRY_MINUTES = 5;
@@ -19,54 +11,6 @@ const MAX_OTP_PER_HOUR = 5;
 function hashOtp(otp, phone) {
   // Salt with phone to prevent rainbow table attacks
   return createHash('sha256').update(`${otp}:${phone}:${process.env.SUPABASE_SERVICE_KEY || 'mymobpay'}`).digest('hex');
-}
-
-async function sendWhatsAppOtp(toPhone, otp) {
-  // toPhone should be in international format without +, e.g. 919410181307
-  const url = `https://graph.facebook.com/${WA_API_VERSION}/${WA_PHONE_ID}/messages`;
-
-  const body = {
-    messaging_product: 'whatsapp',
-    to: toPhone,
-    type: 'template',
-    template: {
-      name: process.env.WHATSAPP_TEMPLATE_NAME || 'otp_login',
-      language: { code: 'en' },
-      components: [
-        {
-          type: 'body',
-          parameters: [
-            { type: 'text', text: otp },
-            { type: 'text', text: `${OTP_EXPIRY_MINUTES} minutes` },
-          ],
-        },
-        {
-          // OTP button for copy-code button in template
-          type: 'button',
-          sub_type: 'url',
-          index: '0',
-          parameters: [{ type: 'text', text: otp }],
-        },
-      ],
-    },
-  };
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${WA_ACCESS_TOKEN}`,
-    },
-    body: JSON.stringify(body),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok || data.error) {
-    throw new Error(data.error?.message || `WhatsApp API error (${res.status})`);
-  }
-
-  return data;
 }
 
 export async function POST(req) {
@@ -141,11 +85,11 @@ export async function POST(req) {
     }
 
     // ── Send via WhatsApp ───────────────────────────────────────────
-    const waConfigured = WA_ACCESS_TOKEN && WA_PHONE_ID;
+    const waConfigured = isWhatsAppConfigured();
 
     if (waConfigured) {
       try {
-        await sendWhatsAppOtp(e164Phone, otp);
+        await sendWhatsAppOtp({ toPhone: cleanPhone, otp, expiryMinutes: OTP_EXPIRY_MINUTES });
       } catch (waErr) {
         console.error('[WA OTP SEND] WhatsApp API error:', waErr);
         // Delete the OTP we just stored so user can retry
