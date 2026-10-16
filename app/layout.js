@@ -286,6 +286,53 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
+
+        {/* JSON-LD Structured Data — Site Navigation Elements (Guides Google Sitelinks) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: safeJsonLd({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "SiteNavigationElement",
+                  "@id": `${BASE_URL}/#nav-login`,
+                  name: "Log in or sign up",
+                  description: "Log in or sign up for a MyMobPay merchant account. Access your dashboard, API keys, and settings.",
+                  url: `${BASE_URL}/login`,
+                },
+                {
+                  "@type": "SiteNavigationElement",
+                  "@id": `${BASE_URL}/#nav-dashboard`,
+                  name: "Merchant Dashboard",
+                  description: "Monitor real-time UPI payments, live webhook events, and settlement analytics.",
+                  url: `${BASE_URL}/dashboard`,
+                },
+                {
+                  "@type": "SiteNavigationElement",
+                  "@id": `${BASE_URL}/#nav-pricing`,
+                  name: "Pricing Plans",
+                  description: "Flat monthly subscription with 0% transaction fees. Calculate your merchant savings.",
+                  url: `${BASE_URL}#pricing-section`,
+                },
+                {
+                  "@type": "SiteNavigationElement",
+                  "@id": `${BASE_URL}/#nav-how-it-works`,
+                  name: "How It Works",
+                  description: "Learn how direct bank UPI settlement and automated instant verification work.",
+                  url: `${BASE_URL}#how-it-works`,
+                },
+                {
+                  "@type": "SiteNavigationElement",
+                  "@id": `${BASE_URL}/#nav-dev`,
+                  name: "Developer Integration",
+                  description: "API documentation, code snippets in cURL/Node/Python, and signed HMAC webhooks.",
+                  url: `${BASE_URL}#developer-section`,
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body
         className="font-sans antialiased bg-slate-50 text-slate-900 selection:bg-blue-500/30 selection:text-white"
