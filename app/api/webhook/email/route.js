@@ -7,6 +7,7 @@ import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { resolveMerchantIdToUuid } from '@/lib/merchantId';
 import { generateOrderId } from '@/lib/orderId';
+import { findMerchantByApiKey } from '@/lib/merchantAuth';
 
 export async function POST(request) {
   try {
@@ -23,14 +24,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Missing API key or email body' }, { status: 400 });
     }
 
-    // 1. Authenticate the merchant
-    const { data: merchant, error: merchantError } = await supabaseAdmin
-      .from('merchants')
-      .select('id, subscription_status, subscription_expires_at')
-      .eq('api_key', api_key)
-      .single();
+    // 1. Authenticate the merchant (supports SHA-256 hashed API key)
+    const merchant = await findMerchantByApiKey(api_key, 'id, subscription_status, subscription_expires_at');
 
-    if (merchantError || !merchant) {
+    if (!merchant) {
       return NextResponse.json({ error: 'Unauthorized: Invalid API Key' }, { status: 401 });
     }
 

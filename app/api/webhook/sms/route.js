@@ -8,6 +8,7 @@ import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { resolveMerchantIdToUuid } from '@/lib/merchantId';
 import { generateOrderId } from '@/lib/orderId';
+import { findMerchantByApiKey } from '@/lib/merchantAuth';
 
 // Constant-time string comparison to prevent timing attacks
 function safeCompare(a, b) {
@@ -41,30 +42,20 @@ export async function POST(request) {
       isAuthorized = true;
     }
 
-    // Authenticate merchant using api_key if provided
+    // Authenticate merchant using api_key if provided (supports SHA-256 hashed API key)
     if (apiKey) {
-      const { data, error } = await supabaseAdmin
-        .from('merchants')
-        .select('id, subscription_status, subscription_expires_at')
-        .eq('api_key', apiKey)
-        .single();
-      
-      if (!error && data) {
-        merchant = data;
+      const found = await findMerchantByApiKey(apiKey, 'id, subscription_status, subscription_expires_at');
+      if (found) {
+        merchant = found;
         isAuthorized = true;
       }
     }
 
     // Fallback: Check if the 'secret' sent is actually a merchant's private API Key
     if (!merchant && secret && secret !== validSecret) {
-      const { data, error } = await supabaseAdmin
-        .from('merchants')
-        .select('id, subscription_status, subscription_expires_at')
-        .eq('api_key', secret)
-        .single();
-        
-      if (!error && data) {
-        merchant = data;
+      const found = await findMerchantByApiKey(secret, 'id, subscription_status, subscription_expires_at');
+      if (found) {
+        merchant = found;
         isAuthorized = true;
       }
     }

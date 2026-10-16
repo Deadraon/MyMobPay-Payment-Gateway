@@ -8,6 +8,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { CONFIG } from '@/lib/config';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { generateOrderId } from '@/lib/orderId';
+import { findMerchantByApiKey } from '@/lib/merchantAuth';
 
 export async function POST(request) {
   try {
@@ -57,14 +58,10 @@ export async function POST(request) {
       actualKey = effectiveApiKey.replace('live_', '');
     }
 
-    // 1. Authenticate the merchant using the API Key
-    const { data: merchant, error: merchantError } = await supabaseAdmin
-      .from('merchants')
-      .select('id, subscription_status, sandbox_mode, subscription_expires_at')
-      .eq('api_key', actualKey)
-      .single();
+    // 1. Authenticate the merchant using the API Key (SHA-256 hashed lookup)
+    const merchant = await findMerchantByApiKey(actualKey, 'id, subscription_status, sandbox_mode, subscription_expires_at');
 
-    if (merchantError || !merchant) {
+    if (!merchant) {
       return NextResponse.json({ error: 'Invalid API Key or Merchant not found.' }, { status: 401 });
     }
 
