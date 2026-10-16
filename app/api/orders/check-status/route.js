@@ -80,42 +80,72 @@ export async function POST(request) {
     // 4. In Live Mode: Check recent bank email alerts
     const cleanCustomerUtr = order.customer_utr ? String(order.customer_utr).trim() : null;
 
-    // Check if any recent email matches customer UTR
+    // Check if any recent email matches customer UTR with matching amount
     if (cleanCustomerUtr && cleanCustomerUtr.length >= 8) {
-      const { data: matchedEmail } = await supabaseAdmin
-        .from('email_logs')
-        .select('*')
-        .ilike('body_snippet', `%${cleanCustomerUtr}%`)
+      // Duplicate UTR check across already verified orders
+      const { data: existingVerified } = await supabaseAdmin
+        .from('orders')
+        .select('id')
+        .eq('utr', cleanCustomerUtr)
+        .eq('status', 'verified')
+        .neq('id', order.id)
         .limit(1);
 
-      if (matchedEmail && matchedEmail.length > 0) {
-        const { data: updatedOrder, error: updateErr } = await supabaseAdmin
-          .from('orders')
-          .update({
-            status: 'verified',
-            utr: cleanCustomerUtr,
-            verified_at: new Date().toISOString()
-          })
-          .eq('id', order.id)
-          .select()
-          .single();
+      if (!existingVerified || existingVerified.length === 0) {
+        const { data: matchedEmail } = await supabaseAdmin
+          .from('email_logs')
+          .select('*')
+          .ilike('body_snippet', `%${cleanCustomerUtr}%`)
+          .limit(1);
 
-        if (!updateErr && updatedOrder) {
-          try {
-            await syncOrderVerificationToPaymentLink(order.id, cleanCustomerUtr);
-            await checkAndProcessSubscription(updatedOrder, '');
-            await triggerMerchantWebhook(order.id);
-          } catch (e) {
-            console.error('Post-verification tasks error:', e);
+        if (matchedEmail && matchedEmail.length > 0) {
+          const snippet = matchedEmail[0].body_snippet || '';
+          const orderAmt = parseFloat(order.amount);
+          const formattedAmt = orderAmt.toFixed(2);
+          const integerAmt = Math.floor(orderAmt).toString();
+
+          const hasMatchingAmount =
+            snippet.includes(formattedAmt) ||
+            snippet.includes(`INR ${formattedAmt}`) ||
+            snippet.includes(`Rs. ${formattedAmt}`) ||
+            snippet.includes(`Rs.${formattedAmt}`) ||
+            snippet.includes(`₹${formattedAmt}`) ||
+            snippet.includes(`Rs. ${integerAmt}`) ||
+            snippet.includes(`Rs.${integerAmt}`) ||
+            snippet.includes(`INR ${integerAmt}`);
+
+          if (hasMatchingAmount) {
+            const { data: updatedOrder, error: updateErr } = await supabaseAdmin
+              .from('orders')
+              .update({
+                status: 'verified',
+                utr: cleanCustomerUtr,
+                verified_at: new Date().toISOString()
+              })
+              .eq('id', order.id)
+              .select()
+              .single();
+
+            if (!updateErr && updatedOrder) {
+              try {
+                await syncOrderVerificationToPaymentLink(order.id, cleanCustomerUtr);
+                await checkAndProcessSubscription(updatedOrder, '');
+                await triggerMerchantWebhook(order.id);
+              } catch (e) {
+                console.error('Post-verification tasks error:', e);
+              }
+
+              return NextResponse.json({
+                success: true,
+                verified: true,
+                status: 'verified',
+                message: 'Payment verified by bank credit alert!',
+                order: updatedOrder
+              }, { status: 200 });
+            }
+          } else {
+            console.warn(`[Security Alert] UTR ${cleanCustomerUtr} found in bank log, but credited amount did not match required order amount ₹${formattedAmt}. Skipping auto-verification.`);
           }
-
-          return NextResponse.json({
-            success: true,
-            verified: true,
-            status: 'verified',
-            message: 'Payment verified by bank credit alert!',
-            order: updatedOrder
-          }, { status: 200 });
         }
       }
     }

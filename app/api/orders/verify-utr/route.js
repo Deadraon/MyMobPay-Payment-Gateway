@@ -118,6 +118,13 @@ export async function POST(request) {
       }, { status: 200 });
     }
 
+    if (order.status === 'cancelled' || order.status === 'failed' || order.status === 'expired') {
+      return NextResponse.json({
+        error: `Order has been ${order.status} and cannot be verified.`,
+        code: 'ORDER_TERMINATED'
+      }, { status: 400 });
+    }
+
     // 2. Check for duplicate UTR fraud against already verified orders
     const { data: existingUtr } = await supabaseAdmin
       .from('orders')

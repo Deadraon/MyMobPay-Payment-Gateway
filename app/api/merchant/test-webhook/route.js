@@ -1,8 +1,21 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { supabaseAdmin } from '@/lib/supabase';
+import { isSafeWebhookUrl } from '@/lib/webhook';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(request) {
   try {
+    // 0. Rate limiting to prevent webhook spam/flooding
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`test_webhook_${clientIp}`, 10, 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many test webhook requests. Please wait a moment.', code: 'RATE_LIMIT_EXCEEDED' },
+        { status: 429, headers: { 'Retry-After': rateLimit.resetInSeconds.toString() } }
+      );
+    }
+
     const body = await request.json();
     const { api_key, webhook_url, amount, note, payload } = body;
 
@@ -11,7 +24,16 @@ export async function POST(request) {
     }
 
     if (!webhook_url) {
-      return NextResponse.json({ error: 'Outbound Webhook URL is required. Please set it in your Settings tab.' }, { status: 400 });
+      return NextResponse.json({ error: 'Outbound Webhook URL is required.' }, { status: 400 });
+    }
+
+    // SSRF Guard: Strictly validate webhook target URL to block local network, loopback, and cloud metadata probes
+    if (!isSafeWebhookUrl(webhook_url)) {
+      console.warn(`[SSRF Block] Blocked dangerous test-webhook URL probe: ${webhook_url} from IP: ${clientIp}`);
+      return NextResponse.json({
+        error: 'Forbidden Webhook URL: Private networks, localhost, and cloud metadata addresses are strictly blocked.',
+        code: 'SSRF_PROBE_BLOCKED'
+      }, { status: 400 });
     }
 
     // Standard raw API key configuration
@@ -22,7 +44,18 @@ export async function POST(request) {
       rawApiKey = api_key.replace('live_', '');
     }
 
-    // Generate high-fidelity simulated checkout verification payload
+    // Authenticate the merchant key against Supabase
+    const { data: merchant, error: mErr } = await supabaseAdmin
+      .from('merchants')
+      .select('id')
+      .eq('api_key', rawApiKey)
+      .single();
+
+    if (mErr || !merchant) {
+      return NextResponse.json({ error: 'Unauthorized: Invalid Merchant API Key.' }, { status: 401 });
+    }
+
+    // Generate simulated checkout verification payload
     const mockPayload = payload || {
       event: 'payment.verified',
       orderId: 'O_TEST_' + Math.random().toString(36).substring(2, 6).toUpperCase(),
@@ -57,7 +90,7 @@ export async function POST(request) {
           'Content-Type': 'application/json',
           'X-MyMobPay-Signature': signature,
           'X-MyMobPay-Event': 'payment.verified',
-          'User-Agent': 'MyMobPay-Webhook-Tester/1.0'
+          'User-Agent': 'MyMobPay-Webhook-Tester/2.0'
         },
         body: payloadString,
         signal: controller.signal

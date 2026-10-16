@@ -487,8 +487,7 @@ export default function DashboardPage() {
     isMobileMenuOpen ||
     isProfileDropdownOpen ||
     isBusinessInfoModalOpen ||
-    isProfileModalOpen ||
-
+    isProfileModalOpen
   );
 
   // Prevent background scrolling when any mobile drawer, notification flyout, or modal is active
