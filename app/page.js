@@ -194,9 +194,12 @@ export default function HomePage() {
           <span className="text-white font-medium truncate">
             Direct bank transfer (IMPS / NEFT) with <strong className="text-white font-black underline underline-offset-2">0% gateway fees</strong>.
           </span>
-          <a href="#pricing-section" className="inline-flex items-center gap-1 text-white hover:text-blue-100 font-bold text-[11px] sm:text-xs transition-colors group ml-1 shrink-0 underline underline-offset-2">
+          <a
+            href="#pricing-section"
+            className="inline-flex items-center gap-1.5 bg-white hover:bg-blue-50 text-blue-700 font-bold text-xs px-3 py-1 rounded-full transition-all shadow-xs shrink-0 focus-visible:outline-2 focus-visible:outline-white"
+          >
             <span>Compare savings</span>
-            <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+            <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
           </a>
         </div>
 
@@ -429,7 +432,7 @@ export default function HomePage() {
                   {/* Logo */}
                   <div className="flex flex-col items-center justify-center pt-2">
                     <MyMobPayLogo className="w-36 h-auto" textColor="#FFFFFF" />
-                    <p className="text-[10px] text-slate-400 font-medium tracking-wide mt-1">Direct bank checkout</p>
+                    <p className="text-xs text-slate-300 font-medium tracking-wide mt-1">Direct bank checkout</p>
                   </div>
 
                   {/* Due amount card */}
@@ -501,18 +504,18 @@ export default function HomePage() {
                   
                   {/* Universal UPI Indicators */}
                   <div className="space-y-2">
-                    <p className="text-[9px] text-slate-400 font-medium text-center">Scan with any UPI app</p>
+                    <p className="text-xs text-slate-300 font-medium text-center">Scan with any UPI app</p>
                     <div className="grid grid-cols-4 gap-1.5">
-                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-blue-400 text-[8px] font-semibold py-1 px-1 rounded-lg text-center">UPI QR</span>
-                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-emerald-400 text-[8px] font-semibold py-1 px-1 rounded-lg text-center">Direct pay</span>
-                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-indigo-400 text-[8px] font-semibold py-1 px-1 rounded-lg text-center">Instant rail</span>
-                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-sky-400 text-[8px] font-semibold py-1 px-1 rounded-lg text-center">Auto-match</span>
+                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-blue-400 text-[10px] font-semibold py-1 px-1 rounded-md text-center">UPI QR</span>
+                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-emerald-400 text-[10px] font-semibold py-1 px-1 rounded-md text-center">Direct pay</span>
+                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-indigo-400 text-[10px] font-semibold py-1 px-1 rounded-md text-center">Instant rail</span>
+                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-sky-400 text-[10px] font-semibold py-1 px-1 rounded-md text-center">Auto-match</span>
                     </div>
                   </div>
 
                   {/* Security copy */}
-                  <div className="flex items-center justify-center gap-1.5 text-[9px] font-medium text-slate-400 text-center">
-                    <Lock className="w-3 h-3 text-slate-400" /> Secure checkout by MyMobPay
+                  <div className="flex items-center justify-center gap-1.5 text-xs font-medium text-slate-300 text-center">
+                    <Lock className="w-3.5 h-3.5 text-slate-400" /> Secure checkout by MyMobPay
                   </div>
 
                 </div>
@@ -618,12 +621,12 @@ export default function HomePage() {
                 <div className="flex-1 mx-2">
                   <div className="bg-white border border-slate-200 rounded-md px-3 py-1 flex items-center gap-2 max-w-xs mx-auto shadow-xs">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                    <span className="text-[11px] text-slate-600 font-mono">dashboard.mymobpay.com</span>
+                    <span className="text-xs text-slate-700 font-mono">dashboard.mymobpay.com</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] text-emerald-700 font-semibold">Live</span>
+                  <span className="text-xs text-emerald-700 font-semibold">Live</span>
                 </div>
               </div>
 
@@ -773,7 +776,7 @@ export default function HomePage() {
           <div className="text-center space-y-3.5 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
               <span className="w-1.5 h-1.5 rounded-full bg-slate-900"></span>
-              <span className="text-[11px] font-semibold text-slate-700 tracking-wide uppercase">
+              <span className="text-xs font-semibold text-slate-700 tracking-normal">
                 Direct Settlement Pipeline
               </span>
             </div>
@@ -786,7 +789,7 @@ export default function HomePage() {
 
             {/* Step Switcher Pills */}
             <div className="pt-2 flex items-center justify-center gap-2">
-              <div className="inline-flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200">
+              <div role="tablist" aria-label="Settlement pipeline steps" className="inline-flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200">
                 {[
                   { step: 0, label: '1. Scan & Intent' },
                   { step: 1, label: '2. Direct Rail' },
@@ -794,13 +797,17 @@ export default function HomePage() {
                 ].map((item) => (
                   <button
                     key={item.step}
+                    role="tab"
+                    id={`step-tab-${item.step}`}
+                    aria-selected={howStep === item.step}
+                    aria-controls="settlement-stage-canvas"
                     onClick={() => {
                       setHowStep(item.step);
                       setIsHowAutoPlay(false);
                     }}
-                    className={`px-3 py-1.5 text-xs rounded-md transition-all ${
+                    className={`px-3 py-1.5 text-xs rounded-md transition-all font-semibold focus-visible:outline-2 focus-visible:outline-blue-600 ${
                       howStep === item.step
-                        ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                        ? 'bg-blue-600 text-white shadow-xs'
                         : 'text-slate-600 hover:text-slate-900 font-medium'
                     }`}
                   >
@@ -1122,13 +1129,13 @@ export default function HomePage() {
                               <Smartphone className="w-4 h-4 text-blue-400" />
                             </div>
                             <div>
-                              <p className="text-[11px] text-slate-400 font-medium">Customer Source Account</p>
+                              <p className="text-xs text-slate-300 font-medium">Customer Source Account</p>
                               <p className="text-xs font-semibold text-white">HDFC Bank UPI (rahul@okaxis)</p>
                             </div>
                           </div>
                           <div className="text-right">
                             <span className="text-xs font-mono text-rose-400 font-bold">-₹2,499.00</span>
-                            <p className="text-[10px] text-slate-400">Debited instantly</p>
+                            <p className="text-xs text-slate-400">Debited instantly</p>
                           </div>
                         </div>
 
@@ -1144,13 +1151,13 @@ export default function HomePage() {
                               <Landmark className="w-4 h-4" />
                             </div>
                             <div>
-                              <p className="text-[11px] text-emerald-300 font-medium">Your Merchant Current Account</p>
+                              <p className="text-xs text-emerald-300 font-medium">Your Merchant Current Account</p>
                               <p className="text-xs font-semibold text-white">ICICI Bank Current A/c (...4092)</p>
                             </div>
                           </div>
                           <div className="text-right">
                             <span className="text-sm font-mono text-emerald-400 font-bold">+₹2,499.00</span>
-                            <p className="text-[10px] text-emerald-300 font-medium">100% Retained (0% Commission)</p>
+                            <p className="text-xs text-emerald-300 font-medium">100% Retained (0% Commission)</p>
                           </div>
                         </div>
 
@@ -1159,8 +1166,8 @@ export default function HomePage() {
                       {/* Bypassed Gateway Escrow Strip */}
                       <div className="p-2.5 rounded-lg bg-slate-800/60 border border-rose-500/30 flex items-center justify-between text-xs text-slate-300">
                         <span className="line-through text-slate-400">Traditional Gateway Escrow Pool (T+2 Hold)</span>
-                        <span className="text-[10px] font-mono font-bold text-rose-400 bg-rose-950/80 border border-rose-800/80 px-2 py-0.5 rounded">
-                          BYPASSED &amp; ELIMINATED
+                        <span className="text-xs font-mono font-bold text-rose-300 bg-rose-950/90 border border-rose-800 px-2.5 py-1 rounded-md">
+                          Bypassed &amp; Eliminated
                         </span>
                       </div>
 
@@ -1365,35 +1372,36 @@ export default function HomePage() {
                   </ul>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-600">Settlement timeline:</span>
-                  <span className="text-blue-600 font-bold text-sm">0 Seconds (Instant Liquidity)</span>
+                <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-600 block">Settlement timeline:</span>
+                    <span className="text-blue-600 font-bold text-sm">0 Seconds (Instant Liquidity)</span>
+                  </div>
+                  <Link
+                    href="/login"
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold whitespace-nowrap transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 focus-visible:outline-2 focus-visible:outline-blue-600"
+                  >
+                    <span>Start Direct Settlement</span>
+                    <span aria-hidden="true">→</span>
+                  </Link>
                 </div>
               </div>
 
             </div>
 
             {/* Bottom Savings Badge Ribbon */}
-            <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center text-slate-800 flex-shrink-0">
-                  <Zap className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-semibold text-slate-900">
-                    Keep your profit margins where they belong.
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Indian merchants save an average of ₹1,20,000 annually per ₹50L GMV using MyMobPay.
-                  </p>
-                </div>
+            <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 flex-shrink-0">
+                <Zap className="w-4 h-4" />
               </div>
-              <Link
-                href="/login"
-                className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold whitespace-nowrap transition-colors"
-              >
-                Start Direct Settlement ➔
-              </Link>
+              <div>
+                <p className="text-xs sm:text-sm font-semibold text-slate-900">
+                  Keep your profit margins where they belong.
+                </p>
+                <p className="text-xs text-slate-500">
+                  Indian merchants save an average of ₹1,20,000 annually per ₹50L GMV using MyMobPay.
+                </p>
+              </div>
             </div>
 
           </div>
@@ -1441,9 +1449,11 @@ export default function HomePage() {
                 <div className="my-8 sm:my-12 flex justify-end">
                   <Link 
                     href="/login"
-                    className="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all shadow-md shadow-blue-500/20 group"
+                    aria-label="Get started with instant settlements"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-all shadow-md shadow-blue-500/20 group focus-visible:outline-2 focus-visible:outline-blue-600"
                   >
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                    <span>Get Started</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
                   </Link>
                 </div>
               </div>
@@ -1573,21 +1583,29 @@ export default function HomePage() {
               </div>
 
               {/* Language Switcher Tabs (Languages Actually Used & Supported) */}
-              <div className="flex items-center gap-1 bg-[#060D1A] p-1 rounded-xl border border-blue-900/40 text-xs font-mono">
+              <div
+                role="tablist"
+                aria-label="Code sample programming languages"
+                className="flex items-center gap-1.5 bg-[#0a1424] p-1.5 rounded-xl border border-blue-900/50 text-xs font-mono"
+              >
                 {[
                   { id: 'curl', label: 'cURL' },
                   { id: 'node', label: 'Node.js' },
-                  { id: 'nextjs', label: 'Next.js / React' },
+                  { id: 'nextjs', label: 'Next.js' },
                   { id: 'python', label: 'Python' },
                   { id: 'php', label: 'PHP' }
                 ].map(lang => (
                   <button
                     key={lang.id}
+                    role="tab"
+                    id={`dev-tab-${lang.id}`}
+                    aria-selected={productDevLang === lang.id}
+                    aria-controls="dev-terminal-body"
                     onClick={() => setProductDevLang(lang.id)}
-                    className={`px-3 py-1.5 rounded-lg transition-all font-semibold ${
+                    className={`px-3.5 py-1.5 rounded-lg transition-all font-semibold focus-visible:outline-2 focus-visible:outline-blue-400 ${
                       productDevLang === lang.id 
                         ? 'bg-blue-600 text-white shadow-sm' 
-                        : 'text-slate-400 hover:text-white'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
                     }`}
                   >
                     {lang.label}
@@ -1793,17 +1811,20 @@ export default function HomePage() {
               </div>
 
               {/* Range Slider */}
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 <input
                   type="range"
+                  id="monthly-volume-slider"
                   min="10000"
                   max="5000000"
                   step="50000"
                   value={monthlyVolume}
+                  aria-label="Monthly sales volume in rupees"
+                  aria-valuetext={`₹${monthlyVolume.toLocaleString('en-IN')}`}
                   onChange={e => setMonthlyVolume(parseInt(e.target.value))}
-                  className="w-full accent-blue-600 h-2 bg-slate-200 rounded-lg cursor-pointer"
+                  className="w-full h-2.5 bg-slate-200 rounded-lg cursor-pointer appearance-none accent-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing hover:[&::-webkit-slider-thumb]:scale-110 transition-transform"
                 />
-                <div className="flex justify-between text-[11px] text-slate-400 font-medium">
+                <div className="flex justify-between text-xs text-slate-500 font-semibold">
                   <span>₹10K</span>
                   <span>₹25L</span>
                   <span>₹50L</span>
