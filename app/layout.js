@@ -191,7 +191,9 @@ export default function RootLayout({ children }) {
               logo: `${BASE_URL}/og-banner.png`,
               description:
                 "Direct-to-bank UPI payment gateway with 0% transaction fees. Accept instant UPI payments with real-time automated verification.",
-              sameAs: [],
+              sameAs: [
+                "https://www.instagram.com/mymobpay"
+              ],
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "customer support",

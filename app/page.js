@@ -41,6 +41,24 @@ const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-prima
   </svg>
 );
 
+const InstagramIcon = ({ className = 'w-4 h-4' }) => (
+  <svg
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    fill="none"
+    className={className}
+  >
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
 export default function HomePage() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -2263,6 +2281,17 @@ export default function HomePage() {
               </li>
               <li><Link href="/terms" className="hover:text-white transition-colors">Terms of service</Link></li>
               <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy policy</Link></li>
+              <li>
+                <a 
+                  href="https://instagram.com/mymobpay" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-pink-400 transition-colors flex items-center gap-1.5 text-pink-400/90 hover:text-pink-300"
+                >
+                  <InstagramIcon className="w-3.5 h-3.5" />
+                  Instagram (@mymobpay)
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -2283,7 +2312,16 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto px-6 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-normal text-[#64748B]">
           <p>© 2026 MyMobPay. All rights reserved.</p>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-5">
+            <a 
+              href="https://instagram.com/mymobpay" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-pink-400 transition-colors flex items-center gap-1.5 text-[#94A3B8]"
+            >
+              <InstagramIcon className="w-3.5 h-3.5 text-pink-400" />
+              <span>@mymobpay</span>
+            </a>
             <Link href="/terms" className="hover:text-slate-400 transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy</Link>
           </div>
