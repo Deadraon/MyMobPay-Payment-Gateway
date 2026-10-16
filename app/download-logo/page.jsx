@@ -2,7 +2,15 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Download, Check, Sparkles, Instagram, ArrowLeft, Eye, ShieldCheck } from 'lucide-react';
+import { Download, Check, Sparkles, ArrowLeft, Eye, ShieldCheck } from 'lucide-react';
+
+const InstagramIcon = ({ className = 'w-4 h-4' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+  </svg>
+);
 
 export default function DownloadLogoPage() {
   const [previewMode, setPreviewMode] = useState('circle'); // 'circle' | 'square'
@@ -65,7 +73,7 @@ export default function DownloadLogoPage() {
         {/* Title */}
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium mb-3">
-            <Instagram className="w-3.5 h-3.5" />
+            <InstagramIcon className="w-3.5 h-3.5" />
             <span>@mymobpay Official Instagram DP</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-950">
