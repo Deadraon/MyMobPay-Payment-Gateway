@@ -214,6 +214,10 @@ export default function LoginPage() {
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [authTab, setAuthTab] = useState('whatsapp'); // 'whatsapp' (WhatsApp OTP - DEFAULT) | 'email' (Email OTP) | 'password'
 
+  // WhatsApp OTP Health & Dynamic Fallback
+  const [isWaDegraded, setIsWaDegraded] = useState(false);
+  const [waDegradedReason, setWaDegradedReason] = useState('');
+
   // Email OTP
   const [email, setEmail] = useState('');
   const [emailOtp, setEmailOtp] = useState('');
@@ -317,6 +321,60 @@ export default function LoginPage() {
     return () => subscription?.unsubscribe();
   }, [router]);
 
+  // WhatsApp OTP Delivery Health Check & Dynamic Fallback Probe
+  useEffect(() => {
+    let isMounted = true;
+
+    const probeWhatsAppHealth = async () => {
+      // 1. Instant check against local device failure cooldown to prevent UI flash
+      if (typeof window !== 'undefined') {
+        try {
+          const degradedUntil = localStorage.getItem('mmp_wa_degraded_until');
+          if (degradedUntil && Date.now() < Number(degradedUntil)) {
+            setIsWaDegraded(true);
+            setAuthTab('email');
+          }
+        } catch (e) {}
+      }
+
+      // 2. Query global circuit breaker on backend
+      try {
+        const res = await fetch('/api/auth/whatsapp-otp/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!isMounted) return;
+
+        if (data.isDegraded || data.primaryOption === 'email') {
+          setIsWaDegraded(true);
+          setWaDegradedReason(data.reason || 'WhatsApp delivery experiencing service interruption');
+          setAuthTab('email');
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem('mmp_wa_degraded_until', String(Date.now() + 15 * 60 * 1000));
+            } catch (e) {}
+          }
+        } else {
+          // If server reports healthy and local timer expired, restore
+          if (typeof window !== 'undefined') {
+            const degradedUntil = localStorage.getItem('mmp_wa_degraded_until');
+            if (!degradedUntil || Date.now() >= Number(degradedUntil)) {
+              localStorage.removeItem('mmp_wa_degraded_until');
+              setIsWaDegraded(false);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('WhatsApp health check warning:', err);
+      }
+    };
+
+    probeWhatsAppHealth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Email OTP countdown timer
   useEffect(() => {
     let interval = null;
@@ -391,6 +449,24 @@ export default function LoginPage() {
           setOtpTimer(data.secondsLeft);
           setOtpSent(true); // show OTP input but with timer active
         }
+
+        // WhatsApp delivery failure detected: auto-fallback to Email OTP
+        if (data.fallbackToEmail || res.status === 502) {
+          setIsWaDegraded(true);
+          setWaDegradedReason(data.error || 'WhatsApp delivery unavailable');
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem('mmp_wa_degraded_until', String(Date.now() + 15 * 60 * 1000));
+            } catch (e) {}
+          }
+          setAuthTab('email');
+          if (data.suggestedEmail) {
+            setEmail(data.suggestedEmail);
+          }
+          setError(data.error || 'WhatsApp delivery is currently delayed. Automatically switched to Email OTP.');
+          return;
+        }
+
         setError(data.error || 'Failed to send OTP.');
         return;
       }
@@ -398,9 +474,16 @@ export default function LoginPage() {
       setOtpSent(true);
       setOtp('');
       setOtpTimer(45);
+      setIsWaDegraded(false);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.removeItem('mmp_wa_degraded_until');
+        } catch (e) {}
+      }
       setMessage(data.message || `OTP sent to +91 ${cleanPhone} via ${method === 'whatsapp' ? 'WhatsApp' : 'SMS'}.`);
     } catch (err) {
-      setError(err?.message || 'Network error. Please check your connection.');
+      console.error('WhatsApp OTP send error:', err);
+      setError(err?.message || 'Network error. Please check your connection or switch to Email OTP.');
     } finally {
       setLoading(false);
     }
@@ -649,6 +732,14 @@ export default function LoginPage() {
         if (res.status === 429 && data.secondsLeft) {
           setPhoneTimer(data.secondsLeft);
           setPhoneOtpSent(true);
+        }
+        if (data.fallbackToEmail || res.status === 502) {
+          setIsWaDegraded(true);
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem('mmp_wa_degraded_until', String(Date.now() + 15 * 60 * 1000));
+            } catch (e) {}
+          }
         }
         setError(data.error || 'Failed to send WhatsApp verification code.');
         return;
@@ -1164,7 +1255,13 @@ export default function LoginPage() {
                   <div className="mt-4 p-1 bg-[#eaedff] rounded-lg grid grid-cols-2 gap-1 border border-[#dae2fd]/70 shadow-xs">
                     <button 
                       type="button" 
-                      onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
+                      onClick={() => {
+                        setAuthTab(isWaDegraded ? 'email' : 'whatsapp');
+                        setError('');
+                        setMessage('');
+                        setOtpSent(false);
+                        setEmailOtpSent(false);
+                      }}
                       className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         authTab === 'whatsapp' || authTab === 'email'
                           ? 'bg-white text-[#0045de] shadow-sm' 
@@ -1175,6 +1272,11 @@ export default function LoginPage() {
                         <>
                           <Mail className="w-3.5 h-3.5 text-[#0045de]" />
                           <span>Email OTP</span>
+                          {isWaDegraded && (
+                            <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.5 rounded ml-1">
+                              Primary
+                            </span>
+                          )}
                         </>
                       ) : (
                         <>
@@ -1195,6 +1297,41 @@ export default function LoginPage() {
                       <Lock className="w-3.5 h-3.5" />
                       <span>Password</span>
                     </button>
+                  </div>
+                )}
+
+                {/* Degraded Alert Banner when WhatsApp delivery is experiencing delays */}
+                {mode === 'signin' && isWaDegraded && (
+                  <div className="mt-3.5 p-3 rounded-lg bg-amber-50 border border-amber-200/90 text-xs text-amber-950 flex items-start gap-2.5 shadow-xs">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div className="flex-1 text-[11px] leading-relaxed">
+                      <div className="font-semibold text-amber-900 flex items-center justify-between">
+                        <span>Email OTP Active</span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-200/80 text-amber-900 px-1.5 py-0.5 rounded">
+                          Auto Fallback
+                        </span>
+                      </div>
+                      <p className="text-amber-800 mt-0.5">
+                        WhatsApp OTP delivery is experiencing delays. Login is defaulted to fast 6-digit Email OTP.
+                      </p>
+                      {authTab === 'email' ? (
+                        <button
+                          type="button"
+                          onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
+                          className="mt-1 font-semibold text-amber-950 underline hover:text-amber-800 cursor-pointer inline-flex items-center gap-1"
+                        >
+                          <span>Prefer WhatsApp? Try WhatsApp OTP anyway &rarr;</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                          className="mt-1 font-semibold text-blue-700 underline hover:text-blue-900 cursor-pointer inline-flex items-center gap-1"
+                        >
+                          <span>&larr; Switch back to recommended Email OTP</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -1389,7 +1526,7 @@ export default function LoginPage() {
                             onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
                             className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                           >
-                            <span>Prefer WhatsApp? Sign in with WhatsApp OTP &rarr;</span>
+                            <span>{isWaDegraded ? 'Prefer WhatsApp? Try WhatsApp OTP anyway \u2192' : 'Prefer WhatsApp? Sign in with WhatsApp OTP \u2192'}</span>
                           </button>
                         </div>
                       </>
@@ -1461,7 +1598,7 @@ export default function LoginPage() {
                               onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
                               className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                             >
-                              <span>Prefer WhatsApp? Sign in with WhatsApp OTP &rarr;</span>
+                              <span>{isWaDegraded ? 'Prefer WhatsApp? Try WhatsApp OTP anyway \u2192' : 'Prefer WhatsApp? Sign in with WhatsApp OTP \u2192'}</span>
                             </button>
                           </div>
                         </div>

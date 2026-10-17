@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createHash, randomInt } from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendWhatsAppOtp, isWhatsAppConfigured } from '@/lib/whatsapp';
+import { recordWhatsAppSuccess, recordWhatsAppFailure } from '@/lib/whatsappHealth';
 
 // OTP config
 const OTP_EXPIRY_MINUTES = 5;
@@ -29,6 +30,8 @@ export async function POST(req) {
     const e164Phone = `91${cleanPhone}`;      // WhatsApp needs this format
     const dbPhone   = `+91${cleanPhone}`;     // Stored in DB with +
 
+    let existingMerchant = null;
+
     // ── Check account existence based on purpose ────────────────────
     if (purpose === 'signup') {
       const { data: existingPhoneMerchant } = await supabaseAdmin
@@ -45,12 +48,14 @@ export async function POST(req) {
         }, { status: 409 });
       }
     } else if (purpose === 'login') {
-      const { data: existingMerchant } = await supabaseAdmin
+      const { data } = await supabaseAdmin
         .from('merchants')
-        .select('id, phone_number')
+        .select('id, phone_number, email')
         .or(`phone_number.eq.${cleanPhone},phone_number.eq.${dbPhone},phone_number.eq.91${cleanPhone}`)
         .limit(1)
         .maybeSingle();
+
+      existingMerchant = data;
 
       if (!existingMerchant) {
         return NextResponse.json({
@@ -121,12 +126,21 @@ export async function POST(req) {
     if (waConfigured) {
       try {
         await sendWhatsAppOtp({ toPhone: cleanPhone, otp, expiryMinutes: OTP_EXPIRY_MINUTES });
+        recordWhatsAppSuccess(cleanPhone);
       } catch (waErr) {
         console.error('[WA OTP SEND] WhatsApp API error:', waErr);
+        const health = recordWhatsAppFailure(cleanPhone, waErr.message);
         // Delete the OTP we just stored so user can retry
         await supabaseAdmin.from('whatsapp_otps').delete().eq('phone', dbPhone).eq('otp_hash', hash);
         return NextResponse.json(
-          { error: `WhatsApp delivery failed: ${waErr.message}. Please check your WhatsApp API credentials.` },
+          {
+            error: `WhatsApp delivery failed (${waErr.message}). Switched to Email OTP for instant verification.`,
+            code: 'whatsapp_failed',
+            fallbackToEmail: true,
+            suggestedEmail: existingMerchant?.email || '',
+            consecutiveFailures: health.consecutiveFailures,
+            isDegraded: health.globalTripped,
+          },
           { status: 502 }
         );
       }
