@@ -35,6 +35,7 @@ export async function POST(request) {
     const apiKey = body.api_key || request.headers.get('x-api-key') || request.headers.get('X-MyMobPay-API-Key');
     
     let merchant = null;
+    let authenticatedApiKey = null;
     let isAuthorized = false;
 
     // Check if the global secret is provided (timing-safe)
@@ -47,6 +48,7 @@ export async function POST(request) {
       const found = await findMerchantByApiKey(apiKey, 'id, subscription_status, subscription_expires_at');
       if (found) {
         merchant = found;
+        authenticatedApiKey = apiKey;
         isAuthorized = true;
       }
     }
@@ -56,6 +58,7 @@ export async function POST(request) {
       const found = await findMerchantByApiKey(secret, 'id, subscription_status, subscription_expires_at');
       if (found) {
         merchant = found;
+        authenticatedApiKey = secret;
         isAuthorized = true;
       }
     }
@@ -64,6 +67,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized: Invalid secret or API Key' }, { status: 401 });
     }
 
+    // Platform privileges must come from the credential that authenticated the merchant.
+    const isPlatformReceiver = merchant ? (merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || merchant.id === 'dd45279e-7a2c-413c-9e24-24d88011b680' || authenticatedApiKey === CONFIG.platformApiKey) : false;
+
     if (merchant) {
        let isSubActive = merchant.subscription_status === 'active';
        if (isSubActive && merchant.subscription_expires_at) {
@@ -71,8 +77,7 @@ export async function POST(request) {
               isSubActive = false;
           }
        }
-       const isAdminMerchant = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || merchant.id === 'dd45279e-7a2c-413c-9e24-24d88011b680' || apiKey === CONFIG.platformApiKey || secret === CONFIG.platformApiKey;
-       if (!isSubActive && !isAdminMerchant) {
+       if (!isSubActive && !isPlatformReceiver) {
          return NextResponse.json({ error: 'Merchant subscription is inactive or expired' }, { status: 403 });
        }
     }
@@ -93,8 +98,6 @@ export async function POST(request) {
     }
 
     const { amount, utr } = parsed;
-
-    const isPlatformReceiver = merchant ? (merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || merchant.id === 'dd45279e-7a2c-413c-9e24-24d88011b680' || apiKey === CONFIG.platformApiKey || secret === CONFIG.platformApiKey) : false;
 
     let matchedOrder = null;
 
@@ -120,12 +123,15 @@ export async function POST(request) {
     if (!matchedOrder) {
       const orderMatch = message.match(/\b((?:order_|pay_|mmp_|MMP_)[0-9A-Za-z_]+)\b/i);
       if (orderMatch) {
-        const { data: oByRef } = await supabaseAdmin
+        let referenceQuery = supabaseAdmin
           .from('orders')
           .select('*')
           .eq('id', orderMatch[1])
-          .eq('status', 'pending')
-          .limit(1);
+          .eq('status', 'pending');
+        if (merchant && !isPlatformReceiver) {
+          referenceQuery = referenceQuery.eq('merchant_id', merchant.id);
+        }
+        const { data: oByRef } = await referenceQuery.limit(1);
         if (oByRef && oByRef.length > 0) {
           matchedOrder = oByRef[0];
         }
@@ -305,17 +311,19 @@ export async function POST(request) {
       }, { status: 200 });
     }
 
-    // Update the matched order to verified
-    const { data: updatedOrder, error: updateError } = await supabaseAdmin
+    // Recheck ownership in the mutation, regardless of the matching path.
+    let updateQuery = supabaseAdmin
       .from('orders')
       .update({
         status: 'verified',
         utr: utr,
         verified_at: new Date().toISOString()
       })
-      .eq('id', matchedOrder.id)
-      .select()
-      .single();
+      .eq('id', matchedOrder.id);
+    if (merchant && !isPlatformReceiver) {
+      updateQuery = updateQuery.eq('merchant_id', merchant.id);
+    }
+    const { data: updatedOrder, error: updateError } = await updateQuery.select().single();
 
     if (updateError) {
       console.error('Error updating order status:', updateError);
