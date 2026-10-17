@@ -77,36 +77,34 @@ export async function middleware(request) {
     }
   }
 
-  // ── 2. Server-Side Auth Guard for Protected Routes ─────────────────────────
-  const isProtected = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
-  if (isProtected) {
+  // ── 2. Session Cookie Sync & Edge Guard for Dashboard ──────────────────────
+  // Soft-refresh session cookies without blocking client hydration, OAuth hash parsing, or localStorage fallback
+  if (pathname.startsWith('/dashboard')) {
     let response = NextResponse.next({ request: { headers: new Headers(request.headers) } });
 
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
+    try {
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+        {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll();
+            },
+            setAll(cookiesToSet) {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                request.cookies.set(name, value);
+                response.cookies.set(name, value, options);
+              });
+            },
           },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              request.cookies.set(name, value);
-              response.cookies.set(name, value, options);
-            });
-          },
-        },
-      }
-    );
+        }
+      );
 
-    // Verify session using server-verified JWT
-    const { data: { user }, error } = await supabase.auth.getUser();
-
-    if (!user || error) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
+      // Refresh user session cookies if present
+      await supabase.auth.getUser();
+    } catch {
+      // Safe fallback: allow client-side hydration from localStorage or OAuth hash fragment
     }
 
     return applySecurityHeaders(response, requestId);

@@ -11,6 +11,7 @@ import QRCode from 'react-qr-code';
 import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
 import { formatMerchantId } from '@/lib/merchantId';
+import PaymentSuccessTick from '@/components/PaymentSuccessTick';
 
 export default function ConsoleActivationPaywall({
   profile,
@@ -389,15 +390,8 @@ export default function ConsoleActivationPaywall({
           {/* Success Body */}
           <div className="p-6 sm:p-8 flex flex-col items-center text-center">
             
-            {/* Animated Green Tick Icon */}
-            <div className="relative flex items-center justify-center my-4">
-              {/* Outer pulsing ring */}
-              <div className="absolute w-28 h-28 rounded-full bg-emerald-100 animate-ping opacity-75"></div>
-              {/* Green circular base with white checkmark */}
-              <div className="relative w-24 h-24 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-xl shadow-emerald-500/30 border-4 border-white">
-                <Check className="w-12 h-12 text-white stroke-[3.5]" />
-              </div>
-            </div>
+            {/* Animated Green Tick Icon (Razorpay / Top Fintech Style) */}
+            <PaymentSuccessTick size="lg" sound={true} />
 
             {/* Title & Message */}
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">

@@ -291,7 +291,15 @@ export default function LoginPage() {
 
       // Profile is verified and completed -> Safe to launch dashboard
       setMessage('Authenticated successfully! Launching merchant dashboard...');
-      router.replace('/dashboard');
+      let target = '/dashboard';
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const red = params.get('redirect');
+        if (red && !red.startsWith('/login')) target = red;
+        window.location.href = target;
+      } else {
+        router.replace(target);
+      }
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -518,7 +526,17 @@ export default function LoginPage() {
         setMessage('Email verified successfully! Complete the form below to finish registration.');
       } else {
         setMessage('Email verified! Opening your merchant dashboard...');
-        setTimeout(() => router.push('/dashboard'), 600);
+        setTimeout(() => {
+          let target = '/dashboard';
+          if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const red = params.get('redirect');
+            if (red && !red.startsWith('/login')) target = red;
+            window.location.href = target;
+          } else {
+            router.push(target);
+          }
+        }, 500);
       }
     } catch (err) {
       console.error('Email OTP verify error:', err);
@@ -577,7 +595,17 @@ export default function LoginPage() {
           console.warn('verifyOtp error:', sessEx);
         }
       }
-      setTimeout(() => router.push('/dashboard'), 600);
+      setTimeout(() => {
+        let target = '/dashboard';
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const red = params.get('redirect');
+          if (red && !red.startsWith('/login')) target = red;
+          window.location.href = target;
+        } else {
+          router.push(target);
+        }
+      }, 500);
     } catch (err) {
       setError(err?.message || 'Network error during OTP verification.');
     } finally {
@@ -837,7 +865,9 @@ export default function LoginPage() {
           setMode('signin');
         } else {
           setMessage('Account created! Launching your merchant console...');
-          setTimeout(() => router.push('/dashboard'), 800);
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 600);
         }
 
       } else if (action === 'signin') {
@@ -875,7 +905,15 @@ export default function LoginPage() {
         }
 
         setMessage('Welcome back! Launching your merchant dashboard...');
-        setTimeout(() => router.push('/dashboard'), 600);
+        let target = '/dashboard';
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const red = params.get('redirect');
+          if (red && !red.startsWith('/login')) target = red;
+        }
+        setTimeout(() => {
+          window.location.href = target;
+        }, 500);
       }
     } catch (err) {
       isRegistrationSubmittedRef.current = false;
@@ -1174,7 +1212,7 @@ export default function LoginPage() {
                             </span>
                           </label>
                           <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-emerald-500">
-                            <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#131b2e] text-xs font-bold border-r border-[#dae2fd]">
+                            <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#131b2e] text-sm font-semibold border-r border-[#dae2fd]">
                               <span className="text-base leading-none">🇮🇳</span>
                               <span>+91</span>
                             </div>
@@ -1186,7 +1224,7 @@ export default function LoginPage() {
                               onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                               onKeyDown={(e) => e.key === 'Enter' && phone.trim().replace(/\D/g, '').length === 10 && triggerOtpFlow('whatsapp')}
                               placeholder="10-digit WhatsApp number"
-                              className="w-full bg-transparent py-2.5 pl-3 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-mono"
+                              className="w-full bg-transparent py-2.5 pl-3 text-sm text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-sans tracking-normal"
                             />
                           </div>
                           <p className="text-[11px] text-[#74777e] leading-relaxed">
@@ -1739,7 +1777,7 @@ export default function LoginPage() {
                           ? 'bg-emerald-50/40 border-emerald-300' 
                           : 'bg-[#f2f3ff] border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md focus-within:border-blue-400'
                       }`}>
-                        <div className="flex items-center gap-1.5 pr-2.5 py-1.5 text-[#131b2e] text-xs font-bold border-r border-[#dae2fd]">
+                        <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#131b2e] text-sm font-semibold border-r border-[#dae2fd]">
                           <span className="text-base leading-none">🇮🇳</span>
                           <span>+91</span>
                         </div>
@@ -1755,7 +1793,7 @@ export default function LoginPage() {
                             if (phoneOtpSent) setPhoneOtpSent(false);
                           }}
                           placeholder="10-digit WhatsApp number"
-                          className="w-full bg-transparent py-2 pl-3 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium disabled:opacity-85"
+                          className="w-full bg-transparent py-2 pl-3 text-sm text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-sans tracking-normal disabled:opacity-85"
                         />
                         {isPhoneVerified ? (
                           <button

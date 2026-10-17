@@ -9,6 +9,7 @@ import {
   Key, Calendar, ShieldCheck, RefreshCw,
   AlertCircle, ArrowRight, ExternalLink, Check, Clock,
 } from 'lucide-react';
+import PaymentSuccessTick from '@/components/PaymentSuccessTick';
 
 /* ── Animated success check ────────────────────────────────── */
 const AnimatedCheck = () => (
@@ -336,8 +337,8 @@ export default function StatusPage() {
             <div className="bg-white rounded-3xl border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
               <div className={`h-1 w-full ${isCodOrder ? 'bg-blue-600' : 'bg-emerald-500'}`} />
               <div className="p-6 text-center space-y-3">
-                <div className="flex justify-center">
-                  <div className="animate-pulse-success rounded-full"><AnimatedCheck /></div>
+                <div className="flex justify-center -my-1">
+                  <PaymentSuccessTick size="lg" sound={true} isCod={isCodOrder} />
                 </div>
                 <div>
                   <h2 className="text-2xl font-black text-slate-900">

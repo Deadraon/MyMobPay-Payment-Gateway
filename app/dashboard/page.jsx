@@ -1540,11 +1540,13 @@ export default function DashboardPage() {
 
 
 
-      const { data: { session } } = await supabase.auth.getSession();
+      // getUser() performs a cryptographic server-side JWT verification (not just a localStorage read)
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
 
 
 
-      if (!session) {
+
+      if (!user || userError) {
 
 
 
@@ -1560,10 +1562,11 @@ export default function DashboardPage() {
 
 
 
-      setUser(session.user);
 
-      await fetchProfile(session.user.id);
-      fetchSubscriptionHistory(session.user.id);
+      setUser(user);
+
+      await fetchProfile(user.id);
+      fetchSubscriptionHistory(user.id);
 
       // Handle redirect from payment gateway (e.g. ?status=success&gateway_id=...)
       if (typeof window !== 'undefined') {
@@ -1573,12 +1576,12 @@ export default function DashboardPage() {
         if (pStatus === 'success' || pOrderId) {
           // Re-fetch profile and subscription history
           setTimeout(() => {
-            fetchProfile(session.user.id);
-            fetchSubscriptionHistory(session.user.id);
+            fetchProfile(user.id);
+            fetchSubscriptionHistory(user.id);
           }, 600);
           setTimeout(() => {
-            fetchProfile(session.user.id);
-            fetchSubscriptionHistory(session.user.id);
+            fetchProfile(user.id);
+            fetchSubscriptionHistory(user.id);
           }, 2000);
           // Clean URL parameters smoothly without reloading
           window.history.replaceState({}, document.title, window.location.pathname);

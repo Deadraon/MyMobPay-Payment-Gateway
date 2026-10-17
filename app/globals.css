@@ -205,6 +205,75 @@ body {
   100% { transform: translateY(135px); opacity: 0; }
 }
 
+/* ─── Razorpay / Top Fintech Success Checkmark Animations ─── */
+@keyframes successBadgePop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes successCheckDraw {
+  0% {
+    stroke-dashoffset: 42;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes successRippleWave {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.05);
+    opacity: 0;
+  }
+}
+
+@keyframes successParticleBurst {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--pt-x, 0px), var(--pt-y, 0px)) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes successLightSweep {
+  0% {
+    transform: translateX(-160%) rotate(25deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+    opacity: 0;
+  }
+}
+
 /* ─── Animation Utility Classes ─────────────────────────── */
 .animate-fade-up      { animation: fadeUp      0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-fade-in      { animation: fadeIn      0.4s ease forwards; }

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { MyMobPayLogo, MyMobPayMark } from '@/components/MyMobPayLogo';
 import { formatRefId, generateOrderId } from '@/lib/orderId';
+import PaymentSuccessTick from '@/components/PaymentSuccessTick';
 
 /* ── Instant Inline Vector Icons (0ms render time, no font loading delays, no text ligatures) ── */
 const IconVerifiedUser = ({ className = "w-[18px] h-[18px]" }) => (
@@ -509,15 +510,8 @@ export default function DesktopCheckoutView({
           <span className="text-[10px] text-emerald-600 uppercase tracking-wider font-bold">Success</span>
         </div>
 
-        {/* Animated Green Tick Icon */}
-        <div className="relative flex items-center justify-center my-3">
-          <div className="absolute w-28 h-28 rounded-full bg-emerald-100 animate-ping opacity-75"></div>
-          <div className="relative w-24 h-24 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-xl shadow-emerald-500/30 border-4 border-white">
-            <svg className="w-12 h-12 text-white stroke-[3.5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          </div>
-        </div>
+        {/* Animated Green Tick Icon (Razorpay / Top Fintech Style) */}
+        <PaymentSuccessTick size="lg" sound={true} />
 
         {/* Headline & Subtitle */}
         <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">

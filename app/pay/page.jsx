@@ -12,6 +12,7 @@ import { formatRefId, generateOrderId } from '@/lib/orderId';
 const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutView'), {
   ssr: false,
 });
+import PaymentSuccessTick from '@/components/PaymentSuccessTick';
 
 /* ── Original MyMobPay Website Logo (Dual-color Blue/Orange M mark + MyMobPay) ── */
 const MyMobPayLogo = ({ textColor = '#0f172a', size = 24 }) => (
@@ -2719,14 +2720,9 @@ function PayPageContent() {
                   <span>Payment Verified • mymob.tech</span>
                 </div>
 
-                {/* Animated Green Tick Icon */}
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                  <div style={{ position: 'absolute', width: 96, height: 96, borderRadius: '50%', background: '#d1fae5', opacity: 0.75, animation: 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
-                  <div style={{ position: 'relative', width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 25px -5px rgba(16, 185, 129, 0.4)', border: '4px solid #ffffff' }}>
-                    <svg style={{ width: 40, height: 40, color: '#ffffff' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </div>
+                {/* Animated Green Tick Icon (Razorpay / Top Fintech Style) */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
+                  <PaymentSuccessTick size="lg" sound={true} isCod={selectedMethod === 'cod'} />
                 </div>
 
                 <h2 style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', margin: '8px 0 4px', letterSpacing: '-0.02em' }}>
