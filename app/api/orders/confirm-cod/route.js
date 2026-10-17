@@ -41,12 +41,28 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Order not found.' }, { status: 404 });
     }
 
+    // COD has no live authorization or settlement flow; only simulate it in sandbox.
+    // Use the stored mode, never a caller-supplied mode or payment method.
+    if (order.mode !== 'test') {
+      return NextResponse.json({
+        error: 'Cash on Delivery is only available in sandbox test mode. For live payments, please use UPI or Direct Bank Transfer.',
+        code: 'METHOD_UNAVAILABLE'
+      }, { status: 400 });
+    }
+
     if (order.status === 'verified') {
       return NextResponse.json({
         success: true,
         verified: true,
         message: 'Order is already confirmed.'
       }, { status: 200 });
+    }
+
+    if (order.status !== 'pending') {
+      return NextResponse.json({
+        error: 'Order is no longer pending and cannot be confirmed.',
+        code: 'ORDER_TERMINATED'
+      }, { status: 409 });
     }
 
     // Generate unique COD Reference
@@ -67,11 +83,20 @@ export async function POST(request) {
       .from('orders')
       .update(updatePayload)
       .eq('id', order.id)
+      .eq('mode', 'test')
+      .eq('status', 'pending')
       .select()
-      .single();
+      .maybeSingle();
 
     if (updateError) {
       throw updateError;
+    }
+
+    if (!updatedOrder) {
+      return NextResponse.json({
+        error: 'Order changed during confirmation. Please refresh and try again.',
+        code: 'ORDER_CHANGED'
+      }, { status: 409 });
     }
 
     // 3. Trigger Merchant webhook to notify merchant of new physical order
