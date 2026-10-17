@@ -326,14 +326,17 @@ export default function TransactionsRedesign({
     }
     setEmailingStatement(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Please sign in to request a statement.');
       const res = await fetch('/api/merchant/statement/email', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({
-          merchantId: profile.id,
           month: new Date().getMonth() + 1,
           year: new Date().getFullYear(),
-          toEmail: profile.email || '',
         })
       });
       const data = await res.json();
