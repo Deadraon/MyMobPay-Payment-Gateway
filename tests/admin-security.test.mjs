@@ -4,11 +4,58 @@ import {
   createAdminSessionToken, 
   verifyAdminSessionToken, 
   verifyAdminAuth,
+  getAdminSettings,
+  ensureAdminMerchant,
   isAuthorizedEmail,
   isAuthorizedAdminUser,
   DEFAULT_ADMIN_EMAILS,
   PLATFORM_ADMIN_USER_ID
 } from '../lib/adminSettings.js';
+import { supabaseAdmin } from '../lib/supabase.js';
+
+test('TOTP requires a configured secret and respects explicit disabling', async (t) => {
+  const originalSecret = process.env.ADMIN_TOTP_SECRET;
+  t.after(() => {
+    if (originalSecret === undefined) delete process.env.ADMIN_TOTP_SECRET;
+    else process.env.ADMIN_TOTP_SECRET = originalSecret;
+  });
+
+  let merchant = null;
+  t.mock.method(supabaseAdmin, 'from', () => ({
+    select() { return this; },
+    eq() { return this; },
+    ilike() { return this; },
+    async maybeSingle() { return { data: merchant }; }
+  }));
+
+  const envSecret = 'JBSWY3DPEHPK3PXP';
+  const storedSecret = 'GEZDGNBVGY3TQOJQ';
+  const cases = [
+    { name: 'no merchant or environment secret', settings: null, secret: null, enabled: false },
+    { name: 'environment secret without a merchant', settings: null, env: envSecret, secret: envSecret, enabled: true },
+    { name: 'empty stored settings', settings: {}, secret: null, enabled: false },
+    { name: 'environment secret with empty stored settings', settings: {}, env: envSecret, secret: envSecret, enabled: true },
+    { name: 'stored secret takes precedence', settings: { totp_secret: storedSecret, totp_enabled: true }, env: envSecret, secret: storedSecret, enabled: true },
+    { name: 'stored secret without an enable flag', settings: { totp_secret: storedSecret }, secret: storedSecret, enabled: true },
+    { name: 'disabled stored secret', settings: { totp_secret: storedSecret, totp_enabled: false }, env: envSecret, secret: storedSecret, enabled: false },
+    { name: 'disabled with an environment secret', settings: { totp_secret: null, totp_enabled: false }, env: envSecret, secret: envSecret, enabled: false },
+    { name: 'enabled flag without a secret', settings: { totp_enabled: true }, secret: null, enabled: false }
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      if (entry.env) process.env.ADMIN_TOTP_SECRET = entry.env;
+      else delete process.env.ADMIN_TOTP_SECRET;
+      merchant = entry.settings === null ? null : {
+        setup_progress: { admin_settings: entry.settings }
+      };
+      await ensureAdminMerchant(true);
+      const settings = await getAdminSettings();
+      assert.equal(settings.totp_secret, entry.secret);
+      assert.equal(settings.totp_enabled, entry.enabled);
+    });
+  }
+});
 
 test('--- Super Admin Security & Passwordless Auth Verification Suite ---', async (t) => {
 

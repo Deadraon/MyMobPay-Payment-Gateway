@@ -4,8 +4,7 @@ import {
   getAdminSettings, 
   verifyTOTP, 
   isAuthorizedAdminUser, 
-  createAdminSessionToken,
-  DEFAULT_ADMIN_TOTP_SECRET 
+  createAdminSessionToken
 } from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
@@ -15,7 +14,7 @@ export async function GET() {
     const settings = await getAdminSettings();
     return NextResponse.json({
       success: true,
-      totpEnabled: settings.totp_enabled !== false
+      totpEnabled: settings.totp_enabled === true
     });
   } catch (e) {
     return NextResponse.json({ success: false }, { status: 500 });
@@ -82,9 +81,13 @@ export async function POST(request) {
       }
 
       const settings = await getAdminSettings();
-      const secret = settings.totp_secret || process.env.ADMIN_TOTP_SECRET || DEFAULT_ADMIN_TOTP_SECRET;
+      if (!settings.totp_enabled || !settings.totp_secret) {
+        return NextResponse.json({
+          error: 'Authenticator login is unavailable. Please sign in with Google.'
+        }, { status: 503 });
+      }
 
-      const isValidTotp = verifyTOTP(secret, cleanCode, 2);
+      const isValidTotp = verifyTOTP(settings.totp_secret, cleanCode, 2);
       if (!isValidTotp) {
         return NextResponse.json({ 
           error: 'Invalid 6-digit code. Please enter the current code from your Authenticator app.' 
