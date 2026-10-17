@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { getLoginRedirect } from '@/lib/loginRedirect';
 import { 
   Loader2, Lock, Mail, ArrowRight, ShieldCheck, 
   CheckCircle2, Building2, QrCode, Phone, Smartphone,
@@ -297,9 +298,7 @@ export default function LoginPage() {
       setMessage('Authenticated successfully! Launching merchant dashboard...');
       let target = '/dashboard';
       if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search);
-        const red = params.get('redirect');
-        if (red && !red.startsWith('/login')) target = red;
+        target = getLoginRedirect(window.location.search, window.location.origin);
         window.location.href = target;
       } else {
         router.replace(target);
@@ -612,9 +611,7 @@ export default function LoginPage() {
         setTimeout(() => {
           let target = '/dashboard';
           if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            const red = params.get('redirect');
-            if (red && !red.startsWith('/login')) target = red;
+            target = getLoginRedirect(window.location.search, window.location.origin);
             window.location.href = target;
           } else {
             router.push(target);
@@ -681,9 +678,7 @@ export default function LoginPage() {
       setTimeout(() => {
         let target = '/dashboard';
         if (typeof window !== 'undefined') {
-          const params = new URLSearchParams(window.location.search);
-          const red = params.get('redirect');
-          if (red && !red.startsWith('/login')) target = red;
+          target = getLoginRedirect(window.location.search, window.location.origin);
           window.location.href = target;
         } else {
           router.push(target);
@@ -998,9 +993,7 @@ export default function LoginPage() {
         setMessage('Welcome back! Launching your merchant dashboard...');
         let target = '/dashboard';
         if (typeof window !== 'undefined') {
-          const params = new URLSearchParams(window.location.search);
-          const red = params.get('redirect');
-          if (red && !red.startsWith('/login')) target = red;
+          target = getLoginRedirect(window.location.search, window.location.origin);
         }
         setTimeout(() => {
           window.location.href = target;
