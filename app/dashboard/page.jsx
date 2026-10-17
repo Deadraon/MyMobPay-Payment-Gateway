@@ -1637,10 +1637,36 @@ export default function DashboardPage() {
       })
       .subscribe();
 
+    // 4. Realtime payment links updates (re-fetch orders whenever links status changes)
+    const plChannel = supabase.channel(`dashboard-pl-${user.id}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'payment_links',
+        filter: `merchant_id=eq.${user.id}`
+      }, () => {
+        fetchOrders(user.id);
+      })
+      .subscribe();
+
+    // 5. Instant wake-up re-fetch when merchant switches back to this dashboard tab
+    const handleWakeup = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        fetchOrders(user.id);
+        fetchProfile(user.id);
+      }
+    };
+
+    window.addEventListener('focus', handleWakeup);
+    document.addEventListener('visibilitychange', handleWakeup);
+
     return () => {
       supabase.removeChannel(channel);
       supabase.removeChannel(subOrdersChannel);
       supabase.removeChannel(merchantChannel);
+      supabase.removeChannel(plChannel);
+      window.removeEventListener('focus', handleWakeup);
+      document.removeEventListener('visibilitychange', handleWakeup);
     };
   }, [user]);
   // Mobile menu scroll lock handled by unified isAnyModalOrDrawerOpen effect

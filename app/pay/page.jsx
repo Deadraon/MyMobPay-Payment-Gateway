@@ -501,6 +501,17 @@ function PayPageContent() {
               headers: { 'Content-Type': 'application/json' }
             });
             const startData = await startRes.json();
+            if (startData?.code === 'PAID' || startData?.status === 'paid') {
+              setPaidOrderData({
+                amount: startData.amount_in_rupees || (Number(startData.amount) / 100).toFixed(2) || finalAmount,
+                orderId: startData.order_id || finalOrderId || routeToken,
+                verified_at: startData.paid_at,
+                title: data.title,
+                merchant_name: data.merchant_name
+              });
+              setCurView('vPaidExpired');
+              return;
+            }
             if (startRes.ok && startData.order_id) {
               finalOrderId = startData.order_id;
               if (startData.amount_in_rupees) {
@@ -512,6 +523,32 @@ function PayPageContent() {
           }
 
           if (!isMounted) return;
+
+          // Real-time server-side pre-flight check:
+          // Check if this finalOrderId has already been paid/verified BEFORE opening vPay!
+          if (finalOrderId) {
+            try {
+              const orderCheck = await fetch(`/api/orders?id=${encodeURIComponent(finalOrderId)}&_t=${Date.now()}`, {
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache, no-store' }
+              });
+              if (orderCheck.ok) {
+                const ocData = await orderCheck.json();
+                if (ocData && (ocData.status === 'verified' || ocData.status === 'completed' || ocData.status === 'paid')) {
+                  if (!isMounted) return;
+                  setPaidOrderData({
+                    amount: ocData.amount || finalAmount,
+                    orderId: finalOrderId,
+                    verified_at: ocData.verified_at,
+                    title: data.title,
+                    merchant_name: data.merchant_name
+                  });
+                  setCurView('vPaidExpired');
+                  return;
+                }
+              }
+            } catch {}
+          }
 
           setOrderId(finalOrderId || routeToken);
           setOrderAmount(finalAmount);

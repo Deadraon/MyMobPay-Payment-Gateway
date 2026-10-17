@@ -35,6 +35,7 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { generateOrderId } from '@/lib/orderId';
+import { supabase } from '@/lib/supabase';
 
 // No default starter links — only show links the merchant actually created
 const DEFAULT_INITIAL_LINKS = [];
@@ -135,7 +136,7 @@ export default function PaymentLinksRedesign({
     }
   };
 
-  // Load merchant-scoped payment links (purge legacy un-scoped cross-account key)
+  // Real-time synchronization: Auto-refresh on mount, tab focus/wake, periodic 3s poll, and Supabase channel
   useEffect(() => {
     if (typeof window !== 'undefined') {
       if (localStorage.getItem('mymobpay_payment_links')) {
@@ -147,7 +148,56 @@ export default function PaymentLinksRedesign({
         return;
       }
 
+      // 1. Initial fetch
       fetchDbLinks();
+
+      // 2. High-responsiveness background polling: checks every 3.5s so merchant sees live state without manual reload
+      const pollTimer = setInterval(() => {
+        fetchDbLinks();
+      }, 3500);
+
+      // 3. Instant wake-up refresh when merchant switches back to this dashboard tab/window
+      const handleTabFocus = () => {
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          fetchDbLinks();
+        }
+      };
+
+      window.addEventListener('focus', handleTabFocus);
+      document.addEventListener('visibilitychange', handleTabFocus);
+
+      // 4. Supabase Realtime channel subscription for instant push updates
+      let channel = null;
+      try {
+        channel = supabase
+          .channel(`pl-realtime-${profile.id}`)
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'payment_links', filter: `merchant_id=eq.${profile.id}` },
+            () => {
+              fetchDbLinks();
+            }
+          )
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'orders', filter: `merchant_id=eq.${profile.id}` },
+            () => {
+              fetchDbLinks();
+            }
+          )
+          .subscribe();
+      } catch (e) {
+        console.warn('Realtime channel warning:', e);
+      }
+
+      return () => {
+        clearInterval(pollTimer);
+        window.removeEventListener('focus', handleTabFocus);
+        document.removeEventListener('visibilitychange', handleTabFocus);
+        if (channel) {
+          supabase.removeChannel(channel);
+        }
+      };
     }
   }, [profile?.id, profile?.api_key]);
 
@@ -194,12 +244,22 @@ export default function PaymentLinksRedesign({
 
     // Harmonize status with real database orders if matching
     return combined.map((item) => {
-      // ONLY match orders that belong specifically to this payment link by orderId or external_ref
+      // Robust order matching by orderId, full token, or pl_ tokenPrefix
+      const token = item.token || item.id;
+      const tokenPrefix = token ? token.slice(0, 12) : '';
+
       const matchingOrder = orders.find(
         (o) =>
           (item.orderId && o.id === item.orderId) ||
+          (token && o.external_ref && (
+            o.external_ref === token ||
+            o.external_ref === `pl_${tokenPrefix}` ||
+            o.external_ref.startsWith(`pl_${tokenPrefix}`) ||
+            o.external_ref.includes(tokenPrefix)
+          )) ||
           (item.id && (o.external_ref === item.id || o.external_ref?.startsWith(item.id + ':'))) ||
-          (item.ref && o.external_ref === item.ref)
+          (item.ref && o.external_ref === item.ref) ||
+          (tokenPrefix && o.note && o.note.includes(tokenPrefix))
       );
 
       if (matchingOrder) {

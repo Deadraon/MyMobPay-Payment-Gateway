@@ -9,6 +9,7 @@ import { CONFIG } from '@/lib/config';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { generateOrderId } from '@/lib/orderId';
 import { findMerchantByApiKey } from '@/lib/merchantAuth';
+import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
 
 export async function POST(request) {
   try {
@@ -358,6 +359,12 @@ export async function GET(request) {
 
     const paidTime = new Date(order.verified_at || order.created_at).getTime();
     const isPaid = order.status === 'verified' || order.status === 'completed' || order.status === 'paid';
+    
+    // Automatically ensure payment_links status is synced to paid
+    if (isPaid) {
+      syncOrderVerificationToPaymentLink(order.id, order.utr).catch(() => {});
+    }
+
     const isPostPaymentExpired = isPaid && !isNaN(paidTime) && (Date.now() - paidTime) > (24 * 60 * 60 * 1000);
 
     // If order was paid > 24 hours ago, expire the link completely (404 NOT_FOUND)

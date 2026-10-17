@@ -12,7 +12,8 @@ import {
   computeExpiresAt,
   parseAmountToPaise,
   paiseToRupees,
-  EXPIRY_LIMITS
+  EXPIRY_LIMITS,
+  transitionLinkToPaid
 } from '@/lib/paymentLinks';
 
 /**
@@ -210,6 +211,42 @@ export async function GET(request) {
     if (error) {
       console.error('[API Payment Links GET Error]:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Real-time Order Verification Reconciliation:
+    // If any active or processing links have their associated orders already verified,
+    // immediately reflect them as 'paid' and self-heal the database.
+    const activeOrProcessing = (links || []).filter(l => l.status !== 'paid' && l.status !== 'cancelled');
+    if (activeOrProcessing.length > 0) {
+      const { data: verifiedOrders } = await supabaseAdmin
+        .from('orders')
+        .select('id, external_ref, status, utr, verified_at, amount')
+        .eq('merchant_id', merchant.id)
+        .in('status', ['verified', 'completed', 'paid']);
+
+      if (verifiedOrders && verifiedOrders.length > 0) {
+        for (const l of links) {
+          if (l.status === 'paid') continue;
+          const tokenPrefix = l.token.slice(0, 12);
+          const matched = verifiedOrders.find(
+            vo =>
+              (l.order_id && vo.id === l.order_id) ||
+              (vo.external_ref && (
+                vo.external_ref === `pl_${tokenPrefix}` ||
+                vo.external_ref.startsWith(`pl_${tokenPrefix}`) ||
+                vo.external_ref === l.token ||
+                vo.external_ref === l.id
+              ))
+          );
+
+          if (matched) {
+            l.status = 'paid';
+            l.paid_at = matched.verified_at || new Date().toISOString();
+            l.order_id = matched.id;
+            transitionLinkToPaid(l.token, { orderId: matched.id, utr: matched.utr }).catch(() => {});
+          }
+        }
+      }
     }
 
     const hostHeader = request.headers.get('x-forwarded-host') || request.headers.get('host');

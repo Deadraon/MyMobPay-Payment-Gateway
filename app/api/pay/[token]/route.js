@@ -10,7 +10,8 @@ import { generateOrderId } from '@/lib/orderId';
 import {
   isLinkUsable,
   paiseToRupees,
-  transitionLinkToProcessing
+  transitionLinkToProcessing,
+  transitionLinkToPaid
 } from '@/lib/paymentLinks';
 
 /**
@@ -48,10 +49,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Payment link not found.' }, { status: 404 });
     }
 
-    // 2. Run central usability check
-    const usability = isLinkUsable(link);
-
-    // 3. Fetch public-safe merchant profile
+    // 2. Fetch public-safe merchant profile
     const { data: merchant } = await supabaseAdmin
       .from('merchants')
       .select('business_name, upi_id, theme_color, enable_bank_transfer, bank_account_name, bank_name, bank_account_number, bank_ifsc')
@@ -62,6 +60,68 @@ export async function GET(request, { params }) {
     const safeUpiId = (merchant?.upi_id && merchant.upi_id !== 'pending@upi' && merchant.upi_id.includes('@'))
       ? merchant.upi_id
       : (CONFIG.upiId || '9410181307@okbizaxis');
+
+    // 3. Real-time Server-Side Verification: Check if order in orders table has ALREADY been paid
+    // Prevents checkout page from ever flashing or asking for payment when order is already settled.
+    let verifiedOrder = null;
+    if (link.order_id) {
+      const { data: ordDirect } = await supabaseAdmin
+        .from('orders')
+        .select('id, status, utr, verified_at, amount, callback_url')
+        .eq('id', link.order_id)
+        .maybeSingle();
+
+      if (ordDirect && (ordDirect.status === 'verified' || ordDirect.status === 'completed' || ordDirect.status === 'paid')) {
+        verifiedOrder = ordDirect;
+      }
+    }
+
+    if (!verifiedOrder) {
+      const tokenPrefix = link.token.slice(0, 12);
+      const { data: ordByRef } = await supabaseAdmin
+        .from('orders')
+        .select('id, status, utr, verified_at, amount, callback_url')
+        .eq('merchant_id', link.merchant_id)
+        .ilike('external_ref', `pl_${tokenPrefix}%`)
+        .in('status', ['verified', 'completed', 'paid'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (ordByRef) {
+        verifiedOrder = ordByRef;
+      }
+    }
+
+    if (verifiedOrder) {
+      // Reconcile database state idempotently
+      transitionLinkToPaid(link.token, { orderId: verifiedOrder.id, utr: verifiedOrder.utr }).catch(() => {});
+
+      return NextResponse.json(
+        {
+          error: 'This payment order has already been verified and settled.',
+          code: 'PAID',
+          merchant_name: safeMerchantName,
+          status: 'paid',
+          order_id: verifiedOrder.id,
+          paid_at: verifiedOrder.verified_at || new Date().toISOString(),
+          amount: Number(link.amount),
+          amount_in_rupees: paiseToRupees(link.amount),
+          title: link.title,
+          callback_url: verifiedOrder.callback_url
+        },
+        {
+          status: 200,
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma': 'no-cache'
+          }
+        }
+      );
+    }
+
+    // 4. Run central usability check
+    const usability = isLinkUsable(link);
 
     // 4. Handle Unusable Cases (Expired, Cancelled, Already Paid, Not Found)
     if (!usability.usable) {
@@ -229,9 +289,23 @@ export async function POST(request, { params }) {
     // (Must exist in orders table first to satisfy foreign key constraint payment_links_order_id_fkey)
     const { data: existingOrder } = await supabaseAdmin
       .from('orders')
-      .select('id')
+      .select('id, status, utr, verified_at, amount')
       .eq('id', orderId)
       .maybeSingle();
+
+    if (existingOrder && (existingOrder.status === 'verified' || existingOrder.status === 'completed' || existingOrder.status === 'paid')) {
+      transitionLinkToPaid(link.token, { orderId: existingOrder.id, utr: existingOrder.utr }).catch(() => {});
+      return NextResponse.json(
+        {
+          error: 'This payment order has already been completed and settled.',
+          code: 'PAID',
+          status: 'paid',
+          order_id: existingOrder.id,
+          paid_at: existingOrder.verified_at || new Date().toISOString()
+        },
+        { status: 200 }
+      );
+    }
 
     if (!existingOrder) {
       const { error: insertErr } = await supabaseAdmin
