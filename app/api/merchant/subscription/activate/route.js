@@ -33,10 +33,11 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Merchant account not found.' }, { status: 404 });
     }
 
+    const isTrial = planId === 'trial' || planId === 'trial_3day';
     const cleanUtr = String(utr || '').trim();
 
     // 1b. Duplicate UTR check to prevent replay fraud across different accounts
-    if (cleanUtr && cleanUtr.length >= 10) {
+    if (!isTrial && cleanUtr && cleanUtr.length >= 10) {
       const { data: existingUtr } = await supabaseAdmin
         .from('orders')
         .select('id, merchant_id, external_ref')
@@ -55,7 +56,6 @@ export async function POST(req) {
       }
     }
 
-    const isTrial = planId === 'trial' || planId === 'trial_3day';
     if (isTrial) {
       const alreadyUsed = Boolean(
         merchant.setup_progress?.trial_activated_at ||
@@ -118,9 +118,9 @@ export async function POST(req) {
     const updatedProgress = {
       ...(merchant.setup_progress || {}),
       plan_type: isTrial ? 'trial_3day' : planId,
-      last_payment_at: nowIso,
-      subscription_activated_at: nowIso,
-      ...(isTrial ? { trial_activated_at: nowIso } : {}),
+      ...(isTrial
+        ? { trial_activated_at: nowIso }
+        : { last_payment_at: nowIso, subscription_activated_at: nowIso }),
     };
 
     // 3. Update merchant subscription in database (unlock live mode on trial/subscription)
@@ -137,6 +137,16 @@ export async function POST(req) {
     if (updateErr) {
       console.error('[SUB ACTIVATE API] Update error:', updateErr);
       return NextResponse.json({ error: updateErr.message }, { status: 500 });
+    }
+
+    // Free trials are recorded on the merchant, never as verified payments.
+    if (isTrial) {
+      return NextResponse.json({
+        success: true,
+        message: 'Free trial successfully activated.',
+        subscription_status: 'active',
+        subscription_expires_at: newExpiry.toISOString(),
+      });
     }
 
     // 4. Update matching pending subscription order or insert verified order for audit
