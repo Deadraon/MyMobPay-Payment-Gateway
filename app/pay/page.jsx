@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
 import { formatRefId, generateOrderId } from '@/lib/orderId';
+import { navigateToCallback } from '@/lib/callbackUrl';
 
 const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutView'), {
   ssr: false,
@@ -360,21 +361,7 @@ function PayPageContent() {
     }
 
     // If user clicked close/cancel before paying:
-    if (cb) {
-      let resolved = cb.trim();
-      if (!/^https?:\/\//i.test(resolved) && !resolved.startsWith('/')) {
-        resolved = `https://${resolved}`;
-      }
-      try {
-        const url = new URL(resolved, window.location.origin);
-        url.searchParams.set('status', 'cancelled');
-        window.location.href = url.toString();
-        return;
-      } catch {
-        window.location.href = cb;
-        return;
-      }
-    }
+    if (navigateToCallback(cb, { status: 'cancelled' })) return;
 
     if (typeof window !== 'undefined' && window.history.length > 1) {
       window.history.back();
@@ -1222,10 +1209,7 @@ function PayPageContent() {
               type="button"
               onClick={() => {
                 const cb = paidOrderData?.callback_url || paramCallback;
-                if (cb) {
-                  window.location.href = cb;
-                  return;
-                }
+                if (navigateToCallback(cb)) return;
                 if (typeof window !== 'undefined' && window.history.length > 1) {
                   window.history.back();
                   return;
@@ -1297,10 +1281,7 @@ function PayPageContent() {
           <button
             type="button"
             onClick={() => {
-              if (paramCallback) {
-                window.location.href = paramCallback;
-                return;
-              }
+              if (navigateToCallback(paramCallback)) return;
               if (typeof window !== 'undefined' && window.history.length > 1) {
                 window.history.back();
                 return;
@@ -1362,10 +1343,7 @@ function PayPageContent() {
           <button
             type="button"
             onClick={() => {
-              if (tokenExpiredData?.redirect_url) {
-                window.location.href = tokenExpiredData.redirect_url;
-                return;
-              }
+              if (navigateToCallback(tokenExpiredData?.redirect_url)) return;
               if (typeof window !== 'undefined' && window.history.length > 1) {
                 window.history.back();
                 return;
