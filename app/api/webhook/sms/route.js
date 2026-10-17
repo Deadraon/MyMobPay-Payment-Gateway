@@ -8,7 +8,7 @@ import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { resolveMerchantIdToUuid } from '@/lib/merchantId';
 import { generateOrderId } from '@/lib/orderId';
-import { findMerchantByApiKey } from '@/lib/merchantAuth';
+import { findMerchantByApiKey, hashApiKey } from '@/lib/merchantAuth';
 
 // Constant-time string comparison to prevent timing attacks
 function safeCompare(a, b) {
@@ -33,34 +33,28 @@ export async function POST(request) {
 
     const validSecret = process.env.WEBHOOK_SECRET || CONFIG.webhookSecret;
     const apiKey = body.api_key || request.headers.get('x-api-key') || request.headers.get('X-MyMobPay-API-Key');
-    
+    const publicPlatformKeyHash = hashApiKey(CONFIG.platformApiKey);
+    // Only the private webhook secret grants platform-wide callback authority.
+    const isPlatformReceiver = safeCompare(secret, validSecret) && hashApiKey(secret) !== publicPlatformKeyHash;
+
     let merchant = null;
-    let isAuthorized = false;
+    let authenticatedApiKey;
 
-    // Check if the global secret is provided (timing-safe)
-    if (secret && safeCompare(secret, validSecret)) {
-      isAuthorized = true;
-    }
-
-    // Authenticate merchant using api_key if provided (supports SHA-256 hashed API key)
-    if (apiKey) {
-      const found = await findMerchantByApiKey(apiKey, 'id, subscription_status, subscription_expires_at');
-      if (found) {
-        merchant = found;
-        isAuthorized = true;
+    if (!isPlatformReceiver) {
+      // Accept a private merchant key in either field, retaining only the successful credential.
+      for (const key of [apiKey, secret]) {
+        // The checkout platform key is public, including its live_/test_ variants.
+        if (!key || hashApiKey(key) === publicPlatformKeyHash) continue;
+        const found = await findMerchantByApiKey(key, 'id, subscription_status, subscription_expires_at');
+        if (found) {
+          merchant = found;
+          authenticatedApiKey = key;
+          break;
+        }
       }
     }
 
-    // Fallback: Check if the 'secret' sent is actually a merchant's private API Key
-    if (!merchant && secret && secret !== validSecret) {
-      const found = await findMerchantByApiKey(secret, 'id, subscription_status, subscription_expires_at');
-      if (found) {
-        merchant = found;
-        isAuthorized = true;
-      }
-    }
-
-    if (!isAuthorized) {
+    if (!isPlatformReceiver && !merchant) {
       return NextResponse.json({ error: 'Unauthorized: Invalid secret or API Key' }, { status: 401 });
     }
 
@@ -71,8 +65,7 @@ export async function POST(request) {
               isSubActive = false;
           }
        }
-       const isAdminMerchant = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || merchant.id === 'dd45279e-7a2c-413c-9e24-24d88011b680' || apiKey === CONFIG.platformApiKey || secret === CONFIG.platformApiKey;
-       if (!isSubActive && !isAdminMerchant) {
+       if (!isSubActive) {
          return NextResponse.json({ error: 'Merchant subscription is inactive or expired' }, { status: 403 });
        }
     }
@@ -94,8 +87,6 @@ export async function POST(request) {
 
     const { amount, utr } = parsed;
 
-    const isPlatformReceiver = merchant ? (merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || merchant.id === 'dd45279e-7a2c-413c-9e24-24d88011b680' || apiKey === CONFIG.platformApiKey || secret === CONFIG.platformApiKey) : false;
-
     let matchedOrder = null;
 
     // 1. Prioritize customer-submitted UTR match
@@ -106,7 +97,7 @@ export async function POST(request) {
         .eq('status', 'pending')
         .eq('customer_utr', utr);
 
-      if (merchant && !isPlatformReceiver) {
+      if (!isPlatformReceiver) {
         utrQuery = utrQuery.eq('merchant_id', merchant.id);
       }
 
@@ -120,12 +111,15 @@ export async function POST(request) {
     if (!matchedOrder) {
       const orderMatch = message.match(/\b((?:order_|pay_|mmp_|MMP_)[0-9A-Za-z_]+)\b/i);
       if (orderMatch) {
-        const { data: oByRef } = await supabaseAdmin
+        let refQuery = supabaseAdmin
           .from('orders')
           .select('*')
           .eq('id', orderMatch[1])
-          .eq('status', 'pending')
-          .limit(1);
+          .eq('status', 'pending');
+        if (!isPlatformReceiver) {
+          refQuery = refQuery.eq('merchant_id', merchant.id);
+        }
+        const { data: oByRef } = await refQuery.limit(1);
         if (oByRef && oByRef.length > 0) {
           matchedOrder = oByRef[0];
         }
@@ -139,7 +133,7 @@ export async function POST(request) {
         .select('*')
         .eq('status', 'pending');
         
-      if (merchant && !isPlatformReceiver) {
+      if (!isPlatformReceiver) {
         orderQuery = orderQuery.eq('merchant_id', merchant.id).eq('amount', amount);
       } else {
         const isSubAmount = amount === 499 || amount === 1497 || amount === 998 || amount === 1 || (amount >= 495 && amount <= 505);
@@ -175,7 +169,7 @@ export async function POST(request) {
         .in('status', ['active', 'processing'])
         .eq('amount', amountInPaise);
 
-      if (merchant && !isPlatformReceiver) {
+      if (!isPlatformReceiver) {
         plQuery = plQuery.eq('merchant_id', merchant.id);
       }
 
@@ -192,6 +186,7 @@ export async function POST(request) {
             .from('orders')
             .select('*')
             .eq('id', linkOrderId)
+            .eq('merchant_id', link.merchant_id)
             .maybeSingle();
           if (existingOrd) {
             matchedOrder = existingOrd;
@@ -269,7 +264,7 @@ export async function POST(request) {
           }).select().single();
 
           if (autoOrder) {
-            await checkAndProcessSubscription(autoOrder, apiKey || CONFIG.platformApiKey);
+            await checkAndProcessSubscription(autoOrder, authenticatedApiKey);
             return NextResponse.json({
               success: true,
               code: 'ORDER_VERIFIED',
@@ -323,7 +318,7 @@ export async function POST(request) {
     }
 
     // Call subscription renewal check
-    await checkAndProcessSubscription(updatedOrder, apiKey);
+    await checkAndProcessSubscription(updatedOrder, authenticatedApiKey);
 
     // Trigger outbound webhook safely
     await triggerMerchantWebhook(matchedOrder.id);
