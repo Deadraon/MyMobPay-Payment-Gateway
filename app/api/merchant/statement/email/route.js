@@ -32,7 +32,7 @@ export async function POST(req) {
     // 1. Fetch merchant details
     const { data: merchant, error: fetchErr } = await supabaseAdmin
       .from('merchants')
-      .select('id, business_name, email, upi_id, settlement_vpa')
+      .select('id, business_name, upi_id')
       .eq('id', actualMerchantId)
       .single();
 
@@ -41,7 +41,7 @@ export async function POST(req) {
     }
 
     // 2. Resolve recipient email
-    let recipientEmail = toEmail || merchant.email || '';
+    let recipientEmail = toEmail || '';
     if (!recipientEmail) {
       try {
         const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(actualMerchantId);

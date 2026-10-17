@@ -131,8 +131,53 @@ async function testBrevo() {
   }
 }
 
+async function testResend() {
+  console.log('👉 [3/3] Testing Resend REST API (Primary for Merchant Welcome & OTPs)...');
+  const resendApiKey = process.env.RESEND_API_KEY || (process.env.SMTP_PASS && process.env.SMTP_PASS.startsWith('re_') ? process.env.SMTP_PASS : null);
+
+  if (!resendApiKey) {
+    console.log('⚠️  Resend is NOT yet configured in .env.local (RESEND_API_KEY / SMTP_PASS missing).\n');
+    return false;
+  }
+
+  try {
+    console.log('   Connecting to https://api.resend.com/emails...');
+    const from = process.env.AUTH_FROM || 'MyMobPay Security <auth@mymob.tech>';
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify({
+        from,
+        to: [targetEmail],
+        subject: '⚡ MyMobPay System Test [Resend API]',
+        html: `
+          <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px;">
+            <h2 style="color: #0f172a; margin-bottom: 8px;">MyMobPay Resend API Rail</h2>
+            <p style="color: #64748b; font-size: 14px;">This test verifies that the Resend API is active and delivering high-speed OTP and merchant onboarding emails.</p>
+          </div>
+        `
+      }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(`Resend API error: ${errData.message || res.statusText || res.status}`);
+    }
+
+    const data = await res.json();
+    console.log(`   🎉 Delivered via Resend! Message ID: ${data.id}\n`);
+    return true;
+  } catch (err) {
+    console.error(`   ❌ Resend Error: ${err.message}\n`);
+    return false;
+  }
+}
+
 async function testApplicationMailer() {
-  console.log('👉 [3/3] Testing Full Application Mailer Routing (lib/mailer.js)...');
+  console.log('👉 [4/5] Testing Full Application Mailer Routing (lib/mailer.js)...');
   try {
     const { sendSubscriptionInvoiceEmail, sendMonthlyStatementEmail, sendOtpEmail } = await import('../lib/mailer.js');
     
@@ -180,7 +225,7 @@ async function testApplicationMailer() {
 }
 
 async function testCircuitBreaker() {
-  console.log('👉 [4/4] Testing Dynamic Limit Circuit Breaker & Auto-Recovery...');
+  console.log('👉 [5/5] Testing Dynamic Limit Circuit Breaker & Auto-Recovery...');
   const { tripProviderLimit, isProviderCircuitTripped, resetProviderLimit, getProviderCircuitStatus } = await import('../lib/mailer.js');
 
   console.log('   Simulating SendPulse hitting daily sending quota limit...');
@@ -200,6 +245,7 @@ async function testCircuitBreaker() {
 async function run() {
   await testSendPulse();
   await testBrevo();
+  await testResend();
   await testApplicationMailer();
   await testCircuitBreaker();
 }
