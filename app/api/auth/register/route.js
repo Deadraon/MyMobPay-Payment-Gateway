@@ -16,10 +16,24 @@ export async function POST(req) {
   }
 
   try {
+    // Validate the requester's session before using administrative privileges.
+    const accessToken = req.headers.get('authorization')?.match(/^Bearer\s+(\S+)$/i)?.[1];
+    if (!accessToken) {
+      return NextResponse.json({ error: 'Please verify your email and sign in before registering.' }, { status: 401 });
+    }
+
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(accessToken);
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Your session is invalid or expired. Please verify your email again.' }, { status: 401 });
+    }
+    if (!user.email || !user.email_confirmed_at) {
+      return NextResponse.json({ error: 'Please verify your email before registering.' }, { status: 403 });
+    }
+
     const { email, password, businessName, upiId, phone } = await req.json();
 
     // ── 1. Validate Email & Password format ─────────────────────────
-    if (!email || !email.includes('@')) {
+    if (typeof email !== 'string' || !email.includes('@')) {
       return NextResponse.json({ error: 'Please provide a valid email address.' }, { status: 400 });
     }
 
@@ -36,6 +50,10 @@ export async function POST(req) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    if (cleanEmail !== user.email.trim().toLowerCase()) {
+      return NextResponse.json({ error: 'Registration email must match your verified account.' }, { status: 403 });
+    }
+    const userId = user.id;
     const finalBusinessName = (businessName && businessName.trim()) ? businessName.trim() : (cleanEmail.split('@')[0] || 'My Merchant Store');
     const finalUpiId = (upiId && upiId.includes('@')) ? upiId.trim() : `${cleanEmail.split('@')[0]}@upi`;
 
@@ -62,34 +80,11 @@ export async function POST(req) {
       }, { status: 400 });
     }
 
-    // ── 4. Enforce Email OTP Verification ───────────────────────────
-    const { data: userListData, error: listError } = await supabaseAdmin.auth.admin.listUsers({
-      page: 1,
-      perPage: 1000,
-    });
-
-    if (listError) {
-      console.error('[REGISTER API] listUsers error:', listError);
-      return NextResponse.json({
-        error: 'Authentication service temporarily busy. Please try again in a moment.'
-      }, { status: 500 });
-    }
-
-    const existingUser = userListData?.users?.find(
-      u => u.email?.toLowerCase() === cleanEmail
-    ) || null;
-
-    if (!existingUser || !existingUser.email_confirmed_at) {
-      return NextResponse.json({
-        error: `Email address (${cleanEmail}) has not been verified via OTP. Please click "Verify Email" to receive and confirm your 6-digit verification code before registering.`
-      }, { status: 400 });
-    }
-
     // ── 5. Check if user is already a completed merchant ────────────
     const { data: existingMerchant } = await supabaseAdmin
       .from('merchants')
       .select('id, business_name, upi_id')
-      .eq('id', existingUser.id)
+      .eq('id', userId)
       .maybeSingle();
 
     if (
@@ -110,7 +105,7 @@ export async function POST(req) {
       .from('merchants')
       .select('id')
       .or(`phone_number.eq.${cleanPhone},phone_number.eq.+91${cleanPhone},phone_number.eq.91${cleanPhone}`)
-      .neq('id', existingUser.id)
+      .neq('id', userId)
       .limit(1)
       .maybeSingle();
 
@@ -127,7 +122,7 @@ export async function POST(req) {
       .select('id')
       .ilike('upi_id', finalUpiId)
       .neq('upi_id', 'pending@upi')
-      .neq('id', existingUser.id)
+      .neq('id', userId)
       .limit(1)
       .maybeSingle();
 
@@ -139,12 +134,10 @@ export async function POST(req) {
     }
 
     // ── 6. Update user's credentials and verified metadata ──────────
-    const userId = existingUser.id;
     const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(userId, {
       password: password,
-      email_confirm: true,
       user_metadata: {
-        ...(existingUser.user_metadata || {}),
+        ...(user.user_metadata || {}),
         business_name: finalBusinessName,
         upi_id: finalUpiId,
         phone: cleanPhone,
