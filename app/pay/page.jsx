@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
 import { formatRefId, generateOrderId } from '@/lib/orderId';
+import { getPaymentReturnUrl } from '@/lib/paymentReturnUrl';
 
 const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutView'), {
   ssr: false,
@@ -365,13 +366,10 @@ function PayPageContent() {
       if (!/^https?:\/\//i.test(resolved) && !resolved.startsWith('/')) {
         resolved = `https://${resolved}`;
       }
-      try {
-        const url = new URL(resolved, window.location.origin);
+      const url = getPaymentReturnUrl(resolved, window.location.origin);
+      if (url) {
         url.searchParams.set('status', 'cancelled');
         window.location.href = url.toString();
-        return;
-      } catch {
-        window.location.href = cb;
         return;
       }
     }
@@ -1222,8 +1220,9 @@ function PayPageContent() {
               type="button"
               onClick={() => {
                 const cb = paidOrderData?.callback_url || paramCallback;
-                if (cb) {
-                  window.location.href = cb;
+                const returnUrl = getPaymentReturnUrl(cb, window.location.href);
+                if (returnUrl) {
+                  window.location.href = returnUrl.href;
                   return;
                 }
                 if (typeof window !== 'undefined' && window.history.length > 1) {
@@ -1297,8 +1296,9 @@ function PayPageContent() {
           <button
             type="button"
             onClick={() => {
-              if (paramCallback) {
-                window.location.href = paramCallback;
+              const returnUrl = getPaymentReturnUrl(paramCallback, window.location.href);
+              if (returnUrl) {
+                window.location.href = returnUrl.href;
                 return;
               }
               if (typeof window !== 'undefined' && window.history.length > 1) {
@@ -1362,8 +1362,9 @@ function PayPageContent() {
           <button
             type="button"
             onClick={() => {
-              if (tokenExpiredData?.redirect_url) {
-                window.location.href = tokenExpiredData.redirect_url;
+              const returnUrl = getPaymentReturnUrl(tokenExpiredData?.redirect_url, window.location.href);
+              if (returnUrl) {
+                window.location.href = returnUrl.href;
                 return;
               }
               if (typeof window !== 'undefined' && window.history.length > 1) {
