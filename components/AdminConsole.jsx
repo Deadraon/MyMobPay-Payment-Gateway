@@ -2769,14 +2769,14 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
                   <div className="space-y-1.5">
                     <div>
                       <p className="text-xs font-bold text-slate-900">Google OAuth Admin Email(s)</p>
-                      <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Authorizes specific Google accounts or prefixes (separated by commas) for console access</p>
+                      <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Authorizes complete Google account email addresses (separated by commas) for console access</p>
                     </div>
                     <div className="flex gap-2">
                       <div className="relative flex-grow">
                         <Mail className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
                         <input
                           type="text"
-                          placeholder="e.g. chauhankuna, deadraon@"
+                          placeholder="e.g. admin@example.com, owner@example.org"
                           value={adminEmail}
                           onChange={(e) => setAdminEmail(e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
