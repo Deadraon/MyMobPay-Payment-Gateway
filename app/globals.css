@@ -205,18 +205,62 @@ body {
   100% { transform: translateY(135px); opacity: 0; }
 }
 
-/* ─── Razorpay / Top Fintech Success Checkmark Animations ─── */
+/* ─── Razorpay / Top Fintech Extended Cinematic Success Animations ─── */
+
+/* 1. Orbit Pre-verification Radar Trace (0.0s – 0.85s) */
+@keyframes successOrbitDraw {
+  0% {
+    stroke-dashoffset: 276;
+    transform: rotate(-90deg);
+    opacity: 0.3;
+  }
+  20% {
+    opacity: 1;
+  }
+  85% {
+    stroke-dashoffset: 0;
+    transform: rotate(270deg);
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    transform: rotate(270deg) scale(1.08);
+    opacity: 0;
+  }
+}
+
+@keyframes successOrbitFade {
+  0% {
+    opacity: 1;
+    transform: scale(0.94);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.18);
+  }
+}
+
+/* 2. Main Badge Spring Pop Entrance (0.62s – 1.4s) */
 @keyframes successBadgePop {
   0% {
     transform: scale(0);
     opacity: 0;
   }
-  50% {
-    transform: scale(1.15);
+  35% {
     opacity: 1;
   }
-  75% {
-    transform: scale(0.96);
+  55% {
+    transform: scale(1.16);
+  }
+  72% {
+    transform: scale(0.94);
+  }
+  86% {
+    transform: scale(1.03);
   }
   100% {
     transform: scale(1);
@@ -224,55 +268,112 @@ body {
   }
 }
 
+/* 3. SVG Checkmark Draw & Spring Apex (0.92s – 1.6s) */
 @keyframes successCheckDraw {
   0% {
-    stroke-dashoffset: 42;
+    stroke-dashoffset: 52;
     opacity: 0;
+    transform: scale(0.92);
   }
   20% {
     opacity: 1;
+  }
+  80% {
+    stroke-dashoffset: 0;
+    transform: scale(1.06);
   }
   100% {
     stroke-dashoffset: 0;
     opacity: 1;
+    transform: scale(1);
   }
 }
 
+/* 4. Concentric Shockwave Ripples (3 waves, 0.7s – 2.4s) */
 @keyframes successRippleWave {
   0% {
-    transform: scale(0.9);
-    opacity: 0.8;
+    transform: scale(0.85);
+    opacity: 0.85;
+  }
+  40% {
+    opacity: 0.5;
   }
   100% {
-    transform: scale(2.05);
+    transform: scale(2.4);
     opacity: 0;
   }
 }
 
+/* 5. Confetti Spark & Micro-Particle Burst (1.25s – 2.3s) */
 @keyframes successParticleBurst {
   0% {
-    transform: translate(0, 0) scale(1);
+    transform: translate(0, 0) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  25% {
     opacity: 1;
+    transform: translate(calc(var(--pt-x, 0px) * 0.45), calc(var(--pt-y, 0px) * 0.45)) scale(1.25) rotate(45deg);
+  }
+  70% {
+    opacity: 0.9;
+    transform: translate(var(--pt-x, 0px), var(--pt-y, 0px)) scale(1) rotate(90deg);
   }
   100% {
-    transform: translate(var(--pt-x, 0px), var(--pt-y, 0px)) scale(0);
+    transform: translate(calc(var(--pt-x, 0px) * 1.25), calc(var(--pt-y, 0px) * 1.25 + 6px)) scale(0) rotate(160deg);
     opacity: 0;
   }
 }
 
+/* 6. Diagonal High-Gloss Sheen Sweep (1.38s – 2.4s) */
 @keyframes successLightSweep {
   0% {
-    transform: translateX(-160%) rotate(25deg);
+    transform: translateX(-180%) rotate(28deg);
     opacity: 0;
   }
-  20% {
-    opacity: 0.6;
+  25% {
+    opacity: 0.75;
   }
   100% {
-    transform: translateX(200%) rotate(25deg);
+    transform: translateX(230%) rotate(28deg);
     opacity: 0;
   }
 }
+
+/* 7. Living Ambient Glow Pulse (Continuous after 2.0s) */
+@keyframes successAmbientGlow {
+  0%, 100% {
+    box-shadow: 0 16px 36px -6px rgba(16, 185, 129, 0.45), 0 0 18px rgba(16, 185, 129, 0.22);
+  }
+  50% {
+    box-shadow: 0 22px 48px -4px rgba(16, 185, 129, 0.65), 0 0 30px rgba(52, 211, 153, 0.4);
+  }
+}
+
+@keyframes successAmbientGlowCod {
+  0%, 100% {
+    box-shadow: 0 16px 36px -6px rgba(37, 99, 235, 0.45), 0 0 18px rgba(37, 99, 235, 0.22);
+  }
+  50% {
+    box-shadow: 0 22px 48px -4px rgba(37, 99, 235, 0.65), 0 0 30px rgba(96, 165, 250, 0.4);
+  }
+}
+
+/* 8. Staggered Content Cascade for Surrounding Receipt Elements */
+@keyframes successCascadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-cascade-1 { animation: successCascadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both; }
+.animate-cascade-2 { animation: successCascadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.05s both; }
+.animate-cascade-3 { animation: successCascadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 1.35s both; }
+.animate-cascade-4 { animation: successCascadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 1.65s both; }
 
 /* ─── Animation Utility Classes ─────────────────────────── */
 .animate-fade-up      { animation: fadeUp      0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

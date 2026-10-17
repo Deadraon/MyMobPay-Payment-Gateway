@@ -2715,7 +2715,7 @@ function PayPageContent() {
               <div className="panel" style={{ padding: '32px 20px', textAlign: 'center', borderRadius: 24, boxShadow: '0 20px 40px -15px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', background: '#ffffff' }}>
                 
                 {/* Floating Trust Pill */}
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#ecfdf5', color: '#065f46', borderRadius: 9999, padding: '6px 14px', marginBottom: 16, border: '1px solid #a7f3d0', fontSize: 11, fontWeight: 700 }}>
+                <div className="animate-cascade-1" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#ecfdf5', color: '#065f46', borderRadius: 9999, padding: '6px 14px', marginBottom: 16, border: '1px solid #a7f3d0', fontSize: 11, fontWeight: 700 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
                   <span>Payment Verified • mymob.tech</span>
                 </div>
@@ -2725,14 +2725,16 @@ function PayPageContent() {
                   <PaymentSuccessTick size="lg" sound={true} isCod={selectedMethod === 'cod'} />
                 </div>
 
-                <h2 style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', margin: '8px 0 4px', letterSpacing: '-0.02em' }}>
-                  Payment Successful!
-                </h2>
-                <p style={{ fontSize: 14, color: '#64748b', margin: '0 0 16px', fontWeight: 500 }}>
-                  {fmtInr(displayAmt)} paid to <strong>{bizName}</strong>
-                </p>
+                <div className="animate-cascade-2">
+                  <h2 style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', margin: '8px 0 4px', letterSpacing: '-0.02em' }}>
+                    Payment Successful!
+                  </h2>
+                  <p style={{ fontSize: 14, color: '#64748b', margin: '0 0 16px', fontWeight: 500 }}>
+                    {fmtInr(displayAmt)} paid to <strong>{bizName}</strong>
+                  </p>
+                </div>
 
-                <div className="rcp" style={{ textAlign: 'left', margin: '16px 0', background: '#f8fafc', padding: '16px', borderRadius: 16, border: '1px solid #e2e8f0' }}>
+                <div className="rcp animate-cascade-3" style={{ textAlign: 'left', margin: '16px 0', background: '#f8fafc', padding: '16px', borderRadius: 16, border: '1px solid #e2e8f0' }}>
                   <div><span>Order Reference</span><span style={{ fontFamily: 'monospace', fontWeight: 700 }} title={activeId}>{formatRefId(activeId) || 'DEMO'}</span></div>
                   <div><span>Amount Paid</span><span style={{ color: '#059669', fontWeight: 800 }}>{fmtInr(displayAmt)}</span></div>
                   <div><span>Payment Method</span><span>{selectedMethod === 'card' ? 'Credit / Debit Card' : selectedMethod === 'bank' ? 'Direct Bank Transfer' : selectedMethod === 'crypto' ? 'Crypto USDT (TRC20)' : selectedMethod === 'cod' ? 'Cash on Delivery (COD)' : 'UPI Instant Settlement'}</span></div>
@@ -2742,7 +2744,7 @@ function PayPageContent() {
 
                 <button
                   type="button"
-                  className="pri wide"
+                  className="pri wide animate-cascade-4"
                   style={{ background: 'linear-gradient(135deg, #059669, #0d9488)', border: 'none', padding: '14px', borderRadius: 14, fontWeight: 700, fontSize: 15, color: '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                   onClick={handleReturn}
                 >

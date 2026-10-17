@@ -394,23 +394,25 @@ export default function ConsoleActivationPaywall({
             <PaymentSuccessTick size="lg" sound={true} />
 
             {/* Title & Message */}
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">
-              {language === 'hi' ? 'भुगतान सफल रहा!' : 'Payment Successful!'}
-            </h2>
-            <p className="text-sm text-slate-600 font-medium max-w-md mx-auto mt-2 leading-relaxed">
-              {language === 'hi' 
-                ? 'आपका एक्टिवेशन भुगतान बैंक द्वारा सत्यापित कर दिया गया है। आपका मर्चेंट कंसोल अब सक्रिय हो चुका है।' 
-                : 'Your activation payment has been verified by the bank. Your merchant console and API gateway are now fully unlocked.'}
-            </p>
+            <div className="animate-cascade-2">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">
+                {language === 'hi' ? 'भुगतान सफल रहा!' : 'Payment Successful!'}
+              </h2>
+              <p className="text-sm text-slate-600 font-medium max-w-md mx-auto mt-2 leading-relaxed">
+                {language === 'hi' 
+                  ? 'आपका एक्टिवेशन भुगतान बैंक द्वारा सत्यापित कर दिया गया है। आपका मर्चेंट कंसोल अब सक्रिय हो चुका है।' 
+                  : 'Your activation payment has been verified by the bank. Your merchant console and API gateway are now fully unlocked.'}
+              </p>
 
-            {/* Green confirmation pill */}
-            <div className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Instant Bank Confirmation Verified</span>
+              {/* Green confirmation pill */}
+              <div className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold">
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Instant Bank Confirmation Verified</span>
+              </div>
             </div>
 
             {/* Receipt Summary Card */}
-            <div className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl p-5 mt-5 text-left space-y-3">
+            <div className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl p-5 mt-5 text-left space-y-3 animate-cascade-3">
               <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   {language === 'hi' ? 'सक्रिय प्लान' : 'Plan Activated'}
@@ -470,7 +472,7 @@ export default function ConsoleActivationPaywall({
             </div>
 
             {/* Countdown Progress Bar */}
-            <div className="w-full mt-6 space-y-1.5">
+            <div className="w-full mt-6 space-y-1.5 animate-cascade-4">
               <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
                 <span>
                   {language === 'hi' 
@@ -492,7 +494,7 @@ export default function ConsoleActivationPaywall({
               onClick={() => {
                 if (onActivationComplete) onActivationComplete();
               }}
-              className="w-full mt-5 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer"
+              className="w-full mt-5 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer animate-cascade-4"
             >
               <span>{language === 'hi' ? 'मर्चेंट डैशबोर्ड पर जाएं' : 'Continue to Merchant Dashboard'}</span>
               <ArrowRight className="w-4 h-4" />

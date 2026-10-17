@@ -340,7 +340,7 @@ export default function StatusPage() {
                 <div className="flex justify-center -my-1">
                   <PaymentSuccessTick size="lg" sound={true} isCod={isCodOrder} />
                 </div>
-                <div>
+                <div className="animate-cascade-2">
                   <h2 className="text-2xl font-black text-slate-900">
                     {isCodOrder ? 'Order Confirmed!' : 'Payment Confirmed!'}
                   </h2>
@@ -351,7 +351,7 @@ export default function StatusPage() {
                   </p>
                 </div>
               </div>
-              <div className="mx-5 mb-4 rounded-xl bg-slate-50 border border-slate-100 px-4 py-1">
+              <div className="mx-5 mb-4 rounded-xl bg-slate-50 border border-slate-100 px-4 py-1 animate-cascade-3">
                 <Row label="Order ID" value={orderId} displayValue={formatRefId(orderId)} mono />
                 <Row label="Amount" value={`₹${parseFloat(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`} green />
                 <Row label="Method" value={isCodOrder ? 'Cash on Delivery (Physical)' : (order.method || (order?.utr?.length > 30 ? 'Crypto' : 'UPI'))} />
@@ -362,7 +362,7 @@ export default function StatusPage() {
                 {order.note && <Row label="Details" value={order.note} />}
                 {order.customer_name && <Row label="Customer" value={order.customer_name} />}
               </div>
-              <div className="px-5 pb-6 space-y-2.5">
+              <div className="px-5 pb-6 space-y-2.5 animate-cascade-4">
                 <button 
                   type="button"
                   onClick={handleDone} 

@@ -503,7 +503,7 @@ export default function DesktopCheckoutView({
       <div className="w-full max-w-[620px] mx-auto my-8 bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200/90 text-center animate-fade-in font-sans">
         
         {/* Floating Trust Pill */}
-        <div className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-800 rounded-full px-4 py-1.5 mb-5 border border-emerald-200 text-xs font-semibold">
+        <div className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-800 rounded-full px-4 py-1.5 mb-5 border border-emerald-200 text-xs font-semibold animate-cascade-1">
           <IconVerifiedUser className="w-4 h-4 text-emerald-600" />
           <span>Payment Verified • <strong>mymob.tech</strong></span>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -514,21 +514,23 @@ export default function DesktopCheckoutView({
         <PaymentSuccessTick size="lg" sound={true} />
 
         {/* Headline & Subtitle */}
-        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">
-          Payment Successful!
-        </h2>
-        <p className="text-sm text-slate-600 font-medium max-w-md mx-auto mt-2 leading-relaxed">
-          ₹{formattedAmount} successfully paid to <strong>{safeBizName}</strong>. Your transaction has been verified by the bank.
-        </p>
+        <div className="animate-cascade-2">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">
+            Payment Successful!
+          </h2>
+          <p className="text-sm text-slate-600 font-medium max-w-md mx-auto mt-2 leading-relaxed">
+            ₹{formattedAmount} successfully paid to <strong>{safeBizName}</strong>. Your transaction has been verified by the bank.
+          </p>
 
-        {/* Green Verified Badge */}
-        <div className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold">
-          <IconCheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Instant Bank Settlement Confirmed</span>
+          {/* Green Verified Badge */}
+          <div className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold">
+            <IconCheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Instant Bank Settlement Confirmed</span>
+          </div>
         </div>
 
         {/* Receipt Details Card */}
-        <div className="w-full bg-[#f8fafc] border border-slate-200/90 rounded-2xl p-5 mt-6 text-left space-y-3">
+        <div className="w-full bg-[#f8fafc] border border-slate-200/90 rounded-2xl p-5 mt-6 text-left space-y-3 animate-cascade-3">
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount Paid</span>
             <div className="flex items-center gap-2">
@@ -566,7 +568,7 @@ export default function DesktopCheckoutView({
         </div>
 
         {/* Countdown Progress Bar */}
-        <div className="w-full mt-6 space-y-1.5">
+        <div className="w-full mt-6 space-y-1.5 animate-cascade-4">
           <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
             <span>Redirecting back in {successCountdown}s...</span>
             <span className="font-bold text-emerald-600">{Math.round(((5 - successCountdown) / 5) * 100)}%</span>
@@ -583,7 +585,7 @@ export default function DesktopCheckoutView({
         <button
           type="button"
           onClick={handleReturn}
-          className="focus-ring w-full mt-5 py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5"
+          className="focus-ring w-full mt-5 py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5 animate-cascade-4"
         >
           <span>Return to {safeBizName}</span>
           <IconArrowForward className="w-4 h-4" />
