@@ -277,43 +277,33 @@ export async function GET(request) {
     if (res1.data) {
       order = res1.data;
     } else {
-      // Case-insensitive fallback lookup by ID
+      // Public receipt identifiers must match literally, never as search patterns.
       const res2 = await supabaseAdmin
         .from('orders')
         .select('id, amount, status, note, created_at, verified_at, mode, utr, merchant_id, project, callback_url, external_ref')
-        .ilike('id', cleanId)
+        .eq('external_ref', cleanId)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (res2.data) {
         order = res2.data;
-      } else {
-        // Fallback lookup by external_ref (e.g. pl_h5x982jz)
-        const res3 = await supabaseAdmin
-          .from('orders')
-          .select('id, amount, status, note, created_at, verified_at, mode, utr, merchant_id, project, callback_url, external_ref')
-          .ilike('external_ref', cleanId)
-          .order('created_at', { ascending: false })
-          .limit(1)
+      } else if (cleanId.length >= 24) {
+        // Fallback lookup: if cleanId is a payment link token
+        const { data: pl } = await supabaseAdmin
+          .from('payment_links')
+          .select('order_id')
+          .eq('token', cleanId)
           .maybeSingle();
-        if (res3.data) {
-          order = res3.data;
-        } else if (cleanId.length >= 24) {
-          // Fallback lookup: if cleanId is a payment link token
-          const { data: pl } = await supabaseAdmin
-            .from('payment_links')
-            .select('order_id')
-            .eq('token', cleanId)
-            .maybeSingle();
 
-          if (pl?.order_id) {
-            const { data: plOrder } = await supabaseAdmin
-              .from('orders')
-              .select('id, amount, status, note, created_at, verified_at, mode, utr, merchant_id, project, callback_url, external_ref')
-              .eq('id', pl.order_id)
-              .maybeSingle();
-            if (plOrder) {
-              order = plOrder;
-            }
+        if (pl?.order_id) {
+          const { data: plOrder } = await supabaseAdmin
+            .from('orders')
+            .select('id, amount, status, note, created_at, verified_at, mode, utr, merchant_id, project, callback_url, external_ref')
+            .eq('id', pl.order_id)
+            .maybeSingle();
+          if (plOrder) {
+            order = plOrder;
           }
         }
       }
