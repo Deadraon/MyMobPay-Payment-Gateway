@@ -7,6 +7,8 @@ import {
   Key,
   Shield,
   FileText,
+  Mail,
+  Loader2,
   Sliders,
   CheckCircle,
   Copy,
@@ -179,6 +181,36 @@ export default function SettingsRedesign({
       setActiveCategory(initialCategory);
     }
   }, [initialCategory]);
+
+  // ── Monthly Statement Email State ─────────────────────────────
+  const [emailingStatement, setEmailingStatement] = useState(false);
+
+  const handleEmailMonthlyStatement = async () => {
+    if (!profile?.id) {
+      alert('Merchant profile not found.');
+      return;
+    }
+    setEmailingStatement(true);
+    try {
+      const res = await fetch('/api/merchant/statement/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          merchantId: profile.id,
+          month: new Date().getMonth() + 1,
+          year: new Date().getFullYear(),
+          toEmail: profile.email || '',
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to email monthly statement');
+      alert(`✅ Monthly statement successfully dispatched to ${data.recipientEmail || 'your email'} via SendPulse!`);
+    } catch (err) {
+      alert(`❌ Failed to dispatch statement: ${err.message}`);
+    } finally {
+      setEmailingStatement(false);
+    }
+  };
 
   // ── Multiple Bank Accounts State ──────────────────────────────
   const [bankAccounts, setBankAccounts] = useState([]);
@@ -1982,17 +2014,29 @@ export default function SettingsRedesign({
                   <div>
                     <h4 className="text-xs font-bold text-slate-800">Monthly Settlement Advice Statement</h4>
                     <p className="text-[11px] text-slate-500 mt-0.5">
-                      Download reconciled IMPS settlement summary with GST input tax credit breakdowns.
+                      Reconciled IMPS settlement summary with GST input tax credit breakdowns dispatched via SendPulse.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => openTaxInvoiceWindow({ plan: 'Monthly Enterprise IMPS Settlement Advice & Reconciliation', amount: 499 }, profile)}
-                    className="h-9 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-2xs shrink-0 cursor-pointer"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Download PDF</span>
-                  </button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      disabled={emailingStatement}
+                      onClick={handleEmailMonthlyStatement}
+                      className="h-9 px-3.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer disabled:opacity-50"
+                      title="Dispatch monthly account statement to registered email via SendPulse"
+                    >
+                      {emailingStatement ? <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" /> : <Mail className="w-3.5 h-3.5 text-blue-600" />}
+                      <span>{emailingStatement ? 'Sending...' : 'Email via SendPulse'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openTaxInvoiceWindow({ plan: 'Monthly Enterprise IMPS Settlement Advice & Reconciliation', amount: 499 }, profile)}
+                      className="h-9 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Download PDF</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

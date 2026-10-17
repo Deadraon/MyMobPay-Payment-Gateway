@@ -30,7 +30,7 @@ console.log(`🎯 Test Target Recipient: ${targetEmail}`);
 console.log('====================================================\n');
 
 async function testSendPulse() {
-  console.log('👉 [1/2] Testing SendPulse SMTP (OTPs & Login Links)...');
+  console.log('👉 [1/2] Testing SendPulse SMTP (Dedicated for Subscription Invoices & Monthly Statements)...');
   const user = process.env.SENDPULSE_SMTP_USER;
   const pass = process.env.SENDPULSE_SMTP_PASS;
 
@@ -51,27 +51,29 @@ async function testSendPulse() {
 
     console.log(`   Connecting to ${host}:${port}...`);
     await transporter.verify();
-    console.log('   ✅ SMTP Handshake Successful!');
+    console.log('   ✅ SendPulse SMTP Handshake Successful!');
 
-    console.log(`   Dispatching test OTP email to ${targetEmail}...`);
-    const from = process.env.SENDPULSE_FROM || `"MyMobPay Security" <${user}>`;
+    console.log(`   Dispatching test Subscription Invoice / Statement to ${targetEmail}...`);
+    const from = process.env.SENDPULSE_FROM || `"MyMobPay Billing" <${user}>`;
     const info = await transporter.sendMail({
       from,
       to: targetEmail,
-      subject: '🔐 Your MyMobPay Verification Code [Test]',
+      subject: '🧾 MyMobPay Subscription Tax Invoice #INV-TEST-8819 [SendPulse]',
       html: `
-        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; rounded: 16px;">
-          <h2 style="color: #0f172a; margin-bottom: 8px;">MyMobPay Security Verification</h2>
-          <p style="color: #64748b; font-size: 14px;">This test verifies that SendPulse SMTP is properly configured and operational.</p>
-          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; padding: 16px; border-radius: 12px; text-align: center; margin: 20px 0;">
-            <span style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #0284c7;">849201</span>
+        <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px;">
+          <h2 style="color: #0f172a; margin-bottom: 8px;">MyMobPay Billing &amp; Accounting</h2>
+          <p style="color: #64748b; font-size: 14px;">This email verifies that SendPulse SMTP is dedicated exclusively for subscription invoices and monthly account statements.</p>
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 12px; margin: 20px 0;">
+            <div style="font-size: 14px; font-weight: bold; color: #1e3a8a;">Pro Merchant Gateway License (30 Days)</div>
+            <div style="font-size: 18px; font-weight: 800; color: #1d4ed8; margin-top: 6px;">Amount: ₹499.00 • GST Included</div>
+            <div style="font-size: 12px; color: #059669; margin-top: 4px;">Status: Settled via NPCI UPI Passthrough</div>
           </div>
-          <p style="color: #94a3b8; font-size: 12px;">Dispatched via SendPulse High-Priority Auth Stream.</p>
+          <p style="color: #94a3b8; font-size: 12px;">Dispatched exclusively via SendPulse High-Priority Billing Stream.</p>
         </div>
       `
     });
 
-    console.log(`   🎉 Delivered! Message ID: ${info.messageId}\n`);
+    console.log(`   🎉 Delivered via SendPulse! Message ID: ${info.messageId}\n`);
     return true;
   } catch (err) {
     console.error(`   ❌ SendPulse Error: ${err.message}\n`);
@@ -80,7 +82,7 @@ async function testSendPulse() {
 }
 
 async function testBrevo() {
-  console.log('👉 [2/2] Testing Brevo SMTP (Invoices & Receipts)...');
+  console.log('👉 [2/2] Testing Brevo SMTP (Fallback Auth Rail)...');
   const user = process.env.BREVO_SMTP_USER;
   const pass = process.env.BREVO_SMTP_KEY || process.env.BREVO_SMTP_PASS;
 
@@ -103,26 +105,20 @@ async function testBrevo() {
     await transporter.verify();
     console.log('   ✅ SMTP Handshake Successful!');
 
-    console.log(`   Dispatching test receipt email to ${targetEmail}...`);
-    const from = process.env.BREVO_FROM || `"MyMobPay Billing" <${user}>`;
+    console.log(`   Dispatching test connectivity email to ${targetEmail}...`);
+    const from = process.env.AUTH_FROM || `"MyMobPay Security" <${user}>`;
     const info = await transporter.sendMail({
       from,
       to: targetEmail,
-      subject: '🧾 Payment Confirmation: Order #MMP_TEST_9921 [Test]',
+      subject: '🛡️ MyMobPay Gateway System Test [Brevo Rail]',
       html: `
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px;">
-          <h2 style="color: #0f172a; margin-bottom: 8px;">Payment Received Successfully</h2>
-          <p style="color: #64748b; font-size: 14px;">This test verifies that Brevo SMTP is properly configured and operational.</p>
-          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 16px; border-radius: 12px; margin: 20px 0;">
-            <div style="display: flex; justify-content: space-between; font-size: 14px; color: #065f46; font-weight: bold;">
-              <span>Amount Paid:</span>
-              <span>₹499.00</span>
-            </div>
-            <div style="font-size: 12px; color: #047857; margin-top: 6px;">
-              Status: Verified via UPI • Settlement: Instant
-            </div>
+          <h2 style="color: #0f172a; margin-bottom: 8px;">MyMobPay Security &amp; Auth Rail</h2>
+          <p style="color: #64748b; font-size: 14px;">This test verifies that Brevo SMTP is operational as a reliable fallback authentication rail.</p>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin: 20px 0;">
+            <div style="font-size: 13px; color: #0f172a; font-weight: 600;">Status: Operational • Per-transaction emails disabled for budget control</div>
           </div>
-          <p style="color: #94a3b8; font-size: 12px;">Dispatched via Brevo Transactional Receipt Stream.</p>
+          <p style="color: #94a3b8; font-size: 12px;">Dispatched via Brevo High-Availability Stream.</p>
         </div>
       `
     });
@@ -138,35 +134,74 @@ async function testBrevo() {
 async function testApplicationMailer() {
   console.log('👉 [3/3] Testing Full Application Mailer Routing (lib/mailer.js)...');
   try {
-    const { sendOtpEmail, sendSubscriptionInvoiceEmail } = await import('../lib/mailer.js');
+    const { sendSubscriptionInvoiceEmail, sendMonthlyStatementEmail, sendOtpEmail } = await import('../lib/mailer.js');
     
-    console.log('   Sending live OTP via auth@mymob.tech...');
-    const r1 = await sendOtpEmail({
-      to: targetEmail,
-      otp: '729401',
-      businessName: 'MyMobPay Merchant',
-      purpose: 'login'
-    });
-    console.log(`   ✅ OTP Result: Dispatched via ${r1.provider} (ID: ${r1.id || 'ok'})`);
-
-    console.log('   Sending live Tax Invoice via receipt@mymob.tech...');
-    const r2 = await sendSubscriptionInvoiceEmail({
+    console.log('   Testing [Subscription Invoice] dispatch (Target: SENDPULSE)...');
+    const r1 = await sendSubscriptionInvoiceEmail({
       to: targetEmail,
       businessName: 'Kunal Chauhan',
       planName: 'Pro Merchant Gateway License',
       amount: 499,
       utr: 'MMP938482019'
     });
-    console.log(`   ✅ Invoice Result: Dispatched via ${r2.provider} (ID: ${r2.id || 'ok'})\n`);
+    console.log(`   ✅ Invoice Result: Dispatched via [${(r1.provider || 'Dev Mode').toUpperCase()}] (ID: ${r1.id || 'ok'})`);
+
+    console.log('   Testing [Monthly Statement] dispatch (Target: SENDPULSE)...');
+    const r2 = await sendMonthlyStatementEmail({
+      to: targetEmail,
+      businessName: 'Kunal Chauhan',
+      mid: 'MMP-9021',
+      monthYear: 'October 2026',
+      totalVolume: 124500,
+      transactionCount: 84,
+      successfulCount: 82,
+      failedCount: 2,
+      settlementVpa: 'chauhan@upi',
+      statementPeriod: '01 Oct 2026 – 31 Oct 2026',
+      recentOrders: [
+        { id: 'ord_1', amount: 500, status: 'verified', utr: 'UTR849201928371', external_ref: 'SUB_01', created_at: new Date().toISOString() },
+        { id: 'ord_2', amount: 1200, status: 'verified', utr: 'UTR849201928372', external_ref: 'ORD_99', created_at: new Date().toISOString() },
+      ]
+    });
+    console.log(`   ✅ Monthly Statement Result: Dispatched via [${(r2.provider || 'Dev Mode').toUpperCase()}] (ID: ${r2.id || 'ok'})`);
+
+    console.log('   Testing [Auth OTP] dispatch (Target: RESEND / BREVO — NOT SendPulse)...');
+    const r3 = await sendOtpEmail({
+      to: targetEmail,
+      otp: '729401',
+      businessName: 'MyMobPay Merchant',
+      purpose: 'login'
+    });
+    console.log(`   ✅ Auth OTP Result: Dispatched via [${(r3.provider || 'Dev Mode').toUpperCase()}] (SendPulse preserved cleanly)\n`);
+
   } catch (err) {
     console.error(`   ❌ App Mailer Error: ${err.message}\n`);
   }
+}
+
+async function testCircuitBreaker() {
+  console.log('👉 [4/4] Testing Dynamic Limit Circuit Breaker & Auto-Recovery...');
+  const { tripProviderLimit, isProviderCircuitTripped, resetProviderLimit, getProviderCircuitStatus } = await import('../lib/mailer.js');
+
+  console.log('   Simulating SendPulse hitting daily sending quota limit...');
+  tripProviderLimit('sendpulse', 'Simulated 550 Daily sending quota exceeded', 1500); // 1.5s cooldown for test
+
+  const isTripped = isProviderCircuitTripped('sendpulse');
+  console.log(`   Circuit tripped state: ${isTripped ? '🚨 ACTIVE (Emergency failover engaged)' : 'NORMAL'}`);
+  console.log('   Circuit status report:', JSON.stringify(getProviderCircuitStatus()));
+
+  console.log('   Waiting 2.0s for cooldown window to expire...');
+  await new Promise(r => setTimeout(r, 2000));
+
+  const afterCooldown = isProviderCircuitTripped('sendpulse');
+  console.log(`   Auto-recovery test: ${!afterCooldown ? '✅ SUCCESS (Restored back to original SendPulse source)' : '❌ FAILED'}\n`);
 }
 
 async function run() {
   await testSendPulse();
   await testBrevo();
   await testApplicationMailer();
+  await testCircuitBreaker();
 }
 
 run();

@@ -26,6 +26,7 @@ import {
   CreditCard,
   QrCode,
   Zap,
+  Mail,
   HelpCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -315,6 +316,36 @@ export default function TransactionsRedesign({
     document.body.removeChild(link);
   };
 
+  // ── Email Monthly Statement via SendPulse Handler ─────────────
+  const [emailingStatement, setEmailingStatement] = useState(false);
+
+  const handleEmailStatement = async () => {
+    if (!profile?.id) {
+      alert('Merchant profile not found.');
+      return;
+    }
+    setEmailingStatement(true);
+    try {
+      const res = await fetch('/api/merchant/statement/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          merchantId: profile.id,
+          month: new Date().getMonth() + 1,
+          year: new Date().getFullYear(),
+          toEmail: profile.email || '',
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to email monthly statement');
+      alert(`✅ Monthly statement successfully dispatched to ${data.recipientEmail || 'your email'} via SendPulse!`);
+    } catch (err) {
+      alert(`❌ Failed to send statement: ${err.message}`);
+    } finally {
+      setEmailingStatement(false);
+    }
+  };
+
   // ── Save Bank Account Handler ─────────────────────────────────
   const handleBankSave = async (e) => {
     if (e) e.preventDefault();
@@ -467,6 +498,16 @@ export default function TransactionsRedesign({
           >
             <SlidersHorizontal className="w-4 h-4 text-blue-600" />
             {showFilters ? 'Hide Rails Filter' : 'Filter Rails'}
+          </button>
+          <button
+            onClick={handleEmailStatement}
+            disabled={emailingStatement}
+            type="button"
+            className="bg-white border border-blue-200 hover:bg-blue-50 text-blue-700 transition-all duration-150 px-4 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-2 disabled:opacity-50"
+            title="Dispatch monthly account statement to registered email via SendPulse"
+          >
+            {emailingStatement ? <Loader2 className="w-4 h-4 animate-spin text-blue-600" /> : <Mail className="w-4 h-4 text-blue-600" />}
+            {emailingStatement ? 'Sending...' : 'Email Statement'}
           </button>
           <button
             onClick={handleExportStatement}
