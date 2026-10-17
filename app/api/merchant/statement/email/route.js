@@ -78,7 +78,7 @@ export async function POST(req) {
     const { data: orders, error: ordersErr } = await supabaseAdmin
       .from('orders')
       .select('id, amount, status, utr, customer_utr, external_ref, customer_name, created_at, mode')
-      .or(`merchant_id.eq.${actualMerchantId},project.eq.${actualMerchantId}`)
+      .eq('merchant_id', actualMerchantId)
       .gte('created_at', startDate.toISOString())
       .lte('created_at', endDate.toISOString())
       .order('created_at', { ascending: false });
