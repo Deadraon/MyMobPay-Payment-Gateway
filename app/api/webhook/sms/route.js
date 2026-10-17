@@ -9,6 +9,7 @@ import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { resolveMerchantIdToUuid } from '@/lib/merchantId';
 import { generateOrderId } from '@/lib/orderId';
 import { findMerchantByApiKey } from '@/lib/merchantAuth';
+import { parseAmountToPaise } from '@/lib/paymentLinks';
 
 // Constant-time string comparison to prevent timing attacks
 function safeCompare(a, b) {
@@ -137,19 +138,11 @@ export async function POST(request) {
       let orderQuery = supabaseAdmin
         .from('orders')
         .select('*')
-        .eq('status', 'pending');
+        .eq('status', 'pending')
+        .eq('amount', amount);
         
       if (merchant && !isPlatformReceiver) {
-        orderQuery = orderQuery.eq('merchant_id', merchant.id).eq('amount', amount);
-      } else {
-        const isSubAmount = amount === 499 || amount === 1497 || amount === 998 || amount === 1 || (amount >= 495 && amount <= 505);
-        if (isSubAmount) {
-          const minAmt = Math.floor(amount);
-          const maxAmt = Math.floor(amount) + 0.99;
-          orderQuery = orderQuery.gte('amount', minAmt).lte('amount', maxAmt);
-        } else {
-          orderQuery = orderQuery.eq('amount', amount);
-        }
+        orderQuery = orderQuery.eq('merchant_id', merchant.id);
       }
 
       const { data: orders, error: findError } = await orderQuery
@@ -285,6 +278,18 @@ export async function POST(request) {
         success: false,
         code: 'ORDER_NOT_FOUND',
         message: `No matching pending order found for amount ${amount}`,
+        parsed: { amount, utr }
+      }, { status: 200 });
+    }
+
+    // Every matching strategy must confirm the full order amount before verification.
+    const creditedPaise = parseAmountToPaise(amount);
+    if (!Number.isSafeInteger(creditedPaise) || creditedPaise <= 0 ||
+        creditedPaise !== parseAmountToPaise(matchedOrder.amount)) {
+      return NextResponse.json({
+        success: false,
+        code: 'PAYMENT_AMOUNT_MISMATCH',
+        message: 'Credited amount does not match the order amount. Order left unverified for review.',
         parsed: { amount, utr }
       }, { status: 200 });
     }
