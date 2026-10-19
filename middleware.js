@@ -140,8 +140,7 @@ export async function middleware(request) {
       const isAuthorized =
         (expectedToken && adminToken === expectedToken) ||
         (adminToken && adminToken.startsWith('adm_')) ||
-        (authHeader && (authHeader.startsWith('Bearer adm_') || authHeader.startsWith('Bearer ey'))) ||
-        secFetchSite === 'same-origin';
+        (authHeader && (authHeader.startsWith('Bearer adm_') || authHeader.startsWith('Bearer ey')));
 
       if (!isAuthorized) {
         const tokenReqRes = new NextResponse(

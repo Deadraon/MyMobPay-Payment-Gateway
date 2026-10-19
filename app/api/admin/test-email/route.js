@@ -7,23 +7,10 @@ import {
   isResendConfigured, 
   isBrevoConfigured 
 } from '@/lib/mailer';
+import { verifyAdminAuth } from '@/lib/adminSettings';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-function isAuthorized(req) {
-  const adminSecret = process.env.ADMIN_API_SECRET || 'mmp_admin_c7f3a92d8e1b4056f9d2a7c3e8b1d4f6';
-  const tokenHeader = req.headers.get('x-admin-token');
-  const authHeader = req.headers.get('authorization');
-  const url = new URL(req.url);
-  const querySecret = url.searchParams.get('secret');
-
-  if (tokenHeader && (tokenHeader === adminSecret || tokenHeader.startsWith('adm_'))) return true;
-  if (authHeader && authHeader.replace(/^Bearer\s+/i, '') === adminSecret) return true;
-  if (querySecret && querySecret === adminSecret) return true;
-
-  return false;
-}
 
 function mask(str, visibleChars = 4) {
   if (!str) return '(not set)';
@@ -40,8 +27,9 @@ export async function POST(req) {
 }
 
 async function handleDiagnostic(req) {
-  if (!isAuthorized(req)) {
-    return NextResponse.json({ error: 'Unauthorized: Invalid or missing admin secret.' }, { status: 401 });
+  const isAuthorized = await verifyAdminAuth(req);
+  if (!isAuthorized) {
+    return NextResponse.json({ error: 'Unauthorized: Invalid or missing admin credentials.' }, { status: 401 });
   }
 
   const url = new URL(req.url);
