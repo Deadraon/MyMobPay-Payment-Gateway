@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { triggerMerchantWebhook } from '@/lib/webhook';
-import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(request) {
@@ -34,7 +33,7 @@ export async function POST(request) {
 
     // 2. Strict UTR format validation (UPI RRN / UTR typically 12 numeric digits or 10-22 alphanumeric)
     const cleanUtr = String(utr).trim();
-    if (!/^[0-9a-zA-Z_-]{10,25}$/.test(cleanUtr)) {
+    if (!/^[0-9a-zA-Z]{10,25}$/.test(cleanUtr)) {
       return NextResponse.json({
         error: 'Invalid UTR format. Please enter a valid 10-18 digit UPI Reference number or UTR.',
         code: 'INVALID_UTR_FORMAT'
@@ -80,73 +79,9 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // 5. Strict Amount & Credit Alert Verification
-    let isBankConfirmed = false;
-    const orderAmt = parseFloat(order.amount);
-    const formattedAmt = orderAmt.toFixed(2);
-    const integerAmt = Math.floor(orderAmt).toString();
-
-    // Check bank email notifications
-    const { data: matchedEmail } = await supabaseAdmin
-      .from('email_logs')
-      .select('*')
-      .ilike('body_snippet', `%${cleanUtr}%`)
-      .limit(1);
-
-    if (matchedEmail && matchedEmail.length > 0) {
-      const emailRecord = matchedEmail[0];
-      const snippet = emailRecord.body_snippet || '';
-
-      // SECURITY RULE: The bank alert MUST contain the exact order amount
-      const hasMatchingAmount =
-        snippet.includes(formattedAmt) ||
-        snippet.includes(`INR ${formattedAmt}`) ||
-        snippet.includes(`Rs. ${formattedAmt}`) ||
-        snippet.includes(`Rs.${formattedAmt}`) ||
-        snippet.includes(`₹${formattedAmt}`) ||
-        snippet.includes(`Rs. ${integerAmt}`) ||
-        snippet.includes(`Rs.${integerAmt}`) ||
-        snippet.includes(`INR ${integerAmt}`);
-
-      if (hasMatchingAmount) {
-        isBankConfirmed = true;
-      } else {
-        console.warn(`[Security Alert] UTR ${cleanUtr} found in bank email log, but credited amount did not match order amount ₹${formattedAmt}. Auto-verification rejected.`);
-      }
-    }
-
-    // Check bank SMS notifications if not confirmed by email
-    if (!isBankConfirmed) {
-      const { data: matchedSms } = await supabaseAdmin
-        .from('sms_logs')
-        .select('*')
-        .ilike('message', `%${cleanUtr}%`)
-        .limit(1);
-
-      if (matchedSms && matchedSms.length > 0) {
-        const smsRecord = matchedSms[0];
-        const msg = smsRecord.message || '';
-
-        const hasMatchingAmount =
-          msg.includes(formattedAmt) ||
-          msg.includes(`INR ${formattedAmt}`) ||
-          msg.includes(`Rs. ${formattedAmt}`) ||
-          msg.includes(`Rs.${formattedAmt}`) ||
-          msg.includes(`₹${formattedAmt}`) ||
-          msg.includes(`Rs. ${integerAmt}`) ||
-          msg.includes(`Rs.${integerAmt}`) ||
-          msg.includes(`INR ${integerAmt}`);
-
-        if (hasMatchingAmount) {
-          isBankConfirmed = true;
-        } else {
-          console.warn(`[Security Alert] UTR ${cleanUtr} found in SMS log, but credited amount did not match order amount ₹${formattedAmt}.`);
-        }
-      }
-    }
-
-    // 6. Verification branch
-    if (order.mode === 'test' || isBankConfirmed) {
+    // Diagnostic alert text cannot authorize a live payment. Live references
+    // await authenticated bank processing or merchant review.
+    if (order.mode === 'test') {
       const { data, error } = await supabaseAdmin
         .from('orders')
         .update({
@@ -156,21 +91,14 @@ export async function POST(request) {
           verified_at: new Date().toISOString()
         })
         .eq('id', cleanOrderId)
+        .eq('mode', 'test')
+        .eq('status', 'pending')
         .select()
         .single();
 
       if (error) {
         console.error('Error updating UTR in database:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
-      }
-
-      // Trigger subscription processing only for live authentic orders
-      if (order.mode !== 'test') {
-        try {
-          await checkAndProcessSubscription(data, '');
-        } catch (sErr) {
-          console.error('Subscription error on payments/utr:', sErr);
-        }
       }
 
       // Trigger merchant webhook
@@ -205,11 +133,12 @@ export async function POST(request) {
       });
     }
 
-    // 7. Live mode without immediate bank match: Save customer_utr and keep pending
+    // Record the live reference for authenticated bank processing or merchant review.
     await supabaseAdmin
       .from('orders')
       .update({ customer_utr: cleanUtr })
-      .eq('id', cleanOrderId);
+      .eq('id', cleanOrderId)
+      .eq('status', 'pending');
 
     return NextResponse.json({
       success: true,
