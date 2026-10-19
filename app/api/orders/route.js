@@ -10,6 +10,7 @@ import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { generateOrderId } from '@/lib/orderId';
 import { findMerchantByApiKey } from '@/lib/merchantAuth';
 import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
+import { parseCallbackUrl } from '@/lib/callbackUrl';
 
 export async function POST(request) {
   try {
@@ -38,6 +39,12 @@ export async function POST(request) {
 
     const body = await request.json();
     const { api_key, amount, method, note, customer_name, customer_phone, project, callback_url, external_ref } = body;
+
+    const hasCallback = callback_url != null && callback_url !== '';
+    const callback = hasCallback ? parseCallbackUrl(callback_url, request.url) : null;
+    if (hasCallback && !callback) {
+      return NextResponse.json({ error: 'callback_url must be a valid HTTP or HTTPS URL.' }, { status: 400 });
+    }
 
     const effectiveApiKey = api_key || CONFIG.platformApiKey;
     if (!effectiveApiKey) {
@@ -235,7 +242,7 @@ export async function POST(request) {
           customer_name: customer_name || '',
           customer_phone: customer_phone || '',
           project: project || merchant.business_name,
-          callback_url: callback_url || null,
+          callback_url: callback?.href || null,
           external_ref: external_ref || null,
           status: 'pending',
           mode: (isTestFromKey || merchant.sandbox_mode !== false) ? 'test' : 'live'

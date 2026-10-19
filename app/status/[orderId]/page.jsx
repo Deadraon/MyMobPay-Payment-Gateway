@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { formatRefId } from '@/lib/orderId';
+import { parseCallbackUrl, navigateToCallback } from '@/lib/callbackUrl';
 import {
   CheckCircle, XCircle, Loader2, IndianRupee,
   Key, Calendar, ShieldCheck, RefreshCw,
@@ -160,6 +161,7 @@ export default function StatusPage() {
     if (target && (target.includes('/webhook') || target.includes('/api/'))) {
       target = null;
     }
+    target = parseCallbackUrl(target, typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech')?.href;
 
     // 2. Automatic fallback for Trial and Subscription payments (Platform self-service dashboard)
     if (!target && (order?.note === 'Trial_Setup_3Day' || order?.note === 'Autopay_Setup_3DayTrial' || order?.note?.startsWith('Subscription_'))) {
@@ -174,25 +176,14 @@ export default function StatusPage() {
     if (!cb) return false;
 
     const externalRef = (typeof window !== 'undefined' && localStorage.getItem(`ref_${orderId}`)) || order?.external_ref;
-    try {
-      let resolvedUrl = cb.trim();
-      if (!/^https?:\/\//i.test(resolvedUrl) && !resolvedUrl.startsWith('/')) {
-        resolvedUrl = `https://${resolvedUrl}`;
-      }
-      const url = new URL(resolvedUrl, typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech');
-      url.searchParams.set('status', 'verified');
-      url.searchParams.set('order_id', orderId);
-      url.searchParams.set('gateway_id', orderId);
-      url.searchParams.set('orderId', orderId);
-      if (order?.utr) url.searchParams.set('utr', order.utr);
-      if (externalRef) url.searchParams.set('ref', externalRef);
-      window.location.href = url.toString();
-      return true;
-    } catch (e) {
-      console.error('Redirect URL parsing failed:', e);
-      window.location.href = cb;
-      return true;
-    }
+    return navigateToCallback(cb, {
+      status: 'verified',
+      order_id: orderId,
+      gateway_id: orderId,
+      orderId,
+      utr: order?.utr || null,
+      ref: externalRef || null,
+    });
   };
 
   /* Done button handler — returns to explicit callback or closes/confirms */
@@ -280,13 +271,7 @@ export default function StatusPage() {
   );
 
   const isUtrSubmitted = order.utr && /^\d{12}$/.test(order.utr.trim());
-  let callback = (typeof window !== 'undefined' && localStorage.getItem(`callback_${orderId}`)) || order.callback_url;
-  if (callback && (callback.includes('/webhook') || callback.includes('/api/'))) {
-    callback = null;
-  }
-  if (!callback && (order?.note === 'Trial_Setup_3Day' || order?.note === 'Autopay_Setup_3DayTrial' || order?.note?.startsWith('Subscription_'))) {
-    callback = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : '/dashboard';
-  }
+  const callback = resolveRedirectUrl();
   const isTrialOrSub = order?.note === 'Trial_Setup_3Day' || order?.note === 'Autopay_Setup_3DayTrial' || order?.note?.startsWith('Subscription_');
 
   /* ═══════════════════════════════════════════════════════════
@@ -437,19 +422,7 @@ export default function StatusPage() {
               </p>
               {callback ? (
                 <button onClick={() => {
-                  try {
-                    let resolvedUrl = callback.trim();
-                    if (!/^https?:\/\//i.test(resolvedUrl) && !resolvedUrl.startsWith('/')) {
-                      resolvedUrl = `https://${resolvedUrl}`;
-                    }
-                    const url = new URL(resolvedUrl, typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech');
-                    url.searchParams.set('status', 'failed');
-                    url.searchParams.set('gateway_id', orderId);
-                    url.searchParams.set('orderId', orderId);
-                    window.location.replace(url.toString());
-                  } catch (e) {
-                    window.location.replace(callback);
-                  }
+                  navigateToCallback(callback, { status: 'failed', gateway_id: orderId, orderId }, true);
                 }} className="w-full py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-sm flex items-center justify-center gap-2 transition-all">
                   <ExternalLink className="w-4 h-4" /> Return to {order.project || 'App'}
                 </button>
