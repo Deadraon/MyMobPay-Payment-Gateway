@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { triggerMerchantWebhook } from '@/lib/webhook';
-import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
 import { generateOrderId } from '@/lib/orderId';
 
@@ -141,71 +140,9 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // 3. Check for matching bank credit in email_logs with strict amount verification
-    let isBankConfirmed = false;
-    const { data: matchedEmail } = await supabaseAdmin
-      .from('email_logs')
-      .select('*')
-      .ilike('body_snippet', `%${cleanUtr}%`)
-      .limit(1);
-
-    if (matchedEmail && matchedEmail.length > 0) {
-      const emailRecord = matchedEmail[0];
-      const snippet = emailRecord.body_snippet || '';
-      const orderAmt = parseFloat(order.amount);
-      const formattedAmt = orderAmt.toFixed(2);
-      const integerAmt = Math.floor(orderAmt).toString();
-
-      // SECURITY CHECK: Verify that the bank email actually credited the matching order amount
-      const hasMatchingAmount =
-        snippet.includes(formattedAmt) ||
-        snippet.includes(`INR ${formattedAmt}`) ||
-        snippet.includes(`Rs. ${formattedAmt}`) ||
-        snippet.includes(`Rs.${formattedAmt}`) ||
-        snippet.includes(`₹${formattedAmt}`) ||
-        snippet.includes(`Rs. ${integerAmt}`) ||
-        snippet.includes(`Rs.${integerAmt}`) ||
-        snippet.includes(`INR ${integerAmt}`);
-
-      if (hasMatchingAmount) {
-        isBankConfirmed = true;
-      } else {
-        console.warn(`[Security Warning] UTR ${cleanUtr} found in bank log, but credited amount does not match required order amount ₹${formattedAmt}. Skipping auto-verification.`);
-      }
-    }
-
-    if (!isBankConfirmed) {
-      const { data: matchedSms } = await supabaseAdmin
-        .from('sms_logs')
-        .select('*')
-        .ilike('message', `%${cleanUtr}%`)
-        .limit(1);
-
-      if (matchedSms && matchedSms.length > 0) {
-        const smsRecord = matchedSms[0];
-        const snippet = smsRecord.message || '';
-        const orderAmt = parseFloat(order.amount);
-        const formattedAmt = orderAmt.toFixed(2);
-        const integerAmt = Math.floor(orderAmt).toString();
-
-        const hasMatchingAmount =
-          snippet.includes(formattedAmt) ||
-          snippet.includes(`INR ${formattedAmt}`) ||
-          snippet.includes(`Rs. ${formattedAmt}`) ||
-          snippet.includes(`Rs.${formattedAmt}`) ||
-          snippet.includes(`₹${formattedAmt}`) ||
-          snippet.includes(`Rs. ${integerAmt}`) ||
-          snippet.includes(`Rs.${integerAmt}`) ||
-          snippet.includes(`INR ${integerAmt}`);
-
-        if (hasMatchingAmount) {
-          isBankConfirmed = true;
-        }
-      }
-    }
-
-    // 4. In test mode OR if bank alert has already matched, verify the order
-    if (order.mode === 'test' || isBankConfirmed) {
+    // Diagnostic email/SMS logs cannot authorize a payment.
+    // Live verification is performed by the authenticated payment webhooks.
+    if (order.mode === 'test') {
       const { data: updatedOrder, error: updateErr } = await supabaseAdmin
         .from('orders')
         .update({
@@ -221,15 +158,6 @@ export async function POST(request) {
       if (updateErr) {
         console.error('Error verifying order with UTR:', updateErr);
         return NextResponse.json({ error: updateErr.message }, { status: 500 });
-      }
-
-      // Trigger subscription activation only for live, authentic verified orders
-      if (order.mode !== 'test') {
-        try {
-          await checkAndProcessSubscription(updatedOrder, '');
-        } catch (subErr) {
-          console.error('Subscription process error on UTR verify:', subErr);
-        }
       }
 
       // Synchronize verification with associated payment link (idempotent, honors late payments)
@@ -254,7 +182,7 @@ export async function POST(request) {
       }, { status: 200 });
     }
 
-    // 5. In live mode without immediate bank match: Save customer_utr and keep pending
+    // Save the live customer reference for webhook matching and keep the order pending.
     await supabaseAdmin
       .from('orders')
       .update({ customer_utr: cleanUtr })

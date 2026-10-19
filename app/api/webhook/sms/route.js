@@ -104,7 +104,8 @@ export async function POST(request) {
         .from('orders')
         .select('*')
         .eq('status', 'pending')
-        .eq('customer_utr', utr);
+        .eq('customer_utr', utr)
+        .eq('amount', amount);
 
       if (merchant && !isPlatformReceiver) {
         utrQuery = utrQuery.eq('merchant_id', merchant.id);
@@ -120,12 +121,18 @@ export async function POST(request) {
     if (!matchedOrder) {
       const orderMatch = message.match(/\b((?:order_|pay_|mmp_|MMP_)[0-9A-Za-z_]+)\b/i);
       if (orderMatch) {
-        const { data: oByRef } = await supabaseAdmin
+        let orderQuery = supabaseAdmin
           .from('orders')
           .select('*')
           .eq('id', orderMatch[1])
           .eq('status', 'pending')
-          .limit(1);
+          .eq('amount', amount);
+
+        if (merchant && !isPlatformReceiver) {
+          orderQuery = orderQuery.eq('merchant_id', merchant.id);
+        }
+
+        const { data: oByRef } = await orderQuery.limit(1);
         if (oByRef && oByRef.length > 0) {
           matchedOrder = oByRef[0];
         }
