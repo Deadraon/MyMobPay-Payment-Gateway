@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Terms of Service',
-  description: 'Read the terms and conditions for using MyMobPay direct UPI payment gateway platform.',
+  title: 'Terms of Service | MyMobPay',
+  description: 'Official Terms of Service for MyMobPay — Direct UPI & IMPS settlement architecture, 0% commission model, and merchant responsibilities.',
   alternates: {
     canonical: '/terms',
   },
