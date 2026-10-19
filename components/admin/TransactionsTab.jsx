@@ -15,8 +15,13 @@ import {
   Send,
   ExternalLink,
   Calendar,
-  Filter
+  Filter,
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
+
+const PAGE_SIZE = 25;
 
 export default function TransactionsTab({
   orders = [],
@@ -29,15 +34,41 @@ export default function TransactionsTab({
   showToast
 }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all'); // all, verified, pending, rejected
+  const [statusFilter, setStatusFilter] = useState('all'); // all, verified, pending, rejected, replay_risk
   const [merchantFilter, setMerchantFilter] = useState('all');
   const [sortBy, setSortBy] = useState('latest'); // latest, amount_high, amount_low
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Duplicate UTR Map for Replay Detection
+  const duplicateUtrMap = useMemo(() => {
+    const counts = new Map();
+    for (const o of orders) {
+      if (o.utr && o.utr.trim().length >= 6) {
+        const clean = o.utr.trim();
+        counts.set(clean, (counts.get(clean) || 0) + 1);
+      }
+    }
+    return counts;
+  }, [orders]);
+
+  const duplicateCount = useMemo(() => {
+    let count = 0;
+    for (const [_, cnt] of duplicateUtrMap.entries()) {
+      if (cnt > 1) count += cnt;
+    }
+    return count;
+  }, [duplicateUtrMap]);
 
   // Filter & Search Engine
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
-      // 1. Status Filter
-      if (statusFilter !== 'all' && order.status !== statusFilter) return false;
+      // 1. Status / Replay Risk Filter
+      if (statusFilter === 'replay_risk') {
+        const utrClean = (order.utr || '').trim();
+        if (!utrClean || (duplicateUtrMap.get(utrClean) || 0) <= 1) return false;
+      } else if (statusFilter !== 'all' && order.status !== statusFilter) {
+        return false;
+      }
 
       // 2. Merchant Store Filter
       if (merchantFilter !== 'all' && order.merchant_id !== merchantFilter) return false;
@@ -62,7 +93,14 @@ export default function TransactionsTab({
       if (sortBy === 'amount_low') return Number(a.amount) - Number(b.amount);
       return new Date(b.created_at) - new Date(a.created_at);
     });
-  }, [orders, statusFilter, merchantFilter, searchQuery, sortBy]);
+  }, [orders, statusFilter, merchantFilter, searchQuery, sortBy, duplicateUtrMap]);
+
+  // Pagination calculation
+  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));
+  const paginatedOrders = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredOrders.slice(start, start + PAGE_SIZE);
+  }, [filteredOrders, currentPage]);
 
   // Export to CSV function
   const handleExportCSV = () => {
@@ -114,11 +152,18 @@ export default function TransactionsTab({
       {/* Header & Quick Action Row */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-5 border-b border-slate-100">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            Global Transaction Ledger
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+              Global Transaction Ledger
+            </h2>
+            {duplicateCount > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                {duplicateCount} Replays Flagged
+              </span>
+            )}
+          </div>
           <p className="text-xs text-slate-400 font-medium mt-0.5">
-            Showing {filteredOrders.length} of {orders.length} total orders across all merchant VPAs
+            Showing {paginatedOrders.length} of {filteredOrders.length} filtered ({orders.length} total orders across merchant VPAs)
           </p>
         </div>
 
@@ -127,7 +172,10 @@ export default function TransactionsTab({
           <div className="relative">
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                setCurrentPage(1);
+              }}
               className="bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-650 font-bold outline-none cursor-pointer appearance-none pr-8"
             >
               <option value="latest">Sort: Newest First</option>
@@ -160,12 +208,18 @@ export default function TransactionsTab({
             type="text"
             placeholder="Search by UTR, Customer, Phone, Note..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-8 text-xs text-slate-900 font-semibold focus:outline-none focus:border-blue-500 focus:bg-white transition-all shadow-xs"
           />
           {searchQuery && (
             <button 
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                setCurrentPage(1);
+              }}
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 text-xs font-bold"
             >
               ✕
@@ -177,7 +231,10 @@ export default function TransactionsTab({
         <div className="relative min-w-[180px]">
           <select
             value={merchantFilter}
-            onChange={(e) => setMerchantFilter(e.target.value)}
+            onChange={(e) => {
+              setMerchantFilter(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-3 pr-8 text-xs text-slate-650 font-bold outline-none cursor-pointer appearance-none"
           >
             <option value="all">All Stores / Accounts</option>
@@ -195,10 +252,14 @@ export default function TransactionsTab({
             { id: 'verified', label: 'Verified' },
             { id: 'pending', label: 'Pending' },
             { id: 'rejected', label: 'Rejected' },
+            { id: 'replay_risk', label: 'Replay Alert' },
           ].map(f => (
             <button
               key={f.id}
-              onClick={() => setStatusFilter(f.id)}
+              onClick={() => {
+                setStatusFilter(f.id);
+                setCurrentPage(1);
+              }}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                 statusFilter === f.id
                   ? 'bg-blue-600 text-white shadow-xs'
@@ -221,7 +282,7 @@ export default function TransactionsTab({
               <th className="px-5 py-3.5 text-left">Order &amp; Customer</th>
               <th className="px-5 py-3.5 text-left">Date (IST)</th>
               <th className="px-5 py-3.5 text-left">Amount</th>
-              <th className="px-5 py-3.5 text-left">Bank UTR</th>
+              <th className="px-5 py-3.5 text-left">Bank UTR Reference</th>
               <th className="px-5 py-3.5 text-center">Status</th>
               <th className="px-5 py-3.5 text-right">Action</th>
             </tr>
@@ -234,14 +295,14 @@ export default function TransactionsTab({
                   Loading global transaction logs...
                 </td>
               </tr>
-            ) : filteredOrders.length === 0 ? (
+            ) : paginatedOrders.length === 0 ? (
               <tr>
                 <td colSpan="7" className="px-6 py-12 text-center text-slate-400 font-semibold">
                   No orders match the selected filters.
                 </td>
               </tr>
             ) : (
-              filteredOrders.map(order => {
+              paginatedOrders.map(order => {
                 const merchantObj = merchants.find(m => m.id === order.merchant_id);
                 const storeName = merchantObj ? merchantObj.business_name : 'Primary Store';
                 const timeStr = new Date(order.created_at).toLocaleString('en-IN', {
@@ -249,6 +310,9 @@ export default function TransactionsTab({
                   dateStyle: 'short',
                   timeStyle: 'short'
                 });
+
+                const cleanUtr = (order.utr || '').trim();
+                const isDuplicateUtr = cleanUtr && (duplicateUtrMap.get(cleanUtr) || 0) > 1;
 
                 return (
                   <tr
@@ -292,6 +356,14 @@ export default function TransactionsTab({
                           <span className="font-bold text-slate-800 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg text-xs">
                             {order.utr}
                           </span>
+                          {isDuplicateUtr && (
+                            <span 
+                              className="px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-200 text-[9px] font-black"
+                              title="Fraud Alert: This UTR was used on multiple orders!"
+                            >
+                              REPLAY
+                            </span>
+                          )}
                           <button
                             onClick={(e) => handleCopy(e, order.utr, 'UTR')}
                             className="p-1 text-slate-400 hover:text-slate-800 rounded opacity-0 group-hover:opacity-100 transition-opacity"
@@ -345,6 +417,33 @@ export default function TransactionsTab({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2 text-xs text-slate-600">
+          <p className="font-medium">
+            Page <strong className="text-slate-900">{currentPage}</strong> of <strong className="text-slate-900">{totalPages}</strong>
+          </p>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="px-2 font-mono font-bold text-slate-800">{currentPage}</span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
     </section>
   );

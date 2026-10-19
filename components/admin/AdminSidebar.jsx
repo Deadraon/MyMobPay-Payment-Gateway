@@ -12,9 +12,8 @@ import {
   Users,
   Radio,
   FileCheck2,
-  AlertOctagon,
-  LifeBuoy,
-  Activity,
+  ShieldAlert,
+  Terminal,
   DownloadCloud
 } from 'lucide-react';
 
@@ -60,7 +59,52 @@ export default function AdminSidebar({
       ]
     },
     {
-      title: 'Monetization & Growth',
+      title: 'Infrastructure & Rails',
+      items: [
+        {
+          id: 'verification',
+          label: 'Verification Center',
+          icon: Radio,
+          badge: null,
+          desc: 'Telemetry & Ingest Queues'
+        },
+        {
+          id: 'developer',
+          label: 'Developer & Webhooks',
+          icon: Terminal,
+          badge: null,
+          desc: 'Signed HMAC Webhook Logs'
+        },
+      ]
+    },
+    {
+      title: 'Risk & Claims',
+      items: [
+        {
+          id: 'risk',
+          label: 'Risk & Fraud Rules',
+          icon: ShieldAlert,
+          badge: null,
+          desc: 'Velocity & Blocklist Registry'
+        },
+        {
+          id: 'disputes',
+          label: 'Customer Claims Desk',
+          icon: FileCheck2,
+          badge: null,
+          desc: 'Non-Custodial Evidence Tracker'
+        },
+        {
+          id: 'audit',
+          label: 'Audit Trail',
+          icon: History,
+          badge: null,
+          desc: 'Tamper-Evident Ops Ledger'
+        },
+      ]
+    },
+    {
+      title: 'Monetization & Reports',
       items: [
         {
           id: 'subscriptions',
@@ -69,18 +113,18 @@ export default function AdminSidebar({
           badge: null,
           desc: 'Subscriptions & Gift Codes'
         },
+        {
+          id: 'reports',
+          label: 'Reports & Exports',
+          icon: DownloadCloud,
+          badge: null,
+          desc: 'CSV Exports & GST Tax GSTR-1'
+        },
       ]
     },
     {
       title: 'Security & Governance',
       items: [
-        {
-          id: 'audit',
-          label: 'Audit Trail',
-          icon: History,
-          badge: null,
-          desc: 'Tamper-Evident Ops Ledger'
-        },
         {
           id: 'team',
           label: 'Admin Team & RBAC',
@@ -124,7 +168,7 @@ export default function AdminSidebar({
                       sessionStorage.setItem('admin_active_tab', item.id);
                     }
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl text-left transition-all group cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-2xl text-left transition-all group cursor-pointer ${
                     isActive
                       ? 'bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/20'
                       : 'hover:bg-slate-50 text-slate-650 hover:text-slate-900 font-semibold'

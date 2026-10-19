@@ -17,6 +17,11 @@ import SubscriptionsTab from './admin/SubscriptionsTab';
 import SystemTab from './admin/SystemTab';
 import AuditTab from './admin/AuditTab';
 import TeamTab from './admin/TeamTab';
+import VerificationTab from './admin/VerificationTab';
+import RiskTab from './admin/RiskTab';
+import DisputesTab from './admin/DisputesTab';
+import DeveloperTab from './admin/DeveloperTab';
+import ReportsTab from './admin/ReportsTab';
 
 import { 
   Lock, 
@@ -60,7 +65,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const [activeTab, setActiveTabState] = useState(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace(/^#/, '');
-      const valid = ['overview', 'transactions', 'merchants', 'signups', 'subscriptions', 'system', 'audit', 'team'];
+      const valid = ['overview', 'transactions', 'merchants', 'signups', 'subscriptions', 'system', 'audit', 'team', 'verification', 'risk', 'disputes', 'developer', 'reports'];
       if (valid.includes(hash)) return hash;
       return sessionStorage.getItem('admin_active_tab') || 'overview';
     }
@@ -730,6 +735,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
               chartData={chartData}
               merchantLeaderboard={merchantLeaderboard}
               recentOrders={orders.slice(0, 10)}
+              merchants={merchants}
               onSelectOrder={(order) => setSelectedOrderForDrawer(order)}
               onSelectMerchant={(m) => {
                 const target = merchants.find(item => item.id === m.id) || m.rawMerchant;
@@ -816,6 +822,41 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
 
           {activeTab === 'team' && (
             <TeamTab
+              showToast={showToast}
+              getAuthHeaders={getAuthHeaders}
+            />
+          )}
+
+          {activeTab === 'verification' && (
+            <VerificationTab
+              showToast={showToast}
+              getAuthHeaders={getAuthHeaders}
+            />
+          )}
+
+          {activeTab === 'risk' && (
+            <RiskTab
+              showToast={showToast}
+              getAuthHeaders={getAuthHeaders}
+            />
+          )}
+
+          {activeTab === 'disputes' && (
+            <DisputesTab
+              showToast={showToast}
+              getAuthHeaders={getAuthHeaders}
+            />
+          )}
+
+          {activeTab === 'developer' && (
+            <DeveloperTab
+              showToast={showToast}
+              getAuthHeaders={getAuthHeaders}
+            />
+          )}
+
+          {activeTab === 'reports' && (
+            <ReportsTab
               showToast={showToast}
               getAuthHeaders={getAuthHeaders}
             />
