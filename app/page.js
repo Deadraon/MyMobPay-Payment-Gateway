@@ -351,17 +351,17 @@ export default function HomePage() {
             </div>
 
             {/* Authoritative Headline with separate animated lines */}
-            <h1 className="font-sohne text-4xl sm:text-5xl lg:text-[56px] font-bold sm:font-extrabold text-[#0d253d] tracking-[-1.5px] leading-[1.08]">
-              <span className="block animate-fade-up delay-100 font-bold sm:font-extrabold">
+            <h1 className="font-sohne text-4xl sm:text-5xl lg:text-[56px] font-semibold text-[#0d253d] tracking-[-1.4px] leading-[1.08]">
+              <span className="block animate-fade-up delay-100 font-semibold">
                 Financial infrastructure for
               </span>
-              <span className="block animate-fade-up delay-200 mt-1 font-bold sm:font-extrabold">
+              <span className="block animate-fade-up delay-200 mt-1 font-semibold">
                 direct UPI payments.
               </span>
-              <span className="block text-[#533afd] font-bold sm:font-extrabold animate-fade-up delay-300 mt-2 min-h-[1.2em] text-3xl sm:text-4xl lg:text-[44px] tracking-[-1px]">
+              <span className="block text-[#533afd] font-semibold animate-fade-up delay-300 mt-2 min-h-[1.2em] text-3xl sm:text-4xl lg:text-[44px] tracking-[-0.96px]">
                 <span className="relative inline-block">
                   {typedLine}
-                  <span className="inline-block w-[3.5px] sm:w-[4px] h-[0.85em] bg-[#533afd] ml-1.5 align-middle animate-pulse" style={{ verticalAlign: 'baseline', marginTop: '-2px' }}>|</span>
+                  <span className="inline-block w-[3px] h-[0.85em] bg-[#533afd] ml-1.5 align-middle animate-pulse" style={{ verticalAlign: 'baseline', marginTop: '-2px' }}>|</span>
                 </span>
               </span>
             </h1>
