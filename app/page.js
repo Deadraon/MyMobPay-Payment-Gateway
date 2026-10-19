@@ -253,13 +253,15 @@ export default function HomePage() {
             </nav>
           </div>
 
-          {/* Right Cluster: Login Link */}
+          {/* Right Cluster: Premium Login Button */}
           <div className="hidden sm:flex items-center">
             <Link 
               href="/login" 
-              className="px-4 py-2 text-[14px] font-medium text-[#0d253d] hover:text-[#533afd] hover:bg-slate-100/70 rounded-full transition-all"
+              className="px-5 py-2.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-[14px] font-semibold flex items-center gap-1.5 transition-all shadow-sm hover:shadow-md group cursor-pointer"
             >
-              Login
+              <Lock className="w-3.5 h-3.5 opacity-90" />
+              <span>Login</span>
+              <ArrowRight className="w-3.5 h-3.5 opacity-80 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
 
