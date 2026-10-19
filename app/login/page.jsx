@@ -982,9 +982,17 @@ export default function LoginPage() {
 
     try {
       if (action === 'signup') {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session?.access_token) {
+          throw new Error('Please verify your email again before completing registration.');
+        }
+
         const res = await fetch('/api/auth/register', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
           body: JSON.stringify({
             email: email.trim(),
             password: password,
