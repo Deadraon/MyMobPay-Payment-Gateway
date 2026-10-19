@@ -5,6 +5,7 @@ import { CONFIG } from '@/lib/config';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { triggerMerchantWebhook } from '@/lib/webhook';
 import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
+import { findMerchantByApiKey } from '@/lib/merchantAuth';
 
 export async function POST(request) {
   try {
@@ -15,6 +16,13 @@ export async function POST(request) {
     const validSecret = process.env.WEBHOOK_SECRET || CONFIG.webhookSecret;
     if (!secret || secret !== validSecret) {
       return NextResponse.json({ error: 'Unauthorized: Invalid secret' }, { status: 401 });
+    }
+
+    // The shared secret authenticates the forwarder, not the receiving merchant.
+    const apiKey = body.api_key || request.headers.get('x-api-key') || request.headers.get('X-MyMobPay-API-Key');
+    const merchant = await findMerchantByApiKey(apiKey, 'id');
+    if (!merchant) {
+      return NextResponse.json({ error: 'Unauthorized: Receiving merchant API key is required' }, { status: 401 });
     }
 
     // Combine title and description text to parse
@@ -48,6 +56,7 @@ export async function POST(request) {
         .from('orders')
         .select('*')
         .eq('status', 'pending')
+        .eq('merchant_id', merchant.id)
         .eq('customer_utr', utr)
         .limit(1);
 
@@ -64,6 +73,7 @@ export async function POST(request) {
           .from('orders')
           .select('*')
           .eq('id', orderMatch[1])
+          .eq('merchant_id', merchant.id)
           .eq('status', 'pending')
           .limit(1);
         if (oByRef && oByRef.length > 0) {
@@ -78,6 +88,7 @@ export async function POST(request) {
       let orderQuery = supabaseAdmin
         .from('orders')
         .select('*')
+        .eq('merchant_id', merchant.id)
         .eq('status', 'pending');
 
       if (isSubAmount) {
@@ -111,6 +122,18 @@ export async function POST(request) {
       }, { status: 200 });
     }
 
+    // Validate every match, including customer UTRs, text references and paise offsets.
+    const requiredAmount = Number(matchedOrder.amount);
+    if (matchedOrder.merchant_id !== merchant.id ||
+        !Number.isFinite(amount) || !Number.isFinite(requiredAmount) ||
+        requiredAmount <= 0 || amount < requiredAmount) {
+      return NextResponse.json({
+        success: false,
+        code: 'PAYMENT_MISMATCH',
+        message: 'Payment does not cover this order or belongs to a different receiving merchant.'
+      }, { status: 200 });
+    }
+
     // Check for double spending UTR
     const { data: duplicateUtr, error: dupError } = await supabaseAdmin
       .from('orders')
@@ -136,6 +159,9 @@ export async function POST(request) {
         verified_at: new Date().toISOString()
       })
       .eq('id', matchedOrder.id)
+      .eq('merchant_id', merchant.id)
+      .eq('amount', matchedOrder.amount)
+      .eq('status', 'pending')
       .select()
       .single();
 
