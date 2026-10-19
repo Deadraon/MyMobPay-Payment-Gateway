@@ -18,8 +18,18 @@ export async function POST(request) {
       return NextResponse.json({ error: 'orderId is required' }, { status: 400 });
     }
 
+    // Action: Re-trigger outbound webhook for an order
+    if (action === 'resend_webhook') {
+      const webhookRes = await triggerMerchantWebhook(orderId);
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Outbound webhook successfully re-dispatched to merchant URL.', 
+        details: webhookRes 
+      });
+    }
+
     if (!['verify', 'reject'].includes(action)) {
-      return NextResponse.json({ error: 'Action must be verify or reject' }, { status: 400 });
+      return NextResponse.json({ error: 'Action must be verify, reject, or resend_webhook' }, { status: 400 });
     }
 
     let updateFields = {};
