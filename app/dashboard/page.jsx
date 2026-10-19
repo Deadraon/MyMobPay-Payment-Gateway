@@ -1076,25 +1076,12 @@ export default function DashboardPage() {
         }
       }
 
-      // Ensure merchant has a valid registered profile with compulsory phone number
-      const cleanPhone = (data?.phone_number || '').toString().trim().replace(/\D/g, '');
-      const isUnregistered = !data || !cleanPhone || cleanPhone.length < 10 || data.business_name === 'My Business' || data.upi_id === 'pending@upi';
-
-      if (isUnregistered) {
-        console.warn('[Dashboard] Incomplete or unregistered merchant profile. Redirecting to registration...');
-        await supabase.auth.signOut();
-        window.location.href = '/login?unregistered=true';
-        return;
-      }
-
       setProfile(data);
 
       // Pre-fill wizard webhook URL from saved profile
-
-      if (data.webhook_url) setWizardWebhookUrl(data.webhook_url);
+      if (data?.webhook_url) setWizardWebhookUrl(data.webhook_url);
 
       // Fetch orders for this merchant
-
       fetchOrders(userId);
 
       fetchEmailLogs(userId);
@@ -1106,12 +1093,40 @@ export default function DashboardPage() {
       console.error('Error fetching profile:', error);
 
       if (error.code === 'PGRST116') {
+        try {
+          const newKey = generateUUID();
+          const fallbackName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'My Business';
+          const newProfile = {
+            id: userId,
+            business_name: fallbackName,
+            upi_id: 'pending@upi',
+            api_key: newKey,
+            subscription_status: 'trial_3day',
+            subscription_expires_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+            setup_progress: {
+              plan_type: 'trial_3day',
+              trial_activated_at: new Date().toISOString(),
+            },
+          };
 
-        console.warn('[Dashboard] Merchant profile not registered (PGRST116). Redirecting to registration...');
-        await supabase.auth.signOut();
-        window.location.href = '/login?unregistered=true';
-        return;
+          const { data: insertedData, error: insertErr } = await supabase
+            .from('merchants')
+            .insert(newProfile)
+            .select()
+            .single();
 
+          if (insertErr) {
+            setDbError(`Profile Init Error: ${insertErr.message}`);
+          } else if (insertedData) {
+            setProfile(insertedData);
+            fetchOrders(userId);
+            fetchEmailLogs(userId);
+            fetchSubscriptionHistory(userId);
+          }
+        } catch (initErr) {
+          console.error('Profile creation fallback error:', initErr);
+          setDbError('Could not initialize merchant profile.');
+        }
       } else {
 
          setDbError(error.message);

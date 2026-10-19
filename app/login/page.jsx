@@ -286,17 +286,14 @@ export default function LoginPage() {
   const modeRef = useRef(mode);
   modeRef.current = mode;
   const isRegistrationSubmittedRef = useRef(false);
+  const isRedirectingRef = useRef(false);
 
-  // Handle URL query parameters on initial mount (e.g. ?mode=signup, ?unregistered=true)
+  // Handle URL query parameters on initial mount (e.g. ?mode=signup)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('mode') === 'signup') {
         setMode('signup');
-      }
-      if (params.get('unregistered') === 'true') {
-        setMode('signup');
-        setError('Access denied: You must complete merchant registration with your mobile number before accessing the dashboard.');
       }
     }
   }, []);
@@ -305,17 +302,18 @@ export default function LoginPage() {
   useEffect(() => {
     const handleAuthRedirect = async (session) => {
       if (!session?.user) return;
+      if (isRedirectingRef.current) return;
 
-      // 1. If currently in the middle of active signup form submission, don't interrupt
+      // If currently in the middle of active manual signup form submission, don't interrupt
       if (modeRef.current === 'signup' && isRegistrationSubmittedRef.current) {
         return;
       }
 
-      // 2. Strict Server-side Registration Verification:
-      // Verify whether this account (Google OAuth, email link, etc.) has already completed
-      // merchant registration with a compulsory mobile phone number and settlement details.
+      isRedirectingRef.current = true;
+      setLoading(true);
+      setMessage('Signing in with Google Workspace...');
+
       try {
-        setLoading(true);
         const verifyRes = await fetch('/api/auth/verify-registration-status', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -327,47 +325,42 @@ export default function LoginPage() {
 
         const verifyData = await verifyRes.json();
 
-        // If the account has NOT registered first, do NOT allow user into dashboard!
-        if (!verifyData.allowed || !verifyData.registered) {
-          console.warn('[LOGIN] Unregistered Google/OAuth user blocked:', session.user.email);
-          await supabase.auth.signOut();
-          setMode('signup');
-          if (session.user.email) {
-            setEmail(session.user.email);
-            setIsEmailVerified(true);
+        if (verifyData && verifyData.allowed) {
+          setMessage('Authenticated successfully! Launching merchant dashboard...');
+          let target = '/dashboard';
+          if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const red = params.get('redirect');
+            if (red && !red.startsWith('/login')) target = red;
+            window.location.href = target;
+          } else {
+            router.replace(target);
           }
-          setError(
-            verifyData.error ||
-            'This Google account is not registered yet. Please complete registration below first.'
-          );
-          setMessage('');
-          setLoading(false);
           return;
         }
-      } catch (checkErr) {
-        console.warn('Registration verification warning:', checkErr);
-        await supabase.auth.signOut();
-        setError('Could not verify merchant registration status. Please try again.');
-        setMode('signup');
-        setLoading(false);
-        return;
-      }
 
-      // Profile is verified and completed with compulsory phone number -> Safe to launch dashboard
-      setMessage('Authenticated successfully! Launching merchant dashboard...');
-      let target = '/dashboard';
-      if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search);
-        const red = params.get('redirect');
-        if (red && !red.startsWith('/login')) target = red;
-        window.location.href = target;
-      } else {
-        router.replace(target);
+        // If backend explicitly rejected with specific reason
+        console.warn('[LOGIN] Account verification response:', verifyData);
+        setError(verifyData?.error || 'Could not verify merchant account. Please try again.');
+        setLoading(false);
+        isRedirectingRef.current = false;
+      } catch (checkErr) {
+        console.warn('Registration verification warning (proceeding to dashboard):', checkErr);
+        // On network/service hiccup, permit authenticated session into dashboard where getUser() runs
+        let target = '/dashboard';
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const red = params.get('redirect');
+          if (red && !red.startsWith('/login')) target = red;
+          window.location.href = target;
+        } else {
+          router.replace(target);
+        }
       }
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
+      if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) {
         handleAuthRedirect(session);
       }
     });
