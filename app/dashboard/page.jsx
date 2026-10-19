@@ -1076,6 +1076,17 @@ export default function DashboardPage() {
         }
       }
 
+      // Ensure merchant has a valid registered profile with compulsory phone number
+      const cleanPhone = (data?.phone_number || '').toString().trim().replace(/\D/g, '');
+      const isUnregistered = !data || !cleanPhone || cleanPhone.length < 10 || data.business_name === 'My Business' || data.upi_id === 'pending@upi';
+
+      if (isUnregistered) {
+        console.warn('[Dashboard] Incomplete or unregistered merchant profile. Redirecting to registration...');
+        await supabase.auth.signOut();
+        window.location.href = '/login?unregistered=true';
+        return;
+      }
+
       setProfile(data);
 
       // Pre-fill wizard webhook URL from saved profile
@@ -1096,42 +1107,10 @@ export default function DashboardPage() {
 
       if (error.code === 'PGRST116') {
 
-         const newKey = generateUUID();
-
-         const newProfile = { id: userId, business_name: 'My Business', upi_id: 'pending@upi', api_key: newKey, subscription_status: 'inactive', subscription_expires_at: null };
-
-         const { data: insertedData, error: insertErr } = await supabase.from('merchants').insert(newProfile).select().single();
-
-         if (insertErr) {
-
-            setDbError(`Insert Error: ${insertErr.message} (Code: ${insertErr.code})`);
-
-         } else {
-
-            setProfile(insertedData);
-
-            try {
-              fetch('/api/auth/notify-signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  userId,
-                  email: user?.email,
-                  name: user?.user_metadata?.full_name || user?.user_metadata?.name || '',
-                  provider: user?.app_metadata?.provider || 'Google OAuth',
-                }),
-              }).catch(e => console.warn('Admin notify error:', e));
-            } catch (notifyErr) {
-              console.warn('Admin notify exception:', notifyErr);
-            }
-
-            fetchOrders(userId);
-
-            fetchEmailLogs(userId);
-
-            fetchSubscriptionHistory(userId);
-
-         }
+        console.warn('[Dashboard] Merchant profile not registered (PGRST116). Redirecting to registration...');
+        await supabase.auth.signOut();
+        window.location.href = '/login?unregistered=true';
+        return;
 
       } else {
 

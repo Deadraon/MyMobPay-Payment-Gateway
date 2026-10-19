@@ -7,7 +7,7 @@ import {
   Loader2, Lock, Mail, ArrowRight, ShieldCheck, 
   CheckCircle2, Building2, QrCode, Phone, Smartphone,
   Zap, Eye, EyeOff, AlertCircle, X, RefreshCw, MessageCircle,
-  Link2, Check, UserPlus
+  Link2, Check, UserPlus, ShieldAlert
 } from 'lucide-react';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
@@ -260,40 +260,73 @@ export default function LoginPage() {
   modeRef.current = mode;
   const isRegistrationSubmittedRef = useRef(false);
 
-  // Supabase Auth State Change Listener (for Magic Link redirects & existing session)
+  // Handle URL query parameters on initial mount (e.g. ?mode=signup, ?unregistered=true)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'signup') {
+        setMode('signup');
+      }
+      if (params.get('unregistered') === 'true') {
+        setMode('signup');
+        setError('Access denied: You must complete merchant registration with your mobile number before accessing the dashboard.');
+      }
+    }
+  }, []);
+
+  // Supabase Auth State Change Listener (for Google OAuth redirects & existing sessions)
   useEffect(() => {
     const handleAuthRedirect = async (session) => {
       if (!session?.user) return;
 
-      // 1. If currently in the middle of filling out signup details, don't hijack to dashboard!
-      if (modeRef.current === 'signup' && !isRegistrationSubmittedRef.current) {
-        setIsEmailVerified(true);
-        if (session.user.email) setEmail(session.user.email);
-        setMessage('Email verified! Please complete your Business Name and Settlement UPI ID below to finish registration.');
+      // 1. If currently in the middle of active signup form submission, don't interrupt
+      if (modeRef.current === 'signup' && isRegistrationSubmittedRef.current) {
         return;
       }
 
-      // 2. Check if merchant profile exists and has real details in DB
+      // 2. Strict Server-side Registration Verification:
+      // Verify whether this account (Google OAuth, email link, etc.) has already completed
+      // merchant registration with a compulsory mobile phone number and settlement details.
       try {
-        const { data: merchantProfile } = await supabase
-          .from('merchants')
-          .select('id, business_name, upi_id')
-          .eq('id', session.user.id)
-          .maybeSingle();
+        setLoading(true);
+        const verifyRes = await fetch('/api/auth/verify-registration-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: session.user.id,
+            email: session.user.email,
+          }),
+        });
 
-        // If no merchant profile or incomplete profile, keep user on signup to complete registration
-        if (!merchantProfile || !merchantProfile.business_name || merchantProfile.business_name === 'My Business' || merchantProfile.upi_id === 'pending@upi') {
+        const verifyData = await verifyRes.json();
+
+        // If the account has NOT registered first, do NOT allow user into dashboard!
+        if (!verifyData.allowed || !verifyData.registered) {
+          console.warn('[LOGIN] Unregistered Google/OAuth user blocked:', session.user.email);
+          await supabase.auth.signOut();
           setMode('signup');
-          setIsEmailVerified(true);
-          if (session.user.email) setEmail(session.user.email);
-          setMessage('Email verified! Please enter your Business Name and Settlement UPI ID to finish setting up your account.');
+          if (session.user.email) {
+            setEmail(session.user.email);
+            setIsEmailVerified(true);
+          }
+          setError(
+            verifyData.error ||
+            'This Google account is not registered yet. Mobile number is compulsory for all new merchants. Please complete registration below first.'
+          );
+          setMessage('');
+          setLoading(false);
           return;
         }
       } catch (checkErr) {
-        console.warn('Profile check warning:', checkErr);
+        console.warn('Registration verification warning:', checkErr);
+        await supabase.auth.signOut();
+        setError('Could not verify merchant registration status. Please try again.');
+        setMode('signup');
+        setLoading(false);
+        return;
       }
 
-      // Profile is verified and completed -> Safe to launch dashboard
+      // Profile is verified and completed with compulsory phone number -> Safe to launch dashboard
       setMessage('Authenticated successfully! Launching merchant dashboard...');
       let target = '/dashboard';
       if (typeof window !== 'undefined') {
@@ -834,8 +867,8 @@ export default function LoginPage() {
 
     if (action === 'signup') {
       const cleanPhone = phone.trim().replace(/\D/g, '');
-      if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
-        setError('Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).');
+      if (!cleanPhone || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+        setError('Mobile phone number is compulsory for all new merchants. Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).');
         return;
       }
 
@@ -908,7 +941,7 @@ export default function LoginPage() {
           setIsPhoneVerified(true);
         } else {
           isRegistrationSubmittedRef.current = false;
-          setError('Please verify your mobile number via WhatsApp OTP before creating your account.');
+          setError('Mobile phone number verification is compulsory. Please verify your mobile number via WhatsApp OTP before creating your account.');
           return;
         }
       }
@@ -1024,7 +1057,7 @@ export default function LoginPage() {
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/login?googleAuth=true`,
         },
       });
       if (authError) throw authError;
@@ -1893,9 +1926,9 @@ export default function LoginPage() {
                     {/* Mobile Phone Number with WhatsApp OTP verification */}
                     <div className="flex flex-col space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
+                        <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1.5">
                           <span>Mobile Number (WhatsApp)</span>
-                          <span className="text-red-500">*</span>
+                          <span className="text-red-500 font-bold">* Compulsory</span>
                         </label>
                         {isPhoneVerified ? (
                           <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
@@ -1903,8 +1936,8 @@ export default function LoginPage() {
                             WhatsApp Verified
                           </span>
                         ) : (
-                          <span className="text-[10px] font-medium text-[#64748d]">
-                            WhatsApp OTP required
+                          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                            Compulsory Verification
                           </span>
                         )}
                       </div>
@@ -1929,7 +1962,7 @@ export default function LoginPage() {
                             if (isPhoneVerified) setIsPhoneVerified(false);
                             if (phoneOtpSent) setPhoneOtpSent(false);
                           }}
-                          placeholder="10-digit WhatsApp number"
+                          placeholder="10-digit mobile number (Compulsory)"
                           className="w-full bg-transparent py-2 pl-3 text-sm text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans tracking-normal disabled:opacity-85"
                         />
                         {isPhoneVerified ? (
@@ -1968,7 +2001,7 @@ export default function LoginPage() {
                       {/* Sub-text hint when Phone OTP not sent yet */}
                       {!phoneOtpSent && !isPhoneVerified && (
                         <p className="text-[11px] text-[#64748d]">
-                          Click &quot;Verify on WhatsApp&quot; to receive your 6-digit OTP code on WhatsApp.
+                          Compulsory for merchant identity verification and transaction alerts. Click &quot;Verify on WhatsApp&quot; to receive your 6-digit OTP code.
                         </p>
                       )}
 
@@ -2092,9 +2125,22 @@ export default function LoginPage() {
                 <div className="relative my-6 flex items-center justify-center">
                   <div className="w-full h-px bg-[#e3e8ee]"></div>
                   <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold uppercase tracking-wider">
-                    OR CONTINUE WITH
+                    {mode === 'signup' ? 'ALREADY REGISTERED?' : 'OR CONTINUE WITH'}
                   </span>
                 </div>
+
+                {/* Notice in Signup mode informing users that Google Sign-in is for registered accounts only */}
+                {mode === 'signup' && (
+                  <div className="mb-3 p-3 rounded-xl bg-amber-50/90 border border-amber-200/90 text-amber-900 text-xs flex items-start gap-2.5 shadow-2xs">
+                    <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div className="flex flex-col gap-0.5 text-left">
+                      <span className="font-semibold text-amber-950">Mobile Registration Required First</span>
+                      <span className="text-[11px] text-amber-800 leading-relaxed">
+                        Mobile number is compulsory for all new merchants. Google Sign-In is only allowed for merchants who have already registered with their phone number.
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Google Workspace Login */}
                 <button
@@ -2109,7 +2155,7 @@ export default function LoginPage() {
                     <path d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.26C.46 8.18 0 9.99 0 12s.46 3.82 1.26 5.42l4.02-3.13z" fill="#FBBC05"></path>
                     <path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.25 2.64 1.26 6.58l4.02 3.13c.95-2.83 3.6-4.96 6.72-4.96z" fill="#EA4335"></path>
                   </svg>
-                  <span>Continue with Google Workspace</span>
+                  <span>{mode === 'signup' ? 'Sign In with Registered Google Account' : 'Continue with Google Workspace'}</span>
                 </button>
                 {/* QR Code Express Login Bar (in Signin mode, desktop only) */}
                 {mode === 'signin' && (
