@@ -30,6 +30,7 @@ import {
 export default function AdminConsole({ user, profile, onBackToMerchant }) {
   // ── Authentication States ──────────────────────────────────────────
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    if (user?.id || user?.email) return true;
     if (typeof window !== 'undefined') {
       return sessionStorage.getItem('admin_google_logged_in') === 'true' || 
              !!sessionStorage.getItem('admin_token');
@@ -42,6 +43,16 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     if (typeof window !== 'undefined') return sessionStorage.getItem('admin_token') || '';
     return '';
   });
+
+  // Ensure logged-in state stays synchronized if user prop is supplied
+  useEffect(() => {
+    if (user?.id || user?.email) {
+      setIsLoggedIn(true);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('admin_google_logged_in', 'true');
+      }
+    }
+  }, [user]);
 
   // Active Navigation Tab
   const [activeTab, setActiveTabState] = useState(() => {
@@ -109,30 +120,68 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     }
   }, [showToast]);
 
+  // Centralized Admin Authentication Headers Builder
+  const getAuthHeaders = useCallback(async () => {
+    const headers = {};
+    let token = typeof window !== 'undefined' ? sessionStorage.getItem('admin_token') : null;
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+
+        // If we don't have a signed admin token in sessionStorage yet, exchange silently
+        if (!token) {
+          try {
+            const loginRes = await fetch('/api/admin/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ provider: 'google', token: session.access_token })
+            });
+            if (loginRes.ok) {
+              const loginData = await loginRes.json();
+              if (loginData.token) {
+                token = loginData.token;
+                sessionStorage.setItem('admin_token', token);
+                sessionStorage.setItem('admin_google_logged_in', 'true');
+              }
+            }
+          } catch (e) {
+            // continue with Bearer session.access_token
+          }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    if (token) {
+      headers['x-admin-token'] = token;
+      if (!headers['Authorization']) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+
+    return headers;
+  }, []);
+
   const fetchMerchantsData = useCallback(async () => {
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
-      const res = await fetch('/api/admin/merchants', {
-        headers: {
-          'x-admin-token': token,
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const headers = await getAuthHeaders();
+      const res = await fetch('/api/admin/merchants', { headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setMerchants(data.merchants || []);
-      setAllSignups(data.all_signups || []);
+      setAllSignups(data.signups || data.all_signups || []);
     } catch (err) {
       console.error('Error fetching merchants & signups:', err);
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   const fetchSubscriptionsAndGiftCodes = useCallback(async () => {
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
-      const res = await fetch('/api/admin/subscriptions', {
-        headers: { 'x-admin-token': token, 'Authorization': `Bearer ${token}` }
-      });
+      const headers = await getAuthHeaders();
+      const res = await fetch('/api/admin/subscriptions', { headers });
       if (res.ok) {
         const data = await res.json();
         setGiftCodes(data.gift_codes || data.giftCodes || []);
@@ -140,14 +189,12 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     } catch (err) {
       console.error('Error fetching subscriptions:', err);
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   const fetchSystemSettings = useCallback(async () => {
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
-      const res = await fetch('/api/admin/settings', {
-        headers: { 'x-admin-token': token, 'Authorization': `Bearer ${token}` }
-      });
+      const headers = await getAuthHeaders();
+      const res = await fetch('/api/admin/settings', { headers });
       if (res.ok) {
         const data = await res.json();
         if (data.upi_id) setAdminUpi(data.upi_id);
@@ -158,7 +205,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     } catch (err) {
       console.error('Error fetching system settings:', err);
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   const refreshAllData = useCallback(async () => {
     setLoading(true);
@@ -291,10 +338,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     if (!reconcileModalOrder) return;
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({
           orderId: reconcileModalOrder.id,
           action: 'verify',
@@ -321,10 +369,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     if (!confirm('Are you sure you want to reject this order?')) return;
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ orderId, action: 'reject' })
       });
       const data = await res.json();
@@ -344,10 +393,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleResendWebhook = async (orderId) => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ orderId, action: 'resend_webhook' })
       });
       const data = await res.json();
@@ -365,10 +415,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleUpdateMerchant = async (merchantId, payload) => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/merchants', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ merchantId, action: 'updateMerchant', payload })
       });
       const data = await res.json();
@@ -389,10 +440,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     if (!confirm('Are you sure you want to generate a new API key? Any existing backend integrations will need the new key.')) return;
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/merchants', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ merchantId, action: 'rotateApiKey' })
       });
       const data = await res.json();
@@ -411,10 +463,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleExtendSubscription = async (merchantId, days, currentExpiry) => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/merchants', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ merchantId, action: 'extendSubscription', payload: { days, currentExpiry } })
       });
       const data = await res.json();
@@ -434,10 +487,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleToggleStatus = async (merchantId, newStatus) => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/merchants', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ merchantId, action: 'toggleSubscription', status: newStatus })
       });
       const data = await res.json();
@@ -456,10 +510,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleSendOutreachEmail = async (email, name) => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/merchants', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({
           action: 'sendOutreachEmail',
           payload: { to: email, recipientName: name }
@@ -485,10 +540,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleCreateGiftCode = async (codePayload) => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/subscriptions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ action: 'create_gift_code', ...codePayload })
       });
       const data = await res.json();
@@ -507,10 +563,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     if (!confirm(`Delete promo code "${code}"?`)) return;
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/subscriptions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ action: 'delete_gift_code', code })
       });
       const data = await res.json();
@@ -529,10 +586,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleUpdateAdminUpi = async (newUpi) => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ action: 'update_upi', upi_id: newUpi })
       });
       const data = await res.json();
@@ -550,10 +608,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleGenerateTotp = async () => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ action: 'generate_totp' })
       });
       const data = await res.json();
@@ -571,10 +630,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const handleEnableTotp = async (code) => {
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ action: 'verify_totp', token: code })
       });
       const data = await res.json();
@@ -594,10 +654,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     if (!confirm('Disable 2FA protection for the Master Console?')) return;
     setActionLoading(true);
     try {
-      const token = sessionStorage.getItem('admin_token') || 'adm_session_authorized';
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
       const res = await fetch('/api/admin/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token, 'Authorization': `Bearer ${token}` },
+        headers,
         body: JSON.stringify({ action: 'disable_totp' })
       });
       if (res.ok) {

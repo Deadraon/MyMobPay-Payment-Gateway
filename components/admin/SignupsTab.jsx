@@ -39,11 +39,11 @@ export default function SignupsTab({
   }, [allSignups]);
 
   const awaitingVpaUsers = useMemo(() => {
-    return allSignups.filter(s => s.phone_number && s.phone_number.trim() !== '' && (!s.upi_id || s.upi_id === 'Not configured'));
+    return allSignups.filter(s => s.phone_number && s.phone_number.trim() !== '' && (!s.upi_id || s.upi_id === 'Not configured' || s.upi_id === 'pending@upi'));
   }, [allSignups]);
 
   const fullyReadyUsers = useMemo(() => {
-    return allSignups.filter(s => s.phone_number && s.upi_id && s.upi_id !== 'Not configured');
+    return allSignups.filter(s => s.phone_number && s.upi_id && s.upi_id !== 'Not configured' && s.upi_id !== 'pending@upi');
   }, [allSignups]);
 
   const displayedSignups = useMemo(() => {
