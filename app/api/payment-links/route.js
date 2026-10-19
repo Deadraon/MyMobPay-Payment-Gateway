@@ -220,30 +220,17 @@ export async function GET(request) {
     if (activeOrProcessing.length > 0) {
       const { data: verifiedOrders } = await supabaseAdmin
         .from('orders')
-        .select('id, external_ref, status, utr, verified_at, amount')
+        .select('id, utr')
         .eq('merchant_id', merchant.id)
         .in('status', ['verified', 'completed', 'paid']);
 
       if (verifiedOrders && verifiedOrders.length > 0) {
-        for (const l of links) {
-          if (l.status === 'paid') continue;
-          const tokenPrefix = l.token.slice(0, 12);
-          const matched = verifiedOrders.find(
-            vo =>
-              (l.order_id && vo.id === l.order_id) ||
-              (vo.external_ref && (
-                vo.external_ref === `pl_${tokenPrefix}` ||
-                vo.external_ref.startsWith(`pl_${tokenPrefix}`) ||
-                vo.external_ref === l.token ||
-                vo.external_ref === l.id
-              ))
-          );
+        for (const l of activeOrProcessing) {
+          const matched = verifiedOrders.find(vo => vo.id === l.order_id);
 
           if (matched) {
-            l.status = 'paid';
-            l.paid_at = matched.verified_at || new Date().toISOString();
-            l.order_id = matched.id;
-            transitionLinkToPaid(l.token, { orderId: matched.id, utr: matched.utr }).catch(() => {});
+            const result = await transitionLinkToPaid(l.token, { orderId: matched.id, utr: matched.utr });
+            if (result.success) Object.assign(l, result.link);
           }
         }
       }

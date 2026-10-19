@@ -76,28 +76,11 @@ export async function GET(request, { params }) {
       }
     }
 
-    if (!verifiedOrder) {
-      const tokenPrefix = link.token.slice(0, 12);
-      const { data: ordByRef } = await supabaseAdmin
-        .from('orders')
-        .select('id, status, utr, verified_at, amount, callback_url')
-        .eq('merchant_id', link.merchant_id)
-        .ilike('external_ref', `pl_${tokenPrefix}%`)
-        .in('status', ['verified', 'completed', 'paid'])
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (ordByRef) {
-        verifiedOrder = ordByRef;
-      }
-    }
-
     if (verifiedOrder) {
       // Reconcile database state idempotently
-      transitionLinkToPaid(link.token, { orderId: verifiedOrder.id, utr: verifiedOrder.utr }).catch(() => {});
+      const result = await transitionLinkToPaid(link.token, { orderId: verifiedOrder.id, utr: verifiedOrder.utr });
 
-      return NextResponse.json(
+      if (result.success) return NextResponse.json(
         {
           error: 'This payment order has already been verified and settled.',
           code: 'PAID',
@@ -294,7 +277,10 @@ export async function POST(request, { params }) {
       .maybeSingle();
 
     if (existingOrder && (existingOrder.status === 'verified' || existingOrder.status === 'completed' || existingOrder.status === 'paid')) {
-      transitionLinkToPaid(link.token, { orderId: existingOrder.id, utr: existingOrder.utr }).catch(() => {});
+      const result = await transitionLinkToPaid(link.token, { orderId: existingOrder.id, utr: existingOrder.utr });
+      if (!result.success) {
+        return NextResponse.json({ error: result.error }, { status: 409 });
+      }
       return NextResponse.json(
         {
           error: 'This payment order has already been completed and settled.',
