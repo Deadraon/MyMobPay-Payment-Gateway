@@ -16,30 +16,33 @@ import {
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 
-const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-primary)' }) => (
-  <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300 hover:scale-[1.02]`}>
-    {/* 3D Ribbon M Mark */}
-    <image
-      href="/logos/mymobpay_mark.png"
-      x="2"
-      y="2"
-      width="38"
-      height="36"
-      preserveAspectRatio="xMidYMid meet"
-    />
-    <text
-      x="44"
-      y="27"
-      fontFamily="'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-      fontWeight="800"
-      fontSize="26"
-      fill={textColor}
-      letterSpacing="-0.5"
-    >
-      MyMobPay
-    </text>
-  </svg>
-);
+const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) => {
+  const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
+  return (
+    <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 hover:scale-[1.02] ${className}`}>
+      {/* 3D Ribbon M Mark */}
+      <img
+        src="/logos/mymobpay_mark.png"
+        alt="MyMobPay Mark"
+        width={markSize}
+        height={markSize}
+        className="object-contain shrink-0"
+        style={{ width: `${markSize}px`, height: `${markSize}px` }}
+      />
+      {/* Brand Wordmark */}
+      <span
+        className="font-extrabold tracking-tight leading-none text-xl sm:text-2xl"
+        style={{
+          fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          color: resolvedColor,
+          letterSpacing: '-0.5px'
+        }}
+      >
+        MyMobPay
+      </span>
+    </div>
+  );
+};
 
 const InstagramIcon = ({ className = 'w-4 h-4' }) => (
   <svg
@@ -210,29 +213,34 @@ export default function HomePage() {
          ──────────────────────────────────────────────────────── */}
       <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-[#e3e8ee] shadow-xs transition-all font-sohne">
         {/* ── TOP ANNOUNCEMENT BANNER ── */}
-        <div className="w-full bg-[#1c1e54] text-white text-[11px] sm:text-xs font-normal py-2.5 px-4 flex items-center justify-center gap-3 select-none border-b border-white/10">
-          <span className="inline-flex items-center gap-1.5 bg-[#533afd] text-white font-semibold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Direct UPI 2.0
-          </span>
-          <span className="text-slate-200 truncate">
-            Direct bank settlement (IMPS / UPI) with <strong className="text-white font-medium underline underline-offset-2">0% gateway fees</strong>.
-          </span>
+        <div className="w-full bg-[#1c1e54] text-white text-[11px] sm:text-xs font-normal py-2 px-3 sm:px-4 flex items-center justify-between sm:justify-center gap-2 sm:gap-3 select-none border-b border-white/10">
+          <div className="flex items-center gap-2 truncate">
+            <span className="inline-flex items-center gap-1.5 bg-[#533afd] text-white font-semibold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide uppercase shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Direct UPI 2.0
+            </span>
+            <span className="text-slate-200 text-[11px] truncate hidden sm:inline">
+              Direct bank settlement (IMPS / UPI) with <strong className="text-white font-medium underline underline-offset-2">0% gateway fees</strong>.
+            </span>
+            <span className="text-slate-200 text-[11px] truncate sm:hidden">
+              0% Gateway Fees • Direct Bank Settlement
+            </span>
+          </div>
           <a
             href="#pricing-section"
-            className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-medium text-xs px-3 py-1 rounded-full transition-all shrink-0 border border-white/20"
+            className="inline-flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white font-medium text-[11px] px-2.5 py-0.5 rounded-full transition-all shrink-0 border border-white/20"
           >
-            <span>Compare savings</span>
+            <span>Savings</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
 
-        <div className="w-full max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
           
           {/* Left Cluster: Brand Logo + Primary Nav */}
-          <div className="flex items-center gap-8 lg:gap-12">
-            <Link href="/" className="flex items-center select-none group py-1">
-              <MyMobPayLogo className="w-42 sm:w-44 h-auto" textColor="#0d253d" />
+          <div className="flex items-center gap-8 lg:gap-12 shrink-0">
+            <Link href="/" className="flex items-center select-none group py-1 shrink-0" aria-label="MyMobPay Home">
+              <MyMobPayLogo textColor="#0d253d" markSize={32} />
             </Link>
 
             {/* Desktop Nav Links */}
@@ -254,7 +262,7 @@ export default function HomePage() {
               Login
             </Link>
             <Link 
-              href="/login"
+              href="/login?mode=signup"
               className="px-5 py-2.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-[14px] font-normal flex items-center gap-1.5 transition-all shadow-sm group"
             >
               <span>Start now</span>
@@ -265,10 +273,11 @@ export default function HomePage() {
           {/* Mobile hamburger button */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-sm"
+            className="lg:hidden p-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors shadow-2xs border border-slate-200/70"
             title="Toggle Menu"
+            aria-label="Toggle Navigation Menu"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
         </div>
@@ -276,7 +285,7 @@ export default function HomePage() {
 
       {/* Mobile Drawer Navigation */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 bottom-0 top-20 z-40 bg-white flex flex-col pt-8 px-6 pb-8 animate-fadeIn border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)]">
+        <div className="lg:hidden fixed inset-x-0 bottom-0 top-[96px] sm:top-[116px] z-40 bg-white flex flex-col pt-6 px-6 pb-8 animate-fadeIn border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto">
           <div className="flex flex-col space-y-4">
             <Link 
               href="/stripe-demo" 
@@ -342,21 +351,19 @@ export default function HomePage() {
       {/* ────────────────────────────────────────────────────────
          FLAGSHIP HERO SECTION (Razorpay-Grade Clean Light Fintech)
          ──────────────────────────────────────────────────────── */}
-      <section className="relative mt-20 pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden stripe-gradient-mesh font-sohne">
+      <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-20 md:pt-40 md:pb-28 overflow-hidden stripe-gradient-mesh font-sohne">
         
         <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_20%,#000_70%,transparent_100%)] opacity-50 -z-20" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
           {/* Left Column: Authoritative Fintech Headline & Reassuring Copy */}
           <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
             
-            {/* Direct P2P Status Badge */}
+            {/* Direct P2P Status Badge (Clean, without duplicate logo) */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 backdrop-blur-md border border-[#e3e8ee] rounded-full text-xs font-medium text-[#273951] shadow-xs animate-fade-up">
-              <img src="/logos/mymobpay_mark.png" alt="MyMobPay" className="w-4 h-auto object-contain" />
-              <span className="font-semibold text-[#0d253d]">MyMobPay</span>
-              <span className="text-slate-300">•</span>
-              <span>Direct-to-bank UPI 2.0 Rails</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span className="font-semibold text-[#0d253d]">Direct-to-bank UPI 2.0 Rails</span>
               <span className="text-slate-300">•</span>
               <span className="font-medium text-[#533afd]">0% Gateway Fees</span>
             </div>
@@ -385,10 +392,10 @@ export default function HomePage() {
             {/* Razorpay-Grade Dual CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fade-up delay-200">
               <Link 
-                href="/login" 
-                className="w-full sm:w-auto px-7 py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all shadow-sm text-center text-[15px] flex items-center justify-center gap-2 group"
+                href="/login?mode=signup" 
+                className="w-full sm:w-auto px-7 py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all shadow-sm text-center text-[15px] flex items-center justify-center gap-2 group cursor-pointer"
               >
-                <span>Start now with WhatsApp OTP</span>
+                <span>Start now</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <a 

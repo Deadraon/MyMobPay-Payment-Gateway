@@ -13,30 +13,31 @@ import Link from 'next/link';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 
-const MyMobPayLogo = ({ className = 'h-8 w-auto', textColor = '#0d253d' }) => (
-  <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300 hover:scale-[1.02]`}>
-    {/* 3D Ribbon M Mark */}
-    <image
-      href="/logos/mymobpay_mark.png"
-      x="2"
-      y="2"
-      width="38"
-      height="36"
-      preserveAspectRatio="xMidYMid meet"
-    />
-    <text
-      x="44"
-      y="27"
-      fontFamily="'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-      fontWeight="800"
-      fontSize="26"
-      fill={textColor}
-      letterSpacing="-0.5"
-    >
-      MyMobPay
-    </text>
-  </svg>
-);
+const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) => {
+  const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
+  return (
+    <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 hover:scale-[1.02] ${className}`}>
+      <img
+        src="/logos/mymobpay_mark.png"
+        alt="MyMobPay Mark"
+        width={markSize}
+        height={markSize}
+        className="object-contain shrink-0"
+        style={{ width: `${markSize}px`, height: `${markSize}px` }}
+      />
+      <span
+        className="font-extrabold tracking-tight leading-none text-xl sm:text-2xl"
+        style={{
+          fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          color: resolvedColor,
+          letterSpacing: '-0.5px'
+        }}
+      >
+        MyMobPay
+      </span>
+    </div>
+  );
+};
 
 // ── Translate developer/system errors to clear, customer-friendly English ──
 function formatCustomerError(err) {
