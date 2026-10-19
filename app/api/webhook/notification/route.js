@@ -4,7 +4,7 @@ import { parseTransactionText } from '@/lib/parseSms';
 import { CONFIG } from '@/lib/config';
 import { checkAndProcessSubscription } from '@/lib/adminSettings';
 import { triggerMerchantWebhook } from '@/lib/webhook';
-import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
+import { parseAmountToPaise, syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
 
 export async function POST(request) {
   try {
@@ -72,21 +72,13 @@ export async function POST(request) {
       }
     }
 
-    // 3. Find the most recent pending order matching the amount (support paise offset for subscriptions)
+    // 3. Find the most recent pending order matching the exact amount, including paise offsets.
     if (!matchedOrder) {
-      const isSubAmount = amount === 499 || amount === 1497 || amount === 998 || amount === 1 || (amount >= 495 && amount <= 505);
-      let orderQuery = supabaseAdmin
+      const orderQuery = supabaseAdmin
         .from('orders')
         .select('*')
-        .eq('status', 'pending');
-
-      if (isSubAmount) {
-        const minAmt = Math.floor(amount);
-        const maxAmt = Math.floor(amount) + 0.99;
-        orderQuery = orderQuery.gte('amount', minAmt).lte('amount', maxAmt);
-      } else {
-        orderQuery = orderQuery.eq('amount', amount);
-      }
+        .eq('status', 'pending')
+        .eq('amount', amount);
 
       const { data: orders, error: findError } = await orderQuery
         .order('created_at', { ascending: false })
@@ -107,6 +99,18 @@ export async function POST(request) {
         success: false,
         code: 'ORDER_NOT_FOUND',
         message: `No matching pending order found for amount ₹${amount}`,
+        parsed: { amount, utr }
+      }, { status: 200 });
+    }
+
+    // Every matching strategy must confirm the full order amount before verification.
+    const creditedPaise = parseAmountToPaise(amount);
+    if (!Number.isSafeInteger(creditedPaise) || creditedPaise <= 0 ||
+        creditedPaise !== parseAmountToPaise(matchedOrder.amount)) {
+      return NextResponse.json({
+        success: false,
+        code: 'PAYMENT_AMOUNT_MISMATCH',
+        message: 'Credited amount does not match the order amount. Order left unverified for review.',
         parsed: { amount, utr }
       }, { status: 200 });
     }
