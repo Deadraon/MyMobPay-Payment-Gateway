@@ -100,8 +100,8 @@ export async function POST(req) {
         registered: false,
         email: cleanEmail,
         error: cleanEmail
-          ? `This Google account (${cleanEmail}) is not registered yet. Mobile number is compulsory for all new merchants. Please complete registration below first.`
-          : 'Your account is not registered yet. Mobile number is compulsory for all new merchants. Please complete registration below first.',
+          ? `This Google account (${cleanEmail}) is not registered yet. Please complete merchant registration below first.`
+          : 'Your account is not registered yet. Please complete merchant registration below first.',
       });
     }
 
