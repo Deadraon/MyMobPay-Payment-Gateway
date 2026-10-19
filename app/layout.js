@@ -317,13 +317,6 @@ export default function RootLayout({ children }) {
                 },
                 {
                   "@type": "SiteNavigationElement",
-                  "@id": `${BASE_URL}/#nav-how-it-works`,
-                  name: "How It Works",
-                  description: "Learn how direct bank UPI settlement and automated instant verification work.",
-                  url: `${BASE_URL}#how-it-works`,
-                },
-                {
-                  "@type": "SiteNavigationElement",
                   "@id": `${BASE_URL}/#nav-dev`,
                   name: "Developer Integration",
                   description: "API documentation, code snippets in cURL/Node/Python, and signed HMAC webhooks.",
