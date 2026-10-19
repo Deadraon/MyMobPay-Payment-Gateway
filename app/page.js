@@ -253,20 +253,13 @@ export default function HomePage() {
             </nav>
           </div>
 
-          {/* Right Cluster: Login + Single Filled Indigo Pill CTA */}
-          <div className="hidden sm:flex items-center gap-4">
+          {/* Right Cluster: Login Link */}
+          <div className="hidden sm:flex items-center">
             <Link 
               href="/login" 
-              className="text-[15px] font-normal text-[#0d253d] hover:text-[#533afd] transition-colors px-3 py-2"
+              className="px-4 py-2 text-[14px] font-medium text-[#0d253d] hover:text-[#533afd] hover:bg-slate-100/70 rounded-full transition-all"
             >
               Login
-            </Link>
-            <Link 
-              href="/login?mode=signup"
-              className="px-5 py-2.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-[14px] font-normal flex items-center gap-1.5 transition-all shadow-sm group"
-            >
-              <span>Start now</span>
-              <span className="ml-1 opacity-80 transition-transform group-hover:translate-x-0.5">&rarr;</span>
             </Link>
           </div>
 
