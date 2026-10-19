@@ -1101,10 +1101,14 @@ export default function LoginPage() {
       {/* ────────────────────────────────────────────────────────
          LEFT PANE: DYNAMIC PRODUCT HERO SHOWCASE (Desktop only)
          ──────────────────────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:col-span-7 bg-[#1c1e54] relative z-10 flex-col justify-between p-8 xl:p-12 h-screen overflow-hidden border-r border-[#273951]/70 shrink-0">
+      <div className="hidden lg:flex lg:col-span-7 bg-[#070913] relative z-10 flex-col justify-between p-8 xl:p-12 h-screen overflow-hidden border-r border-[#1a2035] shrink-0">
         
-        {/* Deep Tech Grid Line Overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#273951_1px,transparent_1px),linear-gradient(to_bottom,#273951_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] opacity-35 pointer-events-none" />
+        {/* Soft Ambient Depth Glows */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#533afd]/15 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3b82f6]/10 rounded-full blur-[100px] pointer-events-none" />
+
+        {/* Deep Tech Grid Line Overlay - Subtle & Refined */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] pointer-events-none" />
 
         {/* Logo Wordmark header */}
         <Link href="/" className="inline-block relative z-10 shrink-0">
@@ -1115,7 +1119,7 @@ export default function LoginPage() {
         <div className="grid grid-cols-12 gap-6 xl:gap-8 items-center relative z-10 my-auto">
           
           <div className="col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/20 rounded-full text-[10px] font-semibold text-[#b9b9f9] uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/[0.06] border border-white/10 rounded-full text-[10px] font-semibold text-[#b9b9f9] uppercase tracking-wider">
               🟢 Direct P2P Settlements
             </div>
             
@@ -1123,37 +1127,37 @@ export default function LoginPage() {
               Built for founders defying all odds
             </h2>
             
-            <p className="text-xs xl:text-sm text-slate-200 leading-relaxed font-normal">
+            <p className="text-xs xl:text-sm text-slate-400 leading-relaxed font-normal">
               Join thousands of businesses managing billing programmatically with flat-rate subscriptions and 0% gateway cuts.
             </p>
 
-            <div className="pt-2 space-y-3.5 font-normal text-xs text-white">
+            <div className="pt-2 space-y-3.5 font-normal text-xs text-slate-300">
               <p className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-white">Zero transaction cuts on monthly volumes</span>
+                <span className="text-slate-200">Zero transaction cuts on monthly volumes</span>
               </p>
               <p className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-white">HMAC-SHA256 signed developer webhooks</span>
+                <span className="text-slate-200">HMAC-SHA256 signed developer webhooks</span>
               </p>
               <p className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-white">Risk-free sandbox simulation active</span>
+                <span className="text-slate-200">Risk-free sandbox simulation active</span>
               </p>
             </div>
           </div>
 
           {/* Interactive Bezel Frame containing payment mockup */}
           <div className="col-span-5 flex justify-end">
-            <div className="relative w-full max-w-[220px] xl:max-w-[240px] bg-[#0c2340] border-4 border-[#273951] rounded-[30px] shadow-2xl overflow-hidden aspect-[9/18.5] flex flex-col transition-transform duration-500 hover:scale-[1.04]">
+            <div className="relative w-full max-w-[220px] xl:max-w-[240px] bg-[#030712] border-4 border-[#1e293b] rounded-[30px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden aspect-[9/18.5] flex flex-col transition-transform duration-500 hover:scale-[1.04]">
               
               {/* Speaker camera notch */}
               <div className="absolute top-0 inset-x-0 h-4 flex justify-center z-30">
-                <div className="bg-[#273951] w-20 h-2.5 rounded-b-xl" />
+                <div className="bg-[#1e293b] w-20 h-2.5 rounded-b-xl" />
               </div>
 
               {/* simulated checkout screen content */}
-              <div className="flex-1 bg-[#0d253d] pt-6 px-3.5 pb-3.5 flex flex-col justify-between font-sans select-none text-white text-[10px]">
+              <div className="flex-1 bg-[#090d16] pt-6 px-3.5 pb-3.5 flex flex-col justify-between font-sans select-none text-white text-[10px]">
                 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-[7px] font-bold text-slate-400 px-0.5">
@@ -1166,13 +1170,13 @@ export default function LoginPage() {
                     <p className="text-[6px] text-slate-400 font-extrabold uppercase tracking-wider mt-0.5">Direct Bank Checkout</p>
                   </div>
 
-                  <div className="bg-[#1c1e54] border border-[#273951] rounded-xl p-2.5 shadow-sm space-y-1.5">
+                  <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-2.5 shadow-sm space-y-1.5">
                     <div className="flex justify-between items-center text-[7px] text-slate-400 font-bold uppercase">
                       <span>Total Due</span>
-                      <span className="text-[#b9b9f9] font-semibold bg-[#533afd]/30 px-1 py-0.2 rounded text-[5px] uppercase">P2P Route</span>
+                      <span className="text-[#a5b4fc] font-semibold bg-[#533afd]/25 px-1 py-0.2 rounded text-[5px] uppercase">P2P Route</span>
                     </div>
                     <div className="flex items-baseline">
-                      <span className="text-[10px] font-bold text-slate-400 mr-0.2">₹</span>
+                      <span className="text-[10px] font-bold text-slate-400 mr-0.5">₹</span>
                       <span className="text-xl font-black text-white tracking-tight leading-none">500.00</span>
                     </div>
                   </div>
@@ -1212,7 +1216,7 @@ export default function LoginPage() {
 
                 </div>
 
-                <div className="space-y-2 pt-2.5 border-t border-slate-200 text-center text-[6px] font-bold text-slate-400 uppercase tracking-wide">
+                <div className="space-y-2 pt-2.5 border-t border-slate-800 text-center text-[6px] font-bold text-slate-500 uppercase tracking-wide">
                   Secure checkout by MyMobPay
                 </div>
 
@@ -1224,7 +1228,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer info in left panel */}
-        <p className="text-[10px] text-slate-400 font-light relative z-10 shrink-0">
+        <p className="text-[10px] text-slate-500 font-light relative z-10 shrink-0">
           © 2026 MyMobPay · Secure B2B Gateway Infrastructures
         </p>
 
