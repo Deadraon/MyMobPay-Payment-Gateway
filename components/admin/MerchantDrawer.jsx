@@ -14,12 +14,24 @@ import {
   CheckCircle2, 
   AlertCircle, 
   ShieldAlert, 
+  ShieldCheck,
   Calendar,
   Save,
   MessageCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  Lock,
+  Building,
+  FileText
 } from 'lucide-react';
+import { 
+  maskBankAccount, 
+  maskPhone, 
+  maskUpi, 
+  maskApiKey, 
+  maskPan, 
+  maskGstin 
+} from '@/lib/adminMasking';
 
 export default function MerchantDrawer({
   merchant,
@@ -28,25 +40,32 @@ export default function MerchantDrawer({
   onRotateApiKey,
   onExtendSubscription,
   actionLoading = false,
-  showToast
+  showToast,
+  getAuthHeaders
 }) {
   const [businessName, setBusinessName] = useState(merchant?.business_name || '');
   const [phoneNumber, setPhoneNumber] = useState(merchant?.phone_number || '');
   const [upiId, setUpiId] = useState(merchant?.upi_id || '');
   const [webhookUrl, setWebhookUrl] = useState(merchant?.webhook_url || '');
   const [subscriptionStatus, setSubscriptionStatus] = useState(merchant?.subscription_status || 'active');
-  const [isKeyRevealed, setIsKeyRevealed] = useState(false);
   const [testWebhookStatus, setTestWebhookStatus] = useState(null); // { loading, code, msg }
 
+  // Revealed values cache: { [fieldName]: unmaskedValue }
+  const [revealedFields, setRevealedFields] = useState({});
+  // Unmask modal: { open: boolean, field: string, label: string }
+  const [revealModal, setRevealModal] = useState({ open: false, field: '', label: '' });
+  const [revealReason, setRevealReason] = useState('');
+  const [revealLoading, setRevealLoading] = useState(false);
+
   // Sync state if merchant prop changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (merchant) {
       setBusinessName(merchant.business_name || '');
       setPhoneNumber(merchant.phone_number || '');
       setUpiId(merchant.upi_id || '');
       setWebhookUrl(merchant.webhook_url || '');
       setSubscriptionStatus(merchant.subscription_status || 'active');
-      setIsKeyRevealed(false);
+      setRevealedFields({});
       setTestWebhookStatus(null);
     }
   }, [merchant]);
@@ -54,6 +73,7 @@ export default function MerchantDrawer({
   if (!merchant) return null;
 
   const handleCopy = (text, label) => {
+    if (!text) return;
     navigator.clipboard.writeText(text);
     if (showToast) showToast(`Copied ${label} to clipboard!`, 'info');
   };
@@ -98,6 +118,49 @@ export default function MerchantDrawer({
     }
   };
 
+  // Trigger unmask request
+  const submitUnmask = async (e) => {
+    e.preventDefault();
+    if (!revealReason || revealReason.trim().length < 5) {
+      if (showToast) showToast('A reason of at least 5 characters is required for audit justification', 'error');
+      return;
+    }
+
+    setRevealLoading(true);
+    try {
+      const headers = getAuthHeaders ? await getAuthHeaders() : {};
+      headers['Content-Type'] = 'application/json';
+
+      const res = await fetch('/api/admin/reveal', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          merchantId: merchant.id,
+          field: revealModal.field,
+          reason: revealReason.trim()
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to unmask credential');
+      }
+
+      setRevealedFields(prev => ({
+        ...prev,
+        [revealModal.field]: data.unmaskedValue
+      }));
+
+      if (showToast) showToast(`Revealed ${revealModal.label}. Logged to audit trail.`, 'info');
+      setRevealModal({ open: false, field: '', label: '' });
+      setRevealReason('');
+    } catch (err) {
+      if (showToast) showToast(err.message, 'error');
+    } finally {
+      setRevealLoading(false);
+    }
+  };
+
   const cleanPhone = (phoneNumber || '').replace(/\D/g, '');
 
   return (
@@ -113,8 +176,13 @@ export default function MerchantDrawer({
               {businessName.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-sm leading-tight">{businessName}</h3>
-              <p className="text-[10px] text-slate-400 font-mono">ID: {merchant.id.slice(0, 8)}</p>
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-bold text-slate-900 text-sm leading-tight">{businessName}</h3>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                  {subscriptionStatus.toUpperCase()}
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 font-mono">ID: {merchant.id}</p>
             </div>
           </div>
 
@@ -133,9 +201,22 @@ export default function MerchantDrawer({
           <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
             <div>
               <p className="font-bold text-slate-900">Direct Merchant Contact</p>
-              <p className="text-[11px] text-slate-500 font-mono">{phoneNumber || merchant.email || 'No contact saved'}</p>
+              <p className="text-[11px] text-slate-500 font-mono">
+                {revealedFields.phone_number || maskPhone(phoneNumber) || merchant.email || 'No contact saved'}
+              </p>
             </div>
             <div className="flex items-center gap-1.5">
+              {!revealedFields.phone_number && (
+                <button
+                  type="button"
+                  onClick={() => setRevealModal({ open: true, field: 'phone_number', label: 'Phone Number' })}
+                  className="p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-slate-900 text-[10px] font-bold flex items-center gap-1"
+                  title="Unmask Phone"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Reveal</span>
+                </button>
+              )}
               {cleanPhone && (
                 <a
                   href={`https://wa.me/91${cleanPhone.slice(-10)}`}
@@ -203,10 +284,22 @@ export default function MerchantDrawer({
             </div>
 
             <div className="space-y-1">
-              <label className="text-slate-500 font-semibold">Verified Contact Phone (+91)</label>
+              <div className="flex items-center justify-between">
+                <label className="text-slate-500 font-semibold">Verified Contact Phone (+91)</label>
+                {!revealedFields.phone_number && (
+                  <button
+                    type="button"
+                    onClick={() => setRevealModal({ open: true, field: 'phone_number', label: 'Phone Number' })}
+                    className="text-[10px] text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>Unmask</span>
+                  </button>
+                )}
+              </div>
               <input
                 type="text"
-                value={phoneNumber}
+                value={revealedFields.phone_number || phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+91 9876543210"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500"
@@ -214,14 +307,62 @@ export default function MerchantDrawer({
             </div>
 
             <div className="space-y-1">
-              <label className="text-slate-500 font-semibold">Merchant Settlement UPI VPA</label>
-              <input
-                type="text"
-                value={upiId}
-                onChange={(e) => setUpiId(e.target.value)}
-                placeholder="merchant@upi"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500"
-              />
+              <div className="flex items-center justify-between">
+                <label className="text-slate-500 font-semibold">Merchant Settlement UPI VPA (Direct NPCI)</label>
+                {!revealedFields.upi_id && (
+                  <button
+                    type="button"
+                    onClick={() => setRevealModal({ open: true, field: 'upi_id', label: 'UPI VPA' })}
+                    className="text-[10px] text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>Unmask</span>
+                  </button>
+                )}
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={revealedFields.upi_id || upiId}
+                  onChange={(e) => setUpiId(e.target.value)}
+                  placeholder="merchant@upi"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Bank Account Details (Masked by default) */}
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                  <Building className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Direct Settlement Bank Account</span>
+                </div>
+                {!revealedFields.bank_account_number && (
+                  <button
+                    type="button"
+                    onClick={() => setRevealModal({ open: true, field: 'bank_account_number', label: 'Bank Account' })}
+                    className="text-[10px] text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>Unmask with Reason</span>
+                  </button>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                <div className="p-2 rounded-xl bg-white border border-slate-200">
+                  <span className="text-[10px] text-slate-400 block font-sans">Account No</span>
+                  <span className="font-bold text-slate-800">
+                    {revealedFields.bank_account_number || maskBankAccount(merchant.bank_account_number)}
+                  </span>
+                </div>
+                <div className="p-2 rounded-xl bg-white border border-slate-200">
+                  <span className="text-[10px] text-slate-400 block font-sans">IFSC Code</span>
+                  <span className="font-bold text-slate-800">
+                    {merchant.bank_ifsc || 'N/A'}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -231,7 +372,7 @@ export default function MerchantDrawer({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                API Key Credentials
+                API Key Credentials (Hashed in Production)
               </h4>
               <button
                 onClick={() => onRotateApiKey && onRotateApiKey(merchant.id)}
@@ -245,17 +386,28 @@ export default function MerchantDrawer({
 
             <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 font-mono">
               <span className="text-slate-700 truncate">
-                {isKeyRevealed ? (merchant.api_key || 'No key generated') : '••••••••••••••••••••••••••••••••'}
+                {revealedFields.api_key || maskApiKey(merchant.api_key)}
               </span>
               <div className="flex items-center gap-1 shrink-0">
+                {!revealedFields.api_key ? (
+                  <button
+                    onClick={() => setRevealModal({ open: true, field: 'api_key', label: 'API Secret Key' })}
+                    className="p-1 text-slate-400 hover:text-slate-800 rounded"
+                    title="Audit-verified Unmask"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setRevealedFields(prev => ({ ...prev, api_key: null }))}
+                    className="p-1 text-blue-600 hover:text-blue-800 rounded"
+                    title="Hide key"
+                  >
+                    <EyeOff className="w-3.5 h-3.5" />
+                  </button>
+                )}
                 <button
-                  onClick={() => setIsKeyRevealed(!isKeyRevealed)}
-                  className="p-1 text-slate-400 hover:text-slate-800 rounded"
-                >
-                  {isKeyRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                </button>
-                <button
-                  onClick={() => handleCopy(merchant.api_key, 'API Key')}
+                  onClick={() => handleCopy(revealedFields.api_key || merchant.api_key, 'API Key')}
                   className="p-1 text-slate-400 hover:text-slate-800 rounded"
                 >
                   <Copy className="w-3.5 h-3.5" />
@@ -301,20 +453,20 @@ export default function MerchantDrawer({
           {/* Subscription Validity Extension */}
           <div className="space-y-2">
             <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-              Extend Subscription Validity
+              Extend Subscription Validity (Flat-Fee SaaS)
             </h4>
             <div className="flex items-center gap-2">
               {[
                 { days: 7, label: '+7 Days Trial' },
                 { days: 30, label: '+30 Days Pro' },
-                { days: 365, label: '+1 Year' },
+                { days: 365, label: '+1 Year Enterprise' },
               ].map(opt => (
                 <button
                   key={opt.days}
                   type="button"
                   onClick={() => onExtendSubscription && onExtendSubscription(merchant.id, opt.days, merchant.subscription_expires_at)}
                   disabled={actionLoading}
-                  className="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-bold text-xs transition-colors disabled:opacity-50"
+                  className="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {opt.label}
                 </button>
@@ -329,7 +481,7 @@ export default function MerchantDrawer({
           <button
             onClick={handleSaveProfile}
             disabled={actionLoading}
-            className="flex-1 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-sm"
+            className="flex-1 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-sm cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>Save Profile Changes</span>
@@ -337,13 +489,69 @@ export default function MerchantDrawer({
 
           <button
             onClick={onClose}
-            className="py-3 px-5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-colors"
+            className="py-3 px-5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer"
           >
-            Cancel
+            Close
           </button>
         </div>
-
       </div>
+
+      {/* Sensitive Data Reveal Modal */}
+      {revealModal.open && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-up">
+            <div className="flex items-center gap-2.5 text-slate-900 border-b border-slate-100 pb-3">
+              <div className="p-2 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200">
+                <Lock className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm">Audit-Justified Credential Unmask</h3>
+                <p className="text-[10px] text-slate-400">NPCI / Data Privacy Audit Requirement</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              You are requesting to view the raw <strong>{revealModal.label}</strong> for <strong>{businessName}</strong>. This unmask event will be permanently recorded in the tamper-evident audit ledger.
+            </p>
+
+            <form onSubmit={submitUnmask} className="space-y-4 text-xs">
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700">Reason / Ticket ID for Access (Required)</label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="e.g. Investigating customer dispute #DISP-492 regarding VPA settlement failure"
+                  value={revealReason}
+                  onChange={(e) => setRevealReason(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-slate-800 resize-none"
+                />
+                <span className="text-[10px] text-slate-400">Minimum 5 characters justification.</span>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRevealModal({ open: false, field: '', label: '' });
+                    setRevealReason('');
+                  }}
+                  className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={revealLoading}
+                  className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold transition-all shadow-xs disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{revealLoading ? 'Authorizing...' : 'Authorize & Reveal'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

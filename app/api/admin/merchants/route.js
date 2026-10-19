@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { verifyAdminAuth } from '@/lib/adminSettings';
 import { sendAdminNewSignupNotification, sendMerchantOnboardingOutreachEmail } from '@/lib/mailer';
+import { logAdminAction } from '@/lib/adminAudit';
 import crypto from 'crypto';
 
 // GET: Fetch all registered merchants and all signups with complete direct details
@@ -220,6 +221,14 @@ export async function POST(request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
+      await logAdminAction({
+        action: 'merchant.status_change',
+        targetType: 'merchant',
+        targetId: merchantId,
+        details: { targetStatus, merchantName: merchant.business_name },
+        request
+      });
+
       return NextResponse.json({ success: true, merchant });
     }
 
@@ -252,6 +261,14 @@ export async function POST(request) {
         }
       }
 
+      await logAdminAction({
+        action: 'merchant.profile_update',
+        targetType: 'merchant',
+        targetId: merchantId,
+        details: { updatedFields: updateData },
+        request
+      });
+
       if (error) {
         return NextResponse.json({ success: true, updatedFields: updateData, notice: 'Saved to auth metadata' });
       }
@@ -272,6 +289,14 @@ export async function POST(request) {
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
+
+      await logAdminAction({
+        action: 'api_key.rotated',
+        targetType: 'merchant',
+        targetId: merchantId,
+        details: { merchantName: merchant?.business_name, keyPrefix: newApiKey.slice(0, 12) },
+        request
+      });
 
       return NextResponse.json({ success: true, api_key: newApiKey, merchant });
     }
@@ -296,6 +321,14 @@ export async function POST(request) {
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
+
+      await logAdminAction({
+        action: 'subscription.extended',
+        targetType: 'merchant',
+        targetId: merchantId,
+        details: { daysGranted: days, newExpiry },
+        request
+      });
 
       return NextResponse.json({ success: true, newExpiry, merchant });
     }

@@ -15,6 +15,8 @@ import MerchantDrawer from './admin/MerchantDrawer';
 import SignupsTab from './admin/SignupsTab';
 import SubscriptionsTab from './admin/SubscriptionsTab';
 import SystemTab from './admin/SystemTab';
+import AuditTab from './admin/AuditTab';
+import TeamTab from './admin/TeamTab';
 
 import { 
   Lock, 
@@ -58,7 +60,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const [activeTab, setActiveTabState] = useState(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace(/^#/, '');
-      const valid = ['overview', 'transactions', 'merchants', 'signups', 'subscriptions', 'system'];
+      const valid = ['overview', 'transactions', 'merchants', 'signups', 'subscriptions', 'system', 'audit', 'team'];
       if (valid.includes(hash)) return hash;
       return sessionStorage.getItem('admin_active_tab') || 'overview';
     }
@@ -805,6 +807,20 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
             />
           )}
 
+          {activeTab === 'audit' && (
+            <AuditTab
+              showToast={showToast}
+              getAuthHeaders={getAuthHeaders}
+            />
+          )}
+
+          {activeTab === 'team' && (
+            <TeamTab
+              showToast={showToast}
+              getAuthHeaders={getAuthHeaders}
+            />
+          )}
+
         </main>
 
       </div>
@@ -836,6 +852,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
           onExtendSubscription={handleExtendSubscription}
           actionLoading={actionLoading}
           showToast={showToast}
+          getAuthHeaders={getAuthHeaders}
         />
       )}
 

@@ -2,11 +2,13 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { triggerMerchantWebhook } from '@/lib/webhook';
 import { verifyAdminAuth, checkAndProcessSubscription } from '@/lib/adminSettings';
+import { logAdminAction } from '@/lib/adminAudit';
+import { hasPermission, PERMISSIONS } from '@/lib/adminRbac';
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { password, orderId, action, utr } = body;
+    const { password, orderId, action, utr, reason } = body;
 
     const isAuthorized = await verifyAdminAuth(request);
 
@@ -21,6 +23,13 @@ export async function POST(request) {
     // Action: Re-trigger outbound webhook for an order
     if (action === 'resend_webhook') {
       const webhookRes = await triggerMerchantWebhook(orderId);
+      await logAdminAction({
+        action: 'order.resend_webhook',
+        targetType: 'order',
+        targetId: orderId,
+        details: { result: webhookRes },
+        request
+      });
       return NextResponse.json({ 
         success: true, 
         message: 'Outbound webhook successfully re-dispatched to merchant URL.', 
@@ -56,6 +65,21 @@ export async function POST(request) {
       console.error('Error modifying order:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    // Record immutable audit entry
+    await logAdminAction({
+      action: action === 'verify' ? 'order.manual_verify' : 'order.manual_reject',
+      targetType: 'order',
+      targetId: orderId,
+      details: {
+        action,
+        utr: updateFields.utr,
+        amount: data.amount,
+        merchant_id: data.merchant_id,
+        reason: reason || 'Manual admin review'
+      },
+      request
+    });
 
     // Trigger outbound webhook for the merchant and check subscription upon verification
     if (action === 'verify') {
