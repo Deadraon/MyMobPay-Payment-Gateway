@@ -86,6 +86,7 @@ export async function POST(request) {
 
       const response = await fetch(webhook_url, {
         method: 'POST',
+        redirect: 'manual', // Never follow redirects past the SSRF URL guard.
         headers: {
           'Content-Type': 'application/json',
           'X-MyMobPay-Signature': signature,
