@@ -715,7 +715,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
       />
 
       {/* Main Container */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row gap-6">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col md:flex-row items-start gap-6">
         
         {/* Navigation Sidebar */}
         <AdminSidebar

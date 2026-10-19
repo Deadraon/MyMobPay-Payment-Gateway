@@ -144,7 +144,7 @@ export default function AdminSidebar({
   ];
 
   return (
-    <aside className="w-full lg:w-68 shrink-0 bg-white border border-slate-200/80 rounded-3xl p-3.5 shadow-xs flex flex-col gap-4 self-start">
+    <aside className="w-full md:w-64 lg:w-72 md:min-w-[260px] lg:min-w-[288px] shrink-0 bg-white border border-slate-200/80 rounded-3xl p-3.5 shadow-xs flex flex-col gap-3.5 self-start sticky top-6">
       {navSections.map((section, sIdx) => (
         <div key={sIdx} className="space-y-1">
           <div className="px-3 py-1">
