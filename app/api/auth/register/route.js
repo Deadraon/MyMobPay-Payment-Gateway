@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { sendWelcomeEmail } from '@/lib/mailer';
+import { sendWelcomeEmail, sendAdminNewSignupNotification } from '@/lib/mailer';
 import { formatMerchantId } from '@/lib/merchantId';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
@@ -189,6 +189,22 @@ export async function POST(req) {
       });
     } catch (welcomeErr) {
       console.warn('[REGISTER API] Welcome email send notice:', welcomeErr?.message);
+    }
+
+    // ── 9. Dispatch Instant Admin Notification Email ─────────────────
+    try {
+      await sendAdminNewSignupNotification({
+        userEmail: cleanEmail,
+        userName: finalBusinessName,
+        businessName: finalBusinessName,
+        upiId: finalUpiId,
+        phone: cleanPhone ? `+91 ${cleanPhone}` : '',
+        provider: 'Email & WhatsApp OTP',
+        userId,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (adminNotifyErr) {
+      console.warn('[REGISTER API] Admin new signup notification notice:', adminNotifyErr?.message);
     }
 
     return NextResponse.json({

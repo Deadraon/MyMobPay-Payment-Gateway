@@ -50,7 +50,8 @@ import {
   Sparkles,
   Smartphone,
   ShieldCheck,
-  ArrowLeft
+  ArrowLeft,
+  Users
 } from 'lucide-react';
 
 const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-primary)' }) => (
@@ -90,11 +91,11 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
 
-  // Active Tab: overview, transactions, merchants, subscriptions, config
+  // Active Tab: overview, signups, transactions, merchants, subscriptions, config
   const [activeTab, setActiveTabState] = useState(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace(/^#/, '');
-      const validTabs = ['overview', 'transactions', 'merchants', 'subscriptions', 'config'];
+      const validTabs = ['overview', 'signups', 'transactions', 'merchants', 'subscriptions', 'config'];
       if (validTabs.includes(hash)) return hash;
       const saved = sessionStorage.getItem('admin_active_tab');
       if (validTabs.includes(saved)) return saved;
@@ -126,6 +127,20 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   // Database Data states
   const [orders, setOrders] = useState([]);
   const [merchants, setMerchants] = useState([]);
+  const [signups, setSignups] = useState([]);
+  const [signupsStats, setSignupsStats] = useState({
+    total_signups: 0,
+    last_7_days_signups: 0,
+    total_merchants: 0,
+    unonboarded_signups: 0,
+    google_signups: 0
+  });
+  const [recentOtps, setRecentOtps] = useState([]);
+  const [signupFilter, setSignupFilter] = useState('all');
+  const [signupSearchQuery, setSignupSearchQuery] = useState('');
+  const [selectedSignupUser, setSelectedSignupUser] = useState(null);
+  const [testEmailLoading, setTestEmailLoading] = useState(false);
+  const [directDetailsCopied, setDirectDetailsCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [merchantsLoading, setMerchantsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -465,10 +480,19 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
       if (!res.ok) throw new Error(data.error || 'Failed to fetch merchants');
       const list = data.merchants || [];
       setMerchants(list);
+      if (Array.isArray(data.signups)) {
+        setSignups(data.signups);
+      }
+      if (data.stats) {
+        setSignupsStats(data.stats);
+      }
+      if (Array.isArray(data.recent_otps)) {
+        setRecentOtps(data.recent_otps);
+      }
       // Seed subscriptionsList if empty
       setSubscriptionsList(prev => prev.length === 0 ? list : prev);
     } catch (err) {
-      console.error('Error fetching merchants:', err);
+      console.error('Error fetching merchants & signups:', err);
       if (merchants.length === 0) {
         setError('Could not fetch merchant records from server.');
       }
@@ -476,6 +500,29 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
       setMerchantsLoading(false);
     }
   }, [isLoggedIn, getAuthHeaders, merchants.length]);
+
+  // Test admin notification email dispatch
+  const handleTestSignupAlert = useCallback(async () => {
+    setTestEmailLoading(true);
+    try {
+      const headers = await getAuthHeaders();
+      const res = await fetch('/api/admin/merchants', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ action: 'sendTestSignupNotification' }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast('✅ Test signup alert email sent! Check your admin inbox.', 'success');
+      } else {
+        showToast(data.error || 'Failed to dispatch test notification email.', 'error');
+      }
+    } catch (err) {
+      showToast(err.message || 'Connection error dispatching test email', 'error');
+    } finally {
+      setTestEmailLoading(false);
+    }
+  }, [getAuthHeaders, showToast]);
 
   // Fetch all orders
   const fetchOrders = useCallback(async (isSilent = false) => {
@@ -893,6 +940,35 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     });
   }, [merchants, merchantSearchQuery]);
 
+  // Filtering Signups & Direct User Profiles
+  const filteredSignups = useMemo(() => {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    return signups.filter(item => {
+      if (signupFilter === '7days') {
+        const itemDate = new Date(item.created_at || item.user_created_at || 0);
+        if (itemDate < sevenDaysAgo) return false;
+      } else if (signupFilter === 'google') {
+        if (!String(item.auth_provider || '').toLowerCase().includes('google')) return false;
+      } else if (signupFilter === 'email') {
+        if (String(item.auth_provider || '').toLowerCase().includes('google')) return false;
+      } else if (signupFilter === 'pending') {
+        if (item.has_merchant_profile && item.upi_id && item.upi_id !== 'pending@upi') return false;
+      }
+
+      if (signupSearchQuery.trim()) {
+        const q = signupSearchQuery.toLowerCase().trim();
+        const matchName = String(item.owner_name || item.business_name || '').toLowerCase().includes(q);
+        const matchEmail = String(item.email || '').toLowerCase().includes(q);
+        const matchPhone = String(item.phone_number || '').toLowerCase().includes(q);
+        const matchUpi = String(item.upi_id || '').toLowerCase().includes(q);
+        const matchBank = String(item.bank_name || item.bank_account_number || '').toLowerCase().includes(q);
+        const matchId = String(item.id || '').toLowerCase().includes(q);
+        return matchName || matchEmail || matchPhone || matchUpi || matchBank || matchId;
+      }
+      return true;
+    });
+  }, [signups, signupFilter, signupSearchQuery]);
+
   // Unified Subscriptions list: use subscriptionsList if loaded, fallback to merchants
   const activeSubscriptions = useMemo(() => {
     return subscriptionsList.length > 0 ? subscriptionsList : merchants;
@@ -1072,6 +1148,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
 
             {[
               { id: 'overview', label: 'Platform Stats', icon: Activity, count: null },
+              { id: 'signups', label: 'Signups & Users', icon: Users, count: signupsStats.last_7_days_signups ? `${signupsStats.last_7_days_signups} new` : (signups.length > 0 ? signups.length : null) },
               { id: 'transactions', label: 'Global Orders', icon: FileText, count: orders.length > 0 ? orders.length : null },
               { id: 'merchants', label: 'Merchants (SaaS)', icon: Store, count: merchants.length > 0 ? merchants.length : null },
               { id: 'subscriptions', label: 'Subscriptions & Gifts', icon: Gift, count: giftCodesList.length > 0 ? `${giftCodesList.length} codes` : null },
@@ -1225,6 +1302,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">Navigation Menu</p>
                 {[
                   { id: 'overview', label: 'Platform Stats', icon: Activity },
+                  { id: 'signups', label: 'Signups & Users', icon: Users },
                   { id: 'transactions', label: 'Global Orders', icon: FileText },
                   { id: 'merchants', label: 'Merchants (SaaS)', icon: Store },
                   { id: 'subscriptions', label: 'Subscriptions & Gifts', icon: Gift },
@@ -1279,6 +1357,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
           <div>
             <h1 className="text-lg font-black text-slate-900">
               {activeTab === 'overview' && 'Platform Performance & Leaderboards'}
+              {activeTab === 'signups' && 'All Signups & Direct User Profiles'}
               {activeTab === 'transactions' && 'Global Transaction Logs'}
               {activeTab === 'merchants' && 'Registered Merchants Directory'}
               {activeTab === 'subscriptions' && 'Subscription & Gift Codes Manager'}
@@ -1899,6 +1978,509 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         )}
 
         {/* ═══════════════════════════════════════════════════════════
+           TAB: ALL NEW SIGNUPS & DIRECT USER PROFILES
+           ═══════════════════════════════════════════════════════════ */}
+        {activeTab === 'signups' && (
+          <section className="space-y-6 animate-fadeIn">
+            
+            {/* Top Banner & Quick Controls */}
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-5 border-b border-slate-100">
+                <div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-9 h-9 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                      <Users className="w-5 h-5" />
+                    </span>
+                    <div>
+                      <h2 className="text-lg font-black text-slate-900 tracking-tight">All Signups & Direct Contact Details</h2>
+                      <p className="text-xs text-slate-400 font-semibold mt-0.5">
+                        Real-time feed of all registered merchants, Google OAuth signups, verified contact numbers & banking info
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  {/* Test notification email button */}
+                  <button
+                    onClick={handleTestSignupAlert}
+                    disabled={testEmailLoading}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/60 transition-all cursor-pointer disabled:opacity-50"
+                    title="Send a test new signup notification to your configured admin email"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-blue-600" />
+                    <span>{testEmailLoading ? 'Sending Alert...' : 'Test Admin Alert Email'}</span>
+                  </button>
+
+                  {/* Refresh button */}
+                  <button
+                    onClick={() => fetchMerchants(false)}
+                    disabled={merchantsLoading}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 transition-all cursor-pointer"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${merchantsLoading ? 'animate-spin text-blue-600' : ''}`} />
+                    <span>Refresh</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* KPI Stat Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+                
+                {/* Total Signups */}
+                <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/70">
+                  <div className="flex items-center justify-between text-slate-400 mb-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Total Signups</span>
+                    <Users className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <p className="text-2xl font-black text-slate-900 font-mono tracking-tight">{signupsStats.total_signups || signups.length}</p>
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">Platform Auth Accounts</p>
+                </div>
+
+                {/* Last 7 Days (New) */}
+                <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/70">
+                  <div className="flex items-center justify-between text-emerald-600 mb-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Last 7 Days
+                    </span>
+                    <Sparkles className="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <p className="text-2xl font-black text-emerald-700 font-mono tracking-tight">{signupsStats.last_7_days_signups || 0}</p>
+                  <p className="text-[10px] text-emerald-600 font-bold mt-1">🔥 Recent New Joiners</p>
+                </div>
+
+                {/* Google SSO Users */}
+                <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-200/60">
+                  <div className="flex items-center justify-between text-blue-600 mb-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Google OAuth</span>
+                    <span className="text-xs font-bold text-blue-600 font-mono">G</span>
+                  </div>
+                  <p className="text-2xl font-black text-blue-900 font-mono tracking-tight">{signupsStats.google_signups || 0}</p>
+                  <p className="text-[10px] text-blue-600 font-medium mt-1">1-Click Google Logins</p>
+                </div>
+
+                {/* Pending Onboarding */}
+                <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/60">
+                  <div className="flex items-center justify-between text-amber-600 mb-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Pending Setup</span>
+                    <Clock className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <p className="text-2xl font-black text-amber-900 font-mono tracking-tight">{signupsStats.unonboarded_signups || 0}</p>
+                  <p className="text-[10px] text-amber-600 font-medium mt-1">Awaiting UPI/Bank Setup</p>
+                </div>
+
+              </div>
+
+              {/* Filters & Search Controls Bar */}
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-2">
+                
+                {/* Filter Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                  {[
+                    { id: 'all', label: 'All Signups', count: signups.length },
+                    { id: '7days', label: '🔥 Last 7 Days', count: signupsStats.last_7_days_signups, highlight: true },
+                    { id: 'google', label: 'Google SSO', count: signupsStats.google_signups },
+                    { id: 'email', label: 'Email / Pass', count: Math.max(0, signups.length - (signupsStats.google_signups || 0)) },
+                    { id: 'pending', label: 'Pending Setup', count: signupsStats.unonboarded_signups },
+                    { id: 'otps', label: '📱 WhatsApp OTP Attempts', count: recentOtps.length },
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setSignupFilter(tab.id)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                        signupFilter === tab.id
+                          ? tab.highlight
+                            ? 'bg-emerald-600 text-white shadow-sm'
+                            : 'bg-blue-600 text-white shadow-sm'
+                          : tab.highlight
+                            ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100/70 border border-emerald-200/60'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+                      }`}
+                    >
+                      <span>{tab.label}</span>
+                      {tab.count !== undefined && (
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
+                          signupFilter === tab.id ? 'bg-white/20 text-white' : 'bg-white text-slate-500 border border-slate-200'
+                        }`}>
+                          {tab.count}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Search Bar */}
+                {signupFilter !== 'otps' && (
+                  <div className="relative max-w-sm w-full">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                      <Search className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Search Name, Email, Phone, UPI..."
+                      value={signupSearchQuery}
+                      onChange={(e) => setSignupSearchQuery(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-10 pr-8 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-500 focus:bg-white transition-all font-semibold"
+                    />
+                    {signupSearchQuery && (
+                      <button
+                        onClick={() => setSignupSearchQuery('')}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-900 text-xs"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* TAB CONTENT: WHATSAPP OTP ATTEMPTS LOG */}
+            {signupFilter === 'otps' ? (
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                      <Smartphone className="w-4 h-4 text-emerald-600" />
+                      <span>WhatsApp OTP Verification Attempts Log</span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Phone numbers entered by visitors during mobile verification or login
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
+                    {recentOtps.length} Entries
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                  <table className="min-w-full divide-y divide-slate-200 text-xs">
+                    <thead className="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      <tr>
+                        <th className="px-5 py-3 text-left">Mobile Number</th>
+                        <th className="px-5 py-3 text-left">Purpose</th>
+                        <th className="px-5 py-3 text-left">Verification Status</th>
+                        <th className="px-5 py-3 text-left">Attempted At (IST)</th>
+                        <th className="px-5 py-3 text-right">Direct Outreach</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 bg-white">
+                      {recentOtps.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="px-5 py-10 text-center text-slate-400 font-semibold">
+                            No WhatsApp OTP requests logged yet.
+                          </td>
+                        </tr>
+                      ) : (
+                        recentOtps.map((otp) => {
+                          const cleanDigits = (otp.phone || '').replace(/\D/g, '');
+                          const dateObj = new Date(otp.created_at);
+                          const istStr = dateObj.toLocaleString('en-IN', {
+                            timeZone: 'Asia/Kolkata',
+                            dateStyle: 'medium',
+                            timeStyle: 'short',
+                          });
+                          const isRecent = (Date.now() - dateObj.getTime()) < 7 * 24 * 60 * 60 * 1000;
+
+                          return (
+                            <tr key={otp.id} className="hover:bg-slate-50/60 transition-colors">
+                              <td className="px-5 py-3.5 font-mono font-bold text-slate-900 whitespace-nowrap">
+                                <div className="flex items-center gap-2">
+                                  <span>{otp.phone}</span>
+                                  {isRecent && (
+                                    <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">
+                                      Last 7d
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-5 py-3.5 whitespace-nowrap">
+                                <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-100 text-slate-700">
+                                  {otp.purpose || 'signup'}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3.5 whitespace-nowrap">
+                                {otp.verified ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                    <CheckCircle className="w-3 h-3 text-emerald-600" /> Verified
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                                    <Clock className="w-3 h-3 text-slate-400" /> Unverified
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap font-medium">
+                                {istStr}
+                              </td>
+                              <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(otp.phone);
+                                      showToast(`Copied ${otp.phone}`, 'success');
+                                    }}
+                                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                                    title="Copy Phone Number"
+                                  >
+                                    <Copy className="w-3.5 h-3.5" />
+                                  </button>
+                                  {cleanDigits && (
+                                    <a
+                                      href={`https://wa.me/${cleanDigits}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[10px] border border-emerald-200 transition-colors"
+                                    >
+                                      <Smartphone className="w-3 h-3 text-emerald-600" />
+                                      <span>WhatsApp</span>
+                                    </a>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              /* TAB CONTENT: MAIN SIGNUPS TABLE */
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+                
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                      Showing {filteredSignups.length} of {signups.length} Accounts
+                    </h3>
+                    {signupFilter === '7days' && (
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 font-black px-2 py-0.5 rounded-full">
+                        Filtered: Last 7 Days
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-400 font-medium">
+                    Click any row or &ldquo;Direct Details&rdquo; to view full credentials & direct contact modal
+                  </p>
+                </div>
+
+                <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                  <table className="min-w-full divide-y divide-slate-200 text-xs">
+                    <thead className="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      <tr>
+                        <th className="px-5 py-3.5 text-left">User / Merchant Identity</th>
+                        <th className="px-5 py-3.5 text-left">Direct Contact (Email & Phone)</th>
+                        <th className="px-5 py-3.5 text-left">Settlement UPI ID</th>
+                        <th className="px-5 py-3.5 text-left">Banking Details</th>
+                        <th className="px-5 py-3.5 text-left">Registered Date (IST)</th>
+                        <th className="px-5 py-3.5 text-center">Status</th>
+                        <th className="px-5 py-3.5 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 bg-white">
+                      {merchantsLoading && filteredSignups.length === 0 ? (
+                        <tr>
+                          <td colSpan="7" className="px-5 py-12 text-center text-slate-400 font-semibold">
+                            <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-blue-500" />
+                            Loading unified signups directory...
+                          </td>
+                        </tr>
+                      ) : filteredSignups.length === 0 ? (
+                        <tr>
+                          <td colSpan="7" className="px-5 py-12 text-center text-slate-400 font-semibold">
+                            No signups match the selected filters or search query.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredSignups.map((user) => {
+                          const dateObj = new Date(user.created_at || user.user_created_at || 0);
+                          const isRecent7d = (Date.now() - dateObj.getTime()) < 7 * 24 * 60 * 60 * 1000;
+                          const istDateFormatted = dateObj.toLocaleDateString('en-IN', {
+                            dateStyle: 'medium',
+                          });
+                          const istTimeFormatted = dateObj.toLocaleTimeString('en-IN', {
+                            timeStyle: 'short',
+                            timeZone: 'Asia/Kolkata',
+                          });
+
+                          const isGoogle = String(user.auth_provider || '').toLowerCase().includes('google');
+                          const displayName = user.owner_name || user.business_name || (user.email ? user.email.split('@')[0] : 'User');
+                          const phoneClean = (user.phone_number || '').replace(/\D/g, '');
+
+                          return (
+                            <tr
+                              key={user.id}
+                              onClick={() => setSelectedSignupUser(user)}
+                              className="hover:bg-blue-50/40 transition-colors cursor-pointer group"
+                            >
+                              
+                              {/* 1. Identity */}
+                              <td className="px-5 py-4 whitespace-nowrap">
+                                <div className="flex items-center gap-3">
+                                  {user.avatar_url ? (
+                                    <img
+                                      src={user.avatar_url}
+                                      alt={displayName}
+                                      className="w-9 h-9 rounded-xl object-cover border border-slate-200 shadow-sm"
+                                    />
+                                  ) : (
+                                    <div
+                                      className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs text-white shadow-sm"
+                                      style={{ backgroundColor: user.theme_color || (isGoogle ? '#EA4335' : '#3B82F6') }}
+                                    >
+                                      {displayName.charAt(0).toUpperCase()}
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div className="flex items-center gap-1.5">
+                                      <p className="font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors">
+                                        {displayName}
+                                      </p>
+                                      {isRecent7d && (
+                                        <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 animate-pulse">
+                                          NEW
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1 mt-0.5">
+                                      <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
+                                        isGoogle ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-slate-100 text-slate-600'
+                                      }`}>
+                                        {isGoogle ? 'Google SSO' : 'Email/Pass'}
+                                      </span>
+                                      <span className="text-[9px] font-mono text-slate-400 truncate max-w-[100px]" title={user.id}>
+                                        {user.id.slice(0, 8)}...
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+
+                              {/* 2. Direct Contact: Email & Phone */}
+                              <td className="px-5 py-4 whitespace-nowrap">
+                                <div className="space-y-1">
+                                  {/* Email */}
+                                  <div className="flex items-center gap-1.5">
+                                    <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                    <span className="font-bold text-slate-800 font-mono select-all">
+                                      {user.email || 'N/A'}
+                                    </span>
+                                    {user.email_confirmed && (
+                                      <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" title="Email Verified" />
+                                    )}
+                                  </div>
+
+                                  {/* Phone */}
+                                  <div className="flex items-center gap-1.5 text-xs">
+                                    <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                    {user.phone_number ? (
+                                      <div className="flex items-center gap-1">
+                                        <span className="font-bold text-slate-900 font-mono">{user.phone_number}</span>
+                                        {phoneClean && (
+                                          <a
+                                            href={`https://wa.me/${phoneClean.startsWith('91') ? phoneClean : '91' + phoneClean}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="text-[9px] text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded font-bold"
+                                            title="Open WhatsApp Chat"
+                                          >
+                                            WA
+                                          </a>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <span className="text-slate-400 italic text-[11px]">Not entered yet</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+
+                              {/* 3. Settlement UPI */}
+                              <td className="px-5 py-4 whitespace-nowrap font-mono text-xs">
+                                {user.upi_id && user.upi_id !== 'pending@upi' ? (
+                                  <span className="font-bold text-slate-900 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+                                    {user.upi_id}
+                                  </span>
+                                ) : (
+                                  <span className="text-amber-600 italic text-[11px] bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                    pending@upi
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* 4. Banking info */}
+                              <td className="px-5 py-4 whitespace-nowrap text-xs">
+                                {user.bank_account_number ? (
+                                  <div className="space-y-0.5">
+                                    <p className="font-bold text-slate-900">{user.bank_name || 'Bank'}</p>
+                                    <p className="font-mono text-[10px] text-slate-500 font-semibold">
+                                      A/C: {user.bank_account_number} • {user.bank_ifsc || ''}
+                                    </p>
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-400 text-[11px] italic">No bank registered</span>
+                                )}
+                              </td>
+
+                              {/* 5. Registered Date */}
+                              <td className="px-5 py-4 whitespace-nowrap text-xs">
+                                <div>
+                                  <p className="font-bold text-slate-800">{istDateFormatted}</p>
+                                  <p className="text-[10px] text-slate-400 font-semibold">{istTimeFormatted} IST</p>
+                                </div>
+                              </td>
+
+                              {/* 6. Status */}
+                              <td className="px-5 py-4 whitespace-nowrap text-center">
+                                {user.subscription_status === 'active' ? (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Active SaaS
+                                  </span>
+                                ) : user.has_merchant_profile ? (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-slate-100 text-slate-600">
+                                    {user.subscription_status || 'Inactive'}
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                                    Pending Setup
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* 7. Action */}
+                              <td className="px-5 py-4 whitespace-nowrap text-right">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedSignupUser(user);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 group-hover:bg-blue-600 text-blue-600 group-hover:text-white border border-blue-200 group-hover:border-blue-600 font-bold text-xs transition-all shadow-sm"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                  <span>Details</span>
+                                </button>
+                              </td>
+
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            )}
+
+          </section>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════
            TAB 3: MERCHANTS DIRECTORY (SaaS ACCOUNT CONTROLS)
            ═══════════════════════════════════════════════════════════ */}
         {activeTab === 'merchants' && (
@@ -1982,6 +2564,12 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
                               </div>
                               <div>
                                 <p className="font-extrabold text-slate-900">{merchant.business_name}</p>
+                                {merchant.email && (
+                                  <p className="text-[10px] text-blue-600 font-bold font-mono">{merchant.email}</p>
+                                )}
+                                {merchant.phone_number && (
+                                  <p className="text-[10px] text-emerald-600 font-bold font-mono">{merchant.phone_number}</p>
+                                )}
                                 <p className="text-[9px] font-mono text-slate-400 tracking-tight mt-0.5">{merchant.id}</p>
                               </div>
                             </div>
@@ -2049,17 +2637,28 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
 
                           {/* Access Switch Actions */}
                           <td className="px-6 py-4.5 whitespace-nowrap text-xs text-center">
-                            <button
-                              onClick={() => {
-                                const actionStr = merchant.subscription_status === 'active' ? 'Suspend' : 'Activate';
-                                if (confirm(`${actionStr} subscription for ${merchant.business_name}?`)) {
-                                  handleToggleSubscription(merchant.id, merchant.subscription_status);
-                                }
-                              }}
-                              className={`px-3 py-1.5 rounded-xl text-[10px] font-extrabold border transition-all ${merchant.subscription_status === 'active' ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-500 hover:text-white' : 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-500 hover:text-white'}`}
-                            >
-                              {merchant.subscription_status === 'active' ? 'SUSPEND' : 'ACTIVATE'}
-                            </button>
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setSelectedSignupUser(merchant)}
+                                className="px-2.5 py-1.5 rounded-xl text-[10px] font-extrabold border bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-200/70 transition-all flex items-center gap-1"
+                                title="View Full Contact & Merchant Details"
+                              >
+                                <Eye className="w-3 h-3 text-slate-500" />
+                                <span>Details</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const actionStr = merchant.subscription_status === 'active' ? 'Suspend' : 'Activate';
+                                  if (confirm(`${actionStr} subscription for ${merchant.business_name}?`)) {
+                                    handleToggleSubscription(merchant.id, merchant.subscription_status);
+                                  }
+                                }}
+                                className={`px-3 py-1.5 rounded-xl text-[10px] font-extrabold border transition-all ${merchant.subscription_status === 'active' ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-500 hover:text-white' : 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-500 hover:text-white'}`}
+                              >
+                                {merchant.subscription_status === 'active' ? 'SUSPEND' : 'ACTIVATE'}
+                              </button>
+                            </div>
                           </td>
 
                         </tr>
@@ -2789,6 +3388,21 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
                         Update
                       </button>
                     </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1">
+                      <p className="text-[10px] text-slate-400">
+                        Automatic new signup alert emails are sent to these addresses whenever a new user joins.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleTestSignupAlert}
+                        disabled={testEmailLoading}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition-colors shrink-0"
+                      >
+                        <Mail className="w-3 h-3 text-blue-600" />
+                        <span>{testEmailLoading ? 'Sending Alert...' : 'Send Test Signup Email'}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -2961,6 +3575,277 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════
+           DIRECT DETAILS MODAL: COMPREHENSIVE USER/SIGNUP CREDENTIALS
+           ═══════════════════════════════════════════════════════════ */}
+        {selectedSignupUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3.5">
+                  {selectedSignupUser.avatar_url ? (
+                    <img
+                      src={selectedSignupUser.avatar_url}
+                      alt={selectedSignupUser.owner_name || selectedSignupUser.business_name}
+                      className="w-12 h-12 rounded-2xl object-cover border-2 border-white/30 shadow-md"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-lg text-white border border-white/30 shadow-md">
+                      {(selectedSignupUser.owner_name || selectedSignupUser.business_name || 'U').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-black tracking-tight text-white">
+                        {selectedSignupUser.owner_name || selectedSignupUser.business_name}
+                      </h3>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 text-white border border-white/30">
+                        {selectedSignupUser.auth_provider || 'Email/Pass'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-blue-100 font-medium mt-0.5">
+                      Merchant ID: <span className="font-mono text-white/90 select-all">{selectedSignupUser.id}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setSelectedSignupUser(null)}
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Modal Body - Scrollable */}
+              <div className="p-6 overflow-y-auto space-y-6 text-xs">
+                
+                {/* 1. Direct Contact Card */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-3.5">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200/60">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5 text-blue-600" />
+                      Direct Contact Details
+                    </span>
+                    <button
+                      onClick={() => {
+                        const contactCard = `Name: ${selectedSignupUser.owner_name || selectedSignupUser.business_name}\nEmail: ${selectedSignupUser.email || 'N/A'}\nPhone: ${selectedSignupUser.phone_number || 'N/A'}\nUPI ID: ${selectedSignupUser.upi_id || 'N/A'}\nBank: ${selectedSignupUser.bank_name || 'N/A'} (A/C: ${selectedSignupUser.bank_account_number || 'N/A'}, IFSC: ${selectedSignupUser.bank_ifsc || 'N/A'})\nUser ID: ${selectedSignupUser.id}`;
+                        navigator.clipboard.writeText(contactCard);
+                        showToast('Full contact card copied to clipboard!', 'success');
+                      }}
+                      className="text-[10px] text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1"
+                    >
+                      <Copy className="w-3 h-3" />
+                      <span>Copy Full Card</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Email */}
+                    <div className="p-3 bg-white rounded-xl border border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Email Address</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="font-bold text-slate-900 font-mono select-all truncate mr-2">{selectedSignupUser.email || 'No email registered'}</span>
+                        <div className="flex items-center gap-1 shrink-0">
+                          {selectedSignupUser.email && (
+                            <>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(selectedSignupUser.email);
+                                  showToast('Copied email to clipboard', 'success');
+                                }}
+                                className="p-1 text-slate-400 hover:text-slate-800"
+                                title="Copy Email"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
+                              <a
+                                href={`mailto:${selectedSignupUser.email}`}
+                                className="p-1 text-blue-600 hover:text-blue-800"
+                                title="Send Email"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mobile Number */}
+                    <div className="p-3 bg-white rounded-xl border border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Mobile / WhatsApp Number</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="font-bold text-slate-900 font-mono select-all">
+                          {selectedSignupUser.phone_number || <span className="text-slate-400 italic font-normal">Not provided</span>}
+                        </span>
+                        {selectedSignupUser.phone_number && (
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(selectedSignupUser.phone_number);
+                                showToast('Copied phone number', 'success');
+                              }}
+                              className="p-1 text-slate-400 hover:text-slate-800"
+                              title="Copy Phone"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                            <a
+                              href={`https://wa.me/${selectedSignupUser.phone_number.replace(/\D/g, '')}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-[10px] border border-emerald-200"
+                              title="Open WhatsApp Chat"
+                            >
+                              <span>WhatsApp</span>
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Settlement & Banking Details */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-3.5">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200/60">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                      <Store className="w-3.5 h-3.5 text-blue-600" />
+                      Settlement & Financial Credentials
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400">Zero MDR Direct Settlement</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* UPI ID */}
+                    <div className="p-3 bg-white rounded-xl border border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Settlement UPI Handle</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="font-bold text-slate-900 font-mono select-all">{selectedSignupUser.upi_id || 'pending@upi'}</span>
+                        {selectedSignupUser.upi_id && selectedSignupUser.upi_id !== 'pending@upi' && (
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(selectedSignupUser.upi_id);
+                              showToast('Copied UPI address', 'success');
+                            }}
+                            className="p-1 text-slate-400 hover:text-slate-800"
+                            title="Copy UPI"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bank Name */}
+                    <div className="p-3 bg-white rounded-xl border border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Bank Name</p>
+                      <p className="font-bold text-slate-900 mt-1">{selectedSignupUser.bank_name || <span className="text-slate-400 italic font-normal">Not configured</span>}</p>
+                    </div>
+
+                    {/* Account Holder */}
+                    <div className="p-3 bg-white rounded-xl border border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Account Holder Name</p>
+                      <p className="font-bold text-slate-900 mt-1">{selectedSignupUser.bank_account_name || selectedSignupUser.owner_name || <span className="text-slate-400 italic font-normal">N/A</span>}</p>
+                    </div>
+
+                    {/* Account Number & IFSC */}
+                    <div className="p-3 bg-white rounded-xl border border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Bank A/C & IFSC</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="font-mono font-bold text-slate-900 select-all">
+                          {selectedSignupUser.bank_account_number ? `${selectedSignupUser.bank_account_number} • ${selectedSignupUser.bank_ifsc || ''}` : <span className="text-slate-400 italic font-normal font-sans">Pending setup</span>}
+                        </span>
+                        {selectedSignupUser.bank_account_number && (
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${selectedSignupUser.bank_account_number}`);
+                              showToast('Copied account number', 'success');
+                            }}
+                            className="p-1 text-slate-400 hover:text-slate-800"
+                            title="Copy A/C No"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Account Dates & Status */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-3">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                    Registration & Account Timestamps
+                  </span>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Registered At</p>
+                      <p className="font-bold text-slate-900 mt-1">
+                        {new Date(selectedSignupUser.created_at || selectedSignupUser.user_created_at || 0).toLocaleString('en-IN', {
+                          timeZone: 'Asia/Kolkata',
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        })}
+                      </p>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-xl border border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Last Sign In</p>
+                      <p className="font-bold text-slate-900 mt-1">
+                        {selectedSignupUser.last_sign_in_at ? (
+                          new Date(selectedSignupUser.last_sign_in_at).toLocaleString('en-IN', {
+                            timeZone: 'Asia/Kolkata',
+                            dateStyle: 'medium',
+                            timeStyle: 'short',
+                          })
+                        ) : (
+                          <span className="text-slate-400 italic font-normal">Never</span>
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 col-span-2 md:col-span-1">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Subscription Status</p>
+                      <p className="font-bold text-slate-900 mt-1 uppercase text-[11px]">
+                        {selectedSignupUser.subscription_status || 'Inactive'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Modal Footer Controls */}
+              <div className="p-4.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setSelectedSignupUser(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200/70 transition-colors"
+                >
+                  Close
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {selectedSignupUser.email && (
+                    <a
+                      href={`mailto:${selectedSignupUser.email}?subject=Welcome%20to%20MyMobPay`}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-sm"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      <span>Email Merchant</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+
             </div>
           </div>
         )}

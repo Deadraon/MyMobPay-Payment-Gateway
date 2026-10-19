@@ -41,4 +41,7 @@ __pycache__/
 
 # backup files
 *_backup_*
+*.backup.*
+*.backup
 scratch/
+

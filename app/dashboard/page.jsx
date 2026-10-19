@@ -1110,6 +1110,21 @@ export default function DashboardPage() {
 
             setProfile(insertedData);
 
+            try {
+              fetch('/api/auth/notify-signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  userId,
+                  email: user?.email,
+                  name: user?.user_metadata?.full_name || user?.user_metadata?.name || '',
+                  provider: user?.app_metadata?.provider || 'Google OAuth',
+                }),
+              }).catch(e => console.warn('Admin notify error:', e));
+            } catch (notifyErr) {
+              console.warn('Admin notify exception:', notifyErr);
+            }
+
             fetchOrders(userId);
 
             fetchEmailLogs(userId);

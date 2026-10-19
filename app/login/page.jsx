@@ -13,7 +13,7 @@ import Link from 'next/link';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 
-const MyMobPayLogo = ({ className = 'h-8 w-auto', textColor = '#131b2e' }) => (
+const MyMobPayLogo = ({ className = 'h-8 w-auto', textColor = '#0d253d' }) => (
   <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300 hover:scale-[1.02]`}>
     {/* 3D Ribbon M Mark */}
     <image
@@ -200,9 +200,9 @@ function OtpBoxInput({ value, onChange, disabled }) {
           placeholder={d ? '' : '·'}
           className={`h-12 w-full text-center font-bold text-[20px] rounded-lg border-2 transition-all outline-none ${
             d
-              ? 'bg-white border-[#2c60ff] text-[#131b2e] shadow-sm'
-              : 'bg-[#f2f3ff] border-[#dae2fd] text-[#131b2e] placeholder:text-[#74777e]'
-          } focus:border-[#2c60ff] focus:bg-white focus:shadow-md disabled:opacity-50`}
+              ? 'bg-white border-[#533afd] text-[#0d253d] ring-2 ring-[#533afd]/20 shadow-xs'
+              : 'bg-[#f6f9fc] border-[#e3e8ee] text-[#0d253d] placeholder:text-[#64748d]'
+          } focus:border-[#533afd] focus:bg-white focus:ring-2 focus:ring-[#533afd]/20 disabled:opacity-50`}
         />
       ))}
     </div>
@@ -1035,16 +1035,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden grid grid-cols-1 lg:grid-cols-12 bg-slate-50 font-sans text-slate-900 relative">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden grid grid-cols-1 lg:grid-cols-12 bg-[#f6f9fc] font-sohne text-[#0d253d] relative">
       <InteractiveBackground />
       
       {/* ────────────────────────────────────────────────────────
          LEFT PANE: DYNAMIC PRODUCT HERO SHOWCASE (Desktop only)
          ──────────────────────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:col-span-7 bg-[#0B0F19] relative z-10 flex-col justify-between p-8 xl:p-12 h-screen overflow-hidden border-r border-slate-800/80 shrink-0">
+      <div className="hidden lg:flex lg:col-span-7 bg-[#1c1e54] relative z-10 flex-col justify-between p-8 xl:p-12 h-screen overflow-hidden border-r border-[#273951]/70 shrink-0">
         
         {/* Deep Tech Grid Line Overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] opacity-25 pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#273951_1px,transparent_1px),linear-gradient(to_bottom,#273951_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] opacity-35 pointer-events-none" />
 
         {/* Logo Wordmark header */}
         <Link href="/" className="inline-block relative z-10 shrink-0">
@@ -1055,45 +1055,45 @@ export default function LoginPage() {
         <div className="grid grid-cols-12 gap-6 xl:gap-8 items-center relative z-10 my-auto">
           
           <div className="col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-900/40 border border-blue-800 rounded-full text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/20 rounded-full text-[10px] font-semibold text-[#b9b9f9] uppercase tracking-wider">
               🟢 Direct P2P Settlements
             </div>
             
-            <h2 className="text-3xl xl:text-4xl font-black text-white leading-tight tracking-tight">
+            <h2 className="text-3xl xl:text-4xl font-light text-white leading-tight tracking-[-0.64px] font-sohne">
               Built for founders defying all odds
             </h2>
             
-            <p className="text-xs xl:text-sm text-slate-200 leading-relaxed font-medium">
+            <p className="text-xs xl:text-sm text-slate-200 leading-relaxed font-normal">
               Join thousands of businesses managing billing programmatically with flat-rate subscriptions and 0% gateway cuts.
             </p>
 
-            <div className="pt-2 space-y-3.5 font-semibold text-xs text-white/95">
+            <div className="pt-2 space-y-3.5 font-normal text-xs text-white">
               <p className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-slate-100">Zero transaction cuts on monthly volumes</span>
+                <span className="text-white">Zero transaction cuts on monthly volumes</span>
               </p>
               <p className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-slate-100">HMAC-SHA256 signed developer webhooks</span>
+                <span className="text-white">HMAC-SHA256 signed developer webhooks</span>
               </p>
               <p className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-slate-100">Risk-free sandbox simulation active</span>
+                <span className="text-white">Risk-free sandbox simulation active</span>
               </p>
             </div>
           </div>
 
           {/* Interactive Bezel Frame containing payment mockup */}
           <div className="col-span-5 flex justify-end">
-            <div className="relative w-full max-w-[220px] xl:max-w-[240px] bg-slate-900 border-4 border-slate-800 rounded-[30px] shadow-2xl overflow-hidden aspect-[9/18.5] flex flex-col transition-transform duration-500 hover:scale-[1.04]">
+            <div className="relative w-full max-w-[220px] xl:max-w-[240px] bg-[#0c2340] border-4 border-[#273951] rounded-[30px] shadow-2xl overflow-hidden aspect-[9/18.5] flex flex-col transition-transform duration-500 hover:scale-[1.04]">
               
               {/* Speaker camera notch */}
               <div className="absolute top-0 inset-x-0 h-4 flex justify-center z-30">
-                <div className="bg-slate-800 w-20 h-2.5 rounded-b-xl" />
+                <div className="bg-[#273951] w-20 h-2.5 rounded-b-xl" />
               </div>
 
               {/* simulated checkout screen content */}
-              <div className="flex-1 bg-[#0B192C] pt-6 px-3.5 pb-3.5 flex flex-col justify-between font-sans select-none text-white text-[10px]">
+              <div className="flex-1 bg-[#0d253d] pt-6 px-3.5 pb-3.5 flex flex-col justify-between font-sans select-none text-white text-[10px]">
                 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-[7px] font-bold text-slate-400 px-0.5">
@@ -1106,10 +1106,10 @@ export default function LoginPage() {
                     <p className="text-[6px] text-slate-400 font-extrabold uppercase tracking-wider mt-0.5">Direct Bank Checkout</p>
                   </div>
 
-                  <div className="bg-[#0F1E36] border border-[#1D2D44] rounded-xl p-2.5 shadow-sm space-y-1.5">
+                  <div className="bg-[#1c1e54] border border-[#273951] rounded-xl p-2.5 shadow-sm space-y-1.5">
                     <div className="flex justify-between items-center text-[7px] text-slate-400 font-bold uppercase">
                       <span>Total Due</span>
-                      <span className="text-[#3395FF] font-extrabold bg-[#0B2447] px-1 py-0.2 rounded text-[5px] uppercase">P2P Route</span>
+                      <span className="text-[#b9b9f9] font-semibold bg-[#533afd]/30 px-1 py-0.2 rounded text-[5px] uppercase">P2P Route</span>
                     </div>
                     <div className="flex items-baseline">
                       <span className="text-[10px] font-bold text-slate-400 mr-0.2">₹</span>
@@ -1118,14 +1118,14 @@ export default function LoginPage() {
                   </div>
 
                   {/* QR Vector preview with Animated Scanning Laser */}
-                  <div className="bg-white border border-slate-200 rounded-xl p-2.5 shadow-sm flex flex-col items-center justify-center space-y-2 relative overflow-hidden group">
+                  <div className="bg-white border border-[#e3e8ee] rounded-xl p-2.5 shadow-sm flex flex-col items-center justify-center space-y-2 relative overflow-hidden group">
                     
                     {/* Laser Scanner Beam */}
-                    <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#3395FF] to-transparent top-0 animate-laser" />
+                    <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#533afd] to-transparent top-0 animate-laser" />
 
                     <svg viewBox="0 0 100 100" className="w-18 h-18 text-slate-800" fill="currentColor">
                       {/* Corner marks */}
-                      <path d="M0,0 h24 v6 h-18 v18 h-6 z M76,0 h24 v24 h-6 v-18 h-18 z M0,76 h6 v18 h18 v6 h-24 z M76,100 h24 v-24 h-6 v18 h-18 z" fill="#00529B" opacity="0.15" />
+                      <path d="M0,0 h24 v6 h-18 v18 h-6 z M76,0 h24 v24 h-6 v-18 h-18 z M0,76 h6 v18 h18 v6 h-24 z M76,100 h24 v-24 h-6 v18 h-18 z" fill="#533afd" opacity="0.2" />
                       
                       <rect x="10" y="10" width="20" height="20" fill="#0F172A" rx="2" />
                       <rect x="14" y="14" width="12" height="12" fill="#FFFFFF" rx="1.5" />
@@ -1141,7 +1141,7 @@ export default function LoginPage() {
                       
                       <path d="M40,10 h6 v6 h-6 z M50,15 h8 v4 h-8 z M45,25 h10 v4 h-10 z M35,35 h8 v8 h-8 z M55,35 h12 v4 h-12 z M35,50 h12 v4 h-12 z M50,50 h6 v6 h-6 z M10,40 h8 v8 h-8 z M25,45 h10 v4 h-10 z M70,40 h8 v6 h-8 z M82,45 h8 v4 h-8 z M70,55 h12 v4 h-12 z M10,55 h6 v6 h-6 z M80,70 h10 v8 h-10 z M80,85 h8 v8 h-8 z" fill="#0F172A" />
                       
-                      <rect x="40" y="40" width="20" height="20" fill="#3B82F6" rx="3" />
+                      <rect x="40" y="40" width="20" height="20" fill="#533afd" rx="3" />
                       <text x="50" y="54" fontFamily="'Orbitron', sans-serif" fontWeight="950" fontSize="13" fill="#FFFFFF" textAnchor="middle">M</text>
                     </svg>
                     
@@ -1164,7 +1164,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer info in left panel */}
-        <p className="text-[10px] text-slate-300 font-semibold relative z-10 shrink-0">
+        <p className="text-[10px] text-slate-400 font-light relative z-10 shrink-0">
           © 2026 MyMobPay · Secure B2B Gateway Infrastructures
         </p>
 
@@ -1173,7 +1173,7 @@ export default function LoginPage() {
       {/* ────────────────────────────────────────────────────────
          RIGHT PANE: BRAND MATCHED AUTHENTICATION CONSOLE
          ──────────────────────────────────────────────────────── */}
-      <div className="col-span-1 lg:col-span-5 bg-[#f2f3ff] h-auto lg:h-screen lg:overflow-y-auto relative z-10 font-sans">
+      <div className="col-span-1 lg:col-span-5 bg-[#f6f9fc] h-auto lg:h-screen lg:overflow-y-auto relative z-10 font-sohne">
         
         <div className="min-h-full w-full flex flex-col justify-center items-center px-4 sm:px-6 py-8 sm:py-10">
           
@@ -1183,25 +1183,25 @@ export default function LoginPage() {
             <div className="flex flex-col items-center mb-5 text-center">
               <div className="flex items-center justify-center mb-2.5">
                 <Link href="/" className="inline-block hover:opacity-95 transition-opacity">
-                  <MyMobPayLogo className="h-9 sm:h-10 w-auto" textColor="#0f1b2d" />
+                  <MyMobPayLogo className="w-40 sm:w-44 h-auto" textColor="#0d253d" />
                 </Link>
               </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e2e7ff] text-[#44474d] text-[11px] font-semibold shadow-xs">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#e3e8ee] text-[#273951] text-[11px] font-medium shadow-2xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#009d6d] animate-pulse"></span>
                 <span>mymob.tech • Unified Fintech Gateway &amp; Settlement Suite</span>
               </div>
             </div>
 
             {/* Centered Auth Card Container */}
-            <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200/80">
+            <div className="w-full bg-white rounded-2xl shadow-sm overflow-hidden border border-[#e3e8ee]">
               
               {/* Card Header */}
               <div className="p-6 sm:p-8 bg-white">
                 <div className="text-center">
-                  <h1 className="text-xl sm:text-2xl font-bold text-[#131b2e] tracking-tight mb-1">
+                  <h1 className="text-xl sm:text-2xl font-light text-[#0d253d] tracking-[-0.4px] mb-1 font-sohne">
                     {mode === 'signin' ? 'Log in to Dashboard' : 'Create Merchant Account'}
                   </h1>
-                  <p className="text-xs text-[#44474d] leading-relaxed">
+                  <p className="text-xs text-[#64748d] leading-relaxed font-light">
                     {mode === 'signin' 
                       ? 'Manage payments, instant settlements, and customer refunds' 
                       : 'Start collecting instant 0% direct UPI payments in minutes'}
@@ -1209,28 +1209,28 @@ export default function LoginPage() {
                 </div>
 
                 {error && (
-                  <div className="mt-4 bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg text-xs font-medium flex items-start gap-2">
+                  <div className="mt-4 bg-rose-50/80 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs font-medium flex items-start gap-2">
                     <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                     <span className="flex-1 leading-normal">{formatCustomerError(error)}</span>
                   </div>
                 )}
 
                 {message && (
-                  <div className="mt-4 bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-lg text-xs font-medium flex items-center gap-2">
+                  <div className="mt-4 bg-emerald-50/80 border border-emerald-200 text-emerald-700 p-3 rounded-xl text-xs font-medium flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                     <span>{message}</span>
                   </div>
                 )}
 
                 {/* ── Primary Auth Mode Switcher: Log In vs Sign Up ── */}
-                <div className="mt-5 p-1 bg-[#eaedff] rounded-xl grid grid-cols-2 gap-1 border border-[#dae2fd]/70 shadow-xs">
+                <div className="mt-5 p-1 bg-[#f0f2f5] rounded-full grid grid-cols-2 gap-1 border border-[#e3e8ee] shadow-2xs">
                   <button 
                     type="button" 
                     onClick={() => { setMode('signin'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                    className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                       mode === 'signin' 
-                        ? 'bg-white text-[#0045de] shadow-sm' 
-                        : 'text-[#44474d] hover:text-[#131b2e]'
+                        ? 'bg-white text-[#533afd] shadow-xs' 
+                        : 'text-[#64748d] hover:text-[#0d253d]'
                     }`}
                   >
                     <Lock className="w-3.5 h-3.5" />
@@ -1239,10 +1239,10 @@ export default function LoginPage() {
                   <button 
                     type="button" 
                     onClick={() => { setMode('signup'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                    className={`py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                       mode === 'signup' 
-                        ? 'bg-white text-[#0045de] shadow-sm' 
-                        : 'text-[#44474d] hover:text-[#131b2e]'
+                        ? 'bg-white text-[#533afd] shadow-xs' 
+                        : 'text-[#64748d] hover:text-[#0d253d]'
                     }`}
                   >
                     <UserPlus className="w-3.5 h-3.5" />
@@ -1252,7 +1252,7 @@ export default function LoginPage() {
 
                 {/* In Sign In Mode ONLY: Sub-Tab Switcher (WhatsApp OTP vs Password) */}
                 {mode === 'signin' && (
-                  <div className="mt-4 p-1 bg-[#eaedff] rounded-lg grid grid-cols-2 gap-1 border border-[#dae2fd]/70 shadow-xs">
+                  <div className="mt-4 p-1 bg-[#f6f9fc] rounded-lg grid grid-cols-2 gap-1 border border-[#e3e8ee]/70 shadow-xs">
                     <button 
                       type="button" 
                       onClick={() => {
@@ -1264,13 +1264,13 @@ export default function LoginPage() {
                       }}
                       className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         authTab === 'whatsapp' || authTab === 'email'
-                          ? 'bg-white text-[#0045de] shadow-sm' 
-                          : 'text-[#44474d] hover:text-[#131b2e]'
+                          ? 'bg-white text-[#533afd] shadow-sm' 
+                          : 'text-[#64748d] hover:text-[#0d253d]'
                       }`}
                     >
                       {authTab === 'email' ? (
                         <>
-                          <Mail className="w-3.5 h-3.5 text-[#0045de]" />
+                          <Mail className="w-3.5 h-3.5 text-[#533afd]" />
                           <span>Email OTP</span>
                           {isWaDegraded && (
                             <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.5 rounded ml-1">
@@ -1288,10 +1288,10 @@ export default function LoginPage() {
                     <button 
                       type="button" 
                       onClick={() => { setAuthTab('password'); setError(''); setMessage(''); }}
-                      className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         authTab === 'password' 
-                          ? 'bg-white text-[#0045de] shadow-sm' 
-                          : 'text-[#44474d] hover:text-[#131b2e]'
+                          ? 'bg-white text-[#533afd] shadow-xs' 
+                          : 'text-[#64748d] hover:text-[#0d253d]'
                       }`}
                     >
                       <Lock className="w-3.5 h-3.5" />
@@ -1341,15 +1341,15 @@ export default function LoginPage() {
                     {!otpSent ? (
                       <>
                         <div className="flex flex-col space-y-1.5">
-                          <label className="text-xs font-medium text-[#44474d] flex items-center justify-between">
+                          <label className="text-xs font-medium text-[#64748d] flex items-center justify-between">
                             <span>WhatsApp Mobile Number</span>
                             <span className="text-[#009d6d] font-semibold text-[11px] flex items-center gap-1">
                               <MessageCircle className="w-3 h-3" />
                               Instant WhatsApp OTP
                             </span>
                           </label>
-                          <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-emerald-500">
-                            <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#131b2e] text-sm font-semibold border-r border-[#dae2fd]">
+                          <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all border border-[#e3e8ee] shadow-2xs">
+                            <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#0d253d] text-sm font-semibold border-r border-[#e3e8ee]">
                               <span className="text-base leading-none">🇮🇳</span>
                               <span>+91</span>
                             </div>
@@ -1361,10 +1361,10 @@ export default function LoginPage() {
                               onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                               onKeyDown={(e) => e.key === 'Enter' && phone.trim().replace(/\D/g, '').length === 10 && triggerOtpFlow('whatsapp')}
                               placeholder="10-digit WhatsApp number"
-                              className="w-full bg-transparent py-2.5 pl-3 text-sm text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-sans tracking-normal"
+                              className="w-full bg-transparent py-2.5 pl-3 text-sm text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans tracking-normal"
                             />
                           </div>
-                          <p className="text-[11px] text-[#74777e] leading-relaxed">
+                          <p className="text-[11px] text-[#64748d] leading-relaxed">
                             We will send a 6-digit verification code directly to your WhatsApp.
                           </p>
                         </div>
@@ -1373,7 +1373,7 @@ export default function LoginPage() {
                           type="button"
                           onClick={() => triggerOtpFlow('whatsapp')}
                           disabled={loading || phone.trim().replace(/\D/g, '').length !== 10}
-                          className="w-full h-12 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                          className="w-full h-11 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1387,11 +1387,11 @@ export default function LoginPage() {
                         </button>
 
                         {/* Blue line at bottom to switch to Email OTP */}
-                        <div className="text-center pt-2 border-t border-[#dae2fd]/60">
+                        <div className="text-center pt-2 border-t border-[#e3e8ee]/60">
                           <button
                             type="button"
                             onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                            className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                            className="text-xs text-[#533afd] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                           >
                             <span>Prefer email? Sign in with Email OTP &rarr;</span>
                           </button>
@@ -1400,21 +1400,21 @@ export default function LoginPage() {
                     ) : (
                       <>
                         <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50/70 border border-emerald-200">
-                          <div className="flex items-center gap-2 text-xs text-[#131b2e] font-medium">
+                          <div className="flex items-center gap-2 text-xs text-[#0d253d] font-medium">
                             <MessageCircle className="w-4 h-4 text-[#009d6d] shrink-0" />
                             <span>OTP sent to WhatsApp <strong className="text-emerald-700">+91 {phone}</strong></span>
                           </div>
                           <button
                             type="button"
                             onClick={() => { setOtpSent(false); setOtp(''); setError(''); setMessage(''); }}
-                            className="text-[11px] text-[#0045de] font-semibold hover:underline cursor-pointer"
+                            className="text-[11px] text-[#533afd] font-semibold hover:underline cursor-pointer"
                           >
                             Change
                           </button>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-xs font-medium text-[#44474d] text-center block">
+                          <label className="text-xs font-medium text-[#64748d] text-center block">
                             Enter 6-digit WhatsApp Verification Code
                           </label>
                           <OtpBoxInput value={otp} onChange={setOtp} disabled={loading} />
@@ -1424,7 +1424,7 @@ export default function LoginPage() {
                           type="button"
                           onClick={handleVerifyOtp}
                           disabled={loading || otp.length !== 6}
-                          className="w-full h-12 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                          className="w-full h-11 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1438,14 +1438,14 @@ export default function LoginPage() {
 
                         {/* Resend button & blue line at bottom */}
                         <div className="text-center pt-2 space-y-2.5">
-                          <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-emerald-50/50 border border-emerald-200/70 text-[11px] text-[#44474d]">
+                          <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-emerald-50/50 border border-emerald-200/70 text-[11px] text-[#64748d]">
                             <MessageCircle className="w-3.5 h-3.5 text-[#009d6d] shrink-0" />
                             <span>Enter the 6-digit code received on your WhatsApp number.</span>
                           </div>
 
                           {otpTimer > 0 ? (
-                            <span className="text-xs text-[#74777e] block">
-                              Resend code in <strong className="text-[#131b2e]">{otpTimer}s</strong>
+                            <span className="text-xs text-[#64748d] block">
+                              Resend code in <strong className="text-[#0d253d]">{otpTimer}s</strong>
                             </span>
                           ) : (
                             <button
@@ -1459,11 +1459,11 @@ export default function LoginPage() {
                           )}
 
                           {/* Blue line at bottom */}
-                          <div className="pt-2 border-t border-[#dae2fd]/60">
+                          <div className="pt-2 border-t border-[#e3e8ee]/60">
                             <button
                               type="button"
                               onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                              className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                              className="text-xs text-[#533afd] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                             >
                               <span>Prefer email? Sign in with Email OTP &rarr;</span>
                             </button>
@@ -1480,14 +1480,14 @@ export default function LoginPage() {
                     {!emailOtpSent ? (
                       <>
                         <div className="flex flex-col space-y-1.5">
-                          <label className="text-xs font-medium text-[#44474d] flex items-center justify-between">
+                          <label className="text-xs font-medium text-[#64748d] flex items-center justify-between">
                             <span>Merchant Email / ID</span>
-                            <span className="text-[#0045de] font-semibold text-[11px]">
+                            <span className="text-[#533afd] font-semibold text-[11px]">
                               6-Digit OTP
                             </span>
                           </label>
-                          <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                            <Mail className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                          <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                            <Mail className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                             <input
                               type="text"
                               required
@@ -1495,10 +1495,10 @@ export default function LoginPage() {
                               onChange={(e) => setEmail(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && email.trim() && handleSendEmailOtp()}
                               placeholder="merchant@company.com or Merchant ID"
-                              className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                              className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
                             />
                           </div>
-                          <p className="text-[11px] text-[#74777e] leading-relaxed">
+                          <p className="text-[11px] text-[#64748d] leading-relaxed">
                             We will send a 6-digit verification code to your registered email inbox.
                           </p>
                         </div>
@@ -1507,7 +1507,7 @@ export default function LoginPage() {
                           type="button"
                           onClick={handleSendEmailOtp}
                           disabled={loading || !email.trim()}
-                          className="w-full h-12 bg-[#2c60ff] hover:bg-[#0045de] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                          className="w-full h-11 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1520,11 +1520,11 @@ export default function LoginPage() {
                         </button>
 
                         {/* Blue line at bottom to switch to WhatsApp OTP */}
-                        <div className="text-center pt-2 border-t border-[#dae2fd]/60">
+                        <div className="text-center pt-2 border-t border-[#e3e8ee]/60">
                           <button
                             type="button"
                             onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
-                            className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                            className="text-xs text-[#533afd] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                           >
                             <span>{isWaDegraded ? 'Prefer WhatsApp? Try WhatsApp OTP anyway \u2192' : 'Prefer WhatsApp? Sign in with WhatsApp OTP \u2192'}</span>
                           </button>
@@ -1532,22 +1532,22 @@ export default function LoginPage() {
                       </>
                     ) : (
                       <>
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-[#eaedff]/60 border border-[#dae2fd]">
-                          <div className="flex items-center gap-2 text-xs text-[#131b2e] font-medium">
-                            <Mail className="w-4 h-4 text-[#0045de] shrink-0" />
-                            <span>Code sent to <strong className="text-[#0045de]">{email}</strong></span>
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-[#f6f9fc]/60 border border-[#e3e8ee]">
+                          <div className="flex items-center gap-2 text-xs text-[#0d253d] font-medium">
+                            <Mail className="w-4 h-4 text-[#533afd] shrink-0" />
+                            <span>Code sent to <strong className="text-[#533afd]">{email}</strong></span>
                           </div>
                           <button
                             type="button"
                             onClick={() => { setEmailOtpSent(false); setEmailOtp(''); setError(''); setMessage(''); }}
-                            className="text-[11px] text-[#0045de] font-semibold hover:underline cursor-pointer"
+                            className="text-[11px] text-[#533afd] font-semibold hover:underline cursor-pointer"
                           >
                             Change
                           </button>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-xs font-medium text-[#44474d] text-center block">
+                          <label className="text-xs font-medium text-[#64748d] text-center block">
                             Enter 6-digit Email Verification Code
                           </label>
                           <OtpBoxInput value={emailOtp} onChange={setEmailOtp} disabled={loading} />
@@ -1557,7 +1557,7 @@ export default function LoginPage() {
                           type="button"
                           onClick={handleVerifyEmailOtp}
                           disabled={loading || emailOtp.length !== 6}
-                          className="w-full h-12 bg-[#2c60ff] hover:bg-[#0045de] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                          className="w-full h-11 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1571,32 +1571,32 @@ export default function LoginPage() {
 
                         {/* Resend button & blue line at bottom */}
                         <div className="text-center pt-2 space-y-2.5">
-                          <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-[#eaedff]/50 border border-[#dae2fd]/70 text-[11px] text-[#44474d]">
-                            <Mail className="w-3.5 h-3.5 text-[#0045de] shrink-0" />
+                          <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-[#f6f9fc]/50 border border-[#e3e8ee]/70 text-[11px] text-[#64748d]">
+                            <Mail className="w-3.5 h-3.5 text-[#533afd] shrink-0" />
                             <span>Enter the 6-digit verification code from your email to sign in.</span>
                           </div>
 
                           {emailTimer > 0 ? (
-                            <span className="text-xs text-[#74777e] block">
-                              Resend code in <strong className="text-[#131b2e]">{emailTimer}s</strong>
+                            <span className="text-xs text-[#64748d] block">
+                              Resend code in <strong className="text-[#0d253d]">{emailTimer}s</strong>
                             </span>
                           ) : (
                             <button
                               type="button"
                               onClick={handleSendEmailOtp}
                               disabled={loading}
-                              className="text-xs font-semibold text-[#0045de] hover:underline cursor-pointer"
+                              className="text-xs font-semibold text-[#533afd] hover:underline cursor-pointer"
                             >
                               Didn&apos;t receive email? Resend code
                             </button>
                           )}
 
                           {/* Blue line at bottom */}
-                          <div className="pt-2 border-t border-[#dae2fd]/60">
+                          <div className="pt-2 border-t border-[#e3e8ee]/60">
                             <button
                               type="button"
                               onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
-                              className="text-xs text-[#0045de] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                              className="text-xs text-[#533afd] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                             >
                               <span>{isWaDegraded ? 'Prefer WhatsApp? Try WhatsApp OTP anyway \u2192' : 'Prefer WhatsApp? Sign in with WhatsApp OTP \u2192'}</span>
                             </button>
@@ -1611,45 +1611,45 @@ export default function LoginPage() {
                 {mode === 'signin' && authTab === 'password' && (
                   <form onSubmit={(e) => { e.preventDefault(); handleAuth('signin'); }} className="mt-6 flex flex-col space-y-4">
                     <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-medium text-[#44474d]">Merchant Email / ID</label>
-                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                        <Mail className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                      <label className="text-xs font-medium text-[#64748d]">Merchant Email / ID</label>
+                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                        <Mail className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                         <input
                           type="text"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="merchant@company.com or Merchant ID"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
                         />
                       </div>
                     </div>
 
                     <div className="flex flex-col space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-xs font-medium text-[#44474d]">Password</label>
+                        <label className="text-xs font-medium text-[#64748d]">Password</label>
                         <button
                           type="button"
                           onClick={handleForgotPassword}
-                          className="text-[11px] font-semibold text-[#0045de] hover:underline"
+                          className="text-[11px] font-semibold text-[#533afd] hover:underline"
                         >
                           Forgot?
                         </button>
                       </div>
-                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                        <Lock className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                        <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                         <input
                           type={showPassword ? 'text' : 'password'}
                           required
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••••••"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(prev => !prev)}
-                          className="text-[#74777e] hover:text-[#131b2e] p-1 cursor-pointer"
+                          className="text-[#64748d] hover:text-[#0d253d] p-1 cursor-pointer"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
@@ -1659,7 +1659,7 @@ export default function LoginPage() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-12 bg-[#2c60ff] hover:bg-[#0045de] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                      className="w-full h-11 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
                     >
                       {loading ? (
                         <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1679,7 +1679,7 @@ export default function LoginPage() {
                     {/* Merchant Email Address with inline OTP verification */}
                     <div className="flex flex-col space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-xs font-semibold text-[#131b2e] flex items-center gap-1">
+                        <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
                           <span>Merchant Email Address</span>
                           <span className="text-red-500">*</span>
                         </label>
@@ -1689,7 +1689,7 @@ export default function LoginPage() {
                             Email Verified
                           </span>
                         ) : (
-                          <span className="text-[10px] font-medium text-[#74777e]">
+                          <span className="text-[10px] font-medium text-[#64748d]">
                             Email verification
                           </span>
                         )}
@@ -1698,9 +1698,9 @@ export default function LoginPage() {
                       <div className={`flex items-center rounded-lg px-3 transition-all border ${
                         isEmailVerified 
                           ? 'bg-emerald-50/40 border-emerald-300' 
-                          : 'bg-[#f2f3ff] border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md focus-within:border-blue-400'
+                          : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs'
                       }`}>
-                        <Mail className={`w-4 h-4 mr-2 shrink-0 ${isEmailVerified ? 'text-emerald-600' : 'text-[#74777e]'}`} />
+                        <Mail className={`w-4 h-4 mr-2 shrink-0 ${isEmailVerified ? 'text-emerald-600' : 'text-[#64748d]'}`} />
                         <input
                           type="email"
                           required
@@ -1712,7 +1712,7 @@ export default function LoginPage() {
                             if (emailOtpSent) setEmailOtpSent(false);
                           }}
                           placeholder="merchant@company.com"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium disabled:opacity-85"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium disabled:opacity-85"
                         />
                         {isEmailVerified ? (
                           <button
@@ -1722,7 +1722,7 @@ export default function LoginPage() {
                               setEmailOtpSent(false);
                               setEmailOtp('');
                             }}
-                            className="text-[11px] text-[#0045de] font-bold hover:underline shrink-0 pl-2 cursor-pointer"
+                            className="text-[11px] text-[#533afd] font-medium hover:underline shrink-0 pl-2 cursor-pointer"
                           >
                             Change
                           </button>
@@ -1731,7 +1731,7 @@ export default function LoginPage() {
                             type="button"
                             onClick={handleSendEmailOtp}
                             disabled={loading || !email.trim() || !email.includes('@')}
-                            className="shrink-0 ml-2 px-2.5 py-1.5 bg-[#2c60ff] hover:bg-[#0045de] disabled:opacity-40 text-white rounded-md text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                            className="shrink-0 ml-2 px-2.5 py-1.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] disabled:opacity-40 text-white rounded-full text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
                           >
                             {loading && !emailOtpSent ? (
                               <Loader2 className="w-3 h-3 animate-spin" />
@@ -1746,21 +1746,21 @@ export default function LoginPage() {
 
                       {/* Sub-text hint when OTP not sent yet */}
                       {!emailOtpSent && !isEmailVerified && (
-                        <p className="text-[11px] text-[#74777e]">
+                        <p className="text-[11px] text-[#64748d]">
                           Click &quot;Verify Email&quot; to receive your 6-digit verification code. Email OTP is mandatory.
                         </p>
                       )}
 
                       {/* Inline OTP Verification Box */}
                       {emailOtpSent && !isEmailVerified && (
-                        <div className="mt-2 p-3.5 rounded-xl bg-[#eaedff]/70 border border-[#dae2fd] space-y-3">
+                        <div className="mt-2 p-3.5 rounded-xl bg-[#f6f9fc]/70 border border-[#e3e8ee] space-y-3">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-[11px] font-semibold text-[#131b2e] flex items-center gap-1.5">
-                              <Zap className="w-3.5 h-3.5 text-[#0045de]" />
-                              <span>Code sent to <strong className="text-[#0045de]">{email}</strong></span>
+                            <span className="text-[11px] font-semibold text-[#0d253d] flex items-center gap-1.5">
+                              <Zap className="w-3.5 h-3.5 text-[#533afd]" />
+                              <span>Code sent to <strong className="text-[#533afd]">{email}</strong></span>
                             </span>
                             {emailTimer > 0 ? (
-                              <span className="text-[10px] text-[#74777e]">
+                              <span className="text-[10px] text-[#64748d]">
                                 Resend in <strong>{emailTimer}s</strong>
                               </span>
                             ) : (
@@ -1768,7 +1768,7 @@ export default function LoginPage() {
                                 type="button"
                                 onClick={handleSendEmailOtp}
                                 disabled={loading}
-                                className="text-[10px] font-bold text-[#0045de] hover:underline cursor-pointer"
+                                className="text-[10px] font-bold text-[#533afd] hover:underline cursor-pointer"
                               >
                                 Resend Code
                               </button>
@@ -1776,7 +1776,7 @@ export default function LoginPage() {
                           </div>
 
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-medium text-[#44474d] block text-center">
+                            <label className="text-[11px] font-medium text-[#64748d] block text-center">
                               Enter 6-Digit Email Verification Code
                             </label>
                             <OtpBoxInput value={emailOtp} onChange={setEmailOtp} disabled={loading} />
@@ -1803,12 +1803,12 @@ export default function LoginPage() {
 
                     {/* Create Password */}
                     <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-semibold text-[#131b2e] flex items-center gap-1">
+                      <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
                         <span>Create Password (min 6 chars)</span>
                         <span className="text-red-500">*</span>
                       </label>
-                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                        <Lock className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                        <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                         <input
                           type={showPassword ? 'text' : 'password'}
                           required
@@ -1816,12 +1816,12 @@ export default function LoginPage() {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••••••"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(prev => !prev)}
-                          className="text-[#74777e] hover:text-[#131b2e] p-1 cursor-pointer"
+                          className="text-[#64748d] hover:text-[#0d253d] p-1 cursor-pointer"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
@@ -1830,34 +1830,34 @@ export default function LoginPage() {
 
                     {/* Business / Brand Name */}
                     <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-semibold text-[#131b2e] flex items-center gap-1">
+                      <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
                         <span>Business / Brand Name</span>
                         <span className="text-red-500">*</span>
                       </label>
-                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                        <Building2 className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                        <Building2 className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                         <input
                           type="text"
                           required
                           value={businessName}
                           onChange={(e) => setBusinessName(e.target.value)}
                           placeholder="e.g. Acme Tech Studio"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
                         />
                       </div>
                     </div>
 
                     {/* Receiving UPI ID */}
                     <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-semibold text-[#131b2e] flex items-center justify-between">
+                      <label className="text-xs font-semibold text-[#0d253d] flex items-center justify-between">
                         <span className="flex items-center gap-1">
                           <span>Settlement UPI ID</span>
                           <span className="text-red-500">*</span>
                         </span>
-                        <span className="text-[10px] text-[#0045de] font-medium">Direct Bank Routing</span>
+                        <span className="text-[10px] text-[#533afd] font-medium">Direct Bank Routing</span>
                       </label>
-                      <div className="flex items-center rounded-lg bg-[#f2f3ff] px-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md transition-all border border-transparent focus-within:border-blue-400">
-                        <QrCode className="w-4 h-4 text-[#74777e] mr-2 shrink-0" />
+                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                        <QrCode className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                         <input
                           type="text"
                           required
@@ -1882,10 +1882,10 @@ export default function LoginPage() {
                             }
                           }}
                           placeholder="e.g. merchant@okhdfcbank"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-mono"
+                          className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-mono"
                         />
                       </div>
-                      <p className="text-[11px] text-[#74777e]">
+                      <p className="text-[11px] text-[#64748d]">
                         Customer payments settle directly to this UPI address with 0% gateway commission.
                       </p>
                     </div>
@@ -1893,7 +1893,7 @@ export default function LoginPage() {
                     {/* Mobile Phone Number with WhatsApp OTP verification */}
                     <div className="flex flex-col space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-xs font-semibold text-[#131b2e] flex items-center gap-1">
+                        <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
                           <span>Mobile Number (WhatsApp)</span>
                           <span className="text-red-500">*</span>
                         </label>
@@ -1903,7 +1903,7 @@ export default function LoginPage() {
                             WhatsApp Verified
                           </span>
                         ) : (
-                          <span className="text-[10px] font-medium text-[#74777e]">
+                          <span className="text-[10px] font-medium text-[#64748d]">
                             WhatsApp OTP required
                           </span>
                         )}
@@ -1912,9 +1912,9 @@ export default function LoginPage() {
                       <div className={`flex items-center rounded-lg px-3 py-1 transition-all border ${
                         isPhoneVerified 
                           ? 'bg-emerald-50/40 border-emerald-300' 
-                          : 'bg-[#f2f3ff] border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md focus-within:border-blue-400'
+                          : 'bg-[#f6f9fc] border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:shadow-md focus-within:border-blue-400'
                       }`}>
-                        <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#131b2e] text-sm font-semibold border-r border-[#dae2fd]">
+                        <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#0d253d] text-sm font-semibold border-r border-[#e3e8ee]">
                           <span className="text-base leading-none">🇮🇳</span>
                           <span>+91</span>
                         </div>
@@ -1930,7 +1930,7 @@ export default function LoginPage() {
                             if (phoneOtpSent) setPhoneOtpSent(false);
                           }}
                           placeholder="10-digit WhatsApp number"
-                          className="w-full bg-transparent py-2 pl-3 text-sm text-[#131b2e] placeholder-[#74777e] focus:outline-none font-medium font-sans tracking-normal disabled:opacity-85"
+                          className="w-full bg-transparent py-2 pl-3 text-sm text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans tracking-normal disabled:opacity-85"
                         />
                         {isPhoneVerified ? (
                           <button
@@ -1940,7 +1940,7 @@ export default function LoginPage() {
                               setPhoneOtpSent(false);
                               setPhoneOtp('');
                             }}
-                            className="text-[11px] text-[#0045de] font-bold hover:underline shrink-0 pl-2 cursor-pointer"
+                            className="text-[11px] text-[#533afd] font-bold hover:underline shrink-0 pl-2 cursor-pointer"
                           >
                             Change
                           </button>
@@ -1949,7 +1949,7 @@ export default function LoginPage() {
                             type="button"
                             onClick={handleSendPhoneOtp}
                             disabled={loading || phone.trim().replace(/\D/g, '').length !== 10}
-                            className="shrink-0 ml-2 px-2.5 py-1.5 bg-[#009d6d] hover:bg-[#007f58] disabled:opacity-40 text-white rounded-md text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                            className="shrink-0 ml-2 px-2.5 py-1.5 bg-[#009d6d] hover:bg-[#007f58] disabled:opacity-40 text-white rounded-full text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
                           >
                             {loading && !phoneOtpSent ? (
                               <Loader2 className="w-3 h-3 animate-spin" />
@@ -1967,7 +1967,7 @@ export default function LoginPage() {
 
                       {/* Sub-text hint when Phone OTP not sent yet */}
                       {!phoneOtpSent && !isPhoneVerified && (
-                        <p className="text-[11px] text-[#74777e]">
+                        <p className="text-[11px] text-[#64748d]">
                           Click &quot;Verify on WhatsApp&quot; to receive your 6-digit OTP code on WhatsApp.
                         </p>
                       )}
@@ -1976,12 +1976,12 @@ export default function LoginPage() {
                       {phoneOtpSent && !isPhoneVerified && (
                         <div className="mt-2 p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-3">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-[11px] font-semibold text-[#131b2e] flex items-center gap-1.5">
+                            <span className="text-[11px] font-semibold text-[#0d253d] flex items-center gap-1.5">
                               <MessageCircle className="w-3.5 h-3.5 text-[#009d6d]" />
                               <span>OTP sent to WhatsApp <strong className="text-emerald-700">+91 {phone}</strong></span>
                             </span>
                             {phoneTimer > 0 ? (
-                              <span className="text-[10px] text-[#74777e]">
+                              <span className="text-[10px] text-[#64748d]">
                                 Resend in <strong>{phoneTimer}s</strong>
                               </span>
                             ) : (
@@ -1997,7 +1997,7 @@ export default function LoginPage() {
                           </div>
 
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-medium text-[#44474d] block text-center">
+                            <label className="text-[11px] font-medium text-[#64748d] block text-center">
                               Enter 6-Digit WhatsApp Verification Code
                             </label>
                             <OtpBoxInput value={phoneOtp} onChange={setPhoneOtp} disabled={loading} />
@@ -2027,7 +2027,7 @@ export default function LoginPage() {
                       <div className={`p-2 rounded-lg border text-[11px] font-semibold flex items-center gap-1.5 transition-all ${
                         isEmailVerified
                           ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                          : 'bg-[#f2f3ff] border-[#dae2fd] text-[#74777e]'
+                          : 'bg-[#f6f9fc] border-[#e3e8ee] text-[#64748d]'
                       }`}>
                         {isEmailVerified ? (
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -2040,7 +2040,7 @@ export default function LoginPage() {
                       <div className={`p-2 rounded-lg border text-[11px] font-semibold flex items-center gap-1.5 transition-all ${
                         isPhoneVerified
                           ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                          : 'bg-[#f2f3ff] border-[#dae2fd] text-[#74777e]'
+                          : 'bg-[#f6f9fc] border-[#e3e8ee] text-[#64748d]'
                       }`}>
                         {isPhoneVerified ? (
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -2057,8 +2057,8 @@ export default function LoginPage() {
                       disabled={loading || !isEmailVerified || !isPhoneVerified}
                       className={`w-full h-12 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 mt-2 cursor-pointer disabled:cursor-not-allowed ${
                         isEmailVerified && isPhoneVerified
-                          ? 'bg-[#2c60ff] hover:bg-[#0045de] text-white shadow-blue-500/20'
-                          : 'bg-slate-200 text-slate-500 border border-slate-300/80 opacity-80'
+                          ? 'bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white shadow-sm rounded-full'
+                          : 'bg-slate-100 text-[#64748d] border border-[#e3e8ee] opacity-80 rounded-full'
                       }`}
                     >
                       {loading ? (
@@ -2090,8 +2090,8 @@ export default function LoginPage() {
 
                 {/* Soft Divider */}
                 <div className="relative my-6 flex items-center justify-center">
-                  <div className="w-full h-px bg-[#e2e7ff]"></div>
-                  <span className="absolute px-3 bg-white text-[#44474d] text-[10px] font-bold uppercase tracking-wider">
+                  <div className="w-full h-px bg-[#e3e8ee]"></div>
+                  <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold uppercase tracking-wider">
                     OR CONTINUE WITH
                   </span>
                 </div>
@@ -2101,7 +2101,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={handleGoogleLogin}
                   disabled={loading}
-                  className="w-full h-11 bg-[#f2f3ff] hover:bg-[#eaedff] text-[#131b2e] rounded-lg text-xs font-semibold flex items-center justify-center gap-3 transition-colors cursor-pointer disabled:opacity-50 border border-slate-200/60"
+                  className="w-full h-11 bg-white hover:bg-[#f6f9fc] text-[#0d253d] rounded-full text-xs font-medium flex items-center justify-center gap-3 transition-colors cursor-pointer disabled:opacity-50 border border-[#e3e8ee] shadow-2xs"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z" fill="#4285F4"></path>
@@ -2113,20 +2113,20 @@ export default function LoginPage() {
                 </button>
                 {/* QR Code Express Login Bar (in Signin mode, desktop only) */}
                 {mode === 'signin' && (
-                  <div className="mt-4 p-3.5 rounded-lg bg-[#eaedff] items-center justify-between gap-3 border border-[#dae2fd]/60 hidden lg:flex">
+                  <div className="mt-4 p-3.5 rounded-lg bg-[#f6f9fc] items-center justify-between gap-3 border border-[#e3e8ee]/60 hidden lg:flex">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center text-[#000d21] shadow-xs">
                         <QrCode className="w-5 h-5 text-blue-600" />
                       </div>
                       <div className="flex flex-col text-left">
-                        <span className="text-xs font-bold text-[#131b2e]">QR Express Login</span>
-                        <span className="text-[11px] text-[#44474d] leading-tight">Scan with mymobpay Merchant Mobile App</span>
+                        <span className="text-xs font-bold text-[#0d253d]">QR Express Login</span>
+                        <span className="text-[11px] text-[#64748d] leading-tight">Scan with mymobpay Merchant Mobile App</span>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => setShowQrModal(true)}
-                      className="px-3 py-1.5 rounded-md bg-white hover:bg-[#f2f3ff] text-[#0045de] text-xs font-bold transition-colors cursor-pointer shadow-xs border border-slate-200/80"
+                      className="px-3 py-1.5 rounded-md bg-white hover:bg-[#f6f9fc] text-[#533afd] text-xs font-bold transition-colors cursor-pointer shadow-xs border border-slate-200/80"
                     >
                       Show QR
                     </button>
@@ -2136,25 +2136,25 @@ export default function LoginPage() {
               </div>
 
               {/* Card Promotional Footer: Registration / Signin Incentive */}
-              <div className="px-6 py-4 bg-[#eaedff] text-center border-t border-[#dae2fd]/70">
+              <div className="px-6 py-4 bg-[#f6f9fc] text-center border-t border-[#e3e8ee]/70">
                 {mode === 'signin' ? (
-                  <p className="text-xs text-[#44474d]">
+                  <p className="text-xs text-[#64748d]">
                     New to mymobpay?{' '}
                     <button
                       type="button"
                       onClick={() => { setMode('signup'); setError(''); setMessage(''); }}
-                      className="font-bold text-[#0045de] hover:underline cursor-pointer ml-1"
+                      className="font-bold text-[#533afd] hover:underline cursor-pointer ml-1"
                     >
                       Sign Up
                     </button>
                   </p>
                 ) : (
-                  <p className="text-xs text-[#44474d]">
+                  <p className="text-xs text-[#64748d]">
                     Already have an account?{' '}
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
-                      className="font-bold text-[#0045de] hover:underline cursor-pointer ml-1"
+                      className="font-bold text-[#533afd] hover:underline cursor-pointer ml-1"
                     >
                       Log In to Dashboard
                     </button>
@@ -2165,14 +2165,14 @@ export default function LoginPage() {
             </div>
 
             {/* Security & Institutional Compliance Badges */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[#44474d] text-[11px] font-semibold">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[#64748d] text-[11px] font-semibold">
               <div className="flex items-center gap-1.5">
                 <Lock className="w-3.5 h-3.5 text-[#009d6d]" />
                 <span>256-Bit SSL Encryption</span>
               </div>
               <span className="hidden sm:inline text-[#c4c6ce]">•</span>
               <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#0045de]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#533afd]" />
                 <span>NPCI UPI Standard</span>
               </div>
               <span className="hidden sm:inline text-[#c4c6ce]">•</span>
@@ -2184,10 +2184,10 @@ export default function LoginPage() {
 
             {/* Merchant Support Strip */}
             <div className="mt-3.5 text-center">
-              <p className="text-xs text-[#44474d] flex items-center justify-center gap-1.5 flex-wrap">
+              <p className="text-xs text-[#64748d] flex items-center justify-center gap-1.5 flex-wrap">
                 <span>Need assistance? Contact support:</span>
                 <a 
-                  className="font-semibold text-[#0045de] hover:underline inline-flex items-center gap-1" 
+                  className="font-semibold text-[#533afd] hover:underline inline-flex items-center gap-1" 
                   href="mailto:support@mymob.tech"
                 >
                   <Mail className="w-3.5 h-3.5" />
@@ -2204,25 +2204,25 @@ export default function LoginPage() {
 
       {/* ── Interactive QR Code Modal ── */}
       {showQrModal && (
-        <div className="fixed inset-0 z-50 bg-[#000d21]/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#0d253d]/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 text-center animate-scale-up relative border border-slate-200">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-lg font-bold text-[#131b2e]">Scan to Log in</span>
+              <span className="text-lg font-bold text-[#0d253d]">Scan to Log in</span>
               <button 
                 type="button" 
                 onClick={() => setShowQrModal(false)}
-                className="text-[#74777e] hover:text-[#131b2e] p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                className="text-[#64748d] hover:text-[#0d253d] p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <p className="text-xs text-[#44474d] mb-4 leading-relaxed">
+            <p className="text-xs text-[#64748d] mb-4 leading-relaxed">
               Open the mymobpay Merchant App, tap on <strong>Profile &gt; Scan Web QR</strong> to instantly sign in.
             </p>
 
             {/* Dynamic QR Code */}
-            <div className="mx-auto w-48 h-48 bg-[#f2f3ff] p-3.5 rounded-xl flex items-center justify-center relative border border-[#dae2fd]">
+            <div className="mx-auto w-48 h-48 bg-[#f6f9fc] p-3.5 rounded-xl flex items-center justify-center relative border border-[#e3e8ee]">
               <QRCode 
                 value={`mymobpay://web-login?challenge=${qrChallenge}`} 
                 size={160} 
@@ -2230,11 +2230,11 @@ export default function LoginPage() {
                 style={{ width: '100%', height: 'auto' }}
               />
               <div className="absolute w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center">
-                <Zap className="w-4 h-4 text-[#0045de]" />
+                <Zap className="w-4 h-4 text-[#533afd]" />
               </div>
             </div>
 
-            <p className="mt-4 text-xs font-semibold text-[#74777e] flex items-center justify-center gap-1.5">
+            <p className="mt-4 text-xs font-semibold text-[#64748d] flex items-center justify-center gap-1.5">
               <RefreshCw className="w-3.5 h-3.5 text-[#009d6d] animate-spin" style={{ animationDuration: '4s' }} />
               <span>QR refreshes in {qrTimer}s</span>
             </p>

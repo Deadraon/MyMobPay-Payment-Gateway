@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 @tailwind base;
@@ -880,3 +880,34 @@ input[type=number] {
 .skip-link:focus {
   top: 0;
 }
+
+/* ─── Stripe Design Language Tokens (DESIGN-stripe.md) ────── */
+.font-sohne {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-feature-settings: 'ss01' 1;
+}
+
+.tabular-nums {
+  font-feature-settings: 'tnum' 1, 'ss01' 1;
+  letter-spacing: -0.42px;
+}
+
+.stripe-gradient-mesh {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(at 10% 15%, rgba(245, 233, 212, 0.95) 0px, transparent 50%),
+    radial-gradient(at 88% 12%, rgba(185, 185, 249, 0.85) 0px, transparent 52%),
+    radial-gradient(at 48% 28%, rgba(254, 215, 249, 0.70) 0px, transparent 55%),
+    radial-gradient(at 22% 55%, rgba(234, 34, 97, 0.16) 0px, transparent 48%),
+    radial-gradient(at 78% 48%, rgba(83, 58, 253, 0.18) 0px, transparent 52%),
+    radial-gradient(at 50% 80%, rgba(246, 249, 252, 1) 0px, transparent 65%);
+}
+
+.stripe-card-shadow {
+  box-shadow: rgba(0, 55, 112, 0.08) 0 1px 3px;
+}
+
+.stripe-elevated-shadow {
+  box-shadow: rgba(0, 55, 112, 0.08) 0 16px 40px, rgba(0, 55, 112, 0.04) 0 3px 8px;
+}
+
