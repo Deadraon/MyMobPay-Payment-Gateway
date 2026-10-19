@@ -29,7 +29,7 @@ export default function TermsPage() {
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <MyMobPayLogo markSize={28} className="w-28 sm:w-32 h-auto" />
+            <MyMobPayLogo markSize={28} />
           </Link>
           <div className="flex items-center gap-3 text-xs sm:text-sm font-medium">
             <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
