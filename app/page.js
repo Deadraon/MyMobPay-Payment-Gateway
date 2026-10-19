@@ -280,17 +280,6 @@ export default function HomePage() {
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-x-0 bottom-0 top-[96px] sm:top-[116px] z-40 bg-white flex flex-col pt-6 px-6 pb-8 animate-fadeIn border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto">
           <div className="flex flex-col space-y-4">
-            <Link 
-              href="/stripe-demo" 
-              onClick={() => setIsMobileMenuOpen(false)} 
-              className="flex items-center justify-between px-4 py-3 rounded-2xl bg-indigo-50 border border-indigo-200 font-bold text-indigo-700 text-sm shadow-[0_2px_6px_rgba(79,70,229,0.06)]"
-            >
-              <span className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-600" />
-                <span>Stripe Design Demo</span>
-              </span>
-              <ChevronRight className="w-4 h-4 text-indigo-400" />
-            </Link>
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
