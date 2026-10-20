@@ -19,9 +19,7 @@ import {
   Clock, CheckCircle2, XCircle, Code, ChevronRight, BookOpen,
 
   Menu, TrendingUp, AlertCircle, Star, Crown, Shield, Calendar, Zap, ChevronDown,
-
-  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock
-
+  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell
 } from 'lucide-react';
 
 import QRCode from 'react-qr-code';
@@ -3150,7 +3148,7 @@ echo "Order Created: " . $data['orderId'];
                   title="Notifications & Activity"
                   type="button"
                 >
-                  <span className="material-symbols-outlined text-xl">notifications</span>
+                  <Bell className="w-5 h-5 text-current" />
                   {orders.filter(o => o.status === 'verified').length > 0 && (
                     <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white animate-pulse"></span>
                   )}
@@ -3159,14 +3157,14 @@ echo "Order Created: " . $data['orderId'];
                 {/* Notifications Flyout Panel */}
                 {isNotificationOpen && (
                   <>
-                    {/* Mobile backdrop to dismiss on outside tap and block background touch scrolling */}
+                    {/* Backdrop to dismiss on outside tap */}
                     <div
-                      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs sm:bg-transparent"
+                      className="fixed inset-0 z-[90] bg-slate-900/20 sm:bg-transparent"
                       onClick={() => setIsNotificationOpen(false)}
                       onTouchMove={(e) => e.preventDefault()}
                     />
                     <div 
-                      className="fixed left-2.5 right-2.5 top-[62px] sm:left-auto sm:right-0 sm:top-full sm:mt-2.5 sm:w-80 md:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[80vh] sm:max-h-[500px]"
+                      className="fixed left-2.5 right-2.5 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] animate-fadeIn"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {/* Panel Header */}

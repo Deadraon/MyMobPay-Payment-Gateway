@@ -15,7 +15,8 @@ import {
   ShieldAlert,
   Terminal,
   DownloadCloud,
-  LogIn
+  LogIn,
+  Mail
 } from 'lucide-react';
 
 export default function AdminSidebar({ 
@@ -63,6 +64,13 @@ export default function AdminSidebar({
           icon: LogIn,
           badge: { text: 'Live', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
           desc: 'Sessions & Activity Stream'
+        },
+        {
+          id: 'emails',
+          label: 'Direct Email & Outreach',
+          icon: Mail,
+          badge: { text: 'New', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+          desc: 'Custom & Broadcast Outreach'
         },
       ]
     },

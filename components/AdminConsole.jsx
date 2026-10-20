@@ -23,6 +23,7 @@ import RiskTab from './admin/RiskTab';
 import DisputesTab from './admin/DisputesTab';
 import DeveloperTab from './admin/DeveloperTab';
 import ReportsTab from './admin/ReportsTab';
+import EmailsTab from './admin/EmailsTab';
 
 import { 
   Lock, 
@@ -66,7 +67,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const [activeTab, setActiveTabState] = useState(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace(/^#/, '');
-      const valid = ['overview', 'transactions', 'merchants', 'signups', 'logins', 'subscriptions', 'system', 'audit', 'team', 'verification', 'risk', 'disputes', 'developer', 'reports'];
+      const valid = ['overview', 'transactions', 'merchants', 'signups', 'logins', 'emails', 'subscriptions', 'system', 'audit', 'team', 'verification', 'risk', 'disputes', 'developer', 'reports'];
       if (valid.includes(hash)) return hash;
       return sessionStorage.getItem('admin_active_tab') || 'overview';
     }
@@ -789,6 +790,14 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
               showToast={showToast}
               getAuthHeaders={getAuthHeaders}
               onSelectMerchant={setSelectedMerchantForDrawer}
+            />
+          )}
+
+          {activeTab === 'emails' && (
+            <EmailsTab
+              showToast={showToast}
+              getAuthHeaders={getAuthHeaders}
+              merchants={merchants}
             />
           )}
 

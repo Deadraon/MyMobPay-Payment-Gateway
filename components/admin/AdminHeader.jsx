@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
   ShieldCheck, 
@@ -85,6 +85,88 @@ export default function AdminHeader({
             <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${loading ? 'animate-spin text-blue-600' : ''}`} />
             <span className="hidden sm:inline">Sync</span>
           </button>
+
+          {/* Admin Operations Notification Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setIsNotifOpen(!isNotifOpen)}
+              className={`relative p-2 rounded-xl border transition-all cursor-pointer ${
+                isNotifOpen
+                  ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border-slate-200 bg-white'
+              }`}
+              title="Admin Notifications & Activity"
+              type="button"
+            >
+              <Bell className="w-4 h-4" />
+              {totalPendingOrders > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white font-mono text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+                  {totalPendingOrders > 99 ? '99+' : totalPendingOrders}
+                </span>
+              )}
+            </button>
+
+            {isNotifOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-[90] bg-transparent" 
+                  onClick={() => setIsNotifOpen(false)} 
+                />
+                <div 
+                  className="absolute right-0 top-[calc(100%+8px)] w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[460px] animate-fadeIn"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/90">
+                    <div className="flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-blue-600" />
+                      <span className="text-xs font-bold text-slate-900">Ops Alerts &amp; Queue</span>
+                      {totalPendingOrders > 0 && (
+                        <span className="bg-rose-100 text-rose-700 text-[10px] font-bold px-2 py-0.5 rounded-full font-mono">
+                          {totalPendingOrders} pending
+                        </span>
+                      )}
+                    </div>
+                    <button 
+                      onClick={() => setIsNotifOpen(false)}
+                      className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="p-3 divide-y divide-slate-100 overflow-y-auto max-h-72">
+                    {totalPendingOrders > 0 ? (
+                      <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl mb-2 text-xs text-amber-900">
+                        <div className="font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                          <span>{totalPendingOrders} Unmatched Pending Checkouts</span>
+                        </div>
+                        <p className="text-[11px] text-amber-700 mt-1">
+                          Orders are awaiting customer UTR or bank confirmation.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="p-6 text-center text-xs text-slate-400">
+                        <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2 opacity-80" />
+                        <span>All transaction queues reconciled. No pending disputes or alerts.</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="text-[11px] text-slate-500">Live Master Rails Active</span>
+                    <button
+                      onClick={() => {
+                        setIsNotifOpen(false);
+                        window.location.hash = 'transactions';
+                      }}
+                      className="text-blue-600 hover:text-blue-700 font-bold text-xs"
+                    >
+                      View Ledger &rarr;
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
 
           {/* Exit to Merchant Portal */}
           {onBackToMerchant && (

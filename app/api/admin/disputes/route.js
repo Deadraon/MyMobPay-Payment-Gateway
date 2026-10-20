@@ -49,7 +49,14 @@ async function getStoredDisputes() {
     const adminMerchant = await ensureAdminMerchant();
     const stored = adminMerchant?.setup_progress?.admin_settings?.disputes;
     if (Array.isArray(stored) && stored.length > 0) return stored;
-  } catch {}
+    
+    // Seed default disputes if empty so the desk always has active records
+    if (adminMerchant) {
+      saveDisputes(DEFAULT_DISPUTES).catch(() => {});
+    }
+  } catch (err) {
+    console.error('getStoredDisputes error:', err);
+  }
   return DEFAULT_DISPUTES;
 }
 
