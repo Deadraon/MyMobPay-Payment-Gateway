@@ -551,7 +551,7 @@ export default function OverviewTab({
               </span>
             </h4>
             <p className="text-xs text-slate-500 mt-0.5">
-              Inspect recent website sign-ins, Google OAuth sessions, and verify specific users like Rajveer and Sonu.
+              Inspect recent website sign-ins, Google OAuth sessions, and verify live user activity.
             </p>
           </div>
         </div>

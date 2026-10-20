@@ -118,49 +118,6 @@ export async function GET(request) {
     // Sort by latest sign-in descending
     processedLogins.sort((a, b) => b.last_sign_in_ms - a.last_sign_in_ms);
 
-    // 5. Build Dedicated Inquiry Spotlight for Rajveer & Sonu
-    const rajveerUser = processedLogins.find(u => 
-      u.email.includes('rajveer') || u.fullName.toLowerCase().includes('rajveer')
-    );
-
-    const sonuUser = processedLogins.find(u => 
-      u.email.includes('sonu') || 
-      u.fullName.toLowerCase().includes('sonu') ||
-      u.email.includes('mohankrish') || 
-      u.fullName.toLowerCase().includes('monu')
-    );
-
-    const spotlight = {
-      rajveer: rajveerUser ? {
-        found: true,
-        email: rajveerUser.email,
-        fullName: rajveerUser.fullName,
-        created_at: rajveerUser.created_at,
-        last_sign_in_at: rajveerUser.last_sign_in_at,
-        hasLoggedInAgain: false, // Explicitly evaluated
-        message: 'Signed up on Oct 18, 2026 at 10:11 PM IST. Has NOT logged in again since initial registration.',
-        upiId: rajveerUser.upiId,
-        subscriptionStatus: rajveerUser.subscriptionStatus
-      } : {
-        found: false,
-        message: 'No user record found matching Rajveer.'
-      },
-      sonu: sonuUser ? {
-        found: true,
-        email: sonuUser.email,
-        fullName: sonuUser.fullName,
-        created_at: sonuUser.created_at,
-        last_sign_in_at: sonuUser.last_sign_in_at,
-        hasLoggedInAgain: false,
-        message: `Registered as ${sonuUser.fullName} (${sonuUser.email}) on Oct 18, 2026 at 12:04 PM IST. Has NOT logged in again since initial registration.`,
-        upiId: sonuUser.upiId,
-        subscriptionStatus: sonuUser.subscriptionStatus
-      } : {
-        found: false,
-        message: 'No user record found matching Sonu.'
-      }
-    };
-
     return NextResponse.json({
       success: true,
       summary: {
@@ -171,7 +128,6 @@ export async function GET(request) {
         emailOtpUsers: processedLogins.length - googleCount,
         checkedAt: new Date().toISOString()
       },
-      spotlight,
       logins: processedLogins,
       auditEvents: authAuditEvents.slice(0, 30)
     });

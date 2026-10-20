@@ -11,15 +11,14 @@ import {
   User, 
   ShieldCheck, 
   CheckCircle2, 
-  AlertCircle, 
   ExternalLink,
   Smartphone,
   Globe,
-  Sparkles,
   Calendar,
   Zap,
-  Info,
-  UserCheck
+  Users,
+  Activity,
+  ArrowUpRight
 } from 'lucide-react';
 
 export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant }) {
@@ -28,6 +27,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
   const [searchQuery, setSearchQuery] = useState('');
   const [providerFilter, setProviderFilter] = useState('all');
   const [timeFilter, setTimeFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState('all');
   const [autoRefresh, setAutoRefresh] = useState(false);
 
   const fetchLogins = useCallback(async () => {
@@ -94,7 +94,6 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
 
   const logins = data?.logins || [];
   const summary = data?.summary || { totalUsers: 0, loginsToday: 0, loginsThisWeek: 0, googleOAuthUsers: 0 };
-  const spotlight = data?.spotlight || {};
 
   // Filtered logins list
   const filteredLogins = useMemo(() => {
@@ -106,6 +105,10 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
     return logins.filter(user => {
       // Provider filter
       if (providerFilter !== 'all' && user.provider !== providerFilter) return false;
+
+      // Role filter
+      if (roleFilter === 'admin' && !user.isAdmin) return false;
+      if (roleFilter === 'merchant' && user.isAdmin) return false;
 
       // Timeframe filter
       if (timeFilter === 'today' && user.last_sign_in_ms < oneDayAgo) return false;
@@ -123,7 +126,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
 
       return matchEmail || matchName || matchPhone || matchStore || matchUpi;
     });
-  }, [logins, providerFilter, timeFilter, searchQuery]);
+  }, [logins, providerFilter, timeFilter, roleFilter, searchQuery]);
 
   // Export to CSV
   const handleExportCsv = () => {
@@ -135,20 +138,20 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
     const headers = [
       'Full Name',
       'Email',
-      'Auth Provider',
+      'Auth Method',
       'Last Sign-in (IST)',
       'Account Created (IST)',
       'Store Name',
       'Settlement UPI',
       'WhatsApp Phone',
-      'Subscription Status',
+      'Subscription Plan',
       'Role'
     ];
 
     const rows = filteredLogins.map(u => [
       u.fullName || '',
       u.email,
-      u.provider,
+      u.provider === 'google' ? 'Google Workspace' : 'Email / OTP',
       formatIST(u.last_sign_in_at),
       formatIST(u.created_at),
       u.businessName || '',
@@ -174,134 +177,93 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
 
   return (
     <div className="space-y-6">
-      
-      {/* ── 1. DEDICATED INQUIRY SPOTLIGHT: RAJVEER & SONU ACTIVITY ──────── */}
-      <section className="bg-linear-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-900/60 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <span className="p-2.5 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-400/30">
-                <Sparkles className="w-5 h-5" />
-              </span>
-              <div>
-                <h2 className="text-base font-black tracking-tight text-white flex items-center gap-2">
-                  <span>Targeted User Login Verification</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold uppercase tracking-wider border border-emerald-500/30">
-                    Live Verified
-                  </span>
-                </h2>
-                <p className="text-xs text-slate-300 mt-0.5">
-                  Direct audit of recent website logins for requested users <strong>Rajveer</strong> and <strong>Sonu</strong>
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={fetchLogins}
-              disabled={loading}
-              className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition-all border border-white/15 flex items-center gap-2 self-start sm:self-auto cursor-pointer"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span>Verify Again</span>
-            </button>
+      {/* ── HEADER BANNER ──────────────────────────────────────────────── */}
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+            <LogIn className="w-6 h-6" />
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-            
-            {/* Rajveer Spotlight Card */}
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-between">
-              <div>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 flex items-center justify-center font-bold text-sm">
-                      RS
-                    </div>
-                    <div>
-                      <h3 className="font-extrabold text-sm text-white">Rajveer Singh</h3>
-                      <p className="text-xs text-slate-400">rajveer.chanix@gmail.com</p>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30 shrink-0">
-                    No Recent Login
-                  </span>
-                </div>
-
-                <div className="mt-4 space-y-2 text-xs">
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Account Created:</span>
-                    <span className="font-semibold text-slate-200">{formatIST(spotlight.rajveer?.created_at)}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Last Sign-in Time:</span>
-                    <span className="font-bold text-amber-300">{formatIST(spotlight.rajveer?.last_sign_in_at)}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Settlement UPI:</span>
-                    <span className="font-mono text-slate-300">{spotlight.rajveer?.upiId || 'rxj.ee@ibl'}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2 text-xs text-amber-200 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
-                <Info className="w-4 h-4 shrink-0 text-amber-300" />
-                <span className="leading-tight">
-                  Rajveer signed up on Oct 18, 2026 at 10:11 PM IST. <strong>Did NOT log in again.</strong>
-                </span>
-              </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-lg font-black text-slate-900 tracking-tight">Recent Website Logins</h1>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Telemetry
+              </span>
             </div>
-
-            {/* Sonu / Monu Spotlight Card */}
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-between">
-              <div>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-500/30 text-purple-200 border border-purple-400/30 flex items-center justify-center font-bold text-sm">
-                      MK
-                    </div>
-                    <div>
-                      <h3 className="font-extrabold text-sm text-white">Monu Krish / Sonu</h3>
-                      <p className="text-xs text-slate-400">mohankrish91606@gmail.com</p>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30 shrink-0">
-                    No Recent Login
-                  </span>
-                </div>
-
-                <div className="mt-4 space-y-2 text-xs">
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Account Created:</span>
-                    <span className="font-semibold text-slate-200">{formatIST(spotlight.sonu?.created_at)}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Last Sign-in Time:</span>
-                    <span className="font-bold text-amber-300">{formatIST(spotlight.sonu?.last_sign_in_at)}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Auth Method:</span>
-                    <span className="font-semibold text-slate-200">Google Workspace OAuth</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2 text-xs text-amber-200 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
-                <Info className="w-4 h-4 shrink-0 text-amber-300" />
-                <span className="leading-tight">
-                  Registered on Oct 18, 2026 at 12:04 PM IST. <strong>Did NOT log in again.</strong>
-                </span>
-              </div>
-            </div>
-
+            <p className="text-xs text-slate-500 mt-1">
+              Real-time user authentication audit, active session timestamps, and identity verification logs.
+            </p>
           </div>
         </div>
-      </section>
 
-      {/* ── 2. METRIC KPI CARDS ─────────────────────────────────────────── */}
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          {/* Auto Refresh Toggle */}
+          <button
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className={`px-3.5 py-2 rounded-2xl text-xs font-bold border transition-all flex items-center gap-2 cursor-pointer ${
+              autoRefresh 
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-xs' 
+                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-ping' : 'bg-slate-300'}`} />
+            <span>{autoRefresh ? 'Live Polling (30s)' : 'Auto Refresh: Off'}</span>
+          </button>
+
+          {/* Refresh Button */}
+          <button
+            onClick={fetchLogins}
+            disabled={loading}
+            className="p-2 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 transition-all cursor-pointer disabled:opacity-50"
+            title="Refresh Data"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* ── KPI METRICS CARDS ──────────────────────────────────────────── */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {/* Total Registered Users */}
+        {/* Active Today */}
+        <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Active Today (24h)</p>
+              <h3 className="text-3xl font-black text-slate-900 mt-2">{summary.loginsToday}</h3>
+            </div>
+            <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+              <Activity className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="text-slate-500 font-medium">Daily Active Users</span>
+            <span className="font-bold text-emerald-600">{summary.loginsToday > 0 ? 'Active Stream' : 'None today'}</span>
+          </div>
+        </div>
+
+        {/* Weekly Active */}
+        <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Weekly Active (7d)</p>
+              <h3 className="text-3xl font-black text-slate-900 mt-2">{summary.loginsThisWeek}</h3>
+            </div>
+            <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100">
+              <Calendar className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span>7-Day Return Rate</span>
+            <span className="font-bold text-indigo-600">
+              {summary.totalUsers > 0 ? `${Math.round((summary.loginsThisWeek / summary.totalUsers) * 100)}%` : '0%'}
+            </span>
+          </div>
+        </div>
+
+        {/* Total Registered Accounts */}
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
@@ -309,48 +271,12 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
               <h3 className="text-3xl font-black text-slate-900 mt-2">{summary.totalUsers}</h3>
             </div>
             <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
-              <UserCheck className="w-5 h-5" />
+              <Users className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>Verified Auth Accounts</span>
-            <span className="font-bold text-blue-600">Active</span>
-          </div>
-        </div>
-
-        {/* Logins in Last 24 Hours */}
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Logins (24 Hours)</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-2">{summary.loginsToday}</h3>
-            </div>
-            <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
-              <LogIn className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="text-slate-500">Active Daily Sessions</span>
-            <span className="font-bold text-emerald-600">{summary.loginsToday > 0 ? 'Live Activity' : 'Quiet'}</span>
-          </div>
-        </div>
-
-        {/* 7-Day Active Users */}
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">7-Day Active Logins</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-2">{summary.loginsThisWeek}</h3>
-            </div>
-            <div className="p-2.5 rounded-2xl bg-purple-50 text-purple-600 border border-purple-100">
-              <Calendar className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>Weekly Active Merchants</span>
-            <span className="font-bold text-purple-600">
-              {summary.totalUsers > 0 ? `${Math.round((summary.loginsThisWeek / summary.totalUsers) * 100)}% reach` : '0%'}
-            </span>
+            <span>Auth Accounts</span>
+            <span className="font-bold text-blue-600">Verified</span>
           </div>
         </div>
 
@@ -358,7 +284,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Google OAuth Logins</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Google OAuth</p>
               <h3 className="text-3xl font-black text-slate-900 mt-2">{summary.googleOAuthUsers}</h3>
             </div>
             <div className="p-2.5 rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
@@ -366,7 +292,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>1-Click Verified SSO</span>
+            <span>1-Click SSO Adoption</span>
             <span className="font-bold text-amber-600">
               {summary.totalUsers > 0 ? `${Math.round((summary.googleOAuthUsers / summary.totalUsers) * 100)}%` : '0%'}
             </span>
@@ -375,7 +301,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
 
       </section>
 
-      {/* ── 3. SEARCH & FILTER CONTROLS ─────────────────────────────────── */}
+      {/* ── SEARCH & FILTER CONTROLS ───────────────────────────────────── */}
       <div className="bg-white border border-slate-200/80 rounded-3xl p-4 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         
         {/* Search Input */}
@@ -385,8 +311,8 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search recent logins by name, email, phone, or store name..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            placeholder="Search by user name, email, phone number, or store name..."
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
           />
           {searchQuery && (
             <button
@@ -398,16 +324,16 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
           )}
         </div>
 
-        {/* Filter Pills */}
+        {/* Filter Selectors */}
         <div className="flex flex-wrap items-center gap-2">
           
           {/* Provider Filter */}
           <select
             value={providerFilter}
             onChange={(e) => setProviderFilter(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-700 focus:outline-hidden cursor-pointer"
+            className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-700 focus:outline-hidden cursor-pointer"
           >
-            <option value="all">All Providers</option>
+            <option value="all">All Auth Methods</option>
             <option value="google">Google Workspace</option>
             <option value="email">Email / OTP</option>
           </select>
@@ -416,31 +342,29 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
           <select
             value={timeFilter}
             onChange={(e) => setTimeFilter(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-700 focus:outline-hidden cursor-pointer"
+            className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-700 focus:outline-hidden cursor-pointer"
           >
             <option value="all">All Time</option>
-            <option value="today">Today (Last 24h)</option>
+            <option value="today">Today (24h)</option>
             <option value="week">Past 7 Days</option>
             <option value="month">Past 30 Days</option>
           </select>
 
-          {/* Auto Refresh Toggle */}
-          <button
-            onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`px-3 py-2 rounded-2xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
-              autoRefresh 
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
-                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-            }`}
+          {/* Role Filter */}
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-700 focus:outline-hidden cursor-pointer"
           >
-            <span className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-ping' : 'bg-slate-300'}`} />
-            <span>Auto Refresh</span>
-          </button>
+            <option value="all">All Roles</option>
+            <option value="merchant">Merchants Only</option>
+            <option value="admin">Super Admins Only</option>
+          </select>
 
           {/* Export CSV */}
           <button
             onClick={handleExportCsv}
-            className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
@@ -449,43 +373,42 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
         </div>
       </div>
 
-      {/* ── 4. DETAILED LOGINS ACTIVITY TABLE ───────────────────────────── */}
+      {/* ── DETAILED LOGINS TABLE ──────────────────────────────────────── */}
       <div className="bg-white border border-slate-200/80 rounded-3xl shadow-xs overflow-hidden">
         
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-black text-slate-900">Live Login Activity & Sessions</h3>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Showing {filteredLogins.length} user{filteredLogins.length !== 1 ? 's' : ''} sorted by most recent sign-in
+            <h3 className="text-sm font-black text-slate-900">User Authentication Stream</h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Showing {filteredLogins.length} login record{filteredLogins.length !== 1 ? 's' : ''} sorted by most recent sign-in
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-[11px] font-semibold text-slate-500">Live Auth Stream</span>
-          </div>
+          <span className="text-[11px] font-bold text-slate-400">
+            Database UTC &bull; Rendered in IST (+05:30)
+          </span>
         </div>
 
         {loading ? (
           <div className="p-16 text-center space-y-3">
             <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto" />
-            <p className="text-xs font-bold text-slate-600">Polling active login sessions...</p>
+            <p className="text-xs font-bold text-slate-600">Retrieving recent authentication logs...</p>
           </div>
         ) : filteredLogins.length === 0 ? (
           <div className="p-16 text-center space-y-3">
             <LogIn className="w-8 h-8 text-slate-300 mx-auto" />
             <p className="text-sm font-bold text-slate-700">No login records found</p>
-            <p className="text-xs text-slate-400">Try adjusting your search query or timeframe filters.</p>
+            <p className="text-xs text-slate-400">Try clearing your search query or timeframe filters.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-slate-50/80 text-[10px] font-extrabold uppercase tracking-widest text-slate-400 border-b border-slate-100">
+                <tr className="bg-slate-50/90 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 border-b border-slate-100">
                   <th className="px-5 py-3.5">User & Identity</th>
                   <th className="px-4 py-3.5">Auth Method</th>
                   <th className="px-4 py-3.5">Last Login (IST)</th>
-                  <th className="px-4 py-3.5">Store & UPI</th>
+                  <th className="px-4 py-3.5">Store & Settlement UPI</th>
                   <th className="px-4 py-3.5">WhatsApp Phone</th>
                   <th className="px-4 py-3.5">Plan Status</th>
                   <th className="px-4 py-3.5 text-right">Actions</th>
@@ -494,14 +417,11 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
               <tbody className="divide-y divide-slate-100">
                 {filteredLogins.map((user) => {
                   const isGoogle = user.provider === 'google';
-                  const isRajveerOrSonu = user.email.includes('rajveer') || user.email.includes('mohankrish');
 
                   return (
                     <tr 
                       key={user.id} 
-                      className={`hover:bg-slate-50/70 transition-colors ${
-                        isRajveerOrSonu ? 'bg-indigo-50/30' : ''
-                      }`}
+                      className="hover:bg-slate-50/80 transition-colors"
                     >
                       {/* User & Identity */}
                       <td className="px-5 py-3.5">
@@ -513,7 +433,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
                               className="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0" 
                             />
                           ) : (
-                            <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-xs shrink-0 border border-slate-200">
+                            <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-xs shrink-0 border border-slate-200">
                               {user.fullName ? user.fullName.slice(0, 2).toUpperCase() : 'U'}
                             </div>
                           )}
@@ -527,11 +447,6 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
                                   Super Admin
                                 </span>
                               )}
-                              {isRajveerOrSonu && (
-                                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-amber-100 text-amber-800 border border-amber-200">
-                                  Inquiry Target
-                                </span>
-                              )}
                             </div>
                             <p className="text-[11px] text-slate-500 truncate mt-0.5 font-medium">{user.email}</p>
                           </div>
@@ -542,7 +457,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
                       <td className="px-4 py-3.5">
                         {isGoogle ? (
                           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                            <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
                               <path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z" fill="#4285F4"></path>
                               <path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.13C3.25 21.36 7.33 24 12 24z" fill="#34A853"></path>
                               <path d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.26C.46 8.18 0 9.99 0 12s.46 3.82 1.26 5.42l4.02-3.13z" fill="#FBBC05"></path>
@@ -552,7 +467,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
                           </div>
                         ) : (
                           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                            <User className="w-3.5 h-3.5 text-slate-500" />
+                            <User className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                             <span>Email / OTP</span>
                           </div>
                         )}
@@ -562,14 +477,14 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
                       <td className="px-4 py-3.5">
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-extrabold text-slate-800">
+                            <span className="font-extrabold text-slate-900">
                               {getRelativeTime(user.last_sign_in_at)}
                             </span>
                             <span className="text-[10px] text-slate-400 font-normal">
                               ({formatIST(user.last_sign_in_at).split(',')[0]})
                             </span>
                           </div>
-                          <p className="text-[10px] text-slate-400 mt-0.5">
+                          <p className="text-[10px] text-slate-500 mt-0.5 font-medium">
                             {formatIST(user.last_sign_in_at).split(',')[1] || ''}
                           </p>
                         </div>
@@ -578,15 +493,15 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
                       {/* Store & UPI */}
                       <td className="px-4 py-3.5">
                         <div className="max-w-[180px]">
-                          <p className="font-bold text-slate-800 truncate">{user.businessName}</p>
+                          <p className="font-bold text-slate-900 truncate">{user.businessName}</p>
                           <p className="font-mono text-[10px] text-blue-600 truncate mt-0.5">{user.upiId}</p>
                         </div>
                       </td>
 
-                      {/* Phone Number */}
+                      {/* WhatsApp Phone */}
                       <td className="px-4 py-3.5">
                         {user.phoneNumber ? (
-                          <div className="flex items-center gap-1.5 text-slate-700 font-semibold font-mono">
+                          <div className="flex items-center gap-1.5 text-slate-800 font-semibold font-mono">
                             <Smartphone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                             <span>{user.phoneNumber}</span>
                             {user.phoneVerified && (
@@ -594,13 +509,13 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
                             )}
                           </div>
                         ) : (
-                          <span className="text-slate-400 italic text-[11px]">Not provided</span>
+                          <span className="text-slate-400 italic text-[11px]">Not linked</span>
                         )}
                       </td>
 
                       {/* Plan Status */}
                       <td className="px-4 py-3.5">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${
                           user.subscriptionStatus === 'active' 
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
                             : user.subscriptionStatus === 'trial_3day' 
