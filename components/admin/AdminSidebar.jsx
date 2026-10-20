@@ -14,7 +14,8 @@ import {
   FileCheck2,
   ShieldAlert,
   Terminal,
-  DownloadCloud
+  DownloadCloud,
+  LogIn
 } from 'lucide-react';
 
 export default function AdminSidebar({ 
@@ -55,6 +56,13 @@ export default function AdminSidebar({
           icon: UserCheck,
           badge: unonboardedSignupsCount > 0 ? { text: unonboardedSignupsCount, color: 'bg-rose-100 text-rose-800 border-rose-200' } : null,
           desc: 'Leads & Phone Verification'
+        },
+        {
+          id: 'logins',
+          label: 'Live Login Activity',
+          icon: LogIn,
+          badge: { text: 'Live', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+          desc: 'Sessions & Activity Stream'
         },
       ]
     },

@@ -21,7 +21,8 @@ import {
   Calendar,
   Zap,
   Server,
-  Filter
+  Filter,
+  LogIn
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -534,6 +535,34 @@ export default function OverviewTab({
           </button>
         </div>
 
+      </div>
+
+      {/* ── LIVE WEBSITE LOGINS & SESSIONS STRIP ─────────────────────── */}
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100">
+            <LogIn className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span>Live Website Login Activity</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black">
+                Live
+              </span>
+            </h4>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Inspect recent website sign-ins, Google OAuth sessions, and verify specific users like Rajveer and Sonu.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => onNavigateTab && onNavigateTab('logins')}
+          className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-xs flex items-center gap-2 self-start sm:self-auto shrink-0 cursor-pointer"
+        >
+          <span>View Live Login Activity</span>
+          <span>&rarr;</span>
+        </button>
       </div>
 
     </div>

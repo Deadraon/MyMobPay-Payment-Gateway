@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
 import { DEFAULT_ADMIN_EMAILS, PLATFORM_ADMIN_USER_ID } from '@/lib/adminSettings';
+import { logAdminAction } from '@/lib/adminAudit';
 
 /**
  * POST /api/auth/verify-registration-status
@@ -33,6 +34,15 @@ export async function POST(req) {
       (cleanEmail && DEFAULT_ADMIN_EMAILS.some(adm => adm.toLowerCase() === cleanEmail));
 
     if (isPlatformAdmin) {
+      logAdminAction({
+        actor: { id: userId || PLATFORM_ADMIN_USER_ID, email: cleanEmail, role: 'super_admin' },
+        action: 'auth.admin_login',
+        targetType: 'user',
+        targetId: userId || PLATFORM_ADMIN_USER_ID,
+        details: { method: 'Google OAuth / Session Token', provider: 'google', email: cleanEmail },
+        request: req
+      }).catch(() => {});
+
       return NextResponse.json({
         allowed: true,
         registered: true,
@@ -89,6 +99,15 @@ export async function POST(req) {
         merchant.phone_number.trim().replace(/\D/g, '').length >= 10
       );
 
+      logAdminAction({
+        actor: { id: merchant.id, email: cleanEmail, role: 'merchant' },
+        action: 'auth.login_success',
+        targetType: 'merchant',
+        targetId: merchant.id,
+        details: { businessName: merchant.business_name, provider: 'Google OAuth / Session' },
+        request: req
+      }).catch(() => {});
+
       return NextResponse.json({
         allowed: true,
         registered: true,
@@ -129,6 +148,15 @@ export async function POST(req) {
         .insert(newMerchantProfile)
         .select()
         .maybeSingle();
+
+      logAdminAction({
+        actor: { id: userId, email: cleanEmail, role: 'merchant' },
+        action: 'auth.oauth_signup',
+        targetType: 'merchant',
+        targetId: userId,
+        details: { businessName: fallbackName, provider: 'Google OAuth', plan: 'trial_3day' },
+        request: req
+      }).catch(() => {});
 
       if (insertErr) {
         console.error('[VERIFY-REGISTRATION-STATUS] Merchant auto-provision error:', insertErr);
