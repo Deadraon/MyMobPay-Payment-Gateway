@@ -32,10 +32,113 @@ import {
   TrendingUp,
   Zap,
   QrCode as QrIcon,
-  RotateCcw
+  RotateCcw,
+  Printer,
+  Volume2,
+  Palette,
+  Lock
 } from 'lucide-react';
 import { generateOrderId } from '@/lib/orderId';
 import { supabase } from '@/lib/supabase';
+
+// ══════════════════════════════════════════════════════════════
+// AUTHENTIC VECTOR ASSETS FOR RETAIL UPI STANDEE STUDIO
+// ══════════════════════════════════════════════════════════════
+
+function UpiShieldVector({ className = "h-4" }) {
+  return (
+    <svg viewBox="0 0 120 38" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M10 6L22 19L10 32H18L30 19L18 6H10Z" fill="#097939" />
+      <path d="M23 6L35 19L23 32H31L43 19L31 6H23Z" fill="#ED7524" />
+      <text x="48" y="26" fontFamily="Inter, system-ui, -apple-system, sans-serif" fontSize="22" fontWeight="900" fill="currentColor" letterSpacing="1">UPI</text>
+    </svg>
+  );
+}
+
+function UpiCenterQrBadge() {
+  return (
+    <div className="w-9 h-9 rounded-xl bg-white shadow-md border-2 border-slate-900/10 flex flex-col items-center justify-center p-0.5 pointer-events-none">
+      <svg viewBox="0 0 36 22" className="w-5 h-3" fill="none">
+        <path d="M4 2L14 11L4 20H10L20 11L10 2H4Z" fill="#097939" />
+        <path d="M14 2L24 11L14 20H20L30 11L20 2H14Z" fill="#ED7524" />
+      </svg>
+      <span className="text-[7px] font-black tracking-widest text-slate-800 leading-none mt-0.5">UPI</span>
+    </div>
+  );
+}
+
+function GPayVector() {
+  return (
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-colors">
+      <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+      </svg>
+      <span className="text-[10px] font-extrabold text-slate-800 tracking-tight leading-none">GPay</span>
+    </div>
+  );
+}
+
+function PhonePeVector() {
+  return (
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-colors">
+      <div className="w-3.5 h-3.5 rounded-[4px] bg-[#5f259f] flex items-center justify-center text-white text-[9px] font-extrabold leading-none">
+        पे
+      </div>
+      <span className="text-[10px] font-extrabold text-[#5f259f] tracking-tight leading-none">PhonePe</span>
+    </div>
+  );
+}
+
+function PaytmVector() {
+  return (
+    <div className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-colors">
+      <span className="text-[10px] font-black text-[#002970] leading-none tracking-tight">Pay</span>
+      <span className="text-[10px] font-black text-[#00baf2] leading-none tracking-tight">tm</span>
+    </div>
+  );
+}
+
+function BhimVector() {
+  return (
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-colors">
+      <svg viewBox="0 0 20 20" className="w-3.5 h-3.5 shrink-0" fill="none">
+        <path d="M3 17L10 3L17 17H3Z" fill="#008080" />
+        <path d="M6 15L10 7L14 15H6Z" fill="#ff9933" />
+      </svg>
+      <span className="text-[10px] font-black text-slate-800 tracking-tight leading-none">BHIM</span>
+    </div>
+  );
+}
+
+function CredVector() {
+  return (
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 text-white shadow-2xs">
+      <svg viewBox="0 0 16 16" className="w-3 h-3 text-white shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M8 1L2 3.5V8C2 11.5 4.5 14.5 8 15.5C11.5 14.5 14 11.5 14 8V3.5L8 1Z" strokeLinejoin="round" />
+        <path d="M6 7.5L7.5 9L10 6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span className="text-[9px] font-black tracking-widest leading-none">CRED</span>
+    </div>
+  );
+}
+
+function SoundboxWaveVector() {
+  return (
+    <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50/90 px-3 py-1 rounded-xl border border-emerald-200/70 text-[10px] font-semibold">
+      <Volume2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+      <span className="flex items-center gap-0.5 h-3 shrink-0">
+        <span className="w-0.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+        <span className="w-0.5 h-3 bg-emerald-600 rounded-full animate-pulse delay-75" />
+        <span className="w-0.5 h-2 bg-emerald-500 rounded-full animate-pulse delay-150" />
+        <span className="w-0.5 h-2.5 bg-emerald-600 rounded-full animate-pulse delay-100" />
+      </span>
+      <span>Instant Voice Notification Active</span>
+    </div>
+  );
+}
 
 // No default starter links — only show links the merchant actually created
 const DEFAULT_INITIAL_LINKS = [];
@@ -69,6 +172,19 @@ export default function PaymentLinksRedesign({
   const [isGenerating, setIsGenerating] = useState(false);
   const [mobileStudioTab, setMobileStudioTab] = useState('configure'); // 'configure' | 'preview'
   const [showMobileQr, setShowMobileQr] = useState(false);
+
+  // Static / Permanent Counter QR State
+  const [showStaticQrModal, setShowStaticQrModal] = useState(false);
+  const [staticQrAmountType, setStaticQrAmountType] = useState('any'); // 'any' | 'fixed'
+  const [staticQrAmount, setStaticQrAmount] = useState('100');
+  const [staticQrNote, setStaticQrNote] = useState('Store Counter Payment');
+  const [standeeTheme, setStandeeTheme] = useState('paytm'); // 'paytm' | 'gpay' | 'phonepe' | 'navy' | 'saffron'
+  const [standeeStyle, setStandeeStyle] = useState('acrylic'); // 'acrylic' | 'poster' | 'minimal'
+  const [standeeBusinessName, setStandeeBusinessName] = useState('');
+  const [standeeDeskTag, setStandeeDeskTag] = useState('Counter 1 - Billing Desk');
+  const [standeeUpiId, setStandeeUpiId] = useState('');
+  const [standeeShowSoundbox, setStandeeShowSoundbox] = useState(true);
+  const [standeeShowLogo, setStandeeShowLogo] = useState(true);
 
   // Active generated preview link (null until user clicks generate)
   const [activeUrl, setActiveUrl] = useState('');
@@ -334,7 +450,7 @@ export default function PaymentLinksRedesign({
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
       });
-      showToast('Quick demo payment link generated!');
+      showToast('Quick payment link generated!');
     };
   }, []);
 
@@ -695,7 +811,20 @@ export default function PaymentLinksRedesign({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            onClick={() => {
+              if (!standeeBusinessName) setStandeeBusinessName(profile?.business_name || profile?.owner_name || 'My Store');
+              if (!standeeUpiId) setStandeeUpiId(profile?.upi_id || 'merchant@upi');
+              setShowStaticQrModal(true);
+            }}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-2xs hover:bg-emerald-100 transition-colors text-sm font-semibold active:scale-[0.98] cursor-pointer"
+            type="button"
+          >
+            <QrIcon className="w-4 h-4 text-emerald-600" />
+            Counter Static QR
+          </button>
+
           <button
             onClick={handleExportCSV}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 shadow-sm hover:bg-slate-50 transition-colors text-sm font-medium active:scale-[0.98]"
@@ -1372,23 +1501,72 @@ export default function PaymentLinksRedesign({
                       </div>
                     </div>
 
-                    {/* UPI Brand Logos */}
-                    <div className="flex items-center justify-center space-x-3 text-[11px] font-bold text-slate-500">
-                      <span className="text-indigo-600">PhonePe</span>
-                      <span>•</span>
-                      <span className="text-blue-600">GPay</span>
-                      <span>•</span>
-                      <span className="text-cyan-600">Paytm</span>
-                      <span>•</span>
-                      <span className="text-orange-600">BHIM</span>
+                    {/* UPI Intent Quick-Pay Buttons (Mobile Tap-to-Pay) */}
+                    <div className="w-full space-y-1.5 pt-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block text-center">
+                        Tap to Pay with UPI Apps
+                      </span>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const upiUrl = `upi://pay?pa=${encodeURIComponent(profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(profile?.business_name || 'Merchant')}&am=${amount || '100'}&cu=INR&tn=${encodeURIComponent(purpose || 'Payment')}`;
+                            navigator.clipboard?.writeText(upiUrl);
+                            showToast('PhonePe UPI deep link copied!');
+                          }}
+                          className="h-8 rounded-lg bg-[#5f259f]/10 hover:bg-[#5f259f]/20 border border-[#5f259f]/20 text-[#5f259f] font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <span className="w-2 h-2 rounded-full bg-[#5f259f]" />
+                          PhonePe
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const upiUrl = `gpay://upi/pay?pa=${encodeURIComponent(profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(profile?.business_name || 'Merchant')}&am=${amount || '100'}&cu=INR&tn=${encodeURIComponent(purpose || 'Payment')}`;
+                            navigator.clipboard?.writeText(upiUrl);
+                            showToast('Google Pay UPI deep link copied!');
+                          }}
+                          className="h-8 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <span className="w-2 h-2 rounded-full bg-blue-600" />
+                          Google Pay
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const upiUrl = `paytmmp://upi/pay?pa=${encodeURIComponent(profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(profile?.business_name || 'Merchant')}&am=${amount || '100'}&cu=INR&tn=${encodeURIComponent(purpose || 'Payment')}`;
+                            navigator.clipboard?.writeText(upiUrl);
+                            showToast('Paytm UPI deep link copied!');
+                          }}
+                          className="h-8 rounded-lg bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 text-cyan-800 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <span className="w-2 h-2 rounded-full bg-cyan-600" />
+                          Paytm
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const upiUrl = `upi://pay?pa=${encodeURIComponent(profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(profile?.business_name || 'Merchant')}&am=${amount || '100'}&cu=INR&tn=${encodeURIComponent(purpose || 'Payment')}`;
+                            navigator.clipboard?.writeText(upiUrl);
+                            showToast('BHIM / Cred UPI deep link copied!');
+                          }}
+                          className="h-8 rounded-lg bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-800 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <span className="w-2 h-2 rounded-full bg-orange-600" />
+                          BHIM / Any UPI
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Escrow Status Pill */}
+                    {/* Escrow Status Pill with Prominent Trust Message (Direct Peer-to-Peer) */}
                     <div className="w-full bg-emerald-50 border border-emerald-200/80 rounded-xl p-2.5 flex items-center space-x-2 text-left">
                       <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path clipRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fillRule="evenodd"></path></svg>
                       <div>
-                        <div className="text-[11px] font-bold text-emerald-900 leading-tight">Direct Bank Credit</div>
-                        <div className="text-[10px] text-emerald-700">Passthrough to {profile?.business_name || 'Merchant'} Bank A/C (0% Escrow Fee)</div>
+                        <div className="text-[11px] font-bold text-emerald-900 leading-tight">Payments go directly to your UPI account</div>
+                        <div className="text-[10px] text-emerald-700">Funds land straight into {profile?.business_name || 'Merchant'} bank account (0% intermediary escrow)</div>
                       </div>
                     </div>
                   </div>
@@ -2041,20 +2219,701 @@ export default function PaymentLinksRedesign({
         <div className="flex items-center gap-3 shrink-0 w-full md:w-auto justify-end">
           <button
             type="button"
-            onClick={() => setActiveTab?.('settlements')}
-            className="px-4 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs transition-colors shadow-xs"
+            onClick={() => setActiveTab?.('verification')}
+            className="px-4 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs transition-colors shadow-xs cursor-pointer"
           >
-            Settlement Advices
+            Verification Center
           </button>
           <button
             type="button"
             onClick={() => setActiveTab?.('settings')}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-all shadow-sm shadow-blue-500/20"
+            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-all shadow-sm shadow-blue-500/20 cursor-pointer"
           >
             API Settings
           </button>
         </div>
       </div>
+
+      {/* ══════════════════════════════════════════════════════════
+          STATIC / COUNTER QR CODE MODAL — RETAIL STANDEE STUDIO
+          ══════════════════════════════════════════════════════════ */}
+      {showStaticQrModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
+          {/* Print Isolation Stylesheet — forces single clean page retail print */}
+          <style>{`
+            @media print {
+              @page {
+                size: portrait;
+                margin: 8mm;
+              }
+              html, body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+              body * {
+                visibility: hidden !important;
+              }
+              #printable-standee-card,
+              #printable-standee-card * {
+                visibility: visible !important;
+              }
+              #printable-standee-card {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) scale(1.04) !important;
+                width: 380px !important;
+                max-width: 90% !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 24px !important;
+                page-break-inside: avoid !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                z-index: 999999 !important;
+              }
+              .no-print-area {
+                display: none !important;
+              }
+            }
+          `}</style>
+
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-4xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-scaleUp">
+            
+            {/* Modal Header — Pinned at Top, 100% visible, never cut off */}
+            <div className="shrink-0 px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-white z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/20 shrink-0">
+                  <QrIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">Retail Counter QR Standee Studio</h3>
+                    <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      T+0 Direct NPCI
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium line-clamp-1">Design, customize, and print retail counter standees like Paytm &amp; Google Pay for Business</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowStaticQrModal(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 cursor-pointer transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Modal Content Workspace */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                {/* Left Column: Customization Controls */}
+                <div className="lg:col-span-6 space-y-4 text-xs pr-1">
+                  
+                  {/* 1. Brand Themes */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wider">
+                      <Palette className="w-3.5 h-3.5 text-blue-600" />
+                      Branding Theme
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'paytm', name: 'Paytm Blue', gradient: 'from-[#002970] to-[#0051b3]', accent: '#00baf2' },
+                        { id: 'gpay', name: 'Google Pay', gradient: 'from-[#1a73e8] via-[#ea4335] to-[#34a853]', accent: '#1a73e8' },
+                        { id: 'phonepe', name: 'PhonePe', gradient: 'from-[#4a157d] to-[#7b1fa2]', accent: '#f59e0b' },
+                        { id: 'navy', name: 'Midnight Gold', gradient: 'from-[#090d16] to-[#1e293b]', accent: '#d4af37' },
+                        { id: 'saffron', name: 'Bharat Saffron', gradient: 'from-[#ea580c] to-[#16a34a]', accent: '#ea580c' },
+                      ].map(t => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => setStandeeTheme(t.id)}
+                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col gap-1.5 ${
+                            standeeTheme === t.id
+                              ? 'border-blue-600 bg-blue-50/50 ring-2 ring-blue-600/20'
+                              : 'border-slate-200 bg-slate-50/70 hover:bg-white'
+                          }`}
+                        >
+                          <div className={`w-full h-3 rounded-md bg-gradient-to-r ${t.gradient} shadow-2xs`} />
+                          <span className="font-bold text-slate-800 text-[11px] truncate">{t.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 2. Standee Format */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wider">
+                      <Sliders className="w-3.5 h-3.5 text-blue-600" />
+                      Standee Format
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'acrylic', label: 'Acrylic Tabletop', desc: 'Counter Standee' },
+                        { id: 'poster', label: 'Retail Poster', desc: 'Billing Wall/Desk' },
+                        { id: 'minimal', label: 'Minimal Card', desc: 'Pocket / NFC Card' },
+                      ].map(f => (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => setStandeeStyle(f.id)}
+                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                            standeeStyle === f.id
+                              ? 'border-blue-600 bg-blue-50/50 ring-2 ring-blue-600/20'
+                              : 'border-slate-200 bg-slate-50/70 hover:bg-white'
+                          }`}
+                        >
+                          <p className="font-bold text-slate-800 text-xs">{f.label}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">{f.desc}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 3. Business Name & Desk Tag */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Business / Store Name</label>
+                      <input
+                        type="text"
+                        value={standeeBusinessName || profile?.business_name || profile?.owner_name || ''}
+                        onChange={(e) => setStandeeBusinessName(e.target.value)}
+                        placeholder="e.g. Deadraon Enterprise"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Counter / Desk Tag</label>
+                      <input
+                        type="text"
+                        value={standeeDeskTag}
+                        onChange={(e) => setStandeeDeskTag(e.target.value)}
+                        placeholder="e.g. Counter 1 - Billing Desk"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 4. Receiving UPI VPA */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-bold text-slate-700">Receiving UPI ID (Direct Settlement)</label>
+                      <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3" /> NPCI Verified
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      value={standeeUpiId || profile?.upi_id || 'merchant@upi'}
+                      onChange={(e) => setStandeeUpiId(e.target.value)}
+                      placeholder="yourname@okaxis"
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    />
+                  </div>
+
+                  {/* 5. Amount Acceptance Mode */}
+                  <div className="p-3 bg-slate-50/80 rounded-2xl border border-slate-200 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Amount Acceptance</label>
+                      <div className="flex rounded-lg border border-slate-200 overflow-hidden bg-white text-xs font-bold">
+                        <button
+                          type="button"
+                          onClick={() => setStaticQrAmountType('any')}
+                          className={`px-3 py-1 cursor-pointer transition-colors ${staticQrAmountType === 'any' ? 'bg-[#0c2340] text-white' : 'text-slate-600 hover:bg-slate-50'}`}
+                        >
+                          Any Amount
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setStaticQrAmountType('fixed')}
+                          className={`px-3 py-1 cursor-pointer transition-colors ${staticQrAmountType === 'fixed' ? 'bg-[#0c2340] text-white' : 'text-slate-600 hover:bg-slate-50'}`}
+                        >
+                          Fixed Preset
+                        </button>
+                      </div>
+                    </div>
+
+                    {staticQrAmountType === 'fixed' ? (
+                      <div className="space-y-2 pt-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-500 text-sm">₹</span>
+                          <input
+                            type="number"
+                            value={staticQrAmount}
+                            onChange={(e) => setStaticQrAmount(e.target.value)}
+                            placeholder="100.00"
+                            className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-mono font-extrabold text-sm"
+                          />
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {['50', '100', '200', '500', '1000'].map(val => (
+                            <button
+                              key={val}
+                              type="button"
+                              onClick={() => setStaticQrAmount(val)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                staticQrAmount === val
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                              }`}
+                            >
+                              ₹{val}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        Customer scans and enters any custom payment amount directly inside their UPI app. Ideal for billing counters and POS desks.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* 6. Feature Toggles */}
+                  <div className="flex items-center justify-between pt-1 text-xs">
+                    <label className="flex items-center gap-2 cursor-pointer select-none text-slate-700 font-medium">
+                      <input
+                        type="checkbox"
+                        checked={standeeShowSoundbox}
+                        onChange={(e) => setStandeeShowSoundbox(e.target.checked)}
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
+                      />
+                      <span>Show Soundbox Voice Wave Seal</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none text-slate-700 font-medium">
+                      <input
+                        type="checkbox"
+                        checked={standeeShowLogo}
+                        onChange={(e) => setStandeeShowLogo(e.target.checked)}
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
+                      />
+                      <span>Center UPI Badge on QR</span>
+                    </label>
+                  </div>
+
+                </div>
+
+                {/* Right Column: Live Retail Standee Preview */}
+                <div className="lg:col-span-6 flex flex-col items-center justify-center p-3 sm:p-5 bg-gradient-to-b from-slate-100 via-slate-100/90 to-slate-200/80 rounded-3xl border border-slate-200/80 shadow-inner relative">
+                  
+                  {/* Format Badging */}
+                  <div className="w-full flex items-center justify-between mb-3 text-[11px] text-slate-500 font-semibold px-2">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Live Tabletop Standee Preview
+                    </span>
+                    <span className="font-mono text-slate-400 uppercase text-[10px]">{standeeTheme} • {standeeStyle}</span>
+                  </div>
+
+                  {/* STANDEE CONTAINER (PRINT TARGET) */}
+                  <div className="w-full flex flex-col items-center">
+                    
+                    {/* Standee Body Card */}
+                    <div
+                      id="printable-standee-card"
+                      className={`w-full max-w-[340px] sm:max-w-[350px] bg-white rounded-3xl shadow-xl border overflow-hidden relative transition-all duration-300 ${
+                        standeeTheme === 'paytm'
+                          ? 'border-[#002970]/30 shadow-blue-900/10'
+                          : standeeTheme === 'gpay'
+                          ? 'border-slate-300 shadow-slate-900/10'
+                          : standeeTheme === 'phonepe'
+                          ? 'border-[#5f259f]/30 shadow-purple-900/10'
+                          : standeeTheme === 'saffron'
+                          ? 'border-orange-500/30 shadow-orange-950/10'
+                          : 'border-slate-800 shadow-slate-950/20'
+                      }`}
+                    >
+                      
+                      {/* Retail Wall Poster: Hanging hole grommet */}
+                      {standeeStyle === 'poster' && (
+                        <div className="w-full flex justify-center pt-2.5 pb-1 bg-slate-50 border-b border-slate-100">
+                          <div className="w-4 h-4 rounded-full bg-white border-2 border-slate-400 shadow-inner flex items-center justify-center">
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 1. TOP BRAND HEADER (Minimalist & Graphic) */}
+                      {standeeTheme === 'gpay' ? (
+                        <div>
+                          {/* Google 4-Color Signature Accent Bar */}
+                          <div className="h-1.5 w-full flex">
+                            <span className="flex-1 bg-[#4285F4]" />
+                            <span className="flex-1 bg-[#EA4335]" />
+                            <span className="flex-1 bg-[#FBBC05]" />
+                            <span className="flex-1 bg-[#34A853]" />
+                          </div>
+                          {/* Google Pay Header Strip */}
+                          <div className="px-4 py-2.5 bg-white border-b border-slate-100 flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <GPayVector />
+                              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider ml-1">Business</span>
+                            </div>
+                            <UpiShieldVector className="h-3.5 text-slate-900" />
+                          </div>
+                        </div>
+                      ) : standeeTheme === 'paytm' ? (
+                        <div>
+                          {/* Cyan Accent Bar */}
+                          <div className="h-1 w-full bg-[#00baf2]" />
+                          {/* Paytm Navy Header Strip */}
+                          <div className="px-4 py-2.5 bg-[#002970] text-white flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-sm font-black text-white leading-none">Pay</span>
+                              <span className="text-sm font-black text-[#00baf2] leading-none">tm</span>
+                              <span className="text-[9.5px] font-bold text-blue-200 uppercase tracking-wider ml-1">for Business</span>
+                            </div>
+                            <UpiShieldVector className="h-3.5 text-white" />
+                          </div>
+                        </div>
+                      ) : standeeTheme === 'phonepe' ? (
+                        <div>
+                          {/* PhonePe Amber Accent Bar */}
+                          <div className="h-1 w-full bg-[#f59e0b]" />
+                          {/* PhonePe Purple Header Strip */}
+                          <div className="px-4 py-2.5 bg-[#5f259f] text-white flex items-center justify-between relative overflow-hidden">
+                            <div className="flex items-center gap-1.5 relative z-10">
+                              <div className="w-4 h-4 rounded-[4px] bg-white text-[#5f259f] flex items-center justify-center text-[10px] font-black leading-none">
+                                पे
+                              </div>
+                              <span className="text-xs font-black text-white tracking-tight">PhonePe</span>
+                              <span className="text-[9.5px] font-bold text-purple-200 uppercase ml-1">Business</span>
+                            </div>
+                            <UpiShieldVector className="h-3.5 text-white relative z-10" />
+                          </div>
+                        </div>
+                      ) : standeeTheme === 'saffron' ? (
+                        <div>
+                          {/* National Tricolor Stripe */}
+                          <div className="h-1.5 w-full flex">
+                            <span className="flex-1 bg-[#ea580c]" />
+                            <span className="flex-1 bg-[#ffffff]" />
+                            <span className="flex-1 bg-[#16a34a]" />
+                          </div>
+                          {/* Saffron Header Strip */}
+                          <div className="px-4 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-black text-white tracking-tight">BHARAT QR</span>
+                              <span className="text-[9.5px] font-bold text-amber-200 uppercase ml-0.5">Retail Standee</span>
+                            </div>
+                            <UpiShieldVector className="h-3.5 text-white" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          {/* Champagne Gold Stripe */}
+                          <div className="h-1 w-full bg-[#d4af37]" />
+                          {/* Midnight Obsidian Header Strip */}
+                          <div className="px-4 py-2.5 bg-[#090d16] text-white flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-amber-300">
+                              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                              <span className="text-xs font-black tracking-wider uppercase text-amber-200">Direct Reserve</span>
+                            </div>
+                            <UpiShieldVector className="h-3.5 text-amber-200" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 2. MERCHANT IDENTITY BLOCK (Minimalist White Background) */}
+                      <div className="px-4 pt-3.5 pb-1 flex flex-col items-center text-center">
+                        
+                        {/* Business Avatar Monogram with Green Check Shield */}
+                        <div className="relative">
+                          <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 font-black text-base flex items-center justify-center shadow-xs">
+                            {(standeeBusinessName || profile?.business_name || profile?.owner_name || 'M').charAt(0).toUpperCase()}
+                          </div>
+                          <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs border-2 border-white">
+                            <Check className="w-2.5 h-2.5 stroke-[3]" />
+                          </span>
+                        </div>
+
+                        {/* Business Name */}
+                        <h4 className="text-sm sm:text-base font-black tracking-tight text-slate-900 mt-2 line-clamp-1">
+                          {standeeBusinessName || profile?.business_name || profile?.owner_name || 'MyMobPay Store'}
+                        </h4>
+
+                        {/* Counter Tag */}
+                        <p className="text-[10px] text-slate-500 font-medium mt-0.5 flex items-center gap-1">
+                          <span className="text-slate-400">📍</span>
+                          <span>{standeeDeskTag || 'Billing Counter'}</span>
+                        </p>
+
+                        {/* Amount Acceptance Mode Pill */}
+                        <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 border border-slate-200 text-slate-700 text-[11px] font-bold">
+                          {staticQrAmountType === 'fixed' && parseFloat(staticQrAmount) > 0 ? (
+                            <>
+                              <Lock className="w-3 h-3 text-blue-600" />
+                              <span>Fixed Amount:</span>
+                              <span className="font-mono text-blue-700 font-extrabold">₹{parseFloat(staticQrAmount).toFixed(2)}</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>Scan &amp; Pay Any Amount</span>
+                            </>
+                          )}
+                        </div>
+
+                        {/* 3. QR CODE PRECISION FRAME */}
+                        <div className="relative p-3 bg-white rounded-2xl border-2 border-slate-900/10 shadow-sm mt-3">
+                          {/* Viewfinder Corner Registration Brackets */}
+                          <div className={`absolute top-1.5 left-1.5 w-3.5 h-3.5 border-t-2 border-l-2 rounded-tl-sm pointer-events-none ${
+                            standeeTheme === 'paytm' ? 'border-[#00baf2]' :
+                            standeeTheme === 'phonepe' ? 'border-[#a855f7]' :
+                            standeeTheme === 'gpay' ? 'border-[#1a73e8]' :
+                            standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400'
+                          }`} />
+                          <div className={`absolute top-1.5 right-1.5 w-3.5 h-3.5 border-t-2 border-r-2 rounded-tr-sm pointer-events-none ${
+                            standeeTheme === 'paytm' ? 'border-[#00baf2]' :
+                            standeeTheme === 'phonepe' ? 'border-[#a855f7]' :
+                            standeeTheme === 'gpay' ? 'border-[#1a73e8]' :
+                            standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400'
+                          }`} />
+                          <div className={`absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-b-2 border-l-2 rounded-bl-sm pointer-events-none ${
+                            standeeTheme === 'paytm' ? 'border-[#00baf2]' :
+                            standeeTheme === 'phonepe' ? 'border-[#a855f7]' :
+                            standeeTheme === 'gpay' ? 'border-[#1a73e8]' :
+                            standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400'
+                          }`} />
+                          <div className={`absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-b-2 border-r-2 rounded-br-sm pointer-events-none ${
+                            standeeTheme === 'paytm' ? 'border-[#00baf2]' :
+                            standeeTheme === 'phonepe' ? 'border-[#a855f7]' :
+                            standeeTheme === 'gpay' ? 'border-[#1a73e8]' :
+                            standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400'
+                          }`} />
+
+                          <div className="relative">
+                            <QRCode
+                              value={
+                                staticQrAmountType === 'fixed' && parseFloat(staticQrAmount) > 0
+                                  ? `upi://pay?pa=${encodeURIComponent(standeeUpiId || profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(standeeBusinessName || profile?.business_name || profile?.owner_name || 'Merchant')}&am=${parseFloat(staticQrAmount).toFixed(2)}&cu=INR&tn=${encodeURIComponent(standeeDeskTag || 'Store Counter')}`
+                                  : `upi://pay?pa=${encodeURIComponent(standeeUpiId || profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(standeeBusinessName || profile?.business_name || profile?.owner_name || 'Merchant')}&cu=INR&tn=${encodeURIComponent(standeeDeskTag || 'Store Counter')}`
+                              }
+                              size={180}
+                              level="H"
+                            />
+                            {standeeShowLogo && (
+                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <UpiCenterQrBadge />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* 4. ACCEPTED APPS ROW (OFFICIAL VECTORS) */}
+                      <div className="w-full px-4 pt-2.5 pb-3.5 space-y-2 text-center">
+                        <p className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-400">
+                          Accepted via Any UPI App
+                        </p>
+                        <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                          <GPayVector />
+                          <PhonePeVector />
+                          <PaytmVector />
+                          <BhimVector />
+                          <CredVector />
+                        </div>
+
+                        {/* Receiving UPI ID Pill */}
+                        <div className="pt-1">
+                          <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-bold text-slate-800 bg-slate-100/90 px-3 py-1 rounded-xl border border-slate-200 shadow-2xs">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                            <span>UPI ID: {standeeUpiId || profile?.upi_id || 'merchant@upi'}</span>
+                          </span>
+                        </div>
+
+                        {/* Instant Voice Notification Wave Seal */}
+                        {standeeShowSoundbox && (
+                          <div className="flex justify-center pt-0.5">
+                            <SoundboxWaveVector />
+                          </div>
+                        )}
+
+                        {/* Direct Settlement Security Footer */}
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400 font-medium">
+                          <span>Direct Bank Settlement</span>
+                          <span className="font-bold text-slate-600">0% MDR Fee</span>
+                          <span>NPCI 2.0 Rails</span>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* 3D Tabletop Acrylic Stand Base Illustration (Only shown on screen for Tabletop mode) */}
+                    {standeeStyle === 'acrylic' && (
+                      <div className="no-print-area flex flex-col items-center mt-[-3px] select-none pointer-events-none">
+                        {/* Glass slot groove */}
+                        <div className="w-[190px] h-2.5 bg-gradient-to-r from-slate-300 via-slate-400 to-slate-300 rounded-sm shadow-inner border-t border-slate-400/50" />
+                        {/* Acrylic pedestal base with glass reflection */}
+                        <div className="w-[260px] h-4 bg-gradient-to-b from-white/90 via-slate-200/90 to-slate-300 rounded-b-xl shadow-lg border border-slate-300/80 relative overflow-hidden flex items-center justify-center">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                          <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest relative z-10">Acrylic Tabletop Display</span>
+                        </div>
+                        {/* Realistic drop shadow on counter */}
+                        <div className="w-[280px] h-2 bg-slate-900/10 rounded-full blur-xs mt-1" />
+                      </div>
+                    )}
+
+                  </div>
+
+                  {/* Print Recommendation Note */}
+                  <p className="no-print-area text-[11px] text-slate-500 text-center mt-3 max-w-xs leading-relaxed">
+                    Tip: Use high-quality photo paper. A4 / A5 tabletop acrylic T-stand frames are available at any office stationery store.
+                  </p>
+
+                </div>
+
+              </div>
+            </div>
+
+            {/* Modal Actions Footer — Pinned at Bottom, NEVER Cut Off */}
+            <div className="shrink-0 px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50/95 flex flex-col sm:flex-row items-center justify-between gap-3 z-10">
+              
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const upiString = staticQrAmountType === 'fixed' && parseFloat(staticQrAmount) > 0
+                      ? `upi://pay?pa=${encodeURIComponent(standeeUpiId || profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(standeeBusinessName || profile?.business_name || profile?.owner_name || 'Merchant')}&am=${parseFloat(staticQrAmount).toFixed(2)}&cu=INR&tn=${encodeURIComponent(standeeDeskTag || 'Store Counter')}`
+                      : `upi://pay?pa=${encodeURIComponent(standeeUpiId || profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(standeeBusinessName || profile?.business_name || profile?.owner_name || 'Merchant')}&cu=INR&tn=${encodeURIComponent(standeeDeskTag || 'Store Counter')}`;
+                    navigator.clipboard.writeText(upiString);
+                    showToast('Static UPI URI copied to clipboard!');
+                  }}
+                  className="flex-1 sm:flex-initial px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer inline-flex items-center justify-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  Copy UPI URI
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const svg = document.querySelector('#printable-standee-card svg');
+                    if (!svg) {
+                      showToast('Standee QR not loaded yet.');
+                      return;
+                    }
+                    const svgData = new XMLSerializer().serializeToString(svg);
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();
+                    img.onload = () => {
+                      canvas.width = 600;
+                      canvas.height = 760;
+                      if (ctx) {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Header color bar based on theme
+                        if (standeeTheme === 'paytm') {
+                          ctx.fillStyle = '#002970';
+                        } else if (standeeTheme === 'gpay') {
+                          ctx.fillStyle = '#1a73e8';
+                        } else if (standeeTheme === 'phonepe') {
+                          ctx.fillStyle = '#5f259f';
+                        } else if (standeeTheme === 'saffron') {
+                          ctx.fillStyle = '#ea580c';
+                        } else {
+                          ctx.fillStyle = '#090d16';
+                        }
+                        ctx.fillRect(0, 0, canvas.width, 60);
+
+                        // Header text
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 20px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('DIRECT UPI PAYMENT • ACCEPTED HERE', 300, 38);
+
+                        // Store name & counter tag
+                        ctx.fillStyle = '#0f172a';
+                        ctx.font = 'bold 24px sans-serif';
+                        ctx.fillText(standeeBusinessName || profile?.business_name || profile?.owner_name || 'MyMobPay Store', 300, 115);
+                        
+                        ctx.font = '14px sans-serif';
+                        ctx.fillStyle = '#64748b';
+                        ctx.fillText(`📍 ${standeeDeskTag || 'Billing Counter'}`, 300, 140);
+
+                        // Amount if fixed
+                        if (staticQrAmountType === 'fixed' && parseFloat(staticQrAmount) > 0) {
+                          ctx.font = 'bold 16px sans-serif';
+                          ctx.fillStyle = '#1e40af';
+                          ctx.fillText(`Fixed Amount: ₹${parseFloat(staticQrAmount).toFixed(2)}`, 300, 170);
+                        } else {
+                          ctx.font = '13px sans-serif';
+                          ctx.fillStyle = '#059669';
+                          ctx.fillText('● Scan & Pay Any Amount', 300, 170);
+                        }
+
+                        // Draw QR code centered
+                        ctx.drawImage(img, 125, 195, 350, 350);
+
+                        // UPI ID
+                        ctx.font = 'bold 18px monospace';
+                        ctx.fillStyle = '#0f172a';
+                        ctx.fillText(`UPI ID: ${standeeUpiId || profile?.upi_id || 'merchant@upi'}`, 300, 595);
+
+                        // Supported apps
+                        ctx.font = 'bold 14px sans-serif';
+                        ctx.fillStyle = '#475569';
+                        ctx.fillText('Google Pay  •  PhonePe  •  Paytm  •  BHIM  •  CRED', 300, 640);
+
+                        // Settlement guarantee footer
+                        ctx.font = '12px sans-serif';
+                        ctx.fillStyle = '#94a3b8';
+                        ctx.fillText('Direct Bank Settlement • 0% MDR Fee • NPCI 2.0 Rails', 300, 680);
+
+                        const pngFile = canvas.toDataURL('image/png');
+                        const downloadLink = document.createElement('a');
+                        downloadLink.download = `${(standeeBusinessName || 'mymobpay').toLowerCase().replace(/\s+/g, '_')}_retail_standee.png`;
+                        downloadLink.href = pngFile;
+                        downloadLink.click();
+                        showToast('High-Res QR Standee image downloaded!');
+                      }
+                    };
+                    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                  }}
+                  className="flex-1 sm:flex-initial px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer inline-flex items-center justify-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download Image
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setShowStaticQrModal(false)}
+                  className="px-4 py-2.5 text-slate-500 hover:text-slate-800 text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  Close
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.print();
+                  }}
+                  className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-500/25 inline-flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print Standee (1-Page Isolated)
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

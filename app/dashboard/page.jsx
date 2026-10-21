@@ -18,8 +18,8 @@ import {
 
   Clock, CheckCircle2, XCircle, Code, ChevronRight, BookOpen,
 
-  Menu, TrendingUp, AlertCircle, Star, Crown, Shield, Calendar, Zap, ChevronDown,
-  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell
+  Menu, TrendingUp, AlertCircle, Star, Crown, Shield, ShieldCheck, BarChart3, Calendar, Zap, ChevronDown,
+  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell, LifeBuoy
 } from 'lucide-react';
 
 import QRCode from 'react-qr-code';
@@ -29,6 +29,10 @@ import PaymentLinksRedesign from '@/components/PaymentLinksRedesign';
 import TransactionsRedesign from '@/components/TransactionsRedesign';
 import SubscriptionRedesign from '@/components/SubscriptionRedesign';
 import SettingsRedesign from '@/components/SettingsRedesign';
+import VerificationCenterRedesign from '@/components/VerificationCenterRedesign';
+import ReportsRedesign from '@/components/ReportsRedesign';
+import DeveloperConsoleRedesign from '@/components/DeveloperConsoleRedesign';
+import SupportHelpRedesign from '@/components/SupportHelpRedesign';
 import AdminConsole from '@/components/AdminConsole';
 
 import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
@@ -105,7 +109,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace(/^#/, '');
-      if (['overview', 'payment-links', 'transactions', 'subscription', 'settings', 'admin'].includes(hash)) {
+      if (['overview', 'payment-links', 'transactions', 'verification', 'reports', 'developer', 'subscription', 'settings', 'support', 'admin'].includes(hash)) {
         return hash;
       }
     }
@@ -2958,9 +2962,34 @@ echo "Order Created: " . $data['orderId'];
               Payment Links
             </button>
 
+            {/* Category: Operations */}
+            <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+              Operations
+            </p>
+
+            <button
+              onClick={() => setActiveTab('verification')}
+              type="button"
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                activeTab === 'verification'
+                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-blue-600' : 'text-slate-400'}`} />
+                <span>Verification</span>
+              </div>
+              {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">
+                  {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
+                </span>
+              )}
+            </button>
+
             {/* Category: Reports */}
             <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-              Reports
+              Reports &amp; Analytics
             </p>
 
             <button
@@ -2976,10 +3005,36 @@ echo "Order Created: " . $data['orderId'];
               Transactions
             </button>
 
-            {/* Category: Settings */}
+            <button
+              onClick={() => setActiveTab('reports')}
+              type="button"
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                activeTab === 'reports'
+                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-blue-600' : 'text-slate-400'}`} />
+              Reports &amp; GST
+            </button>
+
+            {/* Category: Developer & Settings */}
             <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-              Settings
+              Developer &amp; Settings
             </p>
+
+            <button
+              onClick={() => setActiveTab('developer')}
+              type="button"
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                activeTab === 'developer'
+                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-blue-600' : 'text-slate-400'}`} />
+              Developer Hub
+            </button>
 
             <button
               onClick={() => {
@@ -3008,6 +3063,19 @@ echo "Order Created: " . $data['orderId'];
             >
               <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === 'setup-guide' ? 'text-blue-600' : 'text-slate-400'}`} />
               0 to 100 Setup Guide
+            </button>
+
+            <button
+              onClick={() => setActiveTab('support')}
+              type="button"
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                activeTab === 'support'
+                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-blue-600' : 'text-slate-400'}`} />
+              Support &amp; Help Desk
             </button>
           </nav>
         </div>
@@ -3518,9 +3586,36 @@ echo "Order Created: " . $data['orderId'];
                     Payment Links
                   </button>
 
-                  {/* Category: Reports */}
+                  {/* Category: Operations */}
                   <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                    Reports
+                    Operations
+                  </p>
+                  <button
+                    onClick={() => {
+                      setActiveTab('verification');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'verification'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-blue-600' : 'text-slate-400'}`} />
+                      <span>Verification</span>
+                    </div>
+                    {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">
+                        {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Category: Reports & Analytics */}
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                    Reports &amp; Analytics
                   </p>
                   <button
                     onClick={() => {
@@ -3537,11 +3632,41 @@ echo "Order Created: " . $data['orderId'];
                     <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-blue-600' : 'text-slate-400'}`} />
                     Transactions
                   </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('reports');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'reports'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Reports &amp; GST
+                  </button>
 
-                  {/* Category: Settings */}
+                  {/* Category: Developer & Settings */}
                   <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                    Settings &amp; Guides
+                    Developer &amp; Settings
                   </p>
+                  <button
+                    onClick={() => {
+                      setActiveTab('developer');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'developer'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Developer Hub
+                  </button>
                   <button
                     onClick={() => {
                       setSettingsCategory('banking');
@@ -3572,6 +3697,21 @@ echo "Order Created: " . $data['orderId'];
                   >
                     <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === 'setup-guide' ? 'text-blue-600' : 'text-slate-400'}`} />
                     0 to 100 Setup Guide
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('support');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                      activeTab === 'support'
+                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    Support &amp; Help Desk
                   </button>
                 </nav>
               </div>
@@ -3634,7 +3774,7 @@ echo "Order Created: " . $data['orderId'];
 
             {/* Header section with active tab label and sandbox toggle */}
 
-            {activeTab !== 'overview' && activeTab !== 'payment-links' && activeTab !== 'transactions' && activeTab !== 'subscription' && activeTab !== 'settings' && (
+            {activeTab !== 'overview' && activeTab !== 'payment-links' && activeTab !== 'transactions' && activeTab !== 'subscription' && activeTab !== 'settings' && activeTab !== 'verification' && activeTab !== 'reports' && activeTab !== 'developer' && activeTab !== 'support' && (
             <div className="mb-6 pt-2 md:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
               <div>
@@ -3846,18 +3986,56 @@ echo "Order Created: " . $data['orderId'];
             )}
 
             {/* ═══════════════════════════════════════════════════════════
-
-               TAB: API KEYS
-
+               TAB: VERIFICATION CENTER
                ═══════════════════════════════════════════════════════════ */}
-
-            {activeTab === 'api' && (
-              <SettingsRedesign
+            {activeTab === 'verification' && (
+              <VerificationCenterRedesign
                 profile={profile}
-                user={user}
+                orders={orders}
+                emailLogs={emailLogs}
+                onRefresh={() => {
+                  if (user?.id) {
+                    fetchOrders(user.id);
+                    fetchEmailLogs(user.id);
+                  }
+                }}
+                setActiveTab={setActiveTab}
+              />
+            )}
+
+            {/* ═══════════════════════════════════════════════════════════
+               TAB: FINANCIAL & ANALYTICS REPORTS
+               ═══════════════════════════════════════════════════════════ */}
+            {activeTab === 'reports' && (
+              <ReportsRedesign
+                profile={profile}
+                orders={orders}
+                onRefresh={() => {
+                  if (user?.id) fetchOrders(user.id);
+                }}
+                setActiveTab={setActiveTab}
+              />
+            )}
+
+            {/* ═══════════════════════════════════════════════════════════
+               TAB: DEVELOPER & API HUB
+               ═══════════════════════════════════════════════════════════ */}
+            {activeTab === 'developer' && (
+              <DeveloperConsoleRedesign
+                profile={profile}
                 onProfileUpdate={setProfile}
                 setActiveTab={setActiveTab}
-                initialCategory="api"
+              />
+            )}
+
+            {/* ═══════════════════════════════════════════════════════════
+               TAB: API KEYS (Redirected to Developer Hub)
+               ═══════════════════════════════════════════════════════════ */}
+            {activeTab === 'api' && (
+              <DeveloperConsoleRedesign
+                profile={profile}
+                onProfileUpdate={setProfile}
+                setActiveTab={setActiveTab}
               />
             )}
 
@@ -3874,6 +4052,17 @@ echo "Order Created: " . $data['orderId'];
                 onProfileUpdate={setProfile}
                 setActiveTab={setActiveTab}
                 initialCategory={settingsCategory}
+              />
+            )}
+
+            {/* ═══════════════════════════════════════════════════════════
+               TAB: SUPPORT & HELP DESK
+               ═══════════════════════════════════════════════════════════ */}
+            {activeTab === 'support' && (
+              <SupportHelpRedesign
+                profile={profile}
+                user={user}
+                setActiveTab={setActiveTab}
               />
             )}
 

@@ -5,43 +5,7 @@ import { logAdminAction } from '@/lib/adminAudit';
 
 export const dynamic = 'force-dynamic';
 
-const DEFAULT_WEBHOOK_LOGS = [
-  {
-    id: 'wh_log_1',
-    event: 'payment.verified',
-    merchant_name: 'TechStore India',
-    target_url: 'https://api.techstore.in/webhooks/mymobpay',
-    http_status: 200,
-    response_body: '{"received": true}',
-    latency_ms: 142,
-    attempts: 1,
-    created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-    payload: {
-      event: 'payment.verified',
-      order_id: 'ord_demo_101',
-      utr: '408912345678',
-      amount: 1499,
-      status: 'verified'
-    }
-  },
-  {
-    id: 'wh_log_2',
-    event: 'payment.failed',
-    merchant_name: 'Kunal Fashion',
-    target_url: 'https://kunal-fashion.com/api/payment-callback',
-    http_status: 504,
-    response_body: 'Gateway Timeout',
-    latency_ms: 5002,
-    attempts: 3,
-    created_at: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-    payload: {
-      event: 'payment.failed',
-      order_id: 'ord_demo_102',
-      amount: 3200,
-      reason: 'Mismatched UTR'
-    }
-  }
-];
+const DEFAULT_WEBHOOK_LOGS = [];
 
 export async function GET(request) {
   try {

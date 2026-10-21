@@ -25,43 +25,7 @@ import {
   X
 } from 'lucide-react';
 
-const FALLBACK_DISPUTES = [
-  {
-    id: 'disp_901',
-    order_id: 'ord_demo_101',
-    utr: '408912345678',
-    customer_phone: '+91 9811122334',
-    customer_name: 'Amit Verma',
-    amount: 1499,
-    merchant_name: 'TechStore India',
-    merchant_email: 'support@techstore.in',
-    status: 'open',
-    reason: 'Money debited from customer SBI bank account, but store order was not marked fulfilled.',
-    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-    sla_deadline: new Date(Date.now() + 42 * 60 * 60 * 1000).toISOString(),
-    timeline: [
-      { timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), action: 'Dispute submitted by payer with UTR 408912345678' }
-    ]
-  },
-  {
-    id: 'disp_902',
-    order_id: 'ord_demo_102',
-    utr: '408988776655',
-    customer_phone: '+91 9722233445',
-    customer_name: 'Pooja Nair',
-    amount: 3200,
-    merchant_name: 'Kunal Fashion',
-    merchant_email: 'chauhankunal695@gmail.com',
-    status: 'merchant_responded',
-    reason: 'Incorrect product delivered; customer requested payment verification confirmation.',
-    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    sla_deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    timeline: [
-      { timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), action: 'Customer lodged verification dispute' },
-      { timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), action: 'Merchant submitted proof of order dispatch' }
-    ]
-  }
-];
+const FALLBACK_DISPUTES = [];
 
 export default function DisputesTab({ showToast, getAuthHeaders }) {
   const [disputes, setDisputes] = useState([]);

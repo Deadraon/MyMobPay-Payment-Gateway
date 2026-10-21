@@ -27,7 +27,9 @@ import {
   QrCode,
   Zap,
   Mail,
-  HelpCircle
+  HelpCircle,
+  AlertCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -54,6 +56,18 @@ export default function TransactionsRedesign({
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showAddBankModal, setShowAddBankModal] = useState(false);
   const [copiedKey, setCopiedKey] = useState(null);
+
+  // Refund Tracker States
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [refundOrder, setRefundOrder] = useState(null);
+  const [refundAmount, setRefundAmount] = useState('');
+  const [refundUtr, setRefundUtr] = useState('');
+  const [refundReason, setRefundReason] = useState('Customer requested cancellation');
+  const [refundNotifyCustomer, setRefundNotifyCustomer] = useState(true);
+  const [refundLoading, setRefundLoading] = useState(false);
+  const [refundSuccessMsg, setRefundSuccessMsg] = useState(null);
+  const [refundError, setRefundError] = useState(null);
+  const [refundNotes, setRefundNotes] = useState('');
 
   // Bank Form State
   const [bankForm, setBankForm] = useState({
@@ -124,6 +138,76 @@ export default function TransactionsRedesign({
       setOrderStatusMsg(err.message);
     } finally {
       setOrderStatusBusy(false);
+    }
+  };
+
+  // ── Outbound Refund Logging (Direct UPI Model) ───────────────
+  const handleLogRefund = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!refundOrder || refundLoading) return;
+
+    const cleanUtr = (refundUtr || '').trim();
+    if (!cleanUtr || cleanUtr.length < 6) {
+      setRefundError('Please enter a valid outbound 12-digit UPI / IMPS UTR from your bank app.');
+      return;
+    }
+
+    setRefundLoading(true);
+    setRefundError(null);
+    setRefundSuccessMsg(null);
+
+    try {
+      const apiKey = profile?.api_key
+        ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
+        : (profile?.api_key || '');
+
+      const parsedAmount = parseFloat(refundAmount) || parseFloat(refundOrder.amount) || 0;
+
+      const res = await fetch('/api/merchant/orders/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify({
+          orderId: refundOrder.id,
+          action: 'refund',
+          refundAmount: parsedAmount,
+          refundUtr: cleanUtr,
+          refundReason: (refundReason + (refundNotes ? ` - Notes: ${refundNotes}` : '')).trim(),
+          refundNotifyCustomer
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to record refund');
+      }
+
+      setRefundSuccessMsg(data.message || `Refund logged successfully! Transaction marked as ${parsedAmount >= (refundOrder.amount || 0) ? 'Refunded' : 'Partially Refunded'}.`);
+
+      if (selectedOrder && selectedOrder.id === refundOrder.id) {
+        setSelectedOrder(prev => ({
+          ...prev,
+          status: data.order?.status || (parsedAmount >= (refundOrder.amount || 0) ? 'refunded' : 'partially_refunded'),
+          refund_utr: cleanUtr,
+          refund_reason: refundReason
+        }));
+      }
+
+      if (onRefresh) {
+        onRefresh();
+      }
+
+      setTimeout(() => {
+        setShowRefundModal(false);
+        setRefundSuccessMsg(null);
+        setRefundError(null);
+      }, 1600);
+    } catch (err) {
+      setRefundError(err.message || 'Error recording refund');
+    } finally {
+      setRefundLoading(false);
     }
   };
 
@@ -1385,6 +1469,96 @@ export default function TransactionsRedesign({
                 </div>
               </div>
 
+              {/* Full Lifecycle Timeline & Verification Method */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                    Transaction Audit Timeline
+                  </span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                    (selectedOrder.status === 'verified' || selectedOrder.status === 'paid')
+                      ? ((selectedOrder.utr || '').toUpperCase().startsWith('MANUAL_')
+                          ? 'bg-blue-50 text-blue-700 border-blue-200'
+                          : 'bg-emerald-50 text-emerald-700 border-emerald-200')
+                      : selectedOrder.status === 'pending'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                      : 'bg-slate-100 text-slate-600 border-slate-200'
+                  }`}>
+                    {(selectedOrder.status === 'verified' || selectedOrder.status === 'paid')
+                      ? ((selectedOrder.utr || '').toUpperCase().startsWith('MANUAL_') ? 'Manual Override' : 'Auto-Verified (Bank Rail)')
+                      : selectedOrder.status === 'pending'
+                      ? 'In-Flight'
+                      : 'Closed'}
+                  </span>
+                </div>
+
+                <div className="relative pl-6 space-y-3 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                  {/* Step 1: Order Created */}
+                  <div className="relative">
+                    <span className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-white" />
+                    <div className="flex justify-between items-baseline text-xs">
+                      <span className="font-bold text-slate-800">Checkout Initiated</span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }) : '—'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">Dynamic UPI checkout link &amp; QR generated</p>
+                  </div>
+
+                  {/* Step 2: Customer Activity */}
+                  <div className="relative">
+                    <span className={`absolute -left-6 top-1 w-2.5 h-2.5 rounded-full ring-4 ring-white ${
+                      selectedOrder.customer_utr || selectedOrder.utr ? 'bg-emerald-500' : 'bg-amber-400'
+                    }`} />
+                    <div className="flex justify-between items-baseline text-xs">
+                      <span className="font-bold text-slate-800">Customer UPI Transfer</span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {selectedOrder.customer_vpa || 'Universal UPI'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      {selectedOrder.customer_utr
+                        ? `Customer entered reference: ${selectedOrder.customer_utr}`
+                        : 'Customer scanned QR in UPI app (GPay/PhonePe/Paytm)'}
+                    </p>
+                  </div>
+
+                  {/* Step 3: Reconciliation Status */}
+                  <div className="relative">
+                    <span className={`absolute -left-6 top-1 w-2.5 h-2.5 rounded-full ring-4 ring-white ${
+                      (selectedOrder.status === 'verified' || selectedOrder.status === 'paid')
+                        ? 'bg-emerald-600'
+                        : selectedOrder.status === 'pending'
+                        ? 'bg-amber-500'
+                        : 'bg-red-500'
+                    }`} />
+                    <div className="flex justify-between items-baseline text-xs">
+                      <span className="font-bold text-slate-800">
+                        {(selectedOrder.status === 'verified' || selectedOrder.status === 'paid')
+                          ? 'Settled into Bank Account'
+                          : selectedOrder.status === 'pending'
+                          ? 'Awaiting Bank Notification'
+                          : 'Payment Terminated'}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {selectedOrder.verified_at
+                          ? new Date(selectedOrder.verified_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
+                          : 'Pending'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      {(selectedOrder.status === 'verified' || selectedOrder.status === 'paid')
+                        ? ((selectedOrder.utr || '').toUpperCase().startsWith('MANUAL_')
+                            ? 'Manually verified by merchant with bank confirmation'
+                            : `Auto-matched via direct bank SMS/email notification with UTR ${selectedOrder.utr}`)
+                        : selectedOrder.status === 'pending'
+                        ? 'Listening for bank webhook/email credit alert'
+                        : 'Session expired or cancelled by customer'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Settlement Routing */}
               <div className="p-3.5 bg-emerald-50/70 border border-emerald-100 rounded-xl text-emerald-900">
                 <div className="flex items-center gap-2 font-bold mb-1">
@@ -1435,15 +1609,32 @@ export default function TransactionsRedesign({
                       Mark as Paid
                     </button>
                   ) : (selectedOrder.status === 'verified' || selectedOrder.status === 'paid') ? (
-                    <button
-                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'unpaid')}
-                      disabled={orderStatusBusy}
-                      className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
-                      type="button"
-                    >
-                      {orderStatusBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
-                      Mark as Unpaid
-                    </button>
+                    <>
+                      <button
+                        onClick={() => {
+                          setRefundOrder(selectedOrder);
+                          setRefundAmount(selectedOrder.amount || '');
+                          setRefundUtr('');
+                          setRefundReason('Customer requested cancellation');
+                          setShowRefundModal(true);
+                        }}
+                        className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                        type="button"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        Log Refund
+                      </button>
+
+                      <button
+                        onClick={() => handleUpdateOrderStatus(selectedOrder.id, 'unpaid')}
+                        disabled={orderStatusBusy}
+                        className="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
+                        type="button"
+                      >
+                        {orderStatusBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
+                        Mark as Unpaid
+                      </button>
+                    </>
                   ) : null}
 
                   <button
@@ -1588,6 +1779,193 @@ export default function TransactionsRedesign({
                     </>
                   ) : (
                     'Save Bank Account'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════
+          OUTBOUND REFUND TRACKER MODAL (DIRECT UPI MODEL)
+          ══════════════════════════════════════════════════════════ */}
+      {showRefundModal && refundOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 overflow-hidden max-h-[92vh] overflow-y-auto animate-scaleUp">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100">
+                  <RotateCcw className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Record Outbound Refund</h3>
+                  <p className="text-xs text-slate-500">Order #{refundOrder.id?.slice(0, 10)}... • Direct UPI Tracking</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowRefundModal(false);
+                  setRefundError(null);
+                  setRefundSuccessMsg(null);
+                }}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Direct UPI Zero-Custody Disclaimer */}
+            <div className="p-3.5 bg-amber-50/80 border border-amber-200/90 rounded-2xl flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1 text-xs text-amber-900">
+                <span className="font-bold text-amber-950 block">Direct UPI Model (Zero Custody Platform)</span>
+                <p className="text-[11px] leading-relaxed text-amber-800">
+                  MyMobPay never holds, pools, or automatically debits merchant funds. To process this refund, transfer the money directly from your UPI app (Google Pay, PhonePe, Paytm, or Netbanking) to the customer’s UPI ID. Then record your outbound bank UTR below for accounting and dispute protection.
+                </p>
+              </div>
+            </div>
+
+            {/* Original Order Summary Card */}
+            <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between text-xs">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Original Collection</span>
+                <p className="font-bold text-slate-800 text-sm">₹{Number(refundOrder.amount || 0).toLocaleString('en-IN')}</p>
+                <p className="text-[11px] text-slate-500">
+                  Customer: <span className="font-medium text-slate-700">{refundOrder.customer_name || refundOrder.payer_vpa || refundOrder.customer_phone || 'Direct Payer'}</span>
+                </p>
+              </div>
+              <div className="text-right space-y-0.5">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Inbound UTR</span>
+                <p className="font-mono font-semibold text-slate-700 text-xs">{refundOrder.utr || refundOrder.customer_utr || 'Auto-Verified'}</p>
+                <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                  Verified in Bank
+                </span>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleLogRefund} className="space-y-3.5 text-xs">
+              {refundError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{refundError}</span>
+                </div>
+              )}
+              {refundSuccessMsg && (
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 font-bold flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>{refundSuccessMsg}</span>
+                </div>
+              )}
+
+              {/* Refund Amount */}
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700 flex items-center justify-between">
+                  <span>Refund Amount (₹)</span>
+                  <span className="text-[10px] text-slate-500 font-normal">
+                    {Number(refundAmount) < Number(refundOrder.amount) ? 'Partial Refund' : 'Full Refund'}
+                  </span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-2.5 font-bold text-slate-400">₹</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    max={refundOrder.amount}
+                    required
+                    value={refundAmount}
+                    onChange={(e) => setRefundAmount(e.target.value)}
+                    placeholder="Enter refund amount"
+                    className="w-full h-10 pl-8 pr-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+                  />
+                </div>
+              </div>
+
+              {/* Outbound UTR (Required) */}
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700 flex items-center justify-between">
+                  <span>Outbound Bank / UPI UTR (12 Digits) *</span>
+                  <span className="text-[10px] text-rose-600 font-semibold">From your bank debit SMS/receipt</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 429188401923"
+                  value={refundUtr}
+                  onChange={(e) => setRefundUtr(e.target.value.toUpperCase())}
+                  className="h-10 px-3.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-slate-800 uppercase focus:outline-none focus:bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+                />
+              </div>
+
+              {/* Reason */}
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700">Reason for Refund</label>
+                <select
+                  value={refundReason}
+                  onChange={(e) => setRefundReason(e.target.value)}
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 cursor-pointer"
+                >
+                  <option value="Customer requested cancellation">Customer requested cancellation</option>
+                  <option value="Duplicate payment by customer">Duplicate payment by customer</option>
+                  <option value="Product out of stock / service unavailable">Product out of stock / service unavailable</option>
+                  <option value="Disputed transaction / quality issue">Disputed transaction / quality issue</option>
+                  <option value="Other reason">Other reason</option>
+                </select>
+              </div>
+
+              {/* Notes */}
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700">Internal Audit & Dispute Notes (Optional)</label>
+                <textarea
+                  rows={2}
+                  value={refundNotes}
+                  onChange={(e) => setRefundNotes(e.target.value)}
+                  placeholder="e.g. Transferred via PhonePe UPI to customer vpa buyer@okhdfcbank"
+                  className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 text-xs focus:outline-none focus:bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 resize-none"
+                />
+              </div>
+
+              {/* Customer Notification Checkbox */}
+              <label className="flex items-center gap-2 pt-1 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={refundNotifyCustomer}
+                  onChange={(e) => setRefundNotifyCustomer(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                />
+                <span className="text-xs text-slate-700 font-medium">
+                  Trigger webhook & customer notification (Email/SMS) for this refund
+                </span>
+              </label>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowRefundModal(false)}
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={refundLoading || !refundUtr}
+                  className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-sm shadow-rose-500/20 flex items-center gap-2 transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  {refundLoading ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Recording Refund...
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Save & Record Refund
+                    </>
                   )}
                 </button>
               </div>

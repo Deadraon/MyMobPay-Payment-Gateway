@@ -2,1220 +2,433 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import {
-  CheckCircle2,
-  X,
-  AlertCircle,
-  Plus,
-  Download,
-  ArrowRight,
-  ShieldCheck,
-  Landmark,
-  Activity,
-  Check,
-  Zap,
-  Info,
-  ExternalLink,
-  Copy,
-  Inbox
+  CheckCircle2, X, AlertCircle, Plus, ArrowRight, ShieldCheck,
+  Landmark, Clock, TrendingUp, TrendingDown, Minus, AlertTriangle,
+  Info, Inbox, ChevronRight, BarChart2, Zap, CircleDollarSign, ExternalLink,
 } from 'lucide-react';
 import { formatMerchantId } from '@/lib/merchantId';
 
+// ── Status badge ──────────────────────────────────────────────────
+function StatusBadge({ status }) {
+  const s = (status || '').toLowerCase();
+  if (s === 'verified' || s === 'success' || s === 'paid' || s === 'completed')
+    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Verified</span>;
+  if (s === 'pending' || s === 'processing' || s === 'in_progress')
+    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">Pending</span>;
+  if (s === 'failed' || s === 'cancelled' || s === 'rejected' || s === 'declined')
+    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">Failed</span>;
+  if (s === 'expired')
+    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-500 border border-slate-200">Expired</span>;
+  return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">{status || '—'}</span>;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+const IST_TZ = 'Asia/Kolkata';
+function toIST(dateStr) { return new Date(new Date(dateStr).toLocaleString('en-US', { timeZone: IST_TZ })); }
+function todayIST() { const d = toIST(new Date().toISOString()); d.setHours(0,0,0,0); return d; }
+function yesterdayIST() { const d = todayIST(); d.setDate(d.getDate()-1); return d; }
+function formatINR(n) { return `\u20b9${Number(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}`; }
+function isVerified(o) { const s=(o.status||'').toLowerCase(); return s==='verified'||s==='success'||s==='paid'||s==='completed'; }
+function isPending(o)  { const s=(o.status||'').toLowerCase(); return s==='pending'||s==='processing'||s==='in_progress'; }
+function isFailed(o)   { const s=(o.status||'').toLowerCase(); return s==='failed'||s==='cancelled'||s==='rejected'||s==='declined'; }
+function isExpired(o)  { return (o.status||'').toLowerCase()==='expired'; }
+function fmtTime(d) { if(!d) return ''; return new Date(d).toLocaleTimeString('en-IN',{timeZone:IST_TZ,hour:'2-digit',minute:'2-digit',hour12:true}); }
+function fmtDate(d) {
+  if(!d) return '';
+  const orderDay = toIST(d); orderDay.setHours(0,0,0,0);
+  const diff = Math.round((todayIST()-orderDay)/86400000);
+  if(diff===0) return `Today, ${fmtTime(d)}`;
+  if(diff===1) return `Yesterday, ${fmtTime(d)}`;
+  return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',timeZone:IST_TZ})+', '+fmtTime(d);
+}
+
+// ── Main Component ────────────────────────────────────────────────
 export default function DashboardOverviewRedesign({
-  profile,
-  user,
-  stats = {},
-  orders = [],
-  analyticsTimeframe = 7,
-  setAnalyticsTimeframe,
-  setActiveTab,
-  setSettingsCategory
+  profile, user, stats={}, orders=[], analyticsTimeframe=7,
+  setAnalyticsTimeframe, setActiveTab, setSettingsCategory,
 }) {
-  // Navigate directly to dedicated Bank screen in Settings
-  const navigateToBankSettings = () => {
-    if (typeof setSettingsCategory === 'function') {
-      setSettingsCategory('banking');
-    }
-    if (typeof setActiveTab === 'function') {
-      setActiveTab('settings');
-    }
-  };
+  const [chartRange, setChartRange]       = useState('7d');
+  const [successPeriod, setSuccessPeriod] = useState('today');
+  const [dismissedNotices, setDismissedNotices] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('mmp_dismissed_notices')||'[]'); } catch { return []; }
+  });
 
-  // ─── ROUTING RULES MODAL STATE ───
-  const [showRoutingRules, setShowRoutingRules] = useState(false);
-  const [rulesCopied, setRulesCopied] = useState(false);
-
-  // ─── FILTER STATE ───
-  const [activeFilter, setActiveFilter] = useState('all'); // 'all' | 'success' | 'pending' | 'refunded'
-
-  // Live IST Clock
+  // Live IST clock
   const [currentTime, setCurrentTime] = useState('');
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString('en-IN', {
-          timeZone: 'Asia/Kolkata',
-          hour12: false,
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
-        })
-      );
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+    const tick = () => setCurrentTime(new Date().toLocaleTimeString('en-IN',{timeZone:IST_TZ,hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+    tick(); const id=setInterval(tick,1000); return ()=>clearInterval(id);
   }, []);
 
-  // Read active bank account from Settings (localStorage) or profile
-  const activeBankAccount = useMemo(() => {
-    if (typeof window !== 'undefined' && user?.id) {
-      const storageKey = `mymobpay_bank_accounts_${user.id}`;
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            const primary = parsed.find((a) => a.is_primary) || parsed[0];
-            if (primary && (primary.bank_account_number || primary.bank_name)) {
-              return primary;
-            }
-          }
-        } catch {
-          // fallback
-        }
-      }
+  const todayStart     = useMemo(()=>todayIST(),    []);
+  const yesterdayStart = useMemo(()=>yesterdayIST(),[]);
+
+  // Today collections
+  const todayVerified     = useMemo(()=>orders.filter(o=>{ if(!isVerified(o))return false; const d=toIST(o.created_at||''); d.setHours(0,0,0,0); return d.getTime()===todayStart.getTime(); }),[orders,todayStart]);
+  const yesterdayVerified = useMemo(()=>orders.filter(o=>{ if(!isVerified(o))return false; const d=toIST(o.created_at||''); d.setHours(0,0,0,0); return d.getTime()===yesterdayStart.getTime(); }),[orders,yesterdayStart]);
+  const todayTotal     = useMemo(()=>todayVerified.reduce((s,o)=>s+(parseFloat(o.amount)||0),0),[todayVerified]);
+  const yesterdayTotal = useMemo(()=>yesterdayVerified.reduce((s,o)=>s+(parseFloat(o.amount)||0),0),[yesterdayVerified]);
+  const todayChange    = useMemo(()=>{ if(yesterdayTotal===0) return todayTotal>0?100:0; return (((todayTotal-yesterdayTotal)/yesterdayTotal)*100).toFixed(1); },[todayTotal,yesterdayTotal]);
+
+  // Success rate
+  const periodOrders = useMemo(()=>{
+    const now=Date.now();
+    const cutoff = successPeriod==='today' ? todayStart.getTime() : successPeriod==='7d' ? now-7*86400000 : now-30*86400000;
+    return orders.filter(o=>new Date(o.created_at||0).getTime()>=cutoff);
+  },[orders,successPeriod,todayStart]);
+  const periodVerifiedCount = useMemo(()=>periodOrders.filter(isVerified).length,[periodOrders]);
+  const periodPendingCount  = useMemo(()=>periodOrders.filter(isPending).length, [periodOrders]);
+  const periodFailedCount   = useMemo(()=>periodOrders.filter(isFailed).length,  [periodOrders]);
+  const periodExpiredCount  = useMemo(()=>periodOrders.filter(isExpired).length,  [periodOrders]);
+  const periodTotalCount    = periodOrders.length;
+  const successRate = periodTotalCount>0 ? ((periodVerifiedCount/periodTotalCount)*100).toFixed(1) : '0.0';
+
+  // Stale pending (>5 min)
+  const stalePending = useMemo(()=>{
+    const thr=Date.now()-5*60*1000;
+    return orders.filter(o=>isPending(o)&&new Date(o.created_at||0).getTime()<thr).slice(0,5);
+  },[orders]);
+
+  // Chart data
+  const chartData = useMemo(()=>{
+    if(chartRange==='today'){
+      const b=Array.from({length:24},(_,h)=>({label:`${h}h`,value:0}));
+      orders.forEach(o=>{ if(!isVerified(o))return; const d=toIST(o.created_at||''); const day=toIST(o.created_at||''); day.setHours(0,0,0,0); if(day.getTime()!==todayStart.getTime())return; b[d.getHours()].value+=parseFloat(o.amount)||0; });
+      return b;
     }
-    if (profile?.bank_account_number && profile?.bank_name) {
-      return {
-        bank_name: profile.bank_name,
-        bank_account_number: profile.bank_account_number,
-        bank_account_name: profile.bank_account_name || profile.business_name || '',
-        bank_ifsc: profile.bank_ifsc || ''
-      };
+    const days=chartRange==='7d'?7:30;
+    const b=Array.from({length:days},(_,i)=>{ const d=new Date(todayStart.getTime()-(days-1-i)*86400000); return {label:d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',timeZone:IST_TZ}),value:0,day:d.getTime()}; });
+    orders.forEach(o=>{ if(!isVerified(o))return; const d=toIST(o.created_at||''); d.setHours(0,0,0,0); const bk=b.find(x=>x.day===d.getTime()); if(bk)bk.value+=parseFloat(o.amount)||0; });
+    return b;
+  },[orders,chartRange,todayStart]);
+  const chartMax=Math.max(...chartData.map(d=>d.value),1);
+
+  // Recent 10
+  const recentOrders=useMemo(()=>[...orders].slice(0,10),[orders]);
+
+  // Notices
+  const notices=useMemo(()=>{
+    const list=[];
+    if(!profile?.gstin&&!profile?.kyc_verified&&!profile?.is_verified)
+      list.push({id:'kyc',type:'warning',title:'KYC Incomplete',message:'Submit your PAN/GST/ID documents to unlock higher limits and full verification.',action:{label:'Complete KYC \u2192',onClick:()=>{setSettingsCategory?.('business');setActiveTab?.('settings');}}});
+    if(profile?.subscription_expires_at){
+      const exp=new Date(profile.subscription_expires_at);
+      const dl=Math.ceil((exp.getTime()-Date.now())/86400000);
+      if(dl>0&&dl<=7) list.push({id:'expiry',type:'warning',title:`Subscription expires in ${dl} day${dl!==1?'s':''}`,message:`Renew before ${exp.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})} to avoid interruption.`,action:{label:'Renew Plan \u2192',onClick:()=>setActiveTab?.('subscription')}});
+      if(dl<=0) list.push({id:'expired',type:'error',title:'Subscription Expired',message:'Your plan has expired. Live payments are paused until you renew.',action:{label:'Renew Now \u2192',onClick:()=>setActiveTab?.('subscription')}});
     }
+    if(!profile?.upi_id||profile?.upi_id==='pending@upi')
+      list.push({id:'upi',type:'info',title:'UPI ID Not Configured',message:'Add your UPI VPA so customers can pay directly into your account.',action:{label:'Add UPI ID \u2192',onClick:()=>{setSettingsCategory?.('banking');setActiveTab?.('settings');}}});
+    if(stalePending.length>=3)
+      list.push({id:'stale',type:'warning',title:`${stalePending.length} Payments Awaiting Confirmation`,message:'Multiple payments pending verification >5 min. Check your verification setup.',action:{label:'View Pending \u2192',onClick:()=>setActiveTab?.('transactions')}});
+    return list.filter(n=>!dismissedNotices.includes(n.id));
+  },[profile,stalePending,dismissedNotices,setActiveTab,setSettingsCategory]);
+
+  const dismissNotice=(id)=>{ const next=[...dismissedNotices,id]; setDismissedNotices(next); try{localStorage.setItem('mmp_dismissed_notices',JSON.stringify(next));}catch{} };
+
+  // Bank helper
+  const activeBankAccount=useMemo(()=>{
+    if(typeof window!=='undefined'&&user?.id){
+      try{ const s=JSON.parse(localStorage.getItem(`mymobpay_bank_accounts_${user.id}`)||'null'); if(Array.isArray(s)&&s.length>0){const p=s.find(a=>a.is_primary)||s[0]; if(p?.bank_account_number||p?.bank_name)return p;} }catch{}
+    }
+    if(profile?.bank_account_number&&profile?.bank_name) return {bank_name:profile.bank_name,bank_account_number:profile.bank_account_number,bank_ifsc:profile.bank_ifsc||''};
     return null;
-  }, [user?.id, profile]);
+  },[user?.id,profile]);
 
-  const hasBankAccount = !!activeBankAccount;
+  const navigateToBankSettings=()=>{ setSettingsCategory?.('banking'); setActiveTab?.('settings'); };
 
-  // Real live daily settlement cap or pass-through status (no dummy figures)
-  const dailyCapDisplay = useMemo(() => {
-    if (profile?.daily_limit) {
-      return `₹ ${Number(profile.daily_limit).toLocaleString('en-IN')}`;
-    }
-    if (profile?.daily_cap) {
-      return `₹ ${Number(profile.daily_cap).toLocaleString('en-IN')}`;
-    }
-    if (hasBankAccount) {
-      return 'Unlimited (Direct T+0)';
-    }
-    return 'Awaiting Bank Link';
-  }, [profile?.daily_limit, profile?.daily_cap, hasBankAccount]);
-
-  // ─── REAL & LIVE ORDER GROUPING ───
-  const successfulOrders = useMemo(() => {
-    return (orders || []).filter((o) => {
-      const s = (o.status || '').toLowerCase();
-      return s === 'success' || s === 'completed' || s === 'paid' || s === 'verified';
-    });
-  }, [orders]);
-
-  const pendingOrders = useMemo(() => {
-    return (orders || []).filter((o) => {
-      const s = (o.status || '').toLowerCase();
-      return s === 'pending' || s === 'processing' || s === 'in_progress';
-    });
-  }, [orders]);
-
-  const failedOrders = useMemo(() => {
-    return (orders || []).filter((o) => {
-      const s = (o.status || '').toLowerCase();
-      return (
-        s === 'failed' ||
-        s === 'cancelled' ||
-        s === 'refunded' ||
-        s === 'refund' ||
-        s === 'rejected' ||
-        s === 'declined'
-      );
-    });
-  }, [orders]);
-
-  // Multi-Rail Breakdown: Universal UPI, Direct Bank (IMPS), Crypto (Web3)
-  const railMetrics = useMemo(() => {
-    let upi = 0;
-    let bank = 0;
-    let crypto = 0;
-
-    (orders || []).forEach((order) => {
-      const raw = `${order.upi_app || ''} ${order.method || ''} ${order.rail || ''} ${order.payment_method || ''}`.toLowerCase();
-      if (
-        raw.includes('crypto') ||
-        raw.includes('web3') ||
-        raw.includes('usdt') ||
-        raw.includes('btc') ||
-        raw.includes('eth') ||
-        raw.includes('tron') ||
-        raw.includes('sol') ||
-        raw.includes('polygon')
-      ) {
-        crypto++;
-      } else if (
-        raw.includes('bank') ||
-        raw.includes('imps') ||
-        raw.includes('neft') ||
-        raw.includes('rtgs') ||
-        raw.includes('netbanking')
-      ) {
-        bank++;
-      } else {
-        // Universal UPI direct gateway flow
-        upi++;
-      }
-    });
-
-    const total = (orders || []).length || 0;
-    return {
-      upi,
-      bank,
-      crypto,
-      total,
-      upiPct: total > 0 ? (upi / total) * 100 : 0,
-      bankPct: total > 0 ? (bank / total) * 100 : 0,
-      cryptoPct: total > 0 ? (crypto / total) * 100 : 0
-    };
-  }, [orders]);
-
-  // ─── 100% REAL LIVE CALCULATIONS (NO DUMMY VALUES) ───
-  const totalVolume = useMemo(() => {
-    if (stats?.totalVolume !== undefined && Number(stats.totalVolume) > 0) {
-      return Number(stats.totalVolume);
-    }
-    return successfulOrders.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
-  }, [stats?.totalVolume, successfulOrders]);
-
-  const totalCount = (orders || []).length;
-  const settledVolume = totalVolume; // Direct pass-through settles successful volume T+0
-  const successCount = successfulOrders.length;
-  const pendingCount = pendingOrders.length;
-  const failedCount = failedOrders.length;
-
-  const successRate = totalCount > 0
-    ? ((successCount / totalCount) * 100).toFixed(1)
-    : '0.0';
-
-  // Real Merchant Identity
-  const merchantBusinessName = profile?.business_name || profile?.owner_name || 'GainIQ';
-  const merchantInitials = useMemo(() => {
-    const name = merchantBusinessName.trim();
-    const parts = name.split(/\s+/);
-    if (parts.length >= 2 && parts[0] && parts[1]) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase() || 'GA';
-  }, [merchantBusinessName]);
-
-  const merchantMID = useMemo(() => {
-    return formatMerchantId(profile?.id || profile?.merchant_id);
-  }, [profile?.id, profile?.merchant_id]);
-
-  const merchantDomain = profile?.website || (profile?.email ? profile.email.split('@')[1] : 'mymob.tech');
-
-  // ─── MAP LIVE ORDERS INTO LEDGER TRANSACTIONS ───
-  const mappedTransactions = useMemo(() => {
-    return (orders || []).map((order) => {
-      let dateStr = 'Just now';
-      if (order.created_at) {
-        const d = new Date(order.created_at);
-        const isToday = d.toDateString() === new Date().toDateString();
-        const time = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
-        dateStr = isToday
-          ? `Today, ${time}`
-          : `${d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}, ${time}`;
-      }
-
-      const rawStatus = (order.status || '').toLowerCase();
-      let statusCategory = 'Success';
-      if (rawStatus === 'pending' || rawStatus === 'processing' || rawStatus === 'in_progress') {
-        statusCategory = 'Pending';
-      } else if (rawStatus === 'refunded' || rawStatus === 'refund') {
-        statusCategory = 'Refunded';
-      } else if (rawStatus === 'failed' || rawStatus === 'cancelled') {
-        statusCategory = 'Failed';
-      }
-
-      const txnId = order.order_id
-        ? order.order_id
-        : order.id
-        ? order.id.toString().startsWith('TXN_')
-          ? order.id.toString()
-          : `TXN_${order.id.toString().slice(0, 6).toUpperCase()}`
-        : 'TXN_—';
-
-      const customerLabel = order.customer_name || order.customer_email || order.customer_phone || order.vpa || 'Direct Customer';
-
-      return {
-        id: txnId,
-        fullId: order.id || order.order_id,
-        date: dateStr,
-        timestamp: order.created_at ? new Date(order.created_at).getTime() : 0,
-        customer: customerLabel,
-        method: (order.upi_app || order.method || 'GENERIC').toUpperCase(),
-        amount: parseFloat(order.amount) || 0,
-        status: statusCategory,
-        utr: order.utr || '—',
-        raw: order
-      };
-    });
-  }, [orders]);
-
-  // ─── FILTER PIPELINE ───
-  const filteredTransactions = useMemo(() => {
-    if (activeFilter === 'all') return mappedTransactions;
-    if (activeFilter === 'success') return mappedTransactions.filter((t) => t.status === 'Success');
-    if (activeFilter === 'pending') return mappedTransactions.filter((t) => t.status === 'Pending');
-    if (activeFilter === 'failed' || activeFilter === 'refunded') {
-      return mappedTransactions.filter((t) => t.status === 'Failed' || t.status === 'Refunded');
-    }
-    return mappedTransactions;
-  }, [mappedTransactions, activeFilter]);
-
-  // ─── EXPORT TO CSV ───
-  const handleExportCSV = () => {
-    if (filteredTransactions.length === 0) return;
-
-    const headers = ['Transaction ID', 'Date & Time', 'Customer', 'Payment Method', 'Amount (INR)', 'Status', 'UTR'];
-    const rows = filteredTransactions.map((t) => [
-      t.id,
-      t.date,
-      `"${t.customer.replace(/"/g, '""')}"`,
-      t.method,
-      t.amount.toFixed(2),
-      t.status,
-      t.utr
-    ]);
-
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `settlement_ledger_${activeFilter}_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-
-
-  const copyRoutingDetails = () => {
-    const details = `MyMobPay Direct Pass-Through Settlement Rail\nRail Mode: Instant T+0 IMPS/UPI Pass-Through\nIntermediary Escrow: 0.00% (Zero Hold)\nPrimary Clearing Node: Mumbai AWS-South\nDaily Settlement Cap: ${dailyCapDisplay}\nDestination: ${
-      hasBankAccount
-        ? `${activeBankAccount.bank_name} (${activeBankAccount.bank_account_number})`
-        : 'No account linked yet (Configure in Settings > Banking)'
-    }`;
-    navigator.clipboard.writeText(details);
-    setRulesCopied(true);
-    setTimeout(() => setRulesCopied(false), 2000);
-  };
+  const noticeIcon=(t)=> t==='error'?<AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5"/>:t==='warning'?<AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5"/>:<Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5"/>;
+  const noticeBg=(t)=> t==='error'?'bg-red-50 border-red-200':t==='warning'?'bg-amber-50 border-amber-200':'bg-blue-50 border-blue-200';
 
   return (
-    <div className="w-full space-y-5 font-sans antialiased text-[#0f141a]">
+    <div className="w-full space-y-6 font-sans antialiased text-[#0f141a]">
 
-      {/* ─── ALERT: NO BANK ACCOUNT ADDED (ONLY IF NOT LINKED) ─── */}
-      {!hasBankAccount && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-xs">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-              <Landmark className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-amber-900">Direct Pass-Through Rail Inactive</p>
-              <p className="text-xs text-amber-700 mt-0.5">
-                Add your bank account to enable zero-retention T+0 direct settlement to your pool.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={navigateToBankSettings}
-            className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" /> Link Bank Account
-          </button>
+      {/* TRUST BANNER */}
+      <div className="flex items-center gap-3.5 px-5 py-4 bg-emerald-50 border border-emerald-200 rounded-2xl shadow-xs">
+        <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+          <ShieldCheck className="w-5 h-5 text-emerald-600" />
         </div>
-      )}
-
-      {/* ─── ASYMMETRIC BENTO DUAL-WING WORKSPACE ─── */}
-      <div className="w-full grid grid-cols-12 gap-5 items-start">
-
-        {/* ══════════════════════════════════════════════════════════════
-            LEFT WING: HERO METRIC MONOLITH & PROFILE DOCK (Span 3)
-           ══════════════════════════════════════════════════════════════ */}
-        <section className="col-span-12 xl:col-span-3 flex flex-col gap-4">
-          
-          {/* Merchant Passport Card (100% Real Live Data - Dark Obsidian Theme matching Total Processed) */}
-          <div className="bg-[#0c2340] text-white rounded-xl border border-slate-800 p-5 shadow-sm relative overflow-hidden group">
-            <div className="flex gap-3.5 items-center mb-4">
-              {/* Real Merchant Monogram/Logo */}
-              <div
-                className="size-14 rounded-xl text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0 border border-white/20"
-                style={{ backgroundColor: profile?.theme_color || '#1a3a60' }}
-              >
-                {profile?.logo_url ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={profile.logo_url}
-                    alt={merchantBusinessName}
-                    className="w-full h-full object-cover rounded-xl"
-                  />
-                ) : (
-                  <span>{merchantInitials}</span>
-                )}
-              </div>
-
-              <div className="flex flex-col min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-1">
-                  <h3 className="text-white text-base font-bold leading-tight truncate">
-                    {merchantBusinessName}
-                  </h3>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[11px] font-semibold shrink-0 border ${
-                      profile?.is_test_mode
-                        ? 'bg-amber-400/20 text-amber-300 border-amber-400/30'
-                        : 'bg-[#07883b]/25 text-[#4edea3] border border-[#07883b]/40'
-                    }`}
-                  >
-                    {profile?.is_test_mode ? 'Test' : 'Live'}
-                  </span>
-                </div>
-                <p className="text-[#b3c7ec] text-xs font-normal truncate mt-0.5">
-                  {merchantDomain}
-                </p>
-                <p className="text-[#778bad] text-xs font-mono font-medium truncate">
-                  {merchantMID}
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-white/10 space-y-2 text-xs">
-              <div className="flex justify-between items-center">
-                <span className="text-[#b3c7ec]">Settlement Type</span>
-                <span className="font-medium text-white">Direct Pass-Through</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[#b3c7ec]">Destination</span>
-                {hasBankAccount ? (
-                  <button
-                    type="button"
-                    onClick={navigateToBankSettings}
-                    title="Manage settlement bank accounts in Settings"
-                    className="font-mono font-medium text-white hover:text-[#4edea3] transition-colors cursor-pointer text-left truncate max-w-[170px]"
-                  >
-                    {activeBankAccount.bank_name} •••• {activeBankAccount.bank_account_number ? activeBankAccount.bank_account_number.slice(-4) : '••••'}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={navigateToBankSettings}
-                    className="text-amber-400 hover:text-amber-300 font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors"
-                  >
-                    <AlertCircle className="w-3 h-3" /> Not Linked
-                  </button>
-                )}
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[#b3c7ec]">KYC / GSTIN</span>
-                {profile?.gstin || profile?.is_verified || profile?.kyc_verified ? (
-                  <span className="inline-flex items-center gap-1 font-medium text-[#4edea3]">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    Verified
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSettingsCategory?.('business');
-                      setActiveTab?.('settings');
-                    }}
-                    title="Configure business & KYC information in Settings"
-                    className="inline-flex items-center gap-1 font-semibold text-amber-400 hover:text-amber-300 transition-colors cursor-pointer"
-                  >
-                    <AlertCircle className="w-3.5 h-3.5" />
-                    Pending Setup &rarr;
-                  </button>
-                )}
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[#b3c7ec]">Operating Mode</span>
-                <span className="font-medium text-white">
-                  {profile?.is_test_mode ? 'Sandbox Rail' : 'Production Rail (T+0)'}
-                </span>
-              </div>
-            </div>
-            <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-blue-400/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-          </div>
-
-          {/* Monolith: Total Processed (Real Live Volume) */}
-          <div className="bg-[#0c2340] text-white rounded-xl p-5 shadow-sm relative overflow-hidden group flex flex-col justify-between min-h-[140px]">
-            <div className="flex items-center justify-between">
-              <p className="text-[#b3c7ec] text-xs font-semibold uppercase tracking-wider">
-                Total Processed
-              </p>
-              <span className="px-2 py-0.5 rounded-full bg-[#07883b]/20 text-[#4edea3] text-xs font-bold font-mono">
-                {successRate}% Flow
-              </span>
-            </div>
-            <div className="mt-4">
-              <p className="text-3xl font-bold tracking-tight text-white font-mono">
-                ₹ {totalVolume.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
-              <p className="text-xs text-[#778bad] mt-1 font-medium">
-                {totalCount > 0
-                  ? `Gross settled from ${successCount} successful of ${totalCount} transactions`
-                  : 'Gross settled & active gateway flow'}
-              </p>
-            </div>
-            <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-[#07883b]/20 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-          </div>
-
-          {/* Compact Bento Pair: Real Transaction Count & Settled Volume */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
-            {/* Real Transaction Count & Multi-Rail Breakdown (UPI, Bank, Crypto) */}
-            <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm flex flex-col justify-between relative overflow-hidden group">
-              <div className="flex items-center justify-between">
-                <p className="text-[#547092] text-xs font-semibold uppercase tracking-wider">
-                  Transaction Count
-                </p>
-                <span className="text-[#07883b] text-xs font-bold font-mono bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  {successCount} Success
-                </span>
-              </div>
-              <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-blue-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-              <div className="mt-3">
-                <div className="flex items-baseline justify-between">
-                  <p className="text-[#0f141a] text-2xl font-bold tracking-tight font-mono">
-                    {totalCount.toLocaleString('en-IN')}
-                  </p>
-                  <span className="text-[11px] text-[#547092] font-medium">
-                    Total Transactions
-                  </span>
-                </div>
-
-                {/* Master Multi-Rail Segmented Progress Bar */}
-                <div className="w-full bg-[#e8edf2] h-2 rounded-full mt-3 overflow-hidden flex shadow-xs">
-                  {railMetrics.upiPct > 0 && (
-                    <div
-                      title={`UPI: ${railMetrics.upi} (${railMetrics.upiPct.toFixed(1)}%)`}
-                      className="bg-[#2563eb] h-full transition-all duration-500"
-                      style={{ width: `${railMetrics.upiPct}%` }}
-                    />
-                  )}
-                  {railMetrics.bankPct > 0 && (
-                    <div
-                      title={`Bank: ${railMetrics.bank} (${railMetrics.bankPct.toFixed(1)}%)`}
-                      className="bg-[#059669] h-full transition-all duration-500"
-                      style={{ width: `${railMetrics.bankPct}%` }}
-                    />
-                  )}
-                  {railMetrics.cryptoPct > 0 && (
-                    <div
-                      title={`Crypto: ${railMetrics.crypto} (${railMetrics.cryptoPct.toFixed(1)}%)`}
-                      className="bg-[#f59e0b] h-full transition-all duration-500"
-                      style={{ width: `${railMetrics.cryptoPct}%` }}
-                    />
-                  )}
-                  {totalCount === 0 && (
-                    <div className="w-full bg-slate-200 h-full" />
-                  )}
-                </div>
-
-                {/* Multi-Rail Counts with Distinct Color Lines */}
-                <div className="mt-4 pt-3 border-t border-[#e8edf2] space-y-2.5">
-                  {/* UPI Rail */}
-                  <div>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="flex items-center gap-1.5 font-medium text-[#0f141a]">
-                        <span className="size-2 rounded-full bg-[#2563eb]" />
-                        UPI
-                      </span>
-                      <div className="flex items-center gap-1.5 font-mono">
-                        <span className="font-bold text-[#0f141a]">
-                          {railMetrics.upi.toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-[10px] text-[#547092]">
-                          ({railMetrics.upiPct.toFixed(0)}%)
-                        </span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-[#e8edf2] h-1.5 rounded-full overflow-hidden">
-                      <div
-                        className="bg-[#2563eb] h-full rounded-full transition-all duration-500"
-                        style={{ width: `${railMetrics.upiPct}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Bank (IMPS / Direct) Rail */}
-                  <div>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="flex items-center gap-1.5 font-medium text-[#0f141a]">
-                        <span className="size-2 rounded-full bg-[#059669]" />
-                        Bank (IMPS)
-                      </span>
-                      <div className="flex items-center gap-1.5 font-mono">
-                        <span className="font-bold text-[#0f141a]">
-                          {railMetrics.bank.toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-[10px] text-[#547092]">
-                          ({railMetrics.bankPct.toFixed(0)}%)
-                        </span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-[#e8edf2] h-1.5 rounded-full overflow-hidden">
-                      <div
-                        className="bg-[#059669] h-full rounded-full transition-all duration-500"
-                        style={{ width: `${railMetrics.bankPct}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Crypto (Web3 / USDT) Rail */}
-                  <div>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="flex items-center gap-1.5 font-medium text-[#0f141a]">
-                        <span className="size-2 rounded-full bg-[#f59e0b]" />
-                        Crypto (Web3)
-                      </span>
-                      <div className="flex items-center gap-1.5 font-mono">
-                        <span className="font-bold text-[#0f141a]">
-                          {railMetrics.crypto.toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-[10px] text-[#547092]">
-                          ({railMetrics.cryptoPct.toFixed(0)}%)
-                        </span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-[#e8edf2] h-1.5 rounded-full overflow-hidden">
-                      <div
-                        className="bg-[#f59e0b] h-full rounded-full transition-all duration-500"
-                        style={{ width: `${railMetrics.cryptoPct}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* Real Settled Volume */}
-            <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm flex flex-col justify-between relative overflow-hidden group">
-              <div className="flex items-center justify-between">
-                <p className="text-[#547092] text-xs font-medium uppercase tracking-wider">
-                  Settled Volume
-                </p>
-                <span className="text-[#07883b] text-xs font-bold font-mono">
-                  T+0 Direct
-                </span>
-              </div>
-              <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-              <div className="mt-3">
-                <p className="text-[#0f141a] text-2xl font-bold tracking-tight font-mono">
-                  ₹ {settledVolume.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-                <div className="w-full bg-[#e8edf2] h-1.5 rounded-full mt-3 overflow-hidden">
-                  <div
-                    className="bg-[#07883b] h-full rounded-full transition-all duration-500"
-                    style={{ width: `${settledVolume > 0 ? 100 : 0}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Action Deck: Instant Payout API Node */}
-          <button
-            type="button"
-            onClick={() => {
-              setSettingsCategory?.('api');
-              setActiveTab?.('settings');
-            }}
-            title="Manage API Keys & Payout Webhooks"
-            className="w-full bg-[#eaedff] hover:bg-[#dfe4ff] active:scale-[0.99] border border-[#dae2fd] rounded-xl p-4 flex items-center justify-between shadow-xs transition-all text-left cursor-pointer group relative overflow-hidden"
-          >
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="w-5 h-5 text-[#0045de] shrink-0 group-hover:scale-110 transition-transform" />
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <p className="text-xs font-bold text-[#0f141a]">Instant Payout API</p>
-                  <span className="text-[10px] text-blue-600 font-semibold group-hover:underline">Configure &rarr;</span>
-                </div>
-                <p className="text-[11px] text-[#547092]">
-                  {profile?.api_key ? 'Node active on Mumbai AWS-South' : 'API Key Pending Configuration'}
-                </p>
-              </div>
-            </div>
-            <span
-              className={`size-2 rounded-full shrink-0 ${
-                profile?.api_key
-                  ? 'bg-[#07883b] ring-4 ring-[#6ffbbe]/40'
-                  : 'bg-amber-400 ring-4 ring-amber-200'
-              }`}
-            />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-emerald-950">Payments go directly to your UPI account</p>
+          <p className="text-xs text-emerald-700 font-medium mt-0.5 leading-relaxed">MyMobPay never holds or pools your money. Every payment settles instantly via NPCI UPI. Flat subscription — zero per-transaction fees.</p>
+        </div>
+        {activeBankAccount&&(
+          <button type="button" onClick={navigateToBankSettings} className="shrink-0 text-xs font-semibold text-emerald-800 hover:text-emerald-950 underline cursor-pointer hidden sm:block">
+            {activeBankAccount.bank_name} •••• {activeBankAccount.bank_account_number?.slice(-4)}
           </button>
-
-        </section>
-
-
-        {/* ══════════════════════════════════════════════════════════════
-            CENTER WING: HIGH-DENSITY ACCESSIBLE TABULAR LEDGER (Span 6)
-           ══════════════════════════════════════════════════════════════ */}
-        <section className="col-span-12 xl:col-span-6 flex flex-col gap-4">
-          
-          {/* Filter Chips & Operational Bar */}
-          <div className="bg-white border border-[#d2dae5] rounded-xl p-2.5 sm:p-3 flex items-center justify-between gap-2 shadow-sm">
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 sm:pb-0 min-w-0">
-              
-              {/* All Transactions */}
-              <button
-                type="button"
-                onClick={() => setActiveFilter('all')}
-                className={`h-8 px-3 rounded-lg text-xs flex items-center transition-all cursor-pointer ${
-                  activeFilter === 'all'
-                    ? 'bg-[#0c2340] text-white font-semibold shadow-sm'
-                    : 'bg-[#e8edf2] text-[#0f141a] hover:bg-[#d2dae5] font-medium'
-                }`}
-              >
-                <span>All Transactions</span>
-              </button>
-
-              {/* Successful */}
-              <button
-                type="button"
-                onClick={() => setActiveFilter('success')}
-                className={`h-8 px-3 rounded-lg text-xs flex items-center transition-all cursor-pointer ${
-                  activeFilter === 'success'
-                    ? 'bg-[#0c2340] text-white font-semibold shadow-sm'
-                    : 'bg-[#e8edf2] text-[#0f141a] hover:bg-[#d2dae5] font-medium'
-                }`}
-              >
-                <span>Successful</span>
-              </button>
-
-              {/* Pending */}
-              <button
-                type="button"
-                onClick={() => setActiveFilter('pending')}
-                className={`h-8 px-3 rounded-lg text-xs flex items-center transition-all cursor-pointer ${
-                  activeFilter === 'pending'
-                    ? 'bg-[#0c2340] text-white font-semibold shadow-sm'
-                    : 'bg-[#e8edf2] text-[#0f141a] hover:bg-[#d2dae5] font-medium'
-                }`}
-              >
-                <span>Pending</span>
-              </button>
-
-              {/* Failed */}
-              <button
-                type="button"
-                onClick={() => setActiveFilter('failed')}
-                className={`h-8 px-3 rounded-lg text-xs flex items-center transition-all cursor-pointer ${
-                  activeFilter === 'failed'
-                    ? 'bg-[#0c2340] text-white font-semibold shadow-sm'
-                    : 'bg-[#e8edf2] text-[#0f141a] hover:bg-[#d2dae5] font-medium'
-                }`}
-              >
-                <span>Failed</span>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                title="Export ledger as CSV"
-                onClick={handleExportCSV}
-                className="size-8 rounded-lg border border-[#e8edf2] flex items-center justify-center text-[#547092] hover:text-[#0f141a] hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                <Download className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* High Density Real-Time Settlement Ledger Table (Fits in single window) */}
-          <div
-            id="settlement-ledger-table"
-            role="region"
-            aria-label="Real-Time Settlement Ledger"
-            className="bg-white rounded-xl border border-[#d2dae5] shadow-sm overflow-hidden"
-          >
-            {/* Table Header Strip */}
-            <div className="px-4 py-3 border-b border-[#e8edf2] flex items-center justify-between bg-gray-50/50">
-              <div className="flex items-center gap-2">
-                <span className="size-2 rounded-full bg-[#2c60ff]"></span>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0f141a]">
-                  Real-Time Settlement Ledger
-                </h4>
-              </div>
-              <span className="text-[11px] text-[#547092] font-medium font-mono">
-                Sync: {currentTime || 'Live IST'}
-              </span>
-            </div>
-
-            {/* Table Content (Desktop View: hidden on mobile) */}
-            <div className="hidden sm:block overflow-x-auto w-full">
-              <table className="w-full table-fixed text-left border-collapse min-w-[520px]">
-                <colgroup>
-                  <col className="w-[21%]" />
-                  <col className="w-[18%]" />
-                  <col className="w-[21%]" />
-                  <col className="w-[13%]" />
-                  <col className="w-[13%]" />
-                  <col className="w-[14%]" />
-                </colgroup>
-                <thead>
-                  <tr className="bg-gray-50 border-b border-[#e8edf2] text-[10px] sm:text-[11px] font-bold text-[#547092] uppercase tracking-wider">
-                    <th scope="col" className="py-2.5 px-2.5 sm:px-3">TXN ID</th>
-                    <th scope="col" className="py-2.5 px-2">Date &amp; Time</th>
-                    <th scope="col" className="py-2.5 px-2">Customer</th>
-                    <th scope="col" className="py-2.5 px-2 text-center">Method</th>
-                    <th scope="col" className="py-2.5 px-2 text-right">Amount</th>
-                    <th scope="col" className="py-2.5 px-2.5 text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#e8edf2] text-xs">
-                  {filteredTransactions.length > 0 ? (
-                    filteredTransactions.map((txn, index) => (
-                      <tr
-                        key={txn.fullId || txn.id || index}
-                        className="hover:bg-blue-50/40 transition-colors group cursor-pointer"
-                        onClick={() => setActiveTab?.('transactions')}
-                        title={`Click to view full transaction details for ${txn.id}`}
-                      >
-                        <td className="py-2.5 px-2.5 sm:px-3">
-                          <span
-                            className="font-mono text-[11px] font-medium text-[#0f141a] truncate block"
-                            title={txn.id}
-                          >
-                            {txn.id}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-2">
-                          <span
-                            className="text-[11px] text-[#547092] whitespace-nowrap block truncate"
-                            title={txn.date}
-                          >
-                            {txn.date}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-2">
-                          <span
-                            className="font-medium text-[#0f141a] text-[11px] truncate block"
-                            title={txn.customer}
-                          >
-                            {txn.customer}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-2 text-center">
-                          <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded bg-[#e8edf2] text-[#0f141a] text-[10px] font-semibold font-mono truncate max-w-full">
-                            {txn.method}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-2 text-right">
-                          <span className="text-[11px] sm:text-xs font-bold text-[#0f141a] font-mono whitespace-nowrap block">
-                            ₹ {txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-2.5 text-center whitespace-nowrap">
-                          {txn.status === 'Success' && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-[#07883b] border border-emerald-200">
-                              Success
-                            </span>
-                          )}
-                          {txn.status === 'Pending' && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                              Pending
-                            </span>
-                          )}
-                          {(txn.status === 'Refunded' || txn.status === 'Failed') && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-700 border border-red-200">
-                              {txn.status}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={6} className="py-10 text-center text-[#547092]">
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <Inbox className="w-8 h-8 text-slate-300" />
-                          <p className="text-xs font-semibold text-slate-700">
-                            No transactions found for the selected filter
-                          </p>
-                          <p className="text-[11px] text-slate-400">
-                            {activeFilter !== 'all'
-                              ? 'Switch to "All Transactions" to view all records.'
-                              : 'Incoming customer payments will automatically record here in real-time.'}
-                          </p>
-                          {activeFilter !== 'all' && (
-                            <button
-                              type="button"
-                              onClick={() => setActiveFilter('all')}
-                              className="mt-1 px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
-                            >
-                              Show All Transactions
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Settlement Cards (Visible only on sm:hidden) */}
-            <div className="sm:hidden divide-y divide-[#e8edf2]">
-              {filteredTransactions.length > 0 ? (
-                <>
-                  {filteredTransactions.slice(0, 6).map((txn, index) => (
-                    <div
-                      key={txn.fullId || txn.id || index}
-                      onClick={() => setActiveTab?.('transactions')}
-                      className="p-3.5 flex flex-col gap-2 hover:bg-blue-50/40 transition-colors active:bg-blue-50/60 cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-mono text-xs font-bold text-[#0f141a] truncate" title={txn.id}>
-                          {txn.id}
-                        </span>
-                        {txn.status === 'Success' && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-[#07883b] border border-emerald-200 shrink-0">
-                            Success
-                          </span>
-                        )}
-                        {txn.status === 'Pending' && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
-                            Pending
-                          </span>
-                        )}
-                        {(txn.status === 'Refunded' || txn.status === 'Failed') && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 shrink-0">
-                            {txn.status}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-medium text-[#0f141a] truncate max-w-[190px]">
-                          {txn.customer || 'Direct Customer'}
-                        </span>
-                        <span className="text-xs font-bold font-mono text-[#0f141a]">
-                          ₹ {txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-[#547092]">
-                        <span className="font-mono">{txn.date}</span>
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#e8edf2] text-[#0f141a] text-[10px] font-semibold font-mono">
-                          {txn.method}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                  {filteredTransactions.length > 6 && (
-                    <div className="p-3 bg-slate-50/70 text-center">
-                      <button
-                        type="button"
-                        onClick={() => setActiveTab?.('transactions')}
-                        className="w-full py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-blue-50 text-blue-600 font-bold text-xs transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98]"
-                      >
-                        <span>View All {filteredTransactions.length} Transactions</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="py-8 px-4 text-center text-[#547092]">
-                  <Inbox className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-slate-700">No transactions found</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Incoming payments will record here in real-time.</p>
-                </div>
-              )}
-            </div>
-
-            {/* Ledger Footer Summary Strip */}
-            <div className="p-3 border-t border-[#e8edf2] bg-gray-50 flex items-center justify-between text-xs text-[#547092]">
-              <p>
-                Showing {filteredTransactions.length} of {totalCount} settlements
-              </p>
-              <button
-                type="button"
-                onClick={() => setActiveTab?.('transactions')}
-                className="flex items-center gap-1 font-medium text-[#0c2340] hover:text-[#2c60ff] transition-colors cursor-pointer"
-              >
-                <span>View Full Ledger</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-        </section>
-
-
-        {/* ══════════════════════════════════════════════════════════════
-            RIGHT WING: RAIL STATUS TELEMETRY & GATEWAY OPS (Span 3)
-           ══════════════════════════════════════════════════════════════ */}
-        <section className="col-span-12 xl:col-span-3 flex flex-col gap-4">
-          
-          {/* Telemetry Card: Gateway Telemetry */}
-          <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm relative overflow-hidden group">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#0f141a]">
-                Gateway Telemetry
-              </h4>
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#07883b] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#07883b]"></span>
-              </span>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-[#e8edf2]">
-                <span className="text-xs text-[#547092]">UPI Stack Latency</span>
-                <span className="text-xs font-bold text-[#07883b] font-mono">48ms</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-[#e8edf2]">
-                <span className="text-xs text-[#547092]">IMPS Instant Rail</span>
-                <span className="text-xs font-bold text-[#07883b] font-mono">99.98%</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-[#e8edf2]">
-                <span className="text-xs text-[#547092]">Webhook Engine</span>
-                <span
-                  className={`text-xs font-bold font-mono ${
-                    profile?.webhook_url ? 'text-[#07883b]' : 'text-amber-600'
-                  }`}
-                >
-                  {profile?.webhook_url ? 'Active' : 'Not Configured'}
-                </span>
-              </div>
-            </div>
-            <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-          </div>
-
-          {/* Bank Settlement Rail Card (Real Live Account) */}
-          <div className="bg-white rounded-xl border border-[#d2dae5] p-5 shadow-sm relative overflow-hidden group">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="size-8 rounded-lg bg-[#e8edf2] flex items-center justify-center text-[#0c2340]">
-                  <Landmark className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-[#0f141a]">Bank Settlement Rail</p>
-                  <p className="text-[11px] text-[#547092]">Auto-sweep at 23:59 IST</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={navigateToBankSettings}
-                title={hasBankAccount ? "Manage bank accounts in Settings" : "Link bank account in Settings"}
-                className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
-              >
-                {hasBankAccount ? 'Manage' : 'Add'}
-              </button>
-            </div>
-
-            <div className="pt-3 border-t border-[#e8edf2] space-y-1.5 text-xs text-[#547092]">
-              <div className="flex justify-between items-center">
-                <span>Primary Pool</span>
-                {hasBankAccount ? (
-                  <button
-                    type="button"
-                    onClick={navigateToBankSettings}
-                    title="Configure primary settlement account in Settings"
-                    className="font-medium text-[#0f141a] font-mono hover:text-[#0045de] transition-colors cursor-pointer text-right truncate max-w-[200px]"
-                  >
-                    {activeBankAccount.bank_name} *******{activeBankAccount.bank_account_number ? activeBankAccount.bank_account_number.slice(-3) : '•••'}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={navigateToBankSettings}
-                    className="text-amber-600 font-semibold text-xs hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus className="w-3 h-3" /> Link Bank Account
-                  </button>
-                )}
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Daily Cap</span>
-                <span className="font-medium text-[#0f141a] font-mono">{dailyCapDisplay}</span>
-              </div>
-            </div>
-            <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-teal-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-          </div>
-
-          {/* Compact Quick Settlement Control Stack */}
-          <div className="bg-gradient-to-br from-[#0c2340] to-[#1a3a60] text-white rounded-xl p-5 shadow-sm relative overflow-hidden group">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#b3c7ec]">
-                Direct Pass-Through
-              </p>
-              <span className="px-2 py-0.5 rounded-full bg-[#07883b]/20 text-[#4edea3] text-[11px] font-bold">
-                0% Escrow
-              </span>
-            </div>
-            
-            <p className="text-sm font-bold text-white mt-1">
-              No Balance or Holding Period
-            </p>
-            <p className="text-xs text-[#d5e3ff] mt-2 leading-relaxed">
-              Customer payments credit directly into your linked bank account in real-time with zero intermediary hold or rolling reserve.
-            </p>
-
-            <div className="mt-3 pt-3 border-t border-white/10 space-y-1 text-xs text-[#b3c7ec]">
-              <div className="flex justify-between">
-                <span>Routing Mode</span>
-                <span className="font-medium text-white">Instant T+0 Pass-Through</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Intermediary Hold</span>
-                <span className="font-medium text-white font-mono">₹ 0.00 (Zero Retention)</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowRoutingRules(true)}
-              className="mt-4 w-full h-9 rounded-lg bg-white text-[#0c2340] hover:bg-gray-100 text-xs font-bold tracking-wide transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.99] cursor-pointer"
-            >
-              <span>View Bank Routing Rules</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-            <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-[#4edea3]/15 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-          </div>
-
-        </section>
-
+        )}
       </div>
 
-
-
-
-
-      {/* ─── BANK ROUTING RULES POPUP MODAL ─── */}
-      {showRoutingRules && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-[#0c2340] text-white">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-[#4edea3]">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold">Bank Routing Rules &amp; Architecture</h3>
-                  <p className="text-xs text-[#b3c7ec]">Direct Pass-Through &bull; Zero Escrow Protocol</p>
-                </div>
+      {/* NOTICES */}
+      {notices.length>0&&(
+        <div className="space-y-3">
+          {notices.map(n=>(
+            <div key={n.id} className={`flex items-start gap-3.5 px-5 py-4 border rounded-2xl ${noticeBg(n.type)} relative pr-10`}>
+              {noticeIcon(n.type)}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-slate-900">{n.title}</p>
+                <p className="text-xs text-slate-600 mt-1 leading-relaxed">{n.message}</p>
+                {n.action&&<button type="button" onClick={n.action.onClick} className="mt-2 text-xs font-bold text-blue-600 hover:text-blue-800 cursor-pointer inline-flex items-center gap-1">{n.action.label}</button>}
               </div>
-              <button
-                type="button"
-                onClick={() => setShowRoutingRules(false)}
-                className="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <button type="button" onClick={()=>dismissNotice(n.id)} className="absolute top-3.5 right-3.5 p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-white/60 cursor-pointer" aria-label="Dismiss"><X className="w-4 h-4"/></button>
             </div>
+          ))}
+        </div>
+      )}
 
-            {/* Content */}
-            <div className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
-              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-emerald-900">0% Intermediary Retention</h4>
-                  <p className="text-emerald-800 mt-0.5 leading-relaxed">
-                    Customer UPI payments bypass platform escrow wallets entirely, settling straight into your commercial nodal bank account in real-time.
-                  </p>
-                </div>
-              </div>
+      {/* TOP ROW — Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-gray-50 border border-slate-200">
-                  <span className="text-[#547092] font-semibold uppercase text-[10px]">Settlement Rail</span>
-                  <p className="font-bold text-[#0f141a] mt-0.5">NPCI UPI Direct IMPS</p>
-                  <p className="text-[#547092] text-[11px] mt-1">Average execution: &lt; 250ms</p>
-                </div>
-                <div className="p-3 rounded-xl bg-gray-50 border border-slate-200">
-                  <span className="text-[#547092] font-semibold uppercase text-[10px]">Settlement Mode</span>
-                  <p className="font-bold text-[#0f141a] mt-0.5">Instant T+0 Pass-Through</p>
-                  <p className="text-[#547092] text-[11px] mt-1">Zero rolling reserves</p>
-                </div>
-                <div className="p-3 rounded-xl bg-gray-50 border border-slate-200">
-                  <span className="text-[#547092] font-semibold uppercase text-[10px]">Active Node</span>
-                  <p className="font-bold text-[#0f141a] mt-0.5">AWS Mumbai (ap-south-1)</p>
-                  <p className="text-[#547092] text-[11px] mt-1">99.98% High Availability</p>
-                </div>
-                <div className="p-3 rounded-xl bg-gray-50 border border-slate-200">
-                  <span className="text-[#547092] font-semibold uppercase text-[10px]">Daily Velocity Cap</span>
-                  <p className="font-bold text-[#0f141a] mt-0.5">{dailyCapDisplay}</p>
-                  <p className="text-[#547092] text-[11px] mt-1">
-                    {hasBankAccount ? '0% Escrow Direct Settlement' : 'Link bank account to activate'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="flex items-center justify-between text-[#547092] mb-1">
-                  <span className="font-semibold text-[11px]">Active Destination Routing</span>
-                  <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded border ${
-                    hasBankAccount
-                      ? 'text-emerald-600 bg-emerald-50 border-emerald-200'
-                      : 'text-amber-700 bg-amber-50 border-amber-200'
-                  }`}>
-                    {hasBankAccount ? 'ACTIVE' : 'PENDING LINK'}
-                  </span>
-                </div>
-                <p className="font-bold text-slate-800 text-xs">
-                  {hasBankAccount
-                    ? `${activeBankAccount.bank_name} • ${activeBankAccount.bank_account_name || 'Primary'} • Account: ••••${activeBankAccount.bank_account_number?.slice(-4)} (${activeBankAccount.bank_ifsc || 'IMPS Rail'})`
-                    : (
-                      <span>
-                        No settlement bank account linked yet.{' '}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowRoutingRules(false);
-                            navigateToBankSettings();
-                          }}
-                          className="text-blue-600 underline font-semibold cursor-pointer"
-                        >
-                          Add in Settings &rarr;
-                        </button>
-                      </span>
-                    )}
-                </p>
-              </div>
+        {/* Today's collections */}
+        <div className="xl:col-span-2 bg-[#0c2340] text-white rounded-2xl p-6 shadow-sm relative overflow-hidden group">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-200">Received in your account — Today</p>
+              <p className="text-3xl sm:text-4xl font-extrabold mt-2 font-mono tracking-tight text-white">{formatINR(todayTotal)}</p>
             </div>
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shrink-0 mt-1 ${parseFloat(todayChange)>0?'bg-emerald-500/20 text-emerald-300':parseFloat(todayChange)<0?'bg-red-500/20 text-red-300':'bg-white/10 text-slate-300'}`}>
+              {parseFloat(todayChange)>0?<TrendingUp className="w-3.5 h-3.5"/>:parseFloat(todayChange)<0?<TrendingDown className="w-3.5 h-3.5"/>:<Minus className="w-3.5 h-3.5"/>}
+              {Math.abs(parseFloat(todayChange))}% vs yesterday
+            </div>
+          </div>
+          <div className="flex items-center justify-between text-xs text-blue-100 font-medium pt-3.5 border-t border-white/15">
+            <span>{todayVerified.length} payment{todayVerified.length!==1?'s':''} verified today</span>
+            <span>Yesterday: {formatINR(yesterdayTotal)}</span>
+          </div>
+          <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-400/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"/>
+        </div>
 
-            {/* Footer */}
-            <div className="px-6 py-4 bg-gray-50 border-t border-slate-100 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={copyRoutingDetails}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 font-semibold cursor-pointer"
-              >
-                {rulesCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                {rulesCopied ? 'Routing rules copied!' : 'Copy Rule Specs'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowRoutingRules(false)}
-                className="px-4 py-2 rounded-lg bg-[#0c2340] text-white text-xs font-bold hover:bg-[#1a3a60] transition-colors cursor-pointer"
-              >
-                Close
-              </button>
+        {/* Success rate */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Success Rate</p>
+            <div className="flex rounded-xl border border-slate-200 overflow-hidden text-xs font-bold">
+              {['today','7d','30d'].map(p=>(
+                <button key={p} type="button" onClick={()=>setSuccessPeriod(p)} className={`px-2.5 py-1 cursor-pointer transition-colors ${successPeriod===p?'bg-[#0c2340] text-white':'bg-white text-slate-500 hover:bg-slate-50'}`}>
+                  {p==='today'?'Today':p}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="relative w-16 h-16 shrink-0">
+              <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90">
+                <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#e2e8f0" strokeWidth="3.2"/>
+                <circle cx="18" cy="18" r="15.9155" fill="none" stroke={parseFloat(successRate)>=80?'#059669':parseFloat(successRate)>=50?'#f59e0b':'#ef4444'} strokeWidth="3.2" strokeDasharray={`${successRate} 100`} strokeLinecap="round"/>
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-sm font-black text-slate-900">{successRate}%</span>
+            </div>
+            <div className="space-y-1.5 flex-1 text-xs">
+              <div className="flex justify-between"><span className="text-slate-500 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"/>Verified</span><span className="font-bold text-slate-900">{periodVerifiedCount}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500 inline-block"/>Pending</span><span className="font-bold text-slate-900">{periodPendingCount}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-400 inline-block"/>Failed</span><span className="font-bold text-slate-900">{periodFailedCount}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-slate-300 inline-block"/>Expired</span><span className="font-bold text-slate-900">{periodExpiredCount}</span></div>
             </div>
           </div>
         </div>
+
+        {/* All-time count */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">All Time</p>
+          <div>
+            <p className="text-3xl font-extrabold text-slate-900 font-mono mt-2">{orders.length}</p>
+            <p className="text-sm text-slate-500 mt-1">Total payment attempts</p>
+          </div>
+          <button type="button" onClick={()=>setActiveTab?.('transactions')} className="mt-3 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer">
+            View all transactions <ChevronRight className="w-4 h-4"/>
+          </button>
+        </div>
+      </div>
+
+      {/* PENDING CONFIRMATIONS WIDGET */}
+      {stalePending.length>0&&(
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl overflow-hidden shadow-xs">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-amber-200/60 bg-amber-100/50">
+            <div className="flex items-center gap-2.5">
+              <Clock className="w-4 h-4 text-amber-700"/>
+              <span className="text-sm font-bold text-amber-950">{stalePending.length} Payment{stalePending.length!==1?'s':''} Awaiting Confirmation</span>
+              <span className="text-xs bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-bold">Action needed</span>
+            </div>
+            <button type="button" onClick={()=>setActiveTab?.('transactions')} className="text-xs font-bold text-amber-800 hover:text-amber-950 cursor-pointer">View all →</button>
+          </div>
+          <div className="divide-y divide-amber-200/50">
+            {stalePending.map(o=>{
+              const ageMin=Math.floor((Date.now()-new Date(o.created_at||0).getTime())/60000);
+              return (
+                <div key={o.id} className="flex items-center justify-between px-5 py-3.5 gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <span className="text-sm font-bold text-slate-900 font-mono">{o.id?.slice(0,16)}…</span>
+                      <span className="text-xs text-amber-700 font-semibold">{ageMin}m ago</span>
+                    </div>
+                    <p className="text-xs text-slate-600 truncate mt-1">{o.customer_name||'Customer'} · {formatINR(o.amount||0)}</p>
+                  </div>
+                  <button type="button" onClick={()=>setActiveTab?.('transactions')} className="shrink-0 px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer transition-colors shadow-2xs">Review</button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
+
+      {/* REVENUE CHART */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <BarChart2 className="w-5 h-5 text-[#0c2340]"/>
+            <h3 className="text-base font-bold text-slate-900">Collection Trend</h3>
+            <span className="text-xs text-slate-400 font-medium">(Verified payments only)</span>
+          </div>
+          <div className="flex rounded-xl border border-slate-200 overflow-hidden text-xs font-bold">
+            {[{key:'today',label:'Today'},{key:'7d',label:'7 Days'},{key:'30d',label:'30 Days'}].map(({key,label})=>(
+              <button key={key} type="button" onClick={()=>setChartRange(key)} className={`px-3.5 py-1.5 cursor-pointer transition-colors ${chartRange===key?'bg-[#0c2340] text-white':'bg-white text-slate-600 hover:bg-slate-50'}`}>{label}</button>
+            ))}
+          </div>
+        </div>
+        <div className="p-6">
+          {chartData.every(d=>d.value===0)?(
+            <div className="flex flex-col items-center justify-center h-32 gap-2 text-slate-400">
+              <Inbox className="w-9 h-9 text-slate-300"/>
+              <p className="text-sm font-medium text-slate-500">No verified payments in this period</p>
+            </div>
+          ):(
+            <>
+              <div className="flex items-end gap-[3px] h-32 w-full">
+                {chartData.map((d,i)=>{
+                  const pct=chartMax>0?(d.value/chartMax)*100:0;
+                  return (
+                    <div key={i} className="flex-1 flex flex-col items-center group relative" title={`${d.label}: ${formatINR(d.value)}`}>
+                      <div className="w-full rounded-t-sm bg-[#0c2340] hover:bg-blue-600 transition-colors duration-150 min-h-[3px] cursor-pointer" style={{height:`${Math.max(pct,2)}%`}}/>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex justify-between mt-2 text-xs text-slate-500 font-mono">
+                <span>{chartData[0]?.label}</span>
+                {chartData.length>4&&<span>{chartData[Math.floor(chartData.length/2)]?.label}</span>}
+                <span>{chartData[chartData.length-1]?.label}</span>
+              </div>
+              <div className="mt-4 flex items-center justify-between text-xs pt-3 border-t border-slate-100">
+                <span className="text-slate-600">Total Collections: <span className="font-bold text-slate-900">{formatINR(chartData.reduce((s,d)=>s+d.value,0))}</span></span>
+                <span className="text-slate-500 font-medium">{chartData.filter(d=>d.value>0).length} active {chartRange==='today'?'hours':'days'}</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* RECENT 10 TRANSACTIONS */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <Zap className="w-5 h-5 text-[#0c2340]"/>
+            <h3 className="text-base font-bold text-slate-900">Recent Transactions</h3>
+            <span className="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-0.5 rounded-full">Last 10</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-mono text-slate-500 hidden sm:block">IST {currentTime}</span>
+            <button type="button" onClick={()=>setActiveTab?.('transactions')} className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer">
+              View all <ChevronRight className="w-4 h-4"/>
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-50/80 border-b border-slate-100 text-xs font-bold uppercase tracking-wider text-slate-500">
+                <th className="py-3 px-5">Order / UTR</th>
+                <th className="py-3 px-4">Customer</th>
+                <th className="py-3 px-4">Time</th>
+                <th className="py-3 px-4 text-right">Amount</th>
+                <th className="py-3 px-5 text-center">Status</th>
+                <th className="py-3 px-4 w-10"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-sm">
+              {recentOrders.length>0?recentOrders.map((o,i)=>(
+                <tr key={o.id||i} className="hover:bg-blue-50/40 transition-colors cursor-pointer group" onClick={()=>setActiveTab?.('transactions')}>
+                  <td className="py-3.5 px-5">
+                    <p className="font-mono font-medium text-slate-900 truncate max-w-[160px]" title={o.id}>{o.id?.slice(0,14)}…</p>
+                    {o.utr&&<p className="text-xs text-slate-400 font-mono mt-0.5">UTR: {o.utr}</p>}
+                  </td>
+                  <td className="py-3.5 px-4"><span className="text-slate-800 font-medium truncate max-w-[130px] block">{o.customer_name||o.customer_phone||'Customer'}</span></td>
+                  <td className="py-3.5 px-4"><span className="text-slate-500 text-xs whitespace-nowrap">{fmtDate(o.created_at)}</span></td>
+                  <td className="py-3.5 px-4 text-right"><span className="font-bold font-mono text-slate-900">{formatINR(o.amount||0)}</span></td>
+                  <td className="py-3.5 px-5 text-center"><StatusBadge status={o.status}/></td>
+                  <td className="py-3.5 px-4 text-center"><ExternalLink className="w-4 h-4 text-slate-300 group-hover:text-blue-600 transition-colors"/></td>
+                </tr>
+              )):(
+                <tr>
+                  <td colSpan={6} className="py-14 text-center">
+                    <Inbox className="w-9 h-9 text-slate-300 mx-auto mb-2.5"/>
+                    <p className="text-sm font-semibold text-slate-600">No transactions yet</p>
+                    <p className="text-xs text-slate-400 mt-1">Incoming payments will appear here in real-time.</p>
+                    <button type="button" onClick={()=>setActiveTab?.('payment-links')} className="mt-3.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0c2340] hover:bg-blue-900 text-white text-xs font-bold cursor-pointer shadow-xs">
+                      <Plus className="w-4 h-4"/> Create First Payment
+                    </button>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile cards */}
+        <div className="sm:hidden divide-y divide-slate-100">
+          {recentOrders.length>0?recentOrders.slice(0,6).map((o,i)=>(
+            <div key={o.id||i} onClick={()=>setActiveTab?.('transactions')} className="flex items-center gap-3 px-4 py-3.5 hover:bg-blue-50/40 cursor-pointer">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isVerified(o)?'bg-emerald-100 text-emerald-600':isPending(o)?'bg-amber-100 text-amber-600':'bg-red-100 text-red-500'}`}>
+                <CircleDollarSign className="w-5 h-5"/>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold text-slate-900 text-sm">{formatINR(o.amount||0)}</span>
+                  <StatusBadge status={o.status}/>
+                </div>
+                <div className="flex items-center justify-between gap-2 mt-1">
+                  <span className="text-xs text-slate-600 truncate">{o.customer_name||'Customer'}</span>
+                  <span className="text-xs text-slate-400 font-mono shrink-0">{fmtTime(o.created_at)}</span>
+                </div>
+              </div>
+            </div>
+          )):(
+            <div className="py-10 text-center">
+              <Inbox className="w-9 h-9 text-slate-300 mx-auto mb-2"/>
+              <p className="text-sm font-medium text-slate-500">No transactions yet</p>
+            </div>
+          )}
+          {recentOrders.length>6&&(
+            <div className="p-3 bg-slate-50">
+              <button type="button" onClick={()=>setActiveTab?.('transactions')} className="w-full py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-blue-50 text-blue-600 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                View All {orders.length} Transactions <ArrowRight className="w-4 h-4"/>
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="px-6 py-3.5 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs">
+          <span className="text-slate-500 font-medium">Showing {Math.min(recentOrders.length,10)} of {orders.length} transactions</span>
+          <button type="button" onClick={()=>setActiveTab?.('transactions')} className="font-bold text-[#0c2340] hover:text-blue-600 flex items-center gap-1 cursor-pointer">
+            Full Ledger <ChevronRight className="w-4 h-4"/>
+          </button>
+        </div>
+      </div>
+
+      {/* Quick links */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        {[
+          {label:'Create Payment',icon:Plus,tab:'payment-links',color:'bg-[#0c2340] text-white hover:bg-[#1a3a60]'},
+          {label:'All Transactions',icon:BarChart2,tab:'transactions',color:'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50'},
+          {label:'API Keys',icon:ShieldCheck,tab:'settings',cat:'api',color:'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50'},
+          {label:'Subscription',icon:Zap,tab:'subscription',color:'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50'},
+        ].map(({label,icon:Icon,tab,cat,color})=>(
+          <button key={label} type="button" onClick={()=>{cat&&setSettingsCategory?.(cat);setActiveTab?.(tab);}} className={`${color} rounded-2xl p-4 flex items-center gap-3 text-sm font-bold transition-all shadow-xs cursor-pointer`}>
+            <Icon className="w-4 h-4 shrink-0"/>{label}
+          </button>
+        ))}
+      </div>
 
     </div>
   );

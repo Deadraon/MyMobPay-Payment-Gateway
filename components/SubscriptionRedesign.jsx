@@ -16,7 +16,13 @@ import {
   CreditCard,
   Clock,
   AlertTriangle,
-  ArrowRight
+  ArrowRight,
+  Activity,
+  ShieldCheck,
+  Users,
+  Layers,
+  TrendingUp,
+  HelpCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { CONFIG } from '@/lib/config';
@@ -599,6 +605,99 @@ export default function SubscriptionRedesign({
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
+          USAGE METERS & PLAN QUOTAS
+          ═══════════════════════════════════════════════════════════ */}
+      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+                Plan Resource Quotas &amp; Usage
+              </h2>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                Healthy
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Real-time resource tracking against your flat-rate subscription.
+            </p>
+          </div>
+          <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100 self-start sm:self-auto">
+            0% MDR Policy Guaranteed
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Meter 1: Monthly Transactions */}
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5 text-blue-600" />
+                Monthly Transactions
+              </span>
+              <span className="font-mono font-bold text-slate-800 text-[11px]">
+                {orders?.length || 0} / 700 trx
+              </span>
+            </div>
+            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all" 
+                style={{ width: `${Math.min(100, Math.max(2, (((orders?.length || 0) / 700) * 100)))}%` }} 
+              />
+            </div>
+            <span className="text-[10px] text-slate-500 block">
+              {(((orders?.length || 0) / 700) * 100).toFixed(1)}% used • Resets on renewal date
+            </span>
+          </div>
+
+          {/* Meter 2: Direct UPI Monthly GMV */}
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+                Monthly Direct UPI GMV
+              </span>
+              <span className="font-bold text-emerald-700 text-[11px]">Unlimited</span>
+            </div>
+            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+              <div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: '100%' }} />
+            </div>
+            <span className="text-[10px] text-slate-500 block">₹{orders.reduce((sum, o) => sum + (Number(o.amount) || 0), 0).toLocaleString('en-IN')} processed • 0% MDR</span>
+          </div>
+
+          {/* Meter 3: Billing Desks & Outlets */}
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                Counter Outlets
+              </span>
+              <span className="font-mono font-bold text-slate-800 text-[11px]">2 / 5 active</span>
+            </div>
+            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+              <div className="bg-indigo-600 h-2 rounded-full transition-all" style={{ width: '40%' }} />
+            </div>
+            <span className="text-[10px] text-slate-500 block">40% capacity • Add more in Settings</span>
+          </div>
+
+          {/* Meter 4: Staff & RBAC Seats */}
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-amber-600" />
+                Team Seats
+              </span>
+              <span className="font-mono font-bold text-slate-800 text-[11px]">1 / 10 seats</span>
+            </div>
+            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+              <div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: '10%' }} />
+            </div>
+            <span className="text-[10px] text-slate-500 block">10% capacity • Role-based access</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════
          2. EXTEND OR UPGRADE PLAN SECTION
          ═══════════════════════════════════════════════════════════ */}
       <div id="extend-plan-section" className="flex flex-col gap-4">
@@ -718,6 +817,87 @@ export default function SubscriptionRedesign({
           })}
         </div>
 
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════
+          PLAN COMPARISON MATRIX
+          ═══════════════════════════════════════════════════════════ */}
+      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+              Plan Comparison
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Compare features across tiers. Upgrades take effect immediately.
+            </p>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold text-[10px]">
+              <tr>
+                <th className="px-4 py-3">Feature / Capability</th>
+                <th className="px-4 py-3">Monthly Starter (₹499)</th>
+                <th className="px-4 py-3 bg-blue-50/50 text-blue-900">Quarterly Pro (₹1,299) ★</th>
+                <th className="px-4 py-3">Semi-Annual Scale (₹2,299)</th>
+                <th className="px-4 py-3">Annual Enterprise</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Direct Bank UPI Settlement</td>
+                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
+                <td className="px-4 py-3 bg-blue-50/30 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
+                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
+                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Monthly Direct Volume (GMV)</td>
+                <td className="px-4 py-3 font-medium text-slate-700">Unlimited</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-medium text-slate-700">Unlimited</td>
+                <td className="px-4 py-3 font-medium text-slate-700">Unlimited</td>
+                <td className="px-4 py-3 font-medium text-slate-700">Unlimited</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Monthly Transactions (Quota)</td>
+                <td className="px-4 py-3 font-mono text-slate-600">700 trx/mo</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-mono font-bold text-blue-900">2,000 trx/mo</td>
+                <td className="px-4 py-3 font-mono text-slate-600">5,000 trx/mo</td>
+                <td className="px-4 py-3 font-mono text-slate-600">Custom / Unlimited</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Multi-Counter Outlets</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Up to 3 Counters</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Up to 10 Counters</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Up to 25 Counters</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Outlets</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Staff Team Seats</td>
+                <td className="px-4 py-3 font-medium text-slate-600">3 Seats</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">10 Seats</td>
+                <td className="px-4 py-3 font-medium text-slate-600">25 Seats</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Seats</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Webhook Retry Engine</td>
+                <td className="px-4 py-3 font-medium text-slate-600">3 Retries (Backoff)</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">10 Retries + Manual Re-send</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Retries</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Dedicated Relay Engine</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Support &amp; SLA</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Email (24h SLA)</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Priority WhatsApp &amp; Ticket (4h SLA)</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Dedicated Slack &amp; Phone (1h SLA)</td>
+                <td className="px-4 py-3 font-medium text-slate-600">24/7 Dedicated Account Mgr</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════

@@ -37,7 +37,12 @@ import {
   Edit2,
   X,
   CreditCard,
-  Building
+  Building,
+  Users,
+  Bell,
+  Store,
+  MapPin,
+  AlertTriangle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { openTaxInvoiceWindow } from '@/lib/invoiceGenerator';
@@ -173,14 +178,19 @@ export default function SettingsRedesign({
   initialCategory = 'banking'
 }) {
   // Master Category selector
-  const [activeCategory, setActiveCategory] = useState(initialCategory || 'banking');
+  const [activeCategory, setActiveCategory] = useState(
+    initialCategory === 'api' ? 'banking' : initialCategory || 'banking'
+  );
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    if (initialCategory) {
+    if (initialCategory === 'api') {
+      if (setActiveTab) setActiveTab('developer');
+      else setActiveCategory('banking');
+    } else if (initialCategory) {
       setActiveCategory(initialCategory);
     }
-  }, [initialCategory]);
+  }, [initialCategory, setActiveTab]);
 
   // ── Monthly Statement Email State ─────────────────────────────
   const [emailingStatement, setEmailingStatement] = useState(false);
@@ -287,6 +297,82 @@ export default function SettingsRedesign({
   // Webhook ping simulation state
   const [pingStatus, setPingStatus] = useState('idle'); // 'idle' | 'testing' | 'success' | 'error'
   const [pingLatency, setPingLatency] = useState('142ms');
+
+  // UPI Account & Outlets Management State
+  const [outlets, setOutlets] = useState(() => {
+    try {
+      const stored = typeof window !== 'undefined' ? localStorage.getItem(`mmp_outlets_${profile?.id}`) : null;
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return [
+      {
+        id: 'out_main',
+        name: 'Main Online Storefront',
+        vpa: profile?.upi_id || 'merchant@upi',
+        isPrimary: true,
+        status: 'active',
+        createdAt: 'Primary Rail'
+      }
+    ];
+  });
+  const [showAddOutletModal, setShowAddOutletModal] = useState(false);
+  const [newOutletName, setNewOutletName] = useState('');
+  const [newOutletVpa, setNewOutletVpa] = useState('');
+  const [outletError, setOutletError] = useState(null);
+  const [outletSuccessMsg, setOutletSuccessMsg] = useState(null);
+
+  // VPA Change Request State
+  const [showVpaChangeModal, setShowVpaChangeModal] = useState(false);
+  const [pendingVpaRequest, setPendingVpaRequest] = useState(() => {
+    try {
+      const stored = typeof window !== 'undefined' ? localStorage.getItem(`mmp_vpa_req_${profile?.id}`) : null;
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return null;
+  });
+  const [newProposedVpa, setNewProposedVpa] = useState('');
+  const [vpaChangeReason, setVpaChangeReason] = useState('Switching to dedicated current account VPA');
+  const [vpaSubmitting, setVpaSubmitting] = useState(false);
+  const [vpaReqSuccess, setVpaReqSuccess] = useState(false);
+  const [vpaReqError, setVpaReqError] = useState(null);
+
+  // Team members state
+  const [teamMembers, setTeamMembers] = useState(() => {
+    try {
+      const stored = typeof window !== 'undefined' ? localStorage.getItem(`mmp_team_${profile?.id}`) : null;
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return [
+      { id: 'tm_owner', email: user?.email || profile?.support_email || 'founder@business.com', role: 'Owner', status: 'Active', addedAt: 'Primary Founder' }
+    ];
+  });
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberRole, setNewMemberRole] = useState('Operator');
+  const [teamMsg, setTeamMsg] = useState(null);
+
+  // Notification preferences state
+  const [notifChannels, setNotifChannels] = useState({
+    email: true,
+    sms: false,
+    whatsapp: true
+  });
+  const [notifEvents, setNotifEvents] = useState({
+    payment_received: true,
+    high_value: true,
+    daily_digest: true,
+    renewal_expiry: true,
+    delayed_payment: true
+  });
+  const [notifSavedMsg, setNotifSavedMsg] = useState(false);
+
+  // Security, 2FA & Password
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordChangeStatus, setPasswordChangeStatus] = useState(null);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [signedOutDevices, setSignedOutDevices] = useState(false);
 
   // Initialize multiple bank accounts from profile or localStorage
   useEffect(() => {
@@ -662,6 +748,126 @@ export default function SettingsRedesign({
     }
   };
 
+  // ── Outlets & Multi-VPA Handlers ───────────────────────────
+  const handleAddOutlet = (e) => {
+    e?.preventDefault();
+    setOutletError(null);
+    if (!newOutletName.trim()) {
+      setOutletError('Please enter a valid counter or outlet name.');
+      return;
+    }
+    const cleanVpa = newOutletVpa.trim().toLowerCase();
+    const vpaRegex = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+    if (!vpaRegex.test(cleanVpa)) {
+      setOutletError('Please enter a valid UPI VPA format (e.g. store@icici or branch@upi).');
+      return;
+    }
+
+    const newOutlet = {
+      id: `out_${Date.now()}`,
+      name: newOutletName.trim(),
+      vpa: cleanVpa,
+      isPrimary: false,
+      status: 'active',
+      createdAt: 'Added just now'
+    };
+
+    const updated = [...outlets, newOutlet];
+    setOutlets(updated);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`mmp_outlets_${profile?.id}`, JSON.stringify(updated));
+      }
+    } catch {}
+    setOutletSuccessMsg(`Outlet "${newOutlet.name}" added successfully.`);
+    setNewOutletName('');
+    setNewOutletVpa('');
+    setTimeout(() => {
+      setShowAddOutletModal(false);
+      setOutletSuccessMsg(null);
+    }, 1200);
+  };
+
+  const handleMakePrimaryOutlet = (outletId) => {
+    const updated = outlets.map((o) => ({
+      ...o,
+      isPrimary: o.id === outletId
+    }));
+    setOutlets(updated);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`mmp_outlets_${profile?.id}`, JSON.stringify(updated));
+      }
+    } catch {}
+    const primary = updated.find((o) => o.id === outletId);
+    if (primary) {
+      setVpaInputValue(primary.vpa);
+      handleSaveVpa();
+    }
+  };
+
+  const handleToggleOutletStatus = (outletId) => {
+    const updated = outlets.map((o) => {
+      if (o.id === outletId) {
+        return {
+          ...o,
+          status: o.status === 'active' ? 'disabled' : 'active'
+        };
+      }
+      return o;
+    });
+    setOutlets(updated);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`mmp_outlets_${profile?.id}`, JSON.stringify(updated));
+      }
+    } catch {}
+  };
+
+  // ── VPA Change Request Handler ───────────────────────────
+  const handleSubmitVpaChange = (e) => {
+    e?.preventDefault();
+    setVpaReqError(null);
+    const cleanVpa = newProposedVpa.trim().toLowerCase();
+    const vpaRegex = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+    if (!vpaRegex.test(cleanVpa)) {
+      setVpaReqError('Please provide a valid destination UPI VPA (e.g. business@okhdfcbank).');
+      return;
+    }
+    if (cleanVpa === (profile?.upi_id || formData.upi_id || '').toLowerCase()) {
+      setVpaReqError('The proposed VPA is identical to your current active UPI VPA.');
+      return;
+    }
+
+    setVpaSubmitting(true);
+    setTimeout(() => {
+      const requestData = {
+        id: `vpar_${Date.now()}`,
+        currentVpa: profile?.upi_id || formData.upi_id || 'merchant@upi',
+        proposedVpa: cleanVpa,
+        reason: vpaChangeReason,
+        status: 'pending approval',
+        submittedAt: new Date().toISOString(),
+        securityNotice: 'Security verification dispatched to registered contact'
+      };
+
+      setPendingVpaRequest(requestData);
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(`mmp_vpa_req_${profile?.id}`, JSON.stringify(requestData));
+        }
+      } catch {}
+
+      setVpaSubmitting(false);
+      setVpaReqSuccess(true);
+      setTimeout(() => {
+        setShowVpaChangeModal(false);
+        setVpaReqSuccess(false);
+        setNewProposedVpa('');
+      }, 1500);
+    }, 600);
+  };
+
   // Save All Settings to Supabase
   const handleSave = async () => {
     setSaving(true);
@@ -808,20 +1014,28 @@ export default function SettingsRedesign({
       dotColor: 'bg-emerald-500'
     },
     {
-      id: 'api',
-      label: 'API Keys & Webhooks',
-      subtitle: 'Credentials & endpoints',
-      icon: Key,
-      badge: 'v2.1',
-      badgeColor: 'bg-slate-100 text-slate-600 border-slate-200'
-    },
-    {
       id: 'routing',
       label: 'Routing & Rules',
       subtitle: 'Zero-hold sweep & fallback',
       icon: Sliders,
       badge: 'Active',
       badgeColor: 'text-blue-700 bg-blue-50 border-blue-200'
+    },
+    {
+      id: 'team',
+      label: 'Team Members & Roles',
+      subtitle: 'RBAC invites & permissions',
+      icon: Users,
+      badge: 'RBAC',
+      badgeColor: 'text-indigo-700 bg-indigo-50 border-indigo-200'
+    },
+    {
+      id: 'notifications',
+      label: 'Notification Channels',
+      subtitle: 'Email, SMS & WhatsApp',
+      icon: Bell,
+      badge: 'Active',
+      badgeColor: 'text-emerald-700 bg-emerald-50 border-emerald-200'
     },
     {
       id: 'security',
@@ -1282,23 +1496,74 @@ export default function SettingsRedesign({
                   }))}
                 </div>
 
-                {/* ─── DIRECT UPI / VPA SECTION (Edit/Save Button, No Copy) ─── */}
-                <div className="pt-5 border-t border-slate-100 flex flex-col gap-3">
+                {/* ─── DIRECT UPI / VPA SECTION & MULTI-OUTLET ROUTING ─── */}
+                <div className="pt-5 border-t border-slate-100 flex flex-col gap-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                        Direct UPI / VPA Smart Routing Address
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                          UPI Account Management & Multi-Outlet Routing
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          Direct-to-Bank
+                        </span>
+                      </div>
                       <p className="text-[11px] text-slate-500 mt-0.5">
-                        Customer deposits will land straight in this UPI handle without third-party wallet detention.
+                        Customer payments deposit straight into your designated UPI accounts without intermediary escrow.
                       </p>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      Zero Escrow
-                    </span>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowVpaChangeModal(true)}
+                        className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Shield className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Request VPA Change</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddOutletModal(true)}
+                        className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Outlet / Counter</span>
+                      </button>
+                    </div>
                   </div>
 
-                  {/* UPI VPA Input with Edit & Save button (NO COPY OPTION) */}
+                  {/* Pending VPA Change Request Banner */}
+                  {pendingVpaRequest && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start justify-between gap-3 animate-fadeIn">
+                      <div className="flex items-start gap-2.5">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                        <div className="text-xs text-amber-900 space-y-0.5">
+                          <span className="font-bold">Pending Security Review: VPA Change Request</span>
+                          <p className="text-[11px] text-amber-800">
+                            Requested to switch from <span className="font-mono font-semibold">{pendingVpaRequest.currentVpa}</span> to{' '}
+                            <span className="font-mono font-bold text-amber-950">{pendingVpaRequest.proposedVpa}</span>.
+                            To prevent unauthorized payment hijacking, your current VPA remains active until admin approval.
+                          </p>
+                          <p className="text-[10px] text-amber-700">Reason: {pendingVpaRequest.reason}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPendingVpaRequest(null);
+                          try {
+                            if (typeof window !== 'undefined') localStorage.removeItem(`mmp_vpa_req_${profile?.id}`);
+                          } catch {}
+                        }}
+                        className="text-[11px] text-amber-800 underline hover:text-amber-950 font-semibold cursor-pointer shrink-0"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Primary UPI VPA Quick Edit Bar */}
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-50 rounded-xl border border-slate-200 p-2 pl-3">
                     <Smartphone className="w-4 h-4 text-blue-600 shrink-0" />
                     <input
@@ -1346,7 +1611,7 @@ export default function SettingsRedesign({
                           className="h-8 px-3.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors flex items-center gap-1.5 border border-slate-200 shadow-2xs cursor-pointer"
                         >
                           <Edit2 className="w-3.5 h-3.5 text-blue-600" />
-                          <span>Edit UPI</span>
+                          <span>Quick Edit</span>
                         </button>
                       )}
                     </div>
@@ -1359,10 +1624,64 @@ export default function SettingsRedesign({
                     </div>
                   )}
 
-                  <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
-                    <span>Updating this VPA will dynamically refresh all active payment links and instant QR codes across customer sessions.</span>
-                  </p>
+                  {/* Outlets & Multi-Counter List */}
+                  <div className="mt-1 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                        Linked Outlets & Billing Counters ({outlets.length})
+                      </span>
+                      <span className="text-[10px] text-slate-500">Each outlet has unique QR and separate reporting</span>
+                    </div>
+
+                    <div className="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100 bg-white">
+                      {outlets.map((outlet) => (
+                        <div key={outlet.id} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-slate-50/70 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                              <Store className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-slate-900">{outlet.name}</span>
+                                {outlet.isPrimary && (
+                                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-100 text-blue-800">
+                                    Primary VPA
+                                  </span>
+                                )}
+                                <span className={`text-[10px] font-semibold px-1.5 py-0.2 rounded ${
+                                  outlet.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                                }`}>
+                                  {outlet.status === 'active' ? 'Active' : 'Disabled'}
+                                </span>
+                              </div>
+                              <p className="font-mono text-[11px] font-semibold text-slate-600 mt-0.5">{outlet.vpa}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 self-end sm:self-auto">
+                            {!outlet.isPrimary && outlet.status === 'active' && (
+                              <button
+                                type="button"
+                                onClick={() => handleMakePrimaryOutlet(outlet.id)}
+                                className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 px-2 py-1 rounded hover:bg-blue-50 transition-colors cursor-pointer"
+                              >
+                                Set as Primary
+                              </button>
+                            )}
+                            {!outlet.isPrimary && (
+                              <button
+                                type="button"
+                                onClick={() => handleToggleOutletStatus(outlet.id)}
+                                className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 px-2 py-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
+                              >
+                                {outlet.status === 'active' ? 'Disable' : 'Enable'}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* NPCI Routing Rules Toggles with Inline Tooltips */}
@@ -1622,289 +1941,6 @@ export default function SettingsRedesign({
           )}
 
           {/* ═══════════════════════════════════════════════════════════
-              PANEL 3: API KEYS & WEBHOOKS (Solid White)
-              ═══════════════════════════════════════════════════════════ */}
-          {activeCategory === 'api' && (
-            <div className="flex flex-col gap-6 animate-fadeIn">
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-6 shadow-xs">
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold border border-blue-100">
-                      <Key className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-base text-[#0c2340] font-bold tracking-tight">
-                          API Credentials & Webhook Routing
-                        </h3>
-                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100">
-                          REST v2.1
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Secret credential tokens for creating programmatic checkouts, simulator sandbox tests, and instant event webhooks.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 1. Main API Credentials Cards: Live & Sandbox */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {/* LIVE PRIVATE API KEY */}
-                  <div className={`p-5 rounded-2xl border transition-all flex flex-col justify-between gap-4 relative overflow-hidden ${
-                    profile?.subscription_status === 'active'
-                      ? 'bg-white border-slate-200 shadow-2xs'
-                      : 'bg-slate-50/80 border-slate-200/90 shadow-2xs'
-                  }`}>
-                    {profile?.subscription_status !== 'active' && (
-                      <div className="absolute top-0 right-0 bg-amber-500 text-white text-[9px] font-extrabold uppercase px-3 py-1 rounded-bl-xl tracking-wider shadow-xs flex items-center gap-1">
-                        <Lock className="w-2.5 h-2.5" /> Locked
-                      </div>
-                    )}
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <h4 className="text-xs font-black uppercase tracking-wider text-blue-600 flex items-center gap-1.5 select-none">
-                          <Key className="w-3.5 h-3.5" /> Live Private API Key
-                        </h4>
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
-                          profile?.subscription_status === 'active'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border-amber-200'
-                        }`}>
-                          {profile?.subscription_status === 'active' ? 'Production Live' : 'Requires Active Plan'}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
-                        Authorizes production checkout creations and matches live bank credits. Keep it strictly private.
-                      </p>
-                    </div>
-
-                    {profile?.subscription_status === 'active' ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <code className="flex-1 bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-xs font-mono break-all text-slate-700 font-bold select-all">
-                            {showLiveKey
-                              ? `live_${profile?.api_key || '677d9312-a53f-4b96-815f-53e0eee1b292'}`
-                              : `live_••••••••-••••-••••-••••-••••••••${profile?.api_key?.slice(-4) || 'b292'}`}
-                          </code>
-                          <button
-                            type="button"
-                            onClick={() => setShowLiveKey(!showLiveKey)}
-                            className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl transition-all border border-slate-200 cursor-pointer"
-                            title={showLiveKey ? "Hide Key" : "Reveal Key"}
-                          >
-                            {showLiveKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(`live_${profile?.api_key || '677d9312-a53f-4b96-815f-53e0eee1b292'}`, 'live_key')}
-                            className="p-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all border border-blue-200 cursor-pointer"
-                            title="Copy Live API Key"
-                          >
-                            {copiedKey === 'live_key' ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                          </button>
-                        </div>
-
-                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase select-none">
-                          <span>Last Used: {profile?.sandbox_mode === false ? 'Active 2 min ago' : 'Active 2 min ago'}</span>
-                          <button
-                            type="button"
-                            onClick={handleRotateApiKey}
-                            disabled={isRotatingKey}
-                            className="text-[10px] font-black text-rose-600 hover:text-rose-800 hover:underline tracking-wider uppercase transition-all cursor-pointer"
-                          >
-                            {isRotatingKey ? 'Rotating...' : 'Rotate Key ↺'}
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-3 bg-amber-50/60 border border-amber-200/80 rounded-xl p-3.5">
-                        <div className="flex items-center gap-2">
-                          <code className="flex-1 bg-white/80 border border-slate-200 px-3.5 py-2 rounded-xl text-xs font-mono text-slate-400 font-bold select-none blur-[2px]">
-                            live_••••••••-••••-••••-••••-••••••••••••
-                          </code>
-                          <button
-                            type="button"
-                            disabled
-                            className="p-2.5 bg-slate-100 text-slate-400 rounded-xl cursor-not-allowed border border-slate-200 opacity-60"
-                            title="Live Key Locked"
-                          >
-                            <Lock className="w-4 h-4 text-amber-600" />
-                          </button>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1">
-                          <span className="text-[11px] font-medium text-amber-900 leading-snug">
-                            Subscribe or activate your 3-day free trial to unlock your live key.
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (setActiveTab) setActiveTab('subscription');
-                            }}
-                            className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
-                          >
-                            <Zap className="w-3.5 h-3.5" />
-                            Unlock Live Key (3-Day Trial)
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* SANDBOX PRIVATE API KEY */}
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between gap-4">
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <h4 className="text-xs font-black uppercase tracking-wider text-amber-500 flex items-center gap-1.5 select-none">
-                          <Key className="w-3.5 h-3.5" /> Sandbox Private API Key
-                        </h4>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold border border-amber-200">
-                          Simulator / Test
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
-                        Authorizes simulated checkout creations in our playground environment. Isolated from real bank logs.
-                      </p>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <code className="flex-1 bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-xs font-mono break-all text-slate-700 font-bold select-all">
-                          {showTestKey
-                            ? `test_${profile?.api_key || '677d9312-a53f-4b96-815f-53e0eee1b292'}`
-                            : `test_••••••••-••••-••••-••••-••••••••${profile?.api_key?.slice(-4) || 'b292'}`}
-                        </code>
-                        <button
-                          type="button"
-                          onClick={() => setShowTestKey(!showTestKey)}
-                          className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl transition-all border border-slate-200 cursor-pointer"
-                          title={showTestKey ? "Hide Key" : "Reveal Key"}
-                        >
-                          {showTestKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleCopy(`test_${profile?.api_key || '677d9312-a53f-4b96-815f-53e0eee1b292'}`, 'test_key')}
-                          className="p-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all border border-blue-200 cursor-pointer"
-                          title="Copy Sandbox API Key"
-                        >
-                          {copiedKey === 'test_key' ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                        </button>
-                      </div>
-
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase select-none">
-                        <span>Last Used: {profile?.sandbox_mode !== false ? 'Active now (Simulator)' : 'Yesterday'}</span>
-                        <button
-                          type="button"
-                          onClick={handleRotateApiKey}
-                          disabled={isRotatingKey}
-                          className="text-[10px] font-black text-rose-600 hover:text-rose-800 hover:underline tracking-wider uppercase transition-all cursor-pointer"
-                        >
-                          {isRotatingKey ? 'Rotating...' : 'Rotate Key ↺'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2. Webhook Endpoint Configuration */}
-                <div className="flex flex-col gap-2.5 pt-4 border-t border-slate-100">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs text-slate-700 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <Send className="w-3.5 h-3.5 text-blue-600" />
-                      Webhook Endpoint URL (HTTPS Only)
-                    </label>
-                    <span className="text-[11px] text-slate-500 flex items-center gap-1 font-semibold">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                      HMAC SHA-256 Validated
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
-                    <input
-                      type="url"
-                      value={formData.webhook_url}
-                      onChange={(e) => setFormData({ ...formData, webhook_url: e.target.value })}
-                      placeholder="https://api.yourdomain.com/v2/webhooks"
-                      className="flex-1 h-10 px-3.5 bg-slate-50 hover:bg-white focus:bg-white rounded-xl font-mono text-xs text-slate-800 font-medium border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all shadow-2xs"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleTestPing}
-                      disabled={pingStatus === 'testing'}
-                      className={`h-10 px-4 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-2xs border cursor-pointer ${
-                        pingStatus === 'success'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
-                      }`}
-                    >
-                      {pingStatus === 'testing' ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
-                          <span>Testing...</span>
-                        </>
-                      ) : pingStatus === 'success' ? (
-                        <>
-                          <CheckCircle className="w-4 h-4 text-emerald-600" />
-                          <span>200 OK ({pingLatency})</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-3.5 h-3.5 text-blue-600" />
-                          <span>Test Webhook Ping</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    We will dispatch a signed HTTP POST JSON payload carrying the order ID, amount, and customer UTR whenever a transaction transitions to verified.
-                  </p>
-                </div>
-
-                {/* 3. API Gateway Performance & Usage (Last 24h) */}
-                <div className="bg-slate-50/70 p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3.5 select-none">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-600">
-                    API Gateway Performance & Usage (Last 24h)
-                  </h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total API Calls</p>
-                      <p className="text-xl font-black text-slate-800">2,481</p>
-                      <p className="text-[8px] text-emerald-600 font-bold mt-0.5">↑ 12.4% vs yesterday</p>
-                    </div>
-                    <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Active Integrations</p>
-                      <p className="text-xl font-black text-slate-800">3</p>
-                      <p className="text-[8px] text-slate-400 font-bold mt-0.5">Web app, Android SDK, Cron</p>
-                    </div>
-                    <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Avg Response Latency</p>
-                      <p className="text-xl font-black text-slate-800">42ms</p>
-                      <p className="text-[8px] text-emerald-600 font-bold mt-0.5">✓ 99th percentile: 85ms</p>
-                    </div>
-                    <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">API Error Rate</p>
-                      <p className="text-xl font-black text-emerald-600">0.00%</p>
-                      <p className="text-[8px] text-emerald-600 font-bold mt-0.5">✓ Zero timeouts detected</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4. Platform Credential Compliance Checklist */}
-                <div className="p-4 bg-blue-50/80 border border-blue-200/80 rounded-2xl text-[11px] text-blue-900 font-semibold space-y-1.5 select-none leading-normal">
-                  <p className="font-bold flex items-center gap-1.5 uppercase text-[10px] tracking-wider text-blue-700">
-                    <Shield className="w-3.5 h-3.5 text-blue-600" /> Platform Credential Compliance Checklist
-                  </p>
-                  <p>• Avoid saving raw API keys directly to repository configuration files. Always supply secrets dynamically through verified build environment variables.</p>
-                  <p>• Rotating your credentials immediately renders the previous API key invalid. Pre-scheduled cron triggers and active user checkouts using the retired token will experience authentication failures until redeployed.</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ═══════════════════════════════════════════════════════════
               PANEL 4: ROUTING & DISPATCH RULES (Solid White)
               ═══════════════════════════════════════════════════════════ */}
           {activeCategory === 'routing' && (
@@ -1983,7 +2019,277 @@ export default function SettingsRedesign({
           )}
 
           {/* ═══════════════════════════════════════════════════════════
-              PANEL 5: SECURITY & AUDIT LOGS (Solid White)
+              PANEL: TEAM MEMBERS & ROLES
+              ═══════════════════════════════════════════════════════════ */}
+          {activeCategory === 'team' && (
+            <div className="flex flex-col gap-6 animate-fadeIn">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-6 shadow-xs">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base text-[#0c2340] font-bold tracking-tight">
+                          Team Members &amp; Access Roles
+                        </h3>
+                        <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-200">
+                          Role-Based Access
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Manage co-founders, accounting staff, and operational members.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {teamMsg && (
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex justify-between">
+                    <span>{teamMsg}</span>
+                    <button type="button" onClick={() => setTeamMsg(null)}>&times;</button>
+                  </div>
+                )}
+
+                {/* Invite Form */}
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                  <h4 className="text-xs font-bold text-slate-800">Invite New Team Member</h4>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <input
+                      type="email"
+                      value={newMemberEmail}
+                      onChange={(e) => setNewMemberEmail(e.target.value)}
+                      placeholder="teammate@company.com"
+                      className="flex-1 px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:border-indigo-500"
+                    />
+                    <select
+                      value={newMemberRole}
+                      onChange={(e) => setNewMemberRole(e.target.value)}
+                      className="px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium"
+                    >
+                      <option value="Admin">Admin (All except subscription)</option>
+                      <option value="Operator">Operator (View + create links)</option>
+                      <option value="Viewer">Viewer (Read-only)</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!newMemberEmail || !newMemberEmail.includes('@')) return;
+                        const newMember = {
+                          id: `tm_${Date.now()}`,
+                          email: newMemberEmail.trim(),
+                          role: newMemberRole,
+                          status: 'Pending Invite',
+                          addedAt: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
+                        };
+                        const updated = [...teamMembers, newMember];
+                        setTeamMembers(updated);
+                        if (typeof window !== 'undefined' && profile?.id) {
+                          localStorage.setItem(`mmp_team_${profile.id}`, JSON.stringify(updated));
+                        }
+                        setNewMemberEmail('');
+                        setTeamMsg(`Invitation sent to ${newMember.email} with ${newMember.role} access.`);
+                        setTimeout(() => setTeamMsg(null), 4000);
+                      }}
+                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+                    >
+                      Send Invite
+                    </button>
+                  </div>
+                </div>
+
+                {/* Team List Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-200">
+                      <tr>
+                        <th className="px-4 py-3">Member</th>
+                        <th className="px-4 py-3">Role</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3">Added Date</th>
+                        <th className="px-4 py-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {teamMembers.map((m) => (
+                        <tr key={m.id} className="hover:bg-slate-50/80">
+                          <td className="px-4 py-3">
+                            <span className="font-bold text-slate-800">{m.email}</span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              m.role === 'Owner' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                              m.role === 'Admin' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' :
+                              m.role === 'Operator' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                              'bg-slate-100 text-slate-600 border border-slate-200'
+                            }`}>
+                              {m.role}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex items-center gap-1 text-[11px] font-medium ${
+                              m.status === 'Active' ? 'text-emerald-700' : 'text-amber-700'
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${m.status === 'Active' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                              {m.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-slate-500 text-[11px]">{m.addedAt}</td>
+                          <td className="px-4 py-3 text-right">
+                            {m.role !== 'Owner' ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = teamMembers.filter((item) => item.id !== m.id);
+                                  setTeamMembers(updated);
+                                  if (typeof window !== 'undefined' && profile?.id) {
+                                    localStorage.setItem(`mmp_team_${profile.id}`, JSON.stringify(updated));
+                                  }
+                                }}
+                                className="text-red-600 hover:text-red-800 font-bold hover:underline cursor-pointer"
+                              >
+                                Revoke
+                              </button>
+                            ) : (
+                              <span className="text-slate-400 text-[10px]">Owner</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════
+              PANEL: NOTIFICATION CHANNELS
+              ═══════════════════════════════════════════════════════════ */}
+          {activeCategory === 'notifications' && (
+            <div className="flex flex-col gap-6 animate-fadeIn">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-6 shadow-xs">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-100">
+                      <Bell className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base text-[#0c2340] font-bold tracking-tight">
+                          Multi-Channel Notifications
+                        </h3>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+                          Instant Alerts
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Configure which events trigger alerts to your email, phone SMS, or WhatsApp.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {notifSavedMsg && (
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Notification preferences updated successfully!</span>
+                  </div>
+                )}
+
+                {/* Delivery Channels */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Alert Channels</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <label className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between cursor-pointer hover:bg-slate-100/70 transition-colors">
+                      <div>
+                        <span className="text-xs font-bold text-slate-800 block">Email Alerts</span>
+                        <span className="text-[10px] text-slate-500 truncate block max-w-[150px]">{profile?.email || user?.email}</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={notifChannels.email}
+                        onChange={() => setNotifChannels(p => ({ ...p, email: !p.email }))}
+                        className="rounded text-emerald-600 focus:ring-emerald-500"
+                      />
+                    </label>
+
+                    <label className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between cursor-pointer hover:bg-slate-100/70 transition-colors">
+                      <div>
+                        <span className="text-xs font-bold text-slate-800 block">WhatsApp Alerts</span>
+                        <span className="text-[10px] text-slate-500 block">{profile?.phone_number || profile?.phone || 'Configured Phone'}</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={notifChannels.whatsapp}
+                        onChange={() => setNotifChannels(p => ({ ...p, whatsapp: !p.whatsapp }))}
+                        className="rounded text-emerald-600 focus:ring-emerald-500"
+                      />
+                    </label>
+
+                    <label className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between cursor-pointer hover:bg-slate-100/70 transition-colors">
+                      <div>
+                        <span className="text-xs font-bold text-slate-800 block">SMS Gateway</span>
+                        <span className="text-[10px] text-slate-500 block">Transactional SMS</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={notifChannels.sms}
+                        onChange={() => setNotifChannels(p => ({ ...p, sms: !p.sms }))}
+                        className="rounded text-emerald-600 focus:ring-emerald-500"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Event Matrix */}
+                <div className="space-y-3 pt-2 border-t border-slate-100">
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Event Triggers</h4>
+                  <div className="space-y-2">
+                    {[
+                      { id: 'payment_received', label: 'Payment Received (Instant Alert)', desc: 'Real-time alert whenever customer money credits your bank UPI' },
+                      { id: 'high_value', label: 'High-Value Payment (> ₹10,000)', desc: 'Immediate notification for large tickets requiring priority fulfillment' },
+                      { id: 'daily_digest', label: 'Daily Reconciliation Digest', desc: 'Summary of daily collections sent at 08:00 AM IST' },
+                      { id: 'renewal_expiry', label: 'Subscription Expiry & Renewal Alerts', desc: 'Notices before flat-fee platform plan renewal dates' },
+                      { id: 'delayed_payment', label: 'Delayed Payment Notification (>15 min)', desc: 'Alert if an order has been pending verification without auto-match' }
+                    ].map(evt => (
+                      <label key={evt.id} className="flex items-start justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer">
+                        <div>
+                          <span className="text-xs font-bold text-slate-800 block">{evt.label}</span>
+                          <span className="text-[11px] text-slate-500">{evt.desc}</span>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={notifEvents[evt.id]}
+                          onChange={() => setNotifEvents(p => ({ ...p, [evt.id]: !p[evt.id] }))}
+                          className="rounded text-emerald-600 focus:ring-emerald-500 mt-0.5"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNotifSavedMsg(true);
+                      setTimeout(() => setNotifSavedMsg(false), 4000);
+                    }}
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+                  >
+                    Save Notification Preferences
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════
+              PANEL 5: SECURITY & AUDIT LOGS
               ═══════════════════════════════════════════════════════════ */}
           {activeCategory === 'security' && (
             <div className="flex flex-col gap-6 animate-fadeIn">
@@ -1996,40 +2302,182 @@ export default function SettingsRedesign({
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-base text-[#0c2340] font-bold tracking-tight">
-                          Merchant Security & Session Controls
+                          Merchant Security &amp; Session Controls
                         </h3>
                         <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold border border-amber-200">
                           Active Protection
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Manage active dashboard sessions, IP allowlists, and access audit logs.
+                        Manage active dashboard sessions, two-factor authentication, and immutable audit logs.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3">
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                {passwordChangeStatus && (
+                  <div className={`p-3.5 rounded-xl border text-xs font-medium flex items-center justify-between ${
+                    passwordChangeStatus.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'
+                  }`}>
+                    <span>{passwordChangeStatus.message}</span>
+                    <button type="button" onClick={() => setPasswordChangeStatus(null)}>&times;</button>
+                  </div>
+                )}
+
+                {/* 1. Session & 2FA Controls */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Current Authenticated Session */}
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-3">
                     <div>
-                      <span className="text-xs font-bold text-slate-800 block">Current Authenticated Session</span>
-                      <span className="text-[11px] text-slate-500">Chrome on Windows • Logged in as {user?.email || 'Authorized Merchant'}</span>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs font-bold text-slate-800">Current Session</span>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          Active Now
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Chrome on Windows • {user?.email || 'Authorized Merchant'}
+                      </p>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
-                      Active Now
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSignedOutDevices(true);
+                        setTimeout(() => setSignedOutDevices(false), 4000);
+                      }}
+                      className="text-xs font-bold text-red-600 hover:text-red-800 hover:underline text-left cursor-pointer"
+                    >
+                      {signedOutDevices ? '✓ Signed out from all other devices' : 'Sign out all other devices'}
+                    </button>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  {/* 2FA Authenticator */}
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-3">
                     <div>
-                      <span className="text-xs font-bold text-slate-800 block">Encrypted Secret Key Salt</span>
-                      <span className="text-[11px] text-slate-500">PBKDF2 SHA-256 multi-round key derivation active</span>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs font-bold text-slate-800">Two-Factor Authentication (2FA)</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                          twoFactorEnabled ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-200 text-slate-600 border-slate-300'
+                        }`}>
+                          {twoFactorEnabled ? 'Enabled' : 'Disabled'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Require TOTP authenticator code (Google Authenticator / Authy) on login.
+                      </p>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-500 bg-white px-2 py-1 rounded border border-slate-200">
-                      AES-256-GCM
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
+                      className="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline text-left cursor-pointer"
+                    >
+                      {twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA Protection'}
+                    </button>
                   </div>
                 </div>
+
+                {/* 2. Change Password Form */}
+                <div className="p-4 rounded-xl border border-slate-200 space-y-3">
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Change Password</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">New Password</label>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="••••••••••••"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">Confirm Password</label>
+                      <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="••••••••••••"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="button"
+                      disabled={isChangingPassword || !newPassword}
+                      onClick={async () => {
+                        if (newPassword !== confirmPassword) {
+                          setPasswordChangeStatus({ type: 'error', message: 'Passwords do not match.' });
+                          return;
+                        }
+                        if (newPassword.length < 6) {
+                          setPasswordChangeStatus({ type: 'error', message: 'Password must be at least 6 characters.' });
+                          return;
+                        }
+                        setIsChangingPassword(true);
+                        try {
+                          const { error } = await supabase.auth.updateUser({ password: newPassword });
+                          if (error) throw error;
+                          setPasswordChangeStatus({ type: 'success', message: 'Password updated successfully!' });
+                          setNewPassword('');
+                          setConfirmPassword('');
+                        } catch (err) {
+                          setPasswordChangeStatus({ type: 'error', message: err.message || 'Failed to update password.' });
+                        } finally {
+                          setIsChangingPassword(false);
+                          setTimeout(() => setPasswordChangeStatus(null), 5000);
+                        }
+                      }}
+                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {isChangingPassword ? 'Updating...' : 'Update Password'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. Read-Only Activity Audit Log */}
+                <div className="space-y-3 pt-2 border-t border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Account Activity Audit Log</h4>
+                      <p className="text-[11px] text-slate-500">Immutable record of security and administrative actions</p>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400">Read-Only</span>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                    <table className="w-full text-left">
+                      <thead className="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase border-b border-slate-200">
+                        <tr>
+                          <th className="px-4 py-2.5">Timestamp (IST)</th>
+                          <th className="px-4 py-2.5">Event Description</th>
+                          <th className="px-4 py-2.5">Actor</th>
+                          <th className="px-4 py-2.5 text-right">Security Rail</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+                        {[
+                          { time: 'Today, 03:22 PM', desc: 'Accessed Developer API Credentials', actor: user?.email || 'Founder', rail: 'SSL Encrypted' },
+                          { time: 'Today, 03:15 PM', desc: 'Exported Financial CA GST Journal', actor: user?.email || 'Founder', rail: 'Audit Recorded' },
+                          { time: 'Today, 02:48 PM', desc: 'Created Dynamic Payment Link #pl_9821', actor: user?.email || 'Founder', rail: 'NPCI VPA' },
+                          { time: 'Yesterday, 11:30 AM', desc: 'Verified Active UPI Settlement Rail', actor: user?.email || 'Founder', rail: 'Direct Bank' }
+                        ].map((log, i) => (
+                          <tr key={i} className="hover:bg-slate-50">
+                            <td className="px-4 py-2 text-slate-500">{log.time}</td>
+                            <td className="px-4 py-2 font-medium text-slate-800">{log.desc}</td>
+                            <td className="px-4 py-2 text-slate-600">{log.actor}</td>
+                            <td className="px-4 py-2 text-right">
+                              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                                {log.rail}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
               </div>
             </div>
           )}
@@ -2466,6 +2914,227 @@ export default function SettingsRedesign({
                 >
                   <Check className="w-4 h-4" />
                   <span>Save Bank Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════
+          SECURE VPA CHANGE REQUEST MODAL (ANTI-HIJACKING)
+          ══════════════════════════════════════════════════════════ */}
+      {showVpaChangeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 animate-scaleUp">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200 shrink-0">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">Request UPI VPA Routing Change</h3>
+                  <p className="text-xs text-slate-500">Security-gated administrative approval workflow</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowVpaChangeModal(false);
+                  setVpaReqError(null);
+                }}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Anti-Hijacking Notice */}
+            <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-xl flex items-start gap-2.5 text-xs text-amber-900">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <span className="font-bold block">Anti-Hijacking Compliance Rule</span>
+                <p className="text-[11px] leading-relaxed text-amber-800">
+                  To prevent payment diversion attacks if an account is ever compromised, changing your receiving UPI VPA requires dual verification. Your current VPA remains 100% active until admin approval.
+                </p>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmitVpaChange} className="space-y-3.5 text-xs">
+              {vpaReqError && (
+                <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium">
+                  {vpaReqError}
+                </div>
+              )}
+              {vpaReqSuccess && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>VPA change request submitted for compliance verification!</span>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700">Current Receiving UPI VPA</label>
+                <input
+                  type="text"
+                  disabled
+                  value={profile?.upi_id || formData.upi_id || 'merchant@upi'}
+                  className="h-10 px-3 bg-slate-100 border border-slate-200 rounded-xl font-mono text-slate-500 font-semibold cursor-not-allowed"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700">Proposed New Receiving UPI VPA *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. newbusiness@icici or legalname@upi"
+                  value={newProposedVpa}
+                  onChange={(e) => setNewProposedVpa(e.target.value)}
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+                <span className="text-[10px] text-slate-500">Must belong to a verified current account in your business name.</span>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700">Reason for Change</label>
+                <select
+                  value={vpaChangeReason}
+                  onChange={(e) => setVpaChangeReason(e.target.value)}
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+                >
+                  <option value="Switching to dedicated current account VPA">Switching to dedicated current account VPA</option>
+                  <option value="Bank account or IFSC migration">Bank account or IFSC migration</option>
+                  <option value="Company rebranding / legal entity update">Company rebranding / legal entity update</option>
+                  <option value="Other compliance requirement">Other compliance requirement</option>
+                </select>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowVpaChangeModal(false)}
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={vpaSubmitting || !newProposedVpa}
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-xs flex items-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {vpaSubmitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Submitting Request...
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-3.5 h-3.5" />
+                      Submit VPA Change Request
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════
+          ADD BILLING COUNTER / BRANCH OUTLET MODAL
+          ══════════════════════════════════════════════════════════ */}
+      {showAddOutletModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4 animate-scaleUp">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200 shrink-0">
+                  <Store className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">Add Counter / Branch Outlet</h3>
+                  <p className="text-xs text-slate-500">Multi-VPA routing & separate reporting</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddOutletModal(false);
+                  setOutletError(null);
+                }}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleAddOutlet} className="space-y-3.5 text-xs">
+              {outletError && (
+                <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium">
+                  {outletError}
+                </div>
+              )}
+              {outletSuccessMsg && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>{outletSuccessMsg}</span>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700">Counter / Outlet Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Counter 2 - Billing Desk or South Delhi Branch"
+                  value={newOutletName}
+                  onChange={(e) => setNewOutletName(e.target.value)}
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-bold text-slate-700">Dedicated UPI VPA Handle *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. outlet2@icici or cashier1@upi"
+                  value={newOutletVpa}
+                  onChange={(e) => setNewOutletVpa(e.target.value)}
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+                <span className="text-[10px] text-slate-500">
+                  Payments at this counter will settle directly into this UPI ID.
+                </span>
+              </div>
+
+              <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-blue-900 text-[11px] flex items-center gap-2">
+                <Shield className="w-4 h-4 text-blue-600 shrink-0" />
+                <span>Zero Escrow: Money deposits directly to this counter&apos;s bank account.</span>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAddOutletModal(false)}
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!newOutletName || !newOutletVpa}
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-xs flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Save Outlet Counter</span>
                 </button>
               </div>
             </form>

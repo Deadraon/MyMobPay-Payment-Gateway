@@ -26,8 +26,8 @@ export async function POST(request) {
     }
 
     const targetAction = (action || status || 'verify').toLowerCase();
-    if (!['verify', 'unpaid', 'pending', 'reject', 'rejected'].includes(targetAction)) {
-      return NextResponse.json({ error: "Invalid action. Must be 'verify', 'unpaid', or 'reject'." }, { status: 400 });
+    if (!['verify', 'unpaid', 'pending', 'reject', 'rejected', 'refund'].includes(targetAction)) {
+      return NextResponse.json({ error: "Invalid action. Must be 'verify', 'unpaid', 'reject', or 'refund'." }, { status: 400 });
     }
 
     // 1. Authenticate Merchant
@@ -162,6 +162,40 @@ export async function POST(request) {
         success: true,
         action: 'reject',
         message: 'Order marked as Rejected.',
+        order: updatedOrder
+      }, { status: 200 });
+
+    } else if (targetAction === 'refund') {
+      const { refundAmount, refundUtr, refundReason } = body;
+      const numRefundAmount = Number(refundAmount) || Number(order.amount);
+      const isFull = numRefundAmount >= Number(order.amount);
+      const newStatus = isFull ? 'refunded' : 'partially_refunded';
+      const cleanRefundUtr = (refundUtr || '').trim();
+
+      const { data: updatedOrder, error: updateErr } = await supabaseAdmin
+        .from('orders')
+        .update({
+          status: newStatus
+        })
+        .eq('id', order.id)
+        .select()
+        .single();
+
+      if (updateErr) {
+        return NextResponse.json({ error: updateErr.message }, { status: 500 });
+      }
+
+      // Try triggering merchant webhook for payment.refunded
+      try {
+        await triggerMerchantWebhook(order.id);
+      } catch (whErr) {
+        console.error('Webhook error on refund log:', whErr);
+      }
+
+      return NextResponse.json({
+        success: true,
+        action: 'refund',
+        message: `Refund of ₹${numRefundAmount.toLocaleString('en-IN')} recorded successfully (${isFull ? 'Full' : 'Partial'}). Outbound UTR: ${cleanRefundUtr || 'N/A'}.`,
         order: updatedOrder
       }, { status: 200 });
     }
