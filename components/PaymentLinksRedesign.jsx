@@ -2238,7 +2238,8 @@ export default function PaymentLinksRedesign({
           STATIC / COUNTER QR CODE MODAL — RETAIL STANDEE STUDIO
           ══════════════════════════════════════════════════════════ */}
       {showStaticQrModal && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-4 sm:py-6 px-2 sm:px-4 md:px-6 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="flex min-h-full items-start justify-center p-4 sm:p-6">
           {/* Print Isolation Stylesheet — forces single clean page retail print */}
           <style>{`
             @media print {
@@ -2282,7 +2283,7 @@ export default function PaymentLinksRedesign({
             }
           `}</style>
 
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-4xl w-full flex flex-col overflow-hidden animate-scaleUp my-auto">
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-4xl w-full flex flex-col overflow-hidden animate-scaleUp">
             
             {/* Modal Header — Pinned at Top, 100% visible, never cut off */}
             <div className="shrink-0 px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-white z-10">
@@ -2311,68 +2312,76 @@ export default function PaymentLinksRedesign({
               </button>
             </div>
 
-            {/* Scrollable Modal Content Workspace */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+            {/* Modal Content */}
+            <div className="p-4 sm:p-6 space-y-5">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
                 {/* Left Column: Customization Controls */}
                 <div className="lg:col-span-6 space-y-4 text-xs pr-1">
                   
-                  {/* 1. Brand Themes */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wider">
-                      <Palette className="w-3.5 h-3.5 text-blue-600" />
-                      Branding Theme
-                    </label>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {/* 1. Colour Theme — clean swatch strip */}
+                  <div className="space-y-2">
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">Colour Theme</p>
+                    <div className="flex items-center gap-2 flex-wrap">
                       {[
-                        { id: 'ocean',   name: 'Ocean Blue',     gradient: 'from-[#002970] to-[#0051b3]',            accent: '#00baf2' },
-                        { id: 'prism',   name: 'Prism Multi',    gradient: 'from-[#1a73e8] via-[#ea4335] to-[#34a853]', accent: '#1a73e8' },
-                        { id: 'violet',  name: 'Royal Violet',   gradient: 'from-[#4a157d] to-[#7b1fa2]',            accent: '#f59e0b' },
-                        { id: 'navy',    name: 'Midnight Gold',  gradient: 'from-[#090d16] to-[#1e293b]',            accent: '#d4af37' },
-                        { id: 'saffron', name: 'Saffron',        gradient: 'from-[#ea580c] to-[#16a34a]',            accent: '#ea580c' },
+                        { id: 'ocean',   name: 'Ocean',    color: '#0051b3',  ring: 'ring-[#0051b3]'  },
+                        { id: 'prism',   name: 'Prism',    color: '#1a73e8',  ring: 'ring-[#1a73e8]'  },
+                        { id: 'violet',  name: 'Violet',   color: '#5f259f',  ring: 'ring-[#5f259f]'  },
+                        { id: 'navy',    name: 'Midnight', color: '#090d16',  ring: 'ring-slate-900'   },
+                        { id: 'saffron', name: 'Saffron',  color: '#ea580c',  ring: 'ring-[#ea580c]'  },
                       ].map(t => (
                         <button
                           key={t.id}
                           type="button"
                           onClick={() => setStandeeTheme(t.id)}
-                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col gap-1.5 ${
-                            standeeTheme === t.id
-                              ? 'border-blue-600 bg-blue-50/50 ring-2 ring-blue-600/20'
-                              : 'border-slate-200 bg-slate-50/70 hover:bg-white'
-                          }`}
+                          title={t.name}
+                          className={`group relative flex flex-col items-center gap-1.5 cursor-pointer transition-all`}
                         >
-                          <div className={`w-full h-3 rounded-md bg-gradient-to-r ${t.gradient} shadow-2xs`} />
-                          <span className="font-bold text-slate-800 text-[11px] truncate">{t.name}</span>
+                          {/* Colour dot */}
+                          <span
+                            className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center shadow-sm ${
+                              standeeTheme === t.id
+                                ? `border-transparent ring-2 ring-offset-2 ${t.ring}`
+                                : 'border-transparent hover:scale-110'
+                            }`}
+                            style={{ backgroundColor: t.color }}
+                          >
+                            {standeeTheme === t.id && (
+                              <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            )}
+                          </span>
+                          {/* Label */}
+                          <span className={`text-[10px] font-semibold transition-colors ${
+                            standeeTheme === t.id ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600'
+                          }`}>{t.name}</span>
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* 2. Standee Format */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wider">
-                      <Sliders className="w-3.5 h-3.5 text-blue-600" />
-                      Standee Format
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
+                  {/* 2. Standee Format — segmented control */}
+                  <div className="space-y-2">
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">Format</p>
+                    <div className="flex gap-1.5 p-1 bg-slate-100 rounded-xl">
                       {[
-                        { id: 'acrylic', label: 'Acrylic Tabletop', desc: 'Counter Standee' },
-                        { id: 'poster', label: 'Retail Poster', desc: 'Billing Wall/Desk' },
-                        { id: 'minimal', label: 'Minimal Card', desc: 'Pocket / NFC Card' },
+                        { id: 'acrylic', label: 'Tabletop',    icon: '🖥️' },
+                        { id: 'poster',  label: 'Wall Poster', icon: '📋' },
+                        { id: 'minimal', label: 'Pocket Card', icon: '💳' },
                       ].map(f => (
                         <button
                           key={f.id}
                           type="button"
                           onClick={() => setStandeeStyle(f.id)}
-                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                             standeeStyle === f.id
-                              ? 'border-blue-600 bg-blue-50/50 ring-2 ring-blue-600/20'
-                              : 'border-slate-200 bg-slate-50/70 hover:bg-white'
+                              ? 'bg-white text-slate-900 shadow-sm'
+                              : 'text-slate-500 hover:text-slate-700'
                           }`}
                         >
-                          <p className="font-bold text-slate-800 text-xs">{f.label}</p>
-                          <p className="text-[10px] text-slate-400 mt-0.5">{f.desc}</p>
+                          <span className="text-sm leading-none">{f.icon}</span>
+                          <span>{f.label}</span>
                         </button>
                       ))}
                     </div>
@@ -2909,6 +2918,7 @@ export default function PaymentLinksRedesign({
 
             </div>
 
+          </div>
           </div>
         </div>
       )}
