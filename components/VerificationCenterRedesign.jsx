@@ -534,7 +534,7 @@ export default function VerificationCenterRedesign({
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 font-mono">{healthMetrics.autoVerifiedRate}%</span>
+              <span className="text-2xl font-black text-slate-900 tabular-nums">{healthMetrics.autoVerifiedRate}%</span>
               <span className="text-[11px] font-bold text-emerald-600">Auto-Verified</span>
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
@@ -553,7 +553,7 @@ export default function VerificationCenterRedesign({
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 font-mono">{healthMetrics.formattedAvgDelay}</span>
+              <span className="text-2xl font-black text-slate-900 tabular-nums">{healthMetrics.formattedAvgDelay}</span>
               <span className="text-[11px] font-bold text-blue-600">Avg Settlement</span>
             </div>
             <p className="text-[11px] text-slate-500 mt-1">From customer scan to instant bank webhook/email match</p>
@@ -570,7 +570,7 @@ export default function VerificationCenterRedesign({
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className={`text-2xl font-black font-mono ${delayedOrders.length > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
+              <span className={`text-2xl font-black tabular-nums ${delayedOrders.length > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
                 {delayedOrders.length}
               </span>
               <span className="text-[11px] text-slate-500">awaiting confirmation</span>
@@ -591,7 +591,7 @@ export default function VerificationCenterRedesign({
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className={`text-2xl font-black font-mono ${duplicateWarnings.length > 0 ? 'text-red-600' : 'text-slate-900'}`}>
+              <span className={`text-2xl font-black tabular-nums ${duplicateWarnings.length > 0 ? 'text-red-600' : 'text-slate-900'}`}>
                 {duplicateWarnings.length}
               </span>
               <span className="text-[11px] font-medium text-slate-500">alerts detected</span>

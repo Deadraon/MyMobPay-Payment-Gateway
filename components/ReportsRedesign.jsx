@@ -431,7 +431,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
             </div>
           </div>
           <div className="mt-3">
-            <p className="text-2xl font-black text-slate-900 font-mono">{formatINR(metrics.curTotal)}</p>
+            <p className="text-2xl font-black text-slate-900 tabular-nums">{formatINR(metrics.curTotal)}</p>
             <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
               <span>{periodLabel}</span>
               <span>Prior: {formatINR(metrics.prevTotal)}</span>
@@ -451,7 +451,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
             </div>
           </div>
           <div className="mt-3">
-            <p className="text-2xl font-black text-slate-900 font-mono">{metrics.curCount}</p>
+            <p className="text-2xl font-black text-slate-900 tabular-nums">{metrics.curCount}</p>
             <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
               <span>{metrics.curCount} paid</span>
               <span>Prior: {metrics.prevCount}</span>
@@ -471,7 +471,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
             </div>
           </div>
           <div className="mt-3">
-            <p className="text-2xl font-black text-slate-900 font-mono">{formatINR(metrics.curAvgTicket)}</p>
+            <p className="text-2xl font-black text-slate-900 tabular-nums">{formatINR(metrics.curAvgTicket)}</p>
             <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
               <span>Per customer</span>
               <span>Prior: {formatINR(metrics.prevAvgTicket)}</span>
@@ -487,7 +487,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 font-mono">{metrics.curSuccessRate}%</span>
+              <span className="text-2xl font-black text-slate-900 tabular-nums">{metrics.curSuccessRate}%</span>
               <span className={`text-[11px] font-bold ${parseFloat(metrics.rateDiff) >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                 {parseFloat(metrics.rateDiff) >= 0 ? `+${metrics.rateDiff}%` : `${metrics.rateDiff}%`}
               </span>
@@ -686,17 +686,17 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200/60 text-[11px] space-y-1">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Gross Sales:</span>
-                  <span className="font-bold font-mono">{formatINR(metrics.curTotal)}</span>
+                  <span className="font-bold tabular-nums">{formatINR(metrics.curTotal)}</span>
                 </div>
                 {gstRate > 0 && (
                   <>
                     <div className="flex justify-between text-slate-600">
                       <span>GST Component ({gstRate}%):</span>
-                      <span className="font-mono">{formatINR(metrics.curTotal * (gstRate / (100 + gstRate)))}</span>
+                      <span className="tabular-nums">{formatINR(metrics.curTotal * (gstRate / (100 + gstRate)))}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>Net Taxable Value:</span>
-                      <span className="font-mono font-bold text-slate-900">
+                      <span className="tabular-nums font-bold text-slate-900">
                         {formatINR(metrics.curTotal - (metrics.curTotal * (gstRate / (100 + gstRate))))}
                       </span>
                     </div>

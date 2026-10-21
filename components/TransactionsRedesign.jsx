@@ -621,7 +621,7 @@ export default function TransactionsRedesign({
             </span>
           </div>
           <div className="mt-2 sm:mt-4 flex flex-col gap-0.5 sm:gap-1">
-            <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono truncate">
+            <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight tabular-nums truncate">
               ₹ {kpiMetrics.totalVolume.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
@@ -645,7 +645,7 @@ export default function TransactionsRedesign({
             </span>
           </div>
           <div className="mt-2 sm:mt-4 flex flex-col gap-0.5 sm:gap-1">
-            <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono truncate">
+            <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight tabular-nums truncate">
               ₹ {kpiMetrics.settledVolume.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
@@ -669,7 +669,7 @@ export default function TransactionsRedesign({
           </div>
           <div className="mt-2 sm:mt-4 flex flex-col gap-0.5 sm:gap-1">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono truncate">
+              <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight tabular-nums truncate">
                 {kpiMetrics.successfulTxns.toLocaleString('en-IN')}
               </span>
               <span className="text-[10px] sm:text-xs text-slate-400 font-medium">txns</span>
@@ -695,7 +695,7 @@ export default function TransactionsRedesign({
           </div>
           <div className="mt-2 sm:mt-4 flex flex-col gap-0.5 sm:gap-1">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight font-mono truncate">
+              <span className="text-lg sm:text-2xl font-extrabold text-[#0c2340] tracking-tight tabular-nums truncate">
                 142
               </span>
               <span className="text-[10px] sm:text-xs text-slate-400 font-medium">ms</span>
@@ -1376,7 +1376,7 @@ export default function TransactionsRedesign({
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
                 <div className="flex flex-col">
                   <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Amount Received</span>
-                  <span className="text-2xl font-extrabold text-[#0c2340] font-mono mt-0.5">
+                  <span className="text-2xl font-extrabold text-[#0c2340] tabular-nums mt-0.5">
                     ₹ {Number(selectedOrder.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
