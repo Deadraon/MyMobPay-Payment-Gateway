@@ -27,6 +27,8 @@ export default function AdminHeader({
   setGlobalSearch,
   totalPendingOrders = 0,
 }) {
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
