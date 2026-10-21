@@ -178,7 +178,7 @@ export default function PaymentLinksRedesign({
   const [staticQrAmountType, setStaticQrAmountType] = useState('any'); // 'any' | 'fixed'
   const [staticQrAmount, setStaticQrAmount] = useState('100');
   const [staticQrNote, setStaticQrNote] = useState('Store Counter Payment');
-  const [standeeTheme, setStandeeTheme] = useState('paytm'); // 'paytm' | 'gpay' | 'phonepe' | 'navy' | 'saffron'
+  const [standeeTheme, setStandeeTheme] = useState('ocean'); // 'ocean' | 'prism' | 'violet' | 'navy' | 'saffron'
   const [standeeStyle, setStandeeStyle] = useState('acrylic'); // 'acrylic' | 'poster' | 'minimal'
   const [standeeBusinessName, setStandeeBusinessName] = useState('');
   const [standeeDeskTag, setStandeeDeskTag] = useState('Counter 1 - Billing Desk');
@@ -2238,7 +2238,7 @@ export default function PaymentLinksRedesign({
           STATIC / COUNTER QR CODE MODAL — RETAIL STANDEE STUDIO
           ══════════════════════════════════════════════════════════ */}
       {showStaticQrModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-4 sm:py-6 px-2 sm:px-4 md:px-6 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
           {/* Print Isolation Stylesheet — forces single clean page retail print */}
           <style>{`
             @media print {
@@ -2282,7 +2282,7 @@ export default function PaymentLinksRedesign({
             }
           `}</style>
 
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-4xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-scaleUp">
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-4xl w-full flex flex-col overflow-hidden animate-scaleUp my-auto">
             
             {/* Modal Header — Pinned at Top, 100% visible, never cut off */}
             <div className="shrink-0 px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-white z-10">
@@ -2292,13 +2292,13 @@ export default function PaymentLinksRedesign({
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">Retail Counter QR Standee Studio</h3>
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">Static Counter QR Studio</h3>
                     <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       T+0 Direct NPCI
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 font-medium line-clamp-1">Design, customize, and print retail counter standees like Paytm &amp; Google Pay for Business</p>
+                  <p className="text-xs text-slate-500 font-medium line-clamp-1">Design, customize, and print professional UPI payment standees for your retail counter</p>
                 </div>
               </div>
               <button
@@ -2324,13 +2324,13 @@ export default function PaymentLinksRedesign({
                       <Palette className="w-3.5 h-3.5 text-blue-600" />
                       Branding Theme
                     </label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                       {[
-                        { id: 'paytm', name: 'Paytm Blue', gradient: 'from-[#002970] to-[#0051b3]', accent: '#00baf2' },
-                        { id: 'gpay', name: 'Google Pay', gradient: 'from-[#1a73e8] via-[#ea4335] to-[#34a853]', accent: '#1a73e8' },
-                        { id: 'phonepe', name: 'PhonePe', gradient: 'from-[#4a157d] to-[#7b1fa2]', accent: '#f59e0b' },
-                        { id: 'navy', name: 'Midnight Gold', gradient: 'from-[#090d16] to-[#1e293b]', accent: '#d4af37' },
-                        { id: 'saffron', name: 'Bharat Saffron', gradient: 'from-[#ea580c] to-[#16a34a]', accent: '#ea580c' },
+                        { id: 'ocean',   name: 'Ocean Blue',     gradient: 'from-[#002970] to-[#0051b3]',            accent: '#00baf2' },
+                        { id: 'prism',   name: 'Prism Multi',    gradient: 'from-[#1a73e8] via-[#ea4335] to-[#34a853]', accent: '#1a73e8' },
+                        { id: 'violet',  name: 'Royal Violet',   gradient: 'from-[#4a157d] to-[#7b1fa2]',            accent: '#f59e0b' },
+                        { id: 'navy',    name: 'Midnight Gold',  gradient: 'from-[#090d16] to-[#1e293b]',            accent: '#d4af37' },
+                        { id: 'saffron', name: 'Saffron',        gradient: 'from-[#ea580c] to-[#16a34a]',            accent: '#ea580c' },
                       ].map(t => (
                         <button
                           key={t.id}
@@ -2510,7 +2510,7 @@ export default function PaymentLinksRedesign({
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                       Live Tabletop Standee Preview
                     </span>
-                    <span className="font-mono text-slate-400 uppercase text-[10px]">{standeeTheme} • {standeeStyle}</span>
+                    <span className="font-mono text-slate-400 uppercase text-[10px]">{standeeTheme.charAt(0).toUpperCase() + standeeTheme.slice(1)} • {standeeStyle}</span>
                   </div>
 
                   {/* STANDEE CONTAINER (PRINT TARGET) */}
@@ -2520,11 +2520,11 @@ export default function PaymentLinksRedesign({
                     <div
                       id="printable-standee-card"
                       className={`w-full max-w-[340px] sm:max-w-[350px] bg-white rounded-3xl shadow-xl border overflow-hidden relative transition-all duration-300 ${
-                        standeeTheme === 'paytm'
+                        standeeTheme === 'ocean'
                           ? 'border-[#002970]/30 shadow-blue-900/10'
-                          : standeeTheme === 'gpay'
+                          : standeeTheme === 'prism'
                           ? 'border-slate-300 shadow-slate-900/10'
-                          : standeeTheme === 'phonepe'
+                          : standeeTheme === 'violet'
                           ? 'border-[#5f259f]/30 shadow-purple-900/10'
                           : standeeTheme === 'saffron'
                           ? 'border-orange-500/30 shadow-orange-950/10'
@@ -2541,58 +2541,63 @@ export default function PaymentLinksRedesign({
                         </div>
                       )}
 
-                      {/* 1. TOP BRAND HEADER (Minimalist & Graphic) */}
-                      {standeeTheme === 'gpay' ? (
+                      {/* 1. TOP HEADER — Brand-neutral, design-led */}
+                      {standeeTheme === 'prism' ? (
                         <div>
-                          {/* Google 4-Color Signature Accent Bar */}
+                          {/* Prism 4-Color Accent Bar */}
                           <div className="h-1.5 w-full flex">
                             <span className="flex-1 bg-[#4285F4]" />
                             <span className="flex-1 bg-[#EA4335]" />
                             <span className="flex-1 bg-[#FBBC05]" />
                             <span className="flex-1 bg-[#34A853]" />
                           </div>
-                          {/* Google Pay Header Strip */}
+                          {/* Prism Header Strip */}
                           <div className="px-4 py-2.5 bg-white border-b border-slate-100 flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <GPayVector />
-                              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider ml-1">Business</span>
+                            <div className="flex items-center gap-2">
+                              <div className="flex gap-0.5">
+                                <span className="w-2 h-2 rounded-full bg-[#4285F4]" />
+                                <span className="w-2 h-2 rounded-full bg-[#EA4335]" />
+                                <span className="w-2 h-2 rounded-full bg-[#FBBC05]" />
+                                <span className="w-2 h-2 rounded-full bg-[#34A853]" />
+                              </div>
+                              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider">UPI Payment</span>
                             </div>
                             <UpiShieldVector className="h-3.5 text-slate-900" />
                           </div>
                         </div>
-                      ) : standeeTheme === 'paytm' ? (
+                      ) : standeeTheme === 'ocean' ? (
                         <div>
-                          {/* Cyan Accent Bar */}
+                          {/* Ocean Cyan Accent Bar */}
                           <div className="h-1 w-full bg-[#00baf2]" />
-                          {/* Paytm Navy Header Strip */}
+                          {/* Ocean Navy Header Strip */}
                           <div className="px-4 py-2.5 bg-[#002970] text-white flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-black text-white leading-none">Pay</span>
-                              <span className="text-sm font-black text-[#00baf2] leading-none">tm</span>
-                              <span className="text-[9.5px] font-bold text-blue-200 uppercase tracking-wider ml-1">for Business</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 rounded-md bg-[#00baf2]/20 border border-[#00baf2]/40 flex items-center justify-center">
+                                <span className="text-[8px] font-black text-[#00baf2]">UPI</span>
+                              </div>
+                              <span className="text-[10px] font-black text-blue-100 uppercase tracking-wider">Direct Payment</span>
                             </div>
                             <UpiShieldVector className="h-3.5 text-white" />
                           </div>
                         </div>
-                      ) : standeeTheme === 'phonepe' ? (
+                      ) : standeeTheme === 'violet' ? (
                         <div>
-                          {/* PhonePe Amber Accent Bar */}
+                          {/* Violet Amber Accent Bar */}
                           <div className="h-1 w-full bg-[#f59e0b]" />
-                          {/* PhonePe Purple Header Strip */}
+                          {/* Violet Header Strip */}
                           <div className="px-4 py-2.5 bg-[#5f259f] text-white flex items-center justify-between relative overflow-hidden">
-                            <div className="flex items-center gap-1.5 relative z-10">
-                              <div className="w-4 h-4 rounded-[4px] bg-white text-[#5f259f] flex items-center justify-center text-[10px] font-black leading-none">
-                                पे
+                            <div className="flex items-center gap-2 relative z-10">
+                              <div className="w-5 h-5 rounded-md bg-white/15 border border-white/20 flex items-center justify-center">
+                                <span className="text-[8px] font-black text-white">QR</span>
                               </div>
-                              <span className="text-xs font-black text-white tracking-tight">PhonePe</span>
-                              <span className="text-[9.5px] font-bold text-purple-200 uppercase ml-1">Business</span>
+                              <span className="text-[10px] font-black text-purple-100 uppercase tracking-wider">Scan & Pay</span>
                             </div>
                             <UpiShieldVector className="h-3.5 text-white relative z-10" />
                           </div>
                         </div>
                       ) : standeeTheme === 'saffron' ? (
                         <div>
-                          {/* National Tricolor Stripe */}
+                          {/* Tricolor Stripe */}
                           <div className="h-1.5 w-full flex">
                             <span className="flex-1 bg-[#ea580c]" />
                             <span className="flex-1 bg-[#ffffff]" />
@@ -2600,9 +2605,11 @@ export default function PaymentLinksRedesign({
                           </div>
                           {/* Saffron Header Strip */}
                           <div className="px-4 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-black text-white tracking-tight">BHARAT QR</span>
-                              <span className="text-[9.5px] font-bold text-amber-200 uppercase ml-0.5">Retail Standee</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 rounded-md bg-white/15 border border-white/20 flex items-center justify-center">
+                                <span className="text-[8px] font-black text-white">भारत</span>
+                              </div>
+                              <span className="text-[10px] font-black text-amber-100 uppercase tracking-wider">UPI Counter</span>
                             </div>
                             <UpiShieldVector className="h-3.5 text-white" />
                           </div>
@@ -2611,11 +2618,11 @@ export default function PaymentLinksRedesign({
                         <div>
                           {/* Champagne Gold Stripe */}
                           <div className="h-1 w-full bg-[#d4af37]" />
-                          {/* Midnight Obsidian Header Strip */}
+                          {/* Midnight Header Strip */}
                           <div className="px-4 py-2.5 bg-[#090d16] text-white flex items-center justify-between">
-                            <div className="flex items-center gap-1.5 text-amber-300">
+                            <div className="flex items-center gap-2">
                               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                              <span className="text-xs font-black tracking-wider uppercase text-amber-200">Direct Reserve</span>
+                              <span className="text-[10px] font-black tracking-wider uppercase text-amber-200">Premium Counter</span>
                             </div>
                             <UpiShieldVector className="h-3.5 text-amber-200" />
                           </div>
@@ -2665,30 +2672,21 @@ export default function PaymentLinksRedesign({
                         {/* 3. QR CODE PRECISION FRAME */}
                         <div className="relative p-3 bg-white rounded-2xl border-2 border-slate-900/10 shadow-sm mt-3">
                           {/* Viewfinder Corner Registration Brackets */}
-                          <div className={`absolute top-1.5 left-1.5 w-3.5 h-3.5 border-t-2 border-l-2 rounded-tl-sm pointer-events-none ${
-                            standeeTheme === 'paytm' ? 'border-[#00baf2]' :
-                            standeeTheme === 'phonepe' ? 'border-[#a855f7]' :
-                            standeeTheme === 'gpay' ? 'border-[#1a73e8]' :
-                            standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400'
-                          }`} />
-                          <div className={`absolute top-1.5 right-1.5 w-3.5 h-3.5 border-t-2 border-r-2 rounded-tr-sm pointer-events-none ${
-                            standeeTheme === 'paytm' ? 'border-[#00baf2]' :
-                            standeeTheme === 'phonepe' ? 'border-[#a855f7]' :
-                            standeeTheme === 'gpay' ? 'border-[#1a73e8]' :
-                            standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400'
-                          }`} />
-                          <div className={`absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-b-2 border-l-2 rounded-bl-sm pointer-events-none ${
-                            standeeTheme === 'paytm' ? 'border-[#00baf2]' :
-                            standeeTheme === 'phonepe' ? 'border-[#a855f7]' :
-                            standeeTheme === 'gpay' ? 'border-[#1a73e8]' :
-                            standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400'
-                          }`} />
-                          <div className={`absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-b-2 border-r-2 rounded-br-sm pointer-events-none ${
-                            standeeTheme === 'paytm' ? 'border-[#00baf2]' :
-                            standeeTheme === 'phonepe' ? 'border-[#a855f7]' :
-                            standeeTheme === 'gpay' ? 'border-[#1a73e8]' :
-                            standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400'
-                          }`} />
+                          {(() => {
+                            const cornerColor =
+                              standeeTheme === 'ocean'   ? 'border-[#00baf2]' :
+                              standeeTheme === 'violet'  ? 'border-[#a855f7]' :
+                              standeeTheme === 'prism'   ? 'border-[#1a73e8]' :
+                              standeeTheme === 'saffron' ? 'border-[#ea580c]' : 'border-amber-400';
+                            return (
+                              <>
+                                <div className={`absolute top-1.5 left-1.5 w-3.5 h-3.5 border-t-2 border-l-2 rounded-tl-sm pointer-events-none ${cornerColor}`} />
+                                <div className={`absolute top-1.5 right-1.5 w-3.5 h-3.5 border-t-2 border-r-2 rounded-tr-sm pointer-events-none ${cornerColor}`} />
+                                <div className={`absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-b-2 border-l-2 rounded-bl-sm pointer-events-none ${cornerColor}`} />
+                                <div className={`absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-b-2 border-r-2 rounded-br-sm pointer-events-none ${cornerColor}`} />
+                              </>
+                            );
+                          })()}
 
                           <div className="relative">
                             <QRCode
@@ -2814,11 +2812,11 @@ export default function PaymentLinksRedesign({
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
                         
                         // Header color bar based on theme
-                        if (standeeTheme === 'paytm') {
+                        if (standeeTheme === 'ocean') {
                           ctx.fillStyle = '#002970';
-                        } else if (standeeTheme === 'gpay') {
+                        } else if (standeeTheme === 'prism') {
                           ctx.fillStyle = '#1a73e8';
-                        } else if (standeeTheme === 'phonepe') {
+                        } else if (standeeTheme === 'violet') {
                           ctx.fillStyle = '#5f259f';
                         } else if (standeeTheme === 'saffron') {
                           ctx.fillStyle = '#ea580c';
@@ -2864,7 +2862,7 @@ export default function PaymentLinksRedesign({
                         // Supported apps
                         ctx.font = 'bold 14px sans-serif';
                         ctx.fillStyle = '#475569';
-                        ctx.fillText('Google Pay  •  PhonePe  •  Paytm  •  BHIM  •  CRED', 300, 640);
+                        ctx.fillText('GPay  •  PhonePe  •  Paytm  •  BHIM  •  CRED  •  Any UPI App', 300, 640);
 
                         // Settlement guarantee footer
                         ctx.font = '12px sans-serif';
