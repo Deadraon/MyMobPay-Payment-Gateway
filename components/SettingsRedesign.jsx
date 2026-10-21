@@ -297,8 +297,19 @@ export default function SettingsRedesign({
         try {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setBankAccounts(parsed);
-            return;
+            // Filter out any legacy dummy ICICI seed
+            const valid = parsed.filter(
+              (acc) =>
+                acc.bank_account_number !== '50200049284092' &&
+                acc.bank_account_number !== '••••••••4092' &&
+                !(acc.bank_name === 'ICICI Bank Ltd.' && acc.bank_ifsc === 'ICIC0000004')
+            );
+            if (valid.length > 0) {
+              setBankAccounts(valid);
+              return;
+            } else {
+              localStorage.removeItem(storageKey);
+            }
           }
         } catch (e) {
           console.error('Error reading saved bank accounts:', e);
@@ -306,21 +317,29 @@ export default function SettingsRedesign({
       }
     }
 
-    // Default seed accounts
-    const initialSeed = [
-      {
-        id: 'acc_primary_1',
-        bank_name: profile?.bank_name || 'ICICI Bank Ltd.',
-        bank_account_name: profile?.bank_account_name || profile?.business_name || 'MyMobPay Technologies Private Limited',
-        bank_account_number: profile?.bank_account_number || '50200049284092',
-        bank_ifsc: profile?.bank_ifsc || 'ICIC0000004',
-        account_type: 'Current Account',
-        is_primary: true,
-        verified: true,
-        created_at: new Date().toISOString()
-      }
-    ];
-    setBankAccounts(initialSeed);
+    // Only populate if profile actually has a valid bank account linked
+    if (
+      profile?.bank_name &&
+      profile?.bank_account_number &&
+      profile.bank_account_number !== '50200049284092'
+    ) {
+      const initialSeed = [
+        {
+          id: 'acc_primary_1',
+          bank_name: profile.bank_name,
+          bank_account_name: profile.bank_account_name || profile.business_name || '',
+          bank_account_number: profile.bank_account_number,
+          bank_ifsc: profile.bank_ifsc || '',
+          account_type: 'Current Account',
+          is_primary: true,
+          verified: true,
+          created_at: new Date().toISOString()
+        }
+      ];
+      setBankAccounts(initialSeed);
+    } else {
+      setBankAccounts([]);
+    }
   }, [profile, user]);
 
   // Sync working form data with profile
@@ -333,7 +352,7 @@ export default function SettingsRedesign({
         business_category: profile.business_category || 'E-Commerce & Digital Goods',
         gstin: profile.gstin || '',
         business_address: profile.business_address || '',
-        upi_id: profile.upi_id || 'merchant@icici',
+        upi_id: profile.upi_id || '',
         theme_color: profile.theme_color || '#3B82F6',
         webhook_url: profile.webhook_url || 'https://api.mymobpay.tech/v2/webhooks/incoming',
         zero_hold_sweep: true,
@@ -345,20 +364,13 @@ export default function SettingsRedesign({
       };
       setFormData(initial);
       setOriginalData(initial);
-      setVpaInputValue(profile.upi_id || 'merchant@icici');
+      setVpaInputValue(profile.upi_id || '');
     }
   }, [profile]);
 
   // Find active primary bank account
   const primaryBankAccount = useMemo(() => {
-    return bankAccounts.find((b) => b.is_primary) || bankAccounts[0] || {
-      id: 'fallback',
-      bank_name: 'ICICI Bank Ltd.',
-      bank_account_name: 'MyMobPay Tech',
-      bank_account_number: '••••••••4092',
-      bank_ifsc: 'ICIC0000004',
-      is_primary: true
-    };
+    return bankAccounts.find((b) => b.is_primary) || bankAccounts[0] || null;
   }, [bankAccounts]);
 
   // Check if modified
@@ -403,17 +415,28 @@ export default function SettingsRedesign({
   const persistBankAccounts = async (updatedAccounts, newPrimary) => {
     setBankAccounts(updatedAccounts);
     if (typeof window !== 'undefined' && user?.id) {
-      localStorage.setItem(`mymobpay_bank_accounts_${user.id}`, JSON.stringify(updatedAccounts));
+      const storageKey = `mymobpay_bank_accounts_${user.id}`;
+      if (updatedAccounts.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(updatedAccounts));
+      } else {
+        localStorage.removeItem(storageKey);
+      }
     }
 
-    if (newPrimary && user?.id) {
+    if (user?.id) {
       try {
-        const payload = {
+        const payload = newPrimary ? {
           bank_name: newPrimary.bank_name,
           bank_account_name: newPrimary.bank_account_name,
           bank_account_number: newPrimary.bank_account_number,
           bank_ifsc: newPrimary.bank_ifsc,
           enable_bank_transfer: true
+        } : {
+          bank_name: null,
+          bank_account_name: null,
+          bank_account_number: null,
+          bank_ifsc: null,
+          enable_bank_transfer: false
         };
         await supabase
           .from('merchants')
@@ -443,21 +466,16 @@ export default function SettingsRedesign({
 
   const handleRemoveBankAccount = (accountId, e) => {
     if (e) e.stopPropagation();
-    if (bankAccounts.length <= 1) {
-      alert('You must maintain at least one verified settlement bank account.');
-      return;
-    }
     const target = bankAccounts.find((b) => b.id === accountId);
-    const confirmed = window.confirm(`Are you sure you want to remove ${target?.bank_name} (${target?.bank_account_number.slice(-4)})?`);
+    const confirmed = window.confirm(`Are you sure you want to remove ${target?.bank_name || 'this bank account'} (${target?.bank_account_number ? target.bank_account_number.slice(-4) : ''})?`);
     if (!confirmed) return;
 
     const remaining = bankAccounts.filter((b) => b.id !== accountId);
-    // If we removed the primary account, designate the first remaining account as primary
     let newPrimary = null;
-    if (target?.is_primary && remaining.length > 0) {
-      remaining[0].is_primary = true;
-      newPrimary = remaining[0];
-    } else {
+    if (remaining.length > 0) {
+      if (target?.is_primary) {
+        remaining[0].is_primary = true;
+      }
       newPrimary = remaining.find((b) => b.is_primary) || remaining[0];
     }
 
@@ -656,11 +674,11 @@ export default function SettingsRedesign({
         upi_id: vpaInputValue || formData.upi_id,
         theme_color: formData.theme_color,
         webhook_url: formData.webhook_url,
-        bank_name: primaryBankAccount.bank_name,
-        bank_account_name: primaryBankAccount.bank_account_name,
-        bank_account_number: primaryBankAccount.bank_account_number,
-        bank_ifsc: primaryBankAccount.bank_ifsc,
-        enable_bank_transfer: true,
+        bank_name: primaryBankAccount ? primaryBankAccount.bank_name : null,
+        bank_account_name: primaryBankAccount ? primaryBankAccount.bank_account_name : null,
+        bank_account_number: primaryBankAccount ? primaryBankAccount.bank_account_number : null,
+        bank_ifsc: primaryBankAccount ? primaryBankAccount.bank_ifsc : null,
+        enable_bank_transfer: Boolean(primaryBankAccount),
         owner_name: formData.owner_name,
         phone_number: formData.phone_number,
         business_category: formData.business_category,
@@ -775,10 +793,12 @@ export default function SettingsRedesign({
     {
       id: 'banking',
       label: 'Banking & Settlement',
-      subtitle: `${primaryBankAccount.bank_name.split(' ')[0]} A/C ${primaryBankAccount.bank_account_number ? primaryBankAccount.bank_account_number.slice(-4) : '4092'}`,
+      subtitle: primaryBankAccount
+        ? `${primaryBankAccount.bank_name?.split(' ')[0] || 'Bank'} A/C ${primaryBankAccount.bank_account_number ? primaryBankAccount.bank_account_number.slice(-4) : '••••'}`
+        : 'Link settlement account',
       icon: Landmark,
-      badge: `${bankAccounts.length} Connected`,
-      badgeColor: 'text-emerald-700 bg-emerald-50 border-emerald-200'
+      badge: bankAccounts.length > 0 ? `${bankAccounts.length} Connected` : 'Action Required',
+      badgeColor: bankAccounts.length > 0 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-amber-700 bg-amber-50 border-amber-200'
     },
     {
       id: 'business',
@@ -1032,14 +1052,22 @@ export default function SettingsRedesign({
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="text-sm md:text-base font-bold text-white tracking-tight">
-                        Direct Settlement Account Active: {primaryBankAccount.bank_name} (..{primaryBankAccount.bank_account_number ? primaryBankAccount.bank_account_number.slice(-4) : '4092'})
+                        {primaryBankAccount ? (
+                          `Direct Settlement Account Active: ${primaryBankAccount.bank_name} (..${primaryBankAccount.bank_account_number ? primaryBankAccount.bank_account_number.slice(-4) : '••••'})`
+                        ) : (
+                          'No Settlement Bank Account Linked'
+                        )}
                       </h2>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold">
-                        Verified
+                      <span className={`px-2 py-0.5 rounded-full text-white text-[10px] font-bold ${
+                        primaryBankAccount ? 'bg-emerald-500' : 'bg-amber-500'
+                      }`}>
+                        {primaryBankAccount ? 'Verified' : 'Setup Required'}
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 mt-0.5">
-                      Payments land directly in your merchant bank account within seconds via NPCI IMPS/UPI Rails.
+                      {primaryBankAccount
+                        ? 'Payments land directly in your merchant bank account within seconds via NPCI IMPS/UPI Rails.'
+                        : 'Connect your business or personal bank account to receive automated instant IMPS settlements.'}
                     </p>
                   </div>
                 </div>
@@ -1111,8 +1139,12 @@ export default function SettingsRedesign({
                         <h3 className="text-base text-[#0c2340] font-bold tracking-tight">
                           Settlement Bank Accounts ({bankAccounts.length})
                         </h3>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
-                          Direct IMPS Active
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          bankAccounts.length > 0
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-slate-100 text-slate-600 border-slate-200'
+                        }`}>
+                          {bankAccounts.length > 0 ? 'Direct IMPS Active' : 'Not Linked'}
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
@@ -1133,11 +1165,30 @@ export default function SettingsRedesign({
 
                 {/* Multiple Accounts Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {bankAccounts.map((acc, index) => {
-                    const isMasked = maskedAccountIds[acc.id] !== true;
-                    const displayNum = isMasked
-                      ? '••••••••' + (acc.bank_account_number ? acc.bank_account_number.slice(-4) : '4092')
-                      : acc.bank_account_number;
+                  {bankAccounts.length === 0 ? (
+                    <div className="col-span-full p-8 border border-dashed border-slate-200 rounded-xl bg-slate-50/50 flex flex-col items-center justify-center text-center">
+                      <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+                        <Landmark className="w-6 h-6" />
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-700">No bank accounts linked</h4>
+                      <p className="text-[11px] text-slate-400 max-w-sm mt-1">
+                        Link your bank account to enable direct IMPS settlements without third-party wallet escrow.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddBankModal(true)}
+                        className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors shadow-xs cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Link Bank Account</span>
+                      </button>
+                    </div>
+                  ) : (
+                    bankAccounts.map((acc, index) => {
+                      const isMasked = maskedAccountIds[acc.id] !== true;
+                      const displayNum = isMasked
+                        ? '••••••••' + (acc.bank_account_number ? acc.bank_account_number.slice(-4) : '••••')
+                        : acc.bank_account_number;
 
                     return (
                       <div
@@ -1228,7 +1279,7 @@ export default function SettingsRedesign({
                         </div>
                       </div>
                     );
-                  })}
+                  }))}
                 </div>
 
                 {/* ─── DIRECT UPI / VPA SECTION (Edit/Save Button, No Copy) ─── */}
@@ -1257,7 +1308,7 @@ export default function SettingsRedesign({
                         setVpaInputValue(e.target.value);
                         if (!isEditingVpa) setIsEditingVpa(true);
                       }}
-                      placeholder="merchant@icici"
+                      placeholder="e.g. business@okhdfcbank or merchant@upi"
                       className="w-full bg-transparent font-mono text-xs text-slate-800 font-bold focus:outline-none"
                     />
 

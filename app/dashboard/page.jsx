@@ -1007,6 +1007,17 @@ export default function DashboardPage() {
 
       }
 
+      // Sanitize legacy dummy ICICI seed if saved from earlier presets
+      if (
+        data.bank_account_number === '50200049284092' || 
+        (data.bank_name === 'ICICI Bank Ltd.' && (data.bank_ifsc === 'ICIC0000004' || !data.bank_account_number))
+      ) {
+        data.bank_name = null;
+        data.bank_account_name = null;
+        data.bank_account_number = null;
+        data.bank_ifsc = null;
+      }
+
       // Auto-expire check
       if (data.subscription_status === 'active' && data.subscription_expires_at) {
         const isExpired = new Date(data.subscription_expires_at) < new Date();

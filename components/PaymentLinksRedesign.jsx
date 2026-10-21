@@ -656,10 +656,6 @@ export default function PaymentLinksRedesign({
   const previewPurposeFormatted = purpose.trim() || 'Direct Payment';
   const previewRefFormatted = refCode.trim() || 'REF-GEN';
 
-  const destBank = profile?.bank_name || profile?.settlement_bank || 'ICICI';
-  const accNum = profile?.account_number || profile?.bank_account_number || '4092';
-  const lastFour = accNum ? String(accNum).slice(-4) : '4092';
-
   const previewUrlDynamic = useMemo(() => {
     const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
     const cleanRef = refCode.trim() || '84920';
@@ -2031,7 +2027,11 @@ export default function PaymentLinksRedesign({
             <p className="text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
               Every payment collected via your custom payment links settles directly to your verified{' '}
               <strong className="text-slate-800 font-semibold">
-                ICICI Bank Current Account (•••• {profile?.bank_account_number?.slice(-4) || '4092'})
+                {profile?.bank_name
+                  ? `${profile.bank_name} (•••• ${String(profile?.bank_account_number || '').slice(-4) || '••••'})`
+                  : profile?.upi_id
+                  ? `receiving UPI VPA (${profile.upi_id})`
+                  : 'direct bank settlement rail'}
               </strong>
               . Funds never route through intermediary holding wallets or aggregate escrow accounts.
             </p>

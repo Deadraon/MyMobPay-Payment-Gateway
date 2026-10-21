@@ -446,7 +446,9 @@ export default function TransactionsRedesign({
         bg: 'bg-blue-50',
         text: 'text-blue-700',
         icon: 'swap_horiz',
-        identifier: profile?.bank_name ? `${profile.bank_name} ••••${(profile.bank_account_number || '4092').slice(-4)}` : 'Direct IMPS'
+        identifier: profile?.bank_name
+          ? `${profile.bank_name}${profile?.bank_account_number ? ` ••••${profile.bank_account_number.slice(-4)}` : ''}`
+          : 'Direct IMPS'
       };
     }
     if (app.includes('crypto') || app.includes('web3') || app.includes('polygon') || app.includes('usdt')) {
