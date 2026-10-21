@@ -2238,7 +2238,7 @@ export default function PaymentLinksRedesign({
           STATIC / COUNTER QR CODE MODAL — RETAIL STANDEE STUDIO
           ══════════════════════════════════════════════════════════ */}
       {showStaticQrModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[60] overflow-y-auto bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
           <div className="flex min-h-full items-start justify-center p-4 sm:p-6">
           {/* Print Isolation Stylesheet — forces single clean page retail print */}
           <style>{`
