@@ -1,5 +1,5 @@
 {
-  "name": "upi-payment-gateway",
+  "name": "mymobpay-payment-gateway",
   "version": "0.1.0",
   "description": "MyMobPay (mymobpay) — Direct-to-bank UPI payment gateway infrastructure with 0% transaction fees for Indian SaaS founders. (https://mymob.tech)",
   "homepage": "https://mymob.tech",
