@@ -25,6 +25,7 @@ export function MyMobPayLogo({
   className = '',
   textColor = 'var(--text-primary, #0f172a)',
   markSize = 32,
+  textSize = 'text-xl sm:text-2xl',
   ...props
 }) {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
@@ -43,7 +44,7 @@ export function MyMobPayLogo({
       />
       {/* Wordmark: MyMobPay */}
       <span
-        className="font-extrabold tracking-tight leading-none text-xl sm:text-2xl whitespace-nowrap"
+        className={`font-extrabold tracking-tight leading-none whitespace-nowrap ${textSize}`}
         style={{
           fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           color: resolvedColor,

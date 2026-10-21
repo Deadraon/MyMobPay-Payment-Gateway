@@ -16,7 +16,7 @@ import {
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 
-const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) => {
+const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32, textSize = 'text-xl sm:text-2xl' }) => {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
   return (
     <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 hover:scale-[1.02] ${className}`}>
@@ -31,7 +31,7 @@ const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) 
       />
       {/* Brand Wordmark */}
       <span
-        className="font-extrabold tracking-tight leading-none text-xl sm:text-2xl"
+        className={`font-extrabold tracking-tight leading-none whitespace-nowrap ${textSize}`}
         style={{
           fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           color: resolvedColor,
@@ -610,9 +610,9 @@ export default function HomePage() {
               <div className="flex min-h-[480px]">
 
                 {/* Sidebar */}
-                <div className="hidden md:flex w-[180px] bg-slate-50 border-r border-slate-200 flex-col py-6 px-3 gap-1 flex-shrink-0">
-                  <div className="px-3 pb-4">
-                    <MyMobPayLogo className="w-28 h-auto" textColor="#0F172A" />
+                <div className="hidden md:flex w-[200px] bg-slate-50 border-r border-slate-200 flex-col py-6 px-3 gap-1 flex-shrink-0">
+                  <div className="px-2 pb-4">
+                    <MyMobPayLogo markSize={24} textSize="text-base" textColor="#0F172A" />
                   </div>
                   {[
                     { label: 'Dashboard', active: true, dot: 'bg-blue-500' },
