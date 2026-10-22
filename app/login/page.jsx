@@ -268,6 +268,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // Password Recovery / Reset Mode
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
   // Registration Fields (Signup only)
   const [businessName, setBusinessName] = useState('');
   const [upiId, setUpiId] = useState('');
@@ -288,12 +293,14 @@ export default function LoginPage() {
   const isRegistrationSubmittedRef = useRef(false);
   const isRedirectingRef = useRef(false);
 
-  // Handle URL query parameters on initial mount (e.g. ?mode=signup)
+  // Handle URL query parameters & password recovery hash on initial mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('mode') === 'signup') {
         setMode('signup');
+      } else if (params.get('mode') === 'reset' || window.location.hash.includes('type=recovery')) {
+        setMode('reset');
       }
     }
   }, []);
@@ -304,9 +311,9 @@ export default function LoginPage() {
       if (!session?.user) return;
       if (isRedirectingRef.current) return;
 
-      // CRITICAL: In signup mode, NEVER auto-redirect to dashboard when an Email OTP is confirmed.
-      // The user MUST stay on the form to enter their phone number and verify via WhatsApp OTP.
-      if (modeRef.current === 'signup') {
+      // CRITICAL: In signup or reset mode, NEVER auto-redirect to dashboard.
+      // Signup requires completing phone & WhatsApp OTP. Reset requires setting a new password.
+      if (modeRef.current === 'signup' || modeRef.current === 'reset') {
         return;
       }
 
@@ -354,13 +361,17 @@ export default function LoginPage() {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setMode('reset');
+        return;
+      }
       if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) {
         handleAuthRedirect(session);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
+      if (session?.user && modeRef.current !== 'reset') {
         handleAuthRedirect(session);
       }
     });
@@ -867,6 +878,40 @@ export default function LoginPage() {
     }
   };
 
+  const handleUpdateNewPassword = async (e) => {
+    if (e) e.preventDefault();
+    if (!newPassword || newPassword.length < 6) {
+      setError('New password must be at least 6 characters long.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match. Please verify both fields.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      const { error: updateErr } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateErr) throw updateErr;
+
+      setMessage('Password updated successfully! Launching your merchant dashboard...');
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 1000);
+    } catch (err) {
+      console.error('Password update error:', err);
+      setError(err?.message || 'Could not update password. Please try requesting a new reset link.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Main Form Submit Handler
   const handleAuth = async (action) => {
     if (!email.trim() || !password.trim()) {
@@ -1250,12 +1295,14 @@ export default function LoginPage() {
               <div className="p-6 sm:p-8 bg-white">
                 <div className="text-center">
                   <h1 className="text-xl sm:text-2xl font-light text-[#0d253d] tracking-[-0.4px] mb-1 font-sohne">
-                    {mode === 'signin' ? 'Log in to Dashboard' : 'Create Merchant Account'}
+                    {mode === 'signin' ? 'Log in to Dashboard' : mode === 'signup' ? 'Create Merchant Account' : 'Set New Password'}
                   </h1>
                   <p className="text-xs text-[#64748d] leading-relaxed font-light">
                     {mode === 'signin' 
                       ? 'Manage payments, instant settlements, and customer refunds' 
-                      : 'Start collecting instant 0% direct UPI payments in minutes'}
+                      : mode === 'signup'
+                      ? 'Start collecting instant 0% direct UPI payments in minutes'
+                      : 'Choose a strong password with at least 6 characters'}
                   </p>
                 </div>
 
@@ -1273,33 +1320,35 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* ── Primary Auth Mode Switcher: Log In vs Sign Up ── */}
-                <div className="mt-5 p-1 bg-[#f0f2f5] rounded-full grid grid-cols-2 gap-1 border border-[#e3e8ee] shadow-2xs">
-                  <button 
-                    type="button" 
-                    onClick={() => { setMode('signin'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                    className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                      mode === 'signin' 
-                        ? 'bg-white text-[#533afd] shadow-xs' 
-                        : 'text-[#64748d] hover:text-[#0d253d]'
-                    }`}
-                  >
-                    <Lock className="w-3.5 h-3.5" />
-                    <span>Log In</span>
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => { setMode('signup'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                    className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                      mode === 'signup' 
-                        ? 'bg-white text-[#533afd] shadow-xs' 
-                        : 'text-[#64748d] hover:text-[#0d253d]'
-                    }`}
-                  >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    <span>Sign Up</span>
-                  </button>
-                </div>
+                {/* ── Primary Auth Mode Switcher: Log In vs Sign Up (hidden in reset mode) ── */}
+                {mode !== 'reset' && (
+                  <div className="mt-5 p-1 bg-[#f0f2f5] rounded-full grid grid-cols-2 gap-1 border border-[#e3e8ee] shadow-2xs">
+                    <button 
+                      type="button" 
+                      onClick={() => { setMode('signin'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                      className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                        mode === 'signin' 
+                          ? 'bg-white text-[#533afd] shadow-xs' 
+                          : 'text-[#64748d] hover:text-[#0d253d]'
+                      }`}
+                    >
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>Log In</span>
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={() => { setMode('signup'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                      className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                        mode === 'signup' 
+                          ? 'bg-white text-[#533afd] shadow-xs' 
+                          : 'text-[#64748d] hover:text-[#0d253d]'
+                      }`}
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      <span>Sign Up</span>
+                    </button>
+                  </div>
+                )}
 
                 {/* In Sign In Mode ONLY: Sub-Tab Switcher (WhatsApp OTP vs Password) */}
                 {mode === 'signin' && (
@@ -2085,29 +2134,95 @@ export default function LoginPage() {
                   </form>
                 )}
 
+                {/* ── Mode: Reset Password ── */}
+                {mode === 'reset' && (
+                  <form onSubmit={handleUpdateNewPassword} className="space-y-4">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[#64748d] mb-1.5">
+                        New Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showNewPassword ? 'text' : 'password'}
+                          required
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="••••••••••••"
+                          minLength={6}
+                          className="w-full h-11 px-3.5 bg-white border border-[#e3e8ee] rounded-xl text-xs text-[#0d253d] focus:border-[#533afd] focus:ring-1 focus:ring-[#533afd] transition-all outline-hidden pr-10 shadow-2xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                        >
+                          {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[#64748d] mb-1.5">
+                        Confirm New Password
+                      </label>
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="••••••••••••"
+                        minLength={6}
+                        className="w-full h-11 px-3.5 bg-white border border-[#e3e8ee] rounded-xl text-xs text-[#0d253d] focus:border-[#533afd] focus:ring-1 focus:ring-[#533afd] transition-all outline-hidden shadow-2xs"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full h-11 bg-[#533afd] hover:bg-[#432bc9] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Updating Password...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          <span>Set New Password &amp; Continue</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+
                 {/* Soft Divider */}
-                <div className="relative my-6 flex items-center justify-center">
-                  <div className="w-full h-px bg-[#e3e8ee]"></div>
-                  <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold uppercase tracking-wider">
-                    {mode === 'signup' ? 'ALREADY REGISTERED?' : 'OR CONTINUE WITH'}
-                  </span>
-                </div>
+                {mode !== 'reset' && (
+                  <div className="relative my-6 flex items-center justify-center">
+                    <div className="w-full h-px bg-[#e3e8ee]"></div>
+                    <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold uppercase tracking-wider">
+                      {mode === 'signup' ? 'ALREADY REGISTERED?' : 'OR CONTINUE WITH'}
+                    </span>
+                  </div>
+                )}
 
                 {/* Google Workspace Login */}
-                <button
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  disabled={loading}
-                  className="w-full h-11 bg-white hover:bg-[#f6f9fc] text-[#0d253d] rounded-full text-xs font-medium flex items-center justify-center gap-3 transition-colors cursor-pointer disabled:opacity-50 border border-[#e3e8ee] shadow-2xs"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z" fill="#4285F4"></path>
-                    <path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.13C3.25 21.36 7.33 24 12 24z" fill="#34A853"></path>
-                    <path d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.26C.46 8.18 0 9.99 0 12s.46 3.82 1.26 5.42l4.02-3.13z" fill="#FBBC05"></path>
-                    <path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.25 2.64 1.26 6.58l4.02 3.13c.95-2.83 3.6-4.96 6.72-4.96z" fill="#EA4335"></path>
-                  </svg>
-                  <span>{mode === 'signup' ? 'Sign In with Registered Google Account' : 'Continue with Google Workspace'}</span>
-                </button>
+                {mode !== 'reset' && (
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    disabled={loading}
+                    className="w-full h-11 bg-white hover:bg-[#f6f9fc] text-[#0d253d] rounded-full text-xs font-medium flex items-center justify-center gap-3 transition-colors cursor-pointer disabled:opacity-50 border border-[#e3e8ee] shadow-2xs"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                      <path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z" fill="#4285F4"></path>
+                      <path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.13C3.25 21.36 7.33 24 12 24z" fill="#34A853"></path>
+                      <path d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.26C.46 8.18 0 9.99 0 12s.46 3.82 1.26 5.42l4.02-3.13z" fill="#FBBC05"></path>
+                      <path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.25 2.64 1.26 6.58l4.02 3.13c.95-2.83 3.6-4.96 6.72-4.96z" fill="#EA4335"></path>
+                    </svg>
+                    <span>{mode === 'signup' ? 'Sign In with Registered Google Account' : 'Continue with Google Workspace'}</span>
+                  </button>
+                )}
                 {/* QR Code Express Login Bar (in Signin mode, desktop only) */}
                 {mode === 'signin' && (
                   <div className="mt-4 p-3.5 rounded-lg bg-[#f6f9fc] items-center justify-between gap-3 border border-[#e3e8ee]/60 hidden lg:flex">
@@ -2134,7 +2249,18 @@ export default function LoginPage() {
 
               {/* Card Promotional Footer: Registration / Signin Incentive */}
               <div className="px-6 py-4 bg-[#f6f9fc] text-center border-t border-[#e3e8ee]/70">
-                {mode === 'signin' ? (
+                {mode === 'reset' ? (
+                  <p className="text-xs text-[#64748d]">
+                    Remembered your password?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
+                      className="font-bold text-[#533afd] hover:underline cursor-pointer ml-1"
+                    >
+                      Log In to Dashboard
+                    </button>
+                  </p>
+                ) : mode === 'signin' ? (
                   <p className="text-xs text-[#64748d]">
                     New to mymobpay?{' '}
                     <button

@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { CONFIG } from '@/lib/config';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { findMerchantByApiKey } from '@/lib/merchantAuth';
 
 export async function GET(req) {
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`merchant_fetch_${clientIp}`, 30, 60 * 1000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please slow down.' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   const key = searchParams.get('key');
   
@@ -11,13 +22,9 @@ export async function GET(req) {
   }
 
   try {
-    const { data, error } = await supabaseAdmin
-      .from('merchants')
-      .select('id, business_name, upi_id, theme_color, subscription_status, subscription_expires_at, bank_account_number, bank_ifsc, bank_account_name, bank_name, enable_bank_transfer')
-      .eq('api_key', key)
-      .single();
+    const data = await findMerchantByApiKey(key, 'id, business_name, upi_id, theme_color, subscription_status, subscription_expires_at, bank_account_number, bank_ifsc, bank_account_name, bank_name, enable_bank_transfer');
 
-    if (error || !data) {
+    if (!data) {
       return NextResponse.json({ error: 'Merchant not found or invalid API key' }, { status: 404 });
     }
 
