@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import QRCode from 'react-qr-code';
 import {
   Link as LinkIcon,
@@ -185,6 +186,39 @@ export default function PaymentLinksRedesign({
   const [standeeUpiId, setStandeeUpiId] = useState('');
   const [standeeShowSoundbox, setStandeeShowSoundbox] = useState(true);
   const [standeeShowLogo, setStandeeShowLogo] = useState(true);
+
+  // Portal mount check
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock background and html scrolling when static QR modal is open
+  useEffect(() => {
+    if (showStaticQrModal) {
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevBodyTouchAction = document.body.style.touchAction;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      document.documentElement.style.overflow = 'hidden';
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          setShowStaticQrModal(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.body.style.overflow = prevBodyOverflow;
+        document.body.style.touchAction = prevBodyTouchAction;
+        document.documentElement.style.overflow = prevHtmlOverflow;
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [showStaticQrModal]);
 
   // Active generated preview link (null until user clicks generate)
   const [activeUrl, setActiveUrl] = useState('');
@@ -2237,8 +2271,25 @@ export default function PaymentLinksRedesign({
       {/* ══════════════════════════════════════════════════════════
           STATIC / COUNTER QR CODE MODAL — RETAIL STANDEE STUDIO
           ══════════════════════════════════════════════════════════ */}
-      {showStaticQrModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150">
+      {mounted && showStaticQrModal && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in overscroll-contain select-none"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowStaticQrModal(false);
+            }
+          }}
+          onWheel={(e) => {
+            if (e.target === e.currentTarget) {
+              e.preventDefault();
+            }
+          }}
+          onTouchMove={(e) => {
+            if (e.target === e.currentTarget) {
+              e.preventDefault();
+            }
+          }}
+        >
           {/* Print Isolation Stylesheet — forces single clean page retail print */}
           <style>{`
             @media print {
@@ -2282,7 +2333,10 @@ export default function PaymentLinksRedesign({
             }
           `}</style>
 
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-3xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+          <div
+            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             
             {/* Modal Header — Pinned at Top, 100% visible, never cut off */}
             <div className="shrink-0 px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-white z-10">
@@ -2312,7 +2366,7 @@ export default function PaymentLinksRedesign({
             </div>
 
             {/* Scrollable Modal Content */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-4">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
                 {/* Left Column: Customization Controls */}
@@ -2918,7 +2972,8 @@ export default function PaymentLinksRedesign({
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
