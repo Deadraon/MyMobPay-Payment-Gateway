@@ -56,6 +56,45 @@ function UpiShieldVector({ className = "h-4" }) {
   );
 }
 
+const drawUpiLogoCanvas = (ctx, x, y, scale = 1, textColor = '#ffffff') => {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+
+  // Green chevron
+  ctx.fillStyle = '#097939';
+  ctx.beginPath();
+  ctx.moveTo(10, 6);
+  ctx.lineTo(22, 19);
+  ctx.lineTo(10, 32);
+  ctx.lineTo(18, 32);
+  ctx.lineTo(30, 19);
+  ctx.lineTo(18, 6);
+  ctx.closePath();
+  ctx.fill();
+
+  // Orange chevron
+  ctx.fillStyle = '#ED7524';
+  ctx.beginPath();
+  ctx.moveTo(23, 6);
+  ctx.lineTo(35, 19);
+  ctx.lineTo(23, 32);
+  ctx.lineTo(31, 32);
+  ctx.lineTo(43, 19);
+  ctx.lineTo(31, 6);
+  ctx.closePath();
+  ctx.fill();
+
+  // UPI Text
+  ctx.fillStyle = textColor;
+  ctx.font = 'bold 22px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('UPI', 48, 27);
+
+  ctx.restore();
+};
+
 function UpiCenterQrBadge() {
   return (
     <div className="w-9 h-9 rounded-xl bg-white shadow-md border-2 border-slate-900/10 flex flex-col items-center justify-center p-0.5 pointer-events-none">
@@ -794,6 +833,494 @@ export default function PaymentLinksRedesign({
       localStorage.setItem(`mymobpay_payment_links_${profile.id}`, JSON.stringify(updated));
     }
     showToast('Payment link deleted');
+  };
+
+  // High-Resolution Retail Standee PNG Generator (800x1060 HD Canvas)
+  const handleDownloadStandee = () => {
+    const qrSvg = document.getElementById('standee-real-qr-code') || document.querySelector('#standee-qr-frame svg');
+    if (!qrSvg) {
+      showToast('Standee QR code is not ready yet.');
+      return;
+    }
+
+    let svgData = new XMLSerializer().serializeToString(qrSvg);
+    if (!svgData.includes('xmlns=')) {
+      svgData = svgData.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      showToast('Canvas rendering context not available.');
+      return;
+    }
+
+    const qrImg = new Image();
+    qrImg.onload = () => {
+      // 800 x 1060 px - High DPI retail standee card
+      canvas.width = 800;
+      canvas.height = 1060;
+
+      const fillRoundedRect = (x, y, w, h, r, color) => {
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(x, y, w, h, r);
+        } else {
+          ctx.rect(x, y, w, h);
+        }
+        ctx.fill();
+        ctx.restore();
+      };
+
+      const strokeRoundedRect = (x, y, w, h, r, color, lineWidth = 1) => {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(x, y, w, h, r);
+        } else {
+          ctx.rect(x, y, w, h);
+        }
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      // 1. Standee Card Background with Rounded Corners & Subtle Border
+      ctx.fillStyle = '#ffffff';
+      fillRoundedRect(0, 0, canvas.width, canvas.height, 36, '#ffffff');
+      strokeRoundedRect(0, 0, canvas.width, canvas.height, 36, '#e2e8f0', 2);
+
+      // Clip canvas to rounded standee shape for top header
+      ctx.save();
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(0, 0, canvas.width, canvas.height, 36);
+      } else {
+        ctx.rect(0, 0, canvas.width, canvas.height);
+      }
+      ctx.clip();
+
+      // 2. Theme Header Strip
+      if (standeeTheme === 'prism') {
+        // 4-Color Google-style Stripe
+        ctx.fillStyle = '#4285F4'; ctx.fillRect(0, 0, 200, 10);
+        ctx.fillStyle = '#EA4335'; ctx.fillRect(200, 0, 200, 10);
+        ctx.fillStyle = '#FBBC05'; ctx.fillRect(400, 0, 200, 10);
+        ctx.fillStyle = '#34A853'; ctx.fillRect(600, 0, 200, 10);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 10, canvas.width, 70);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(0, 79, canvas.width, 1);
+
+        // 4 dots
+        ctx.fillStyle = '#4285F4'; ctx.beginPath(); ctx.arc(48, 48, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#EA4335'; ctx.beginPath(); ctx.arc(62, 48, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#FBBC05'; ctx.beginPath(); ctx.arc(76, 48, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#34A853'; ctx.beginPath(); ctx.arc(90, 48, 5, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '900 16px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('UPI PAYMENT', 110, 54);
+
+        // UPI Logo Right
+        drawUpiLogoCanvas(ctx, 670, 32, 0.9, '#0f172a');
+      } else if (standeeTheme === 'ocean') {
+        // Cyan Stripe
+        ctx.fillStyle = '#00baf2';
+        ctx.fillRect(0, 0, canvas.width, 8);
+
+        ctx.fillStyle = '#002970';
+        ctx.fillRect(0, 8, canvas.width, 72);
+
+        fillRoundedRect(36, 26, 36, 36, 8, 'rgba(0, 186, 242, 0.25)');
+        ctx.fillStyle = '#00baf2';
+        ctx.font = '900 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('UPI', 54, 49);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 18px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('DIRECT PAYMENT', 86, 50);
+
+        drawUpiLogoCanvas(ctx, 670, 30, 0.9, '#ffffff');
+      } else if (standeeTheme === 'violet') {
+        // Amber Stripe
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(0, 0, canvas.width, 8);
+
+        ctx.fillStyle = '#5f259f';
+        ctx.fillRect(0, 8, canvas.width, 72);
+
+        fillRoundedRect(36, 26, 36, 36, 8, 'rgba(255, 255, 255, 0.2)');
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('QR', 54, 49);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 18px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('SCAN & PAY', 86, 50);
+
+        drawUpiLogoCanvas(ctx, 670, 30, 0.9, '#ffffff');
+      } else if (standeeTheme === 'saffron') {
+        // Tricolor Stripe
+        ctx.fillStyle = '#ea580c'; ctx.fillRect(0, 0, 267, 10);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(267, 0, 266, 10);
+        ctx.fillStyle = '#16a34a'; ctx.fillRect(533, 0, 267, 10);
+
+        const grad = ctx.createLinearGradient(0, 10, canvas.width, 10);
+        grad.addColorStop(0, '#ea580c');
+        grad.addColorStop(1, '#c2410c');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 10, canvas.width, 70);
+
+        fillRoundedRect(36, 27, 44, 36, 8, 'rgba(255, 255, 255, 0.2)');
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('भारत', 58, 50);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 18px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('UPI COUNTER', 94, 50);
+
+        drawUpiLogoCanvas(ctx, 670, 30, 0.9, '#ffffff');
+      } else {
+        // Midnight Gold Stripe
+        ctx.fillStyle = '#d4af37';
+        ctx.fillRect(0, 0, canvas.width, 8);
+
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(0, 8, canvas.width, 72);
+
+        ctx.fillStyle = '#d4af37';
+        ctx.font = '900 18px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('✦  PREMIUM COUNTER', 40, 50);
+
+        drawUpiLogoCanvas(ctx, 670, 30, 0.9, '#d4af37');
+      }
+      ctx.restore();
+
+      // 3. Store Monogram & Verification Check Badge
+      const storeName = standeeBusinessName || profile?.business_name || profile?.owner_name || 'MyMobPay Store';
+      const initial = storeName.charAt(0).toUpperCase();
+
+      fillRoundedRect(368, 110, 64, 64, 20, '#f8fafc');
+      strokeRoundedRect(368, 110, 64, 64, 20, '#e2e8f0', 1.5);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '900 30px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(initial, 400, 154);
+
+      // Verified green check circle
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(424, 166, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Checkmark icon
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(419, 166);
+      ctx.lineTo(422, 169);
+      ctx.lineTo(429, 162);
+      ctx.stroke();
+
+      // Store Name
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '900 26px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(storeName, 400, 208);
+
+      // Desk Tag
+      ctx.fillStyle = '#64748b';
+      ctx.font = '500 15px sans-serif';
+      ctx.fillText(`📍 ${standeeDeskTag || 'Billing Counter'}`, 400, 234);
+
+      // Amount Acceptance Mode Pill
+      if (staticQrAmountType === 'fixed' && parseFloat(staticQrAmount) > 0) {
+        fillRoundedRect(280, 252, 240, 32, 16, '#eff6ff');
+        strokeRoundedRect(280, 252, 240, 32, 16, '#bfdbfe', 1);
+        ctx.fillStyle = '#1d4ed8';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillText(`Fixed Amount: ₹${parseFloat(staticQrAmount).toFixed(2)}`, 400, 273);
+      } else {
+        fillRoundedRect(270, 252, 260, 32, 16, '#f0fdf4');
+        strokeRoundedRect(270, 252, 260, 32, 16, '#bbf7d0', 1);
+        // Green dot
+        ctx.fillStyle = '#10b981';
+        ctx.beginPath();
+        ctx.arc(295, 268, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#15803d';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillText('Scan & Pay Any Amount', 405, 273);
+      }
+
+      // 4. Precision QR Code Frame & Viewfinder Brackets
+      const frameX = 215;
+      const frameY = 305;
+      const frameSize = 370;
+
+      fillRoundedRect(frameX, frameY, frameSize, frameSize, 24, '#ffffff');
+      strokeRoundedRect(frameX, frameY, frameSize, frameSize, 24, '#e2e8f0', 2);
+
+      // Corner Viewfinder Brackets in theme color
+      const bracketColor =
+        standeeTheme === 'ocean'   ? '#00baf2' :
+        standeeTheme === 'violet'  ? '#a855f7' :
+        standeeTheme === 'prism'   ? '#1a73e8' :
+        standeeTheme === 'saffron' ? '#ea580c' : '#d4af37';
+
+      ctx.strokeStyle = bracketColor;
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      const bLen = 22;
+      const bPad = 12;
+
+      // Top-Left
+      ctx.beginPath();
+      ctx.moveTo(frameX + bPad, frameY + bPad + bLen);
+      ctx.lineTo(frameX + bPad, frameY + bPad);
+      ctx.lineTo(frameX + bPad + bLen, frameY + bPad);
+      ctx.stroke();
+
+      // Top-Right
+      ctx.beginPath();
+      ctx.moveTo(frameX + frameSize - bPad - bLen, frameY + bPad);
+      ctx.lineTo(frameX + frameSize - bPad, frameY + bPad);
+      ctx.lineTo(frameX + frameSize - bPad, frameY + bPad + bLen);
+      ctx.stroke();
+
+      // Bottom-Left
+      ctx.beginPath();
+      ctx.moveTo(frameX + bPad, frameY + frameSize - bPad - bLen);
+      ctx.lineTo(frameX + bPad, frameY + frameSize - bPad);
+      ctx.lineTo(frameX + bPad + bLen, frameY + frameSize - bPad);
+      ctx.stroke();
+
+      // Bottom-Right
+      ctx.beginPath();
+      ctx.moveTo(frameX + frameSize - bPad - bLen, frameY + frameSize - bPad);
+      ctx.lineTo(frameX + frameSize - bPad, frameY + frameSize - bPad);
+      ctx.lineTo(frameX + frameSize - bPad, frameY + frameSize - bPad - bLen);
+      ctx.stroke();
+
+      // Draw the ACTUAL QR CODE
+      const qrDrawPad = 26;
+      ctx.drawImage(qrImg, frameX + qrDrawPad, frameY + qrDrawPad, frameSize - qrDrawPad * 2, frameSize - qrDrawPad * 2);
+
+      // Center UPI Badge on QR (if enabled)
+      if (standeeShowLogo) {
+        const badgeSize = 64;
+        const badgeX = 400 - badgeSize / 2;
+        const badgeY = frameY + frameSize / 2 - badgeSize / 2;
+
+        fillRoundedRect(badgeX, badgeY, badgeSize, badgeSize, 16, '#ffffff');
+        strokeRoundedRect(badgeX, badgeY, badgeSize, badgeSize, 16, '#cbd5e1', 2);
+
+        // Center mini UPI vectors
+        drawUpiLogoCanvas(ctx, badgeX + 5, badgeY + 12, 0.55, '#1e293b');
+      }
+
+      // 5. Accepted UPI Apps Row
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ACCEPTED VIA ANY UPI APP', 400, 715);
+
+      const apps = ['GPay', 'PhonePe', 'Paytm', 'BHIM', 'CRED'];
+      const appWidth = 88;
+      const appHeight = 32;
+      const appGap = 10;
+      const startX = 400 - (apps.length * appWidth + (apps.length - 1) * appGap) / 2;
+
+      apps.forEach((app, idx) => {
+        const x = startX + idx * (appWidth + appGap);
+        const y = 730;
+        if (app === 'CRED') {
+          fillRoundedRect(x, y, appWidth, appHeight, 10, '#090d16');
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 12px sans-serif';
+          ctx.fillText('CRED', x + appWidth / 2, y + 21);
+        } else if (app === 'PhonePe') {
+          fillRoundedRect(x, y, appWidth, appHeight, 10, '#ffffff');
+          strokeRoundedRect(x, y, appWidth, appHeight, 10, '#e2e8f0', 1);
+          ctx.fillStyle = '#5f259f';
+          ctx.font = '900 12px sans-serif';
+          ctx.fillText('PhonePe', x + appWidth / 2, y + 21);
+        } else if (app === 'Paytm') {
+          fillRoundedRect(x, y, appWidth, appHeight, 10, '#ffffff');
+          strokeRoundedRect(x, y, appWidth, appHeight, 10, '#e2e8f0', 1);
+          ctx.font = '900 12px sans-serif';
+          ctx.fillStyle = '#002970';
+          ctx.fillText('Pay', x + appWidth / 2 - 10, y + 21);
+          ctx.fillStyle = '#00baf2';
+          ctx.fillText('tm', x + appWidth / 2 + 13, y + 21);
+        } else {
+          fillRoundedRect(x, y, appWidth, appHeight, 10, '#ffffff');
+          strokeRoundedRect(x, y, appWidth, appHeight, 10, '#e2e8f0', 1);
+          ctx.fillStyle = '#1e293b';
+          ctx.font = '900 12px sans-serif';
+          ctx.fillText(app, x + appWidth / 2, y + 21);
+        }
+      });
+
+      // 6. Receiving UPI ID Pill
+      const upiIdStr = `UPI ID: ${standeeUpiId || profile?.upi_id || 'merchant@upi'}`;
+      ctx.font = 'bold 16px monospace';
+      const upiWidth = Math.max(340, ctx.measureText(upiIdStr).width + 60);
+
+      fillRoundedRect(400 - upiWidth / 2, 785, upiWidth, 38, 14, '#f8fafc');
+      strokeRoundedRect(400 - upiWidth / 2, 785, upiWidth, 38, 14, '#cbd5e1', 1.5);
+
+      // Green dot
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(400 - upiWidth / 2 + 20, 804, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 16px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(upiIdStr, 400 + 10, 810);
+
+      // 7. Instant Voice Notification Seal (if enabled)
+      if (standeeShowSoundbox) {
+        fillRoundedRect(220, 842, 360, 32, 12, '#ecfdf5');
+        strokeRoundedRect(220, 842, 360, 32, 12, '#a7f3d0', 1);
+        ctx.fillStyle = '#047857';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText('🔊 Instant Voice Notification Active', 400, 863);
+      }
+
+      // 8. Direct Settlement Security Footer
+      ctx.strokeStyle = '#f1f5f9';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(80, 920);
+      ctx.lineTo(720, 920);
+      ctx.stroke();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '500 13px sans-serif';
+      ctx.fillText('Direct Bank Settlement   •   0% MDR Fee   •   NPCI 2.0 Rails', 400, 955);
+
+      // Trigger high-res PNG download
+      const pngFile = canvas.toDataURL('image/png', 1.0);
+      const downloadLink = document.createElement('a');
+      downloadLink.download = `${(standeeBusinessName || 'mymobpay').toLowerCase().replace(/\s+/g, '_')}_retail_standee.png`;
+      downloadLink.href = pngFile;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      showToast('High-Res QR Standee image downloaded!');
+    };
+
+    qrImg.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+  };
+
+  // 1-Page Isolated Retail Standee Print
+  const handlePrintStandee = () => {
+    const card = document.getElementById('printable-standee-card');
+    if (!card) {
+      window.print();
+      return;
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    iframe.id = 'standee-print-iframe';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+
+    // Collect all stylesheets from parent document
+    let stylesHtml = '';
+    document.querySelectorAll('link[rel="stylesheet"], style').forEach(node => {
+      stylesHtml += node.outerHTML;
+    });
+
+    const cardClone = card.cloneNode(true);
+    cardClone.querySelectorAll('.no-print-area').forEach(el => el.remove());
+
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${(standeeBusinessName || 'MyMobPay').replace(/"/g, '&quot;')} - Retail Standee</title>
+          ${stylesHtml}
+          <style>
+            @page {
+              size: portrait;
+              margin: 10mm;
+            }
+            html, body {
+              background: #ffffff !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              min-height: 100vh !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            #printable-standee-card {
+              width: 380px !important;
+              max-width: 100% !important;
+              margin: auto !important;
+              border: 1.5px solid #cbd5e1 !important;
+              border-radius: 28px !important;
+              box-shadow: none !important;
+              page-break-inside: avoid !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+          </style>
+        </head>
+        <body>
+          ${cardClone.outerHTML}
+        </body>
+      </html>
+    `);
+    doc.close();
+
+    setTimeout(() => {
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch (err) {
+        console.error('Print iframe error:', err);
+        window.print();
+      } finally {
+        setTimeout(() => {
+          if (iframe.parentNode) {
+            iframe.parentNode.removeChild(iframe);
+          }
+        }, 3000);
+      }
+    }, 350);
   };
 
   // Computed preview values
@@ -2273,6 +2800,7 @@ export default function PaymentLinksRedesign({
           ══════════════════════════════════════════════════════════ */}
       {mounted && showStaticQrModal && typeof document !== 'undefined' && createPortal(
         <div
+          id="standee-modal-backdrop"
           className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in overscroll-contain select-none"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -2295,7 +2823,7 @@ export default function PaymentLinksRedesign({
             @media print {
               @page {
                 size: portrait;
-                margin: 8mm;
+                margin: 10mm;
               }
               html, body {
                 background: #ffffff !important;
@@ -2307,20 +2835,29 @@ export default function PaymentLinksRedesign({
               body * {
                 visibility: hidden !important;
               }
+              #standee-modal-backdrop {
+                background: transparent !important;
+                backdrop-filter: none !important;
+                position: static !important;
+                padding: 0 !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+              }
               #printable-standee-card,
               #printable-standee-card * {
                 visibility: visible !important;
               }
               #printable-standee-card {
-                position: fixed !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) scale(1.04) !important;
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
                 width: 380px !important;
                 max-width: 90% !important;
-                margin: 0 auto !important;
+                margin: 20mm auto !important;
                 box-shadow: none !important;
-                border: 1px solid #cbd5e1 !important;
+                border: 1.5px solid #cbd5e1 !important;
                 border-radius: 24px !important;
                 page-break-inside: avoid !important;
                 -webkit-print-color-adjust: exact !important;
@@ -2750,8 +3287,9 @@ export default function PaymentLinksRedesign({
                             );
                           })()}
 
-                          <div className="relative">
+                          <div className="relative" id="standee-qr-frame">
                             <QRCode
+                              id="standee-real-qr-code"
                               value={
                                 staticQrAmountType === 'fixed' && parseFloat(staticQrAmount) > 0
                                   ? `upi://pay?pa=${encodeURIComponent(standeeUpiId || profile?.upi_id || 'merchant@upi')}&pn=${encodeURIComponent(standeeBusinessName || profile?.business_name || profile?.owner_name || 'Merchant')}&am=${parseFloat(staticQrAmount).toFixed(2)}&cu=INR&tn=${encodeURIComponent(standeeDeskTag || 'Store Counter')}`
@@ -2856,91 +3394,7 @@ export default function PaymentLinksRedesign({
 
                 <button
                   type="button"
-                  onClick={() => {
-                    const svg = document.querySelector('#printable-standee-card svg');
-                    if (!svg) {
-                      showToast('Standee QR not loaded yet.');
-                      return;
-                    }
-                    const svgData = new XMLSerializer().serializeToString(svg);
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const img = new Image();
-                    img.onload = () => {
-                      canvas.width = 600;
-                      canvas.height = 760;
-                      if (ctx) {
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        
-                        // Header color bar based on theme
-                        if (standeeTheme === 'ocean') {
-                          ctx.fillStyle = '#002970';
-                        } else if (standeeTheme === 'prism') {
-                          ctx.fillStyle = '#1a73e8';
-                        } else if (standeeTheme === 'violet') {
-                          ctx.fillStyle = '#5f259f';
-                        } else if (standeeTheme === 'saffron') {
-                          ctx.fillStyle = '#ea580c';
-                        } else {
-                          ctx.fillStyle = '#090d16';
-                        }
-                        ctx.fillRect(0, 0, canvas.width, 60);
-
-                        // Header text
-                        ctx.fillStyle = '#ffffff';
-                        ctx.font = 'bold 20px sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.fillText('DIRECT UPI PAYMENT • ACCEPTED HERE', 300, 38);
-
-                        // Store name & counter tag
-                        ctx.fillStyle = '#0f172a';
-                        ctx.font = 'bold 24px sans-serif';
-                        ctx.fillText(standeeBusinessName || profile?.business_name || profile?.owner_name || 'MyMobPay Store', 300, 115);
-                        
-                        ctx.font = '14px sans-serif';
-                        ctx.fillStyle = '#64748b';
-                        ctx.fillText(`📍 ${standeeDeskTag || 'Billing Counter'}`, 300, 140);
-
-                        // Amount if fixed
-                        if (staticQrAmountType === 'fixed' && parseFloat(staticQrAmount) > 0) {
-                          ctx.font = 'bold 16px sans-serif';
-                          ctx.fillStyle = '#1e40af';
-                          ctx.fillText(`Fixed Amount: ₹${parseFloat(staticQrAmount).toFixed(2)}`, 300, 170);
-                        } else {
-                          ctx.font = '13px sans-serif';
-                          ctx.fillStyle = '#059669';
-                          ctx.fillText('● Scan & Pay Any Amount', 300, 170);
-                        }
-
-                        // Draw QR code centered
-                        ctx.drawImage(img, 125, 195, 350, 350);
-
-                        // UPI ID
-                        ctx.font = 'bold 18px monospace';
-                        ctx.fillStyle = '#0f172a';
-                        ctx.fillText(`UPI ID: ${standeeUpiId || profile?.upi_id || 'merchant@upi'}`, 300, 595);
-
-                        // Supported apps
-                        ctx.font = 'bold 14px sans-serif';
-                        ctx.fillStyle = '#475569';
-                        ctx.fillText('GPay  •  PhonePe  •  Paytm  •  BHIM  •  CRED  •  Any UPI App', 300, 640);
-
-                        // Settlement guarantee footer
-                        ctx.font = '12px sans-serif';
-                        ctx.fillStyle = '#94a3b8';
-                        ctx.fillText('Direct Bank Settlement • 0% MDR Fee • NPCI 2.0 Rails', 300, 680);
-
-                        const pngFile = canvas.toDataURL('image/png');
-                        const downloadLink = document.createElement('a');
-                        downloadLink.download = `${(standeeBusinessName || 'mymobpay').toLowerCase().replace(/\s+/g, '_')}_retail_standee.png`;
-                        downloadLink.href = pngFile;
-                        downloadLink.click();
-                        showToast('High-Res QR Standee image downloaded!');
-                      }
-                    };
-                    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-                  }}
+                  onClick={handleDownloadStandee}
                   className="flex-1 sm:flex-initial px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer inline-flex items-center justify-center gap-1.5"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -2959,9 +3413,7 @@ export default function PaymentLinksRedesign({
 
                 <button
                   type="button"
-                  onClick={() => {
-                    window.print();
-                  }}
+                  onClick={handlePrintStandee}
                   className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-500/25 inline-flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
