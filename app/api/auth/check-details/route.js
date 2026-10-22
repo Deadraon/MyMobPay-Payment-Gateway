@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 /**
  * POST /api/auth/check-details
@@ -7,6 +8,16 @@ import { supabaseAdmin } from '@/lib/supabase';
  * is already taken by an existing merchant account.
  */
 export async function POST(req) {
+  // Rate limit: max 20 check attempts per IP per minute
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`auth_check_${clientIp}`, 20, 60 * 1000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many verification attempts. Please wait a moment and try again.' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+    );
+  }
+
   try {
     const { email, phone, upiId } = await req.json();
 

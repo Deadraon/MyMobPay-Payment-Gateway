@@ -29,9 +29,9 @@ export async function POST(req) {
 
     // ── 2. Validate & Enforce Mandatory WhatsApp Phone ──────────────
     const cleanPhone = (phone || '').toString().trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+    if (!/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
       return NextResponse.json({
-        error: 'Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).'
+        error: 'Please enter a valid 10-digit Indian mobile number (cannot be dummy numbers like 0000000000 or 9999999999).'
       }, { status: 400 });
     }
 

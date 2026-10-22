@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createHash } from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 const MAX_ATTEMPTS = 5;
 
@@ -9,6 +10,16 @@ function hashOtp(otp, phone) {
 }
 
 export async function POST(req) {
+  // Rate limit: max 15 OTP verification attempts per IP per minute
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`wa_verify_${clientIp}`, 15, 60 * 1000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many verification attempts. Please wait a minute and try again.' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+    );
+  }
+
   try {
     const { phone, otp, purpose = 'login' } = await req.json();
 

@@ -346,17 +346,10 @@ export default function LoginPage() {
         setLoading(false);
         isRedirectingRef.current = false;
       } catch (checkErr) {
-        console.warn('Registration verification warning (proceeding to dashboard):', checkErr);
-        // On network/service hiccup, permit authenticated session into dashboard where getUser() runs
-        let target = '/dashboard';
-        if (typeof window !== 'undefined') {
-          const params = new URLSearchParams(window.location.search);
-          const red = params.get('redirect');
-          if (red && !red.startsWith('/login')) target = red;
-          window.location.href = target;
-        } else {
-          router.replace(target);
-        }
+        console.error('Registration verification error:', checkErr);
+        setError('Could not verify account authorization. Please try signing in again.');
+        setLoading(false);
+        isRedirectingRef.current = false;
       }
     };
 
