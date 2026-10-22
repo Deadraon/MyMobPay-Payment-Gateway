@@ -59,6 +59,25 @@ export async function POST(request) {
 
     // 4. Handle Actions
     if (targetAction === 'verify') {
+      // SECURITY CHECK: Merchants cannot manually verify SaaS subscription orders to extend their own subscriptions
+      const isSubscriptionOrder = Boolean(
+        (order.note && (
+          order.note.startsWith('Subscription_') ||
+          order.note.includes('Subscription') ||
+          order.note.includes('Trial_Setup') ||
+          order.note.includes('Autopay_Setup')
+        )) ||
+        order.merchant_id === '677d9312-a53f-4b96-815f-53e0eee1b292' ||
+        order.merchant_id === 'dd45279e-7a2c-413c-9e24-24d88011b680'
+      );
+
+      if (isSubscriptionOrder && !isAdmin) {
+        return NextResponse.json({
+          error: 'Forbidden: SaaS platform subscription orders cannot be manually verified by merchants. They require real UPI settlement or platform administrator verification.',
+          code: 'FORBIDDEN_SUBSCRIPTION_ACTION'
+        }, { status: 403 });
+      }
+
       const finalUtr = (utr || order.customer_utr || order.utr || `MANUAL_${Date.now().toString().slice(-6)}`).trim();
       const nowIso = new Date().toISOString();
 

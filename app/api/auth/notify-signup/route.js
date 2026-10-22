@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendAdminNewSignupNotification } from '@/lib/mailer';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(req) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(`notify_signup_${clientIp}`, 10, 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+      );
+    }
+
     const body = await req.json();
     const { userId, email, name, provider, phone, upiId, bankDetails } = body;
 

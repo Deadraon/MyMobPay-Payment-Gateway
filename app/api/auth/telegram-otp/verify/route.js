@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createHash } from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 const MAX_ATTEMPTS = 5;
 
@@ -12,6 +13,14 @@ function hashOtp(otp, identifier) {
 
 export async function POST(req) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(`tg_verify_ip_${clientIp}`, 10, 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many verification attempts. Please wait a minute before retrying.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+      );
+    }
     const { telegramUsername, otp, purpose = 'login' } = await req.json();
 
     const identifier = (telegramUsername || '').toString().trim().replace(/^@/, '').toLowerCase();

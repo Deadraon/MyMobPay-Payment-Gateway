@@ -49,6 +49,25 @@ export async function POST(request) {
       }, { status: 200 });
     }
 
+    // SECURITY CHECK: Cash on Delivery is strictly for physical goods, never SaaS subscriptions or platform plans
+    const isSubscriptionOrder = Boolean(
+      (order.note && (
+        order.note.startsWith('Subscription_') ||
+        order.note.includes('Subscription') ||
+        order.note.includes('Trial_Setup') ||
+        order.note.includes('Autopay_Setup')
+      )) ||
+      order.merchant_id === '677d9312-a53f-4b96-815f-53e0eee1b292' ||
+      order.merchant_id === 'dd45279e-7a2c-413c-9e24-24d88011b680'
+    );
+
+    if (isSubscriptionOrder) {
+      return NextResponse.json({
+        error: 'Cash on Delivery is not supported for digital software licenses and platform subscriptions. Please pay via UPI or Net Banking.',
+        code: 'METHOD_NOT_ALLOWED'
+      }, { status: 400 });
+    }
+
     // Generate unique COD Reference
     const codRef = `COD_${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
 

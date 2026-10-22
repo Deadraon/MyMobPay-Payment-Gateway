@@ -87,11 +87,16 @@ export async function POST(request) {
     const integerAmt = Math.floor(orderAmt).toString();
 
     // Check bank email notifications
-    const { data: matchedEmail } = await supabaseAdmin
+    let emailQuery = supabaseAdmin
       .from('email_logs')
       .select('*')
-      .ilike('body_snippet', `%${cleanUtr}%`)
-      .limit(1);
+      .ilike('body_snippet', `%${cleanUtr}%`);
+
+    if (order.merchant_id) {
+      emailQuery = emailQuery.eq('merchant_id', order.merchant_id);
+    }
+
+    const { data: matchedEmail } = await emailQuery.limit(1);
 
     if (matchedEmail && matchedEmail.length > 0) {
       const emailRecord = matchedEmail[0];
@@ -117,11 +122,16 @@ export async function POST(request) {
 
     // Check bank SMS notifications if not confirmed by email
     if (!isBankConfirmed) {
-      const { data: matchedSms } = await supabaseAdmin
+      let smsQuery = supabaseAdmin
         .from('sms_logs')
         .select('*')
-        .ilike('message', `%${cleanUtr}%`)
-        .limit(1);
+        .ilike('message', `%${cleanUtr}%`);
+
+      if (order.merchant_id) {
+        smsQuery = smsQuery.eq('merchant_id', order.merchant_id);
+      }
+
+      const { data: matchedSms } = await smsQuery.limit(1);
 
       if (matchedSms && matchedSms.length > 0) {
         const smsRecord = matchedSms[0];

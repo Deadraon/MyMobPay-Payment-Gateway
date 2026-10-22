@@ -39,7 +39,7 @@ export async function POST(request) {
     const body = await request.json();
     const { api_key, amount, method, note, customer_name, customer_phone, project, callback_url, external_ref } = body;
 
-    const effectiveApiKey = api_key || CONFIG.platformApiKey;
+    const effectiveApiKey = api_key || request.headers.get('x-api-key') || request.headers.get('X-MyMobPay-API-Key') || request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
     if (!effectiveApiKey) {
       return NextResponse.json({ error: 'API Key is required to create an order.' }, { status: 400 });
     }

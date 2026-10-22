@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createHash } from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 const MAX_ATTEMPTS = 5;
 
@@ -12,10 +13,19 @@ function hashOtp(otp, phone) {
 
 export async function POST(req) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(`firebase_verify_ip_${clientIp}`, 10, 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many verification attempts. Please wait a minute before retrying.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.resetInSeconds) } }
+      );
+    }
+
     const { phone, otp, purpose = 'login' } = await req.json();
 
     const cleanPhone = (phone || '').toString().trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+    if (!/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone) || cleanPhone === '1234567890') {
       return NextResponse.json({ error: 'Invalid phone number.' }, { status: 400 });
     }
 

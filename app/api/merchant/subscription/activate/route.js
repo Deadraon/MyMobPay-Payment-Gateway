@@ -81,22 +81,30 @@ export async function POST(req) {
       if (orderLookupId) {
         const { data: ord } = await supabaseAdmin
           .from('orders')
-          .select('id, amount, status, merchant_id, external_ref')
+          .select('id, amount, status, merchant_id, external_ref, utr, method, mode')
           .eq('id', orderLookupId)
           .eq('status', 'verified')
           .maybeSingle();
         if (ord && (ord.merchant_id === actualMerchantId || ord.external_ref === actualMerchantId)) {
-          verifiedOrder = ord;
+          const isCodOrMock = ord.method === 'COD' || 
+                              (ord.utr && (ord.utr.startsWith('COD_') || ord.utr.startsWith('TS_MOCK_') || ord.utr.startsWith('TEST_')));
+          if (!isCodOrMock && ord.mode !== 'test') {
+            verifiedOrder = ord;
+          }
         }
       } else if (cleanUtr) {
         const { data: ord } = await supabaseAdmin
           .from('orders')
-          .select('id, amount, status, merchant_id, external_ref')
+          .select('id, amount, status, merchant_id, external_ref, utr, method, mode')
           .eq('utr', cleanUtr)
           .eq('status', 'verified')
           .maybeSingle();
         if (ord && (ord.merchant_id === actualMerchantId || ord.external_ref === actualMerchantId)) {
-          verifiedOrder = ord;
+          const isCodOrMock = ord.method === 'COD' || 
+                              (ord.utr && (ord.utr.startsWith('COD_') || ord.utr.startsWith('TS_MOCK_') || ord.utr.startsWith('TEST_')));
+          if (!isCodOrMock && ord.mode !== 'test') {
+            verifiedOrder = ord;
+          }
         }
       }
 

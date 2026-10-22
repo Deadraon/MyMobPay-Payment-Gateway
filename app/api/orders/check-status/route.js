@@ -92,11 +92,16 @@ export async function POST(request) {
         .limit(1);
 
       if (!existingVerified || existingVerified.length === 0) {
-        const { data: matchedEmail } = await supabaseAdmin
+        let emailQuery = supabaseAdmin
           .from('email_logs')
           .select('*')
-          .ilike('body_snippet', `%${cleanCustomerUtr}%`)
-          .limit(1);
+          .ilike('body_snippet', `%${cleanCustomerUtr}%`);
+
+        if (order.merchant_id) {
+          emailQuery = emailQuery.eq('merchant_id', order.merchant_id);
+        }
+
+        const { data: matchedEmail } = await emailQuery.limit(1);
 
         if (matchedEmail && matchedEmail.length > 0) {
           const snippet = matchedEmail[0].body_snippet || '';
@@ -155,12 +160,17 @@ export async function POST(request) {
     const orderCreatedIso = new Date(orderCreatedAt).toISOString();
     const formattedAmt = parseFloat(order.amount).toFixed(2);
     
-    const { data: recentEmails } = await supabaseAdmin
+    let recentEmailQuery = supabaseAdmin
       .from('email_logs')
       .select('*')
       .gte('created_at', orderCreatedIso)
-      .order('created_at', { ascending: false })
-      .limit(10);
+      .order('created_at', { ascending: false });
+
+    if (order.merchant_id) {
+      recentEmailQuery = recentEmailQuery.eq('merchant_id', order.merchant_id);
+    }
+
+    const { data: recentEmails } = await recentEmailQuery.limit(10);
 
     if (recentEmails && recentEmails.length > 0) {
       for (const email of recentEmails) {

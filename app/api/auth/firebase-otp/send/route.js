@@ -59,7 +59,7 @@ export async function POST(req) {
     const { phone, purpose = 'login' } = await req.json();
 
     const cleanPhone = (phone || '').toString().trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+    if (!/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone) || cleanPhone === '1234567890') {
       return NextResponse.json(
         { error: 'Please enter a valid 10-digit Indian mobile number.' },
         { status: 400 }
