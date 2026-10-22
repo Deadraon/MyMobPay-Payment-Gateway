@@ -1114,11 +1114,13 @@ export default function DashboardPage() {
             business_name: fallbackName,
             upi_id: 'pending@upi',
             api_key: newKey,
-            subscription_status: 'trial_3day',
-            subscription_expires_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+            subscription_status: 'inactive',
+            subscription_expires_at: null,
             setup_progress: {
-              plan_type: 'trial_3day',
-              trial_activated_at: new Date().toISOString(),
+              plan_type: 'inactive',
+              created_at: new Date().toISOString(),
+              onboarding_needed: true,
+              phone_needed: true,
             },
           };
 

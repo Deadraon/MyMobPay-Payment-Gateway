@@ -45,6 +45,24 @@ export async function POST(request) {
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: authStatus || 401 });
     }
 
+    // 1b. Enforce Phone Verification & Valid Settlement UPI ID
+    const isPlatformAdmin = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292';
+    if (!isPlatformAdmin) {
+      if (!merchant.phone_verified) {
+        return NextResponse.json({
+          error: 'Mobile phone verification is required before generating payment links. Please verify your phone number in Settings.',
+          code: 'PHONE_VERIFICATION_REQUIRED'
+        }, { status: 403 });
+      }
+
+      if (!merchant.upi_id || merchant.upi_id === 'pending@upi') {
+        return NextResponse.json({
+          error: 'A valid settlement UPI ID is required before generating payment links. Please configure your UPI address in Settings.',
+          code: 'UPI_ID_REQUIRED'
+        }, { status: 400 });
+      }
+    }
+
     // 2. Validate Link Type
     let linkType = (body.link_type || body.linkType || 'shared').toLowerCase();
     if (!['shared', 'checkout'].includes(linkType)) {

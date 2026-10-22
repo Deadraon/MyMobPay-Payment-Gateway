@@ -60,7 +60,7 @@ export async function POST(request) {
     }
 
     // 1. Authenticate the merchant using the API Key (SHA-256 hashed lookup)
-    const merchant = await findMerchantByApiKey(actualKey, 'id, subscription_status, sandbox_mode, subscription_expires_at');
+    const merchant = await findMerchantByApiKey(actualKey, 'id, subscription_status, sandbox_mode, subscription_expires_at, phone_verified, upi_id');
 
     if (!merchant) {
       return NextResponse.json({ error: 'Invalid API Key or Merchant not found.' }, { status: 401 });
@@ -76,8 +76,16 @@ export async function POST(request) {
     const isTestMode = isTestFromKey || merchant.sandbox_mode !== false;
     const isAdminMerchant = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || actualKey === CONFIG.platformApiKey;
 
-    if (!isSubActive && !isAdminMerchant && !isTestMode) {
-      return NextResponse.json({ error: 'Merchant account is inactive or expired. Please subscribe or activate trial to accept live payments.' }, { status: 403 });
+    if (!isTestMode && !isAdminMerchant) {
+      if (!isSubActive) {
+        return NextResponse.json({ error: 'Merchant account is inactive or expired. Please subscribe or activate trial to accept live payments.' }, { status: 403 });
+      }
+      if (!merchant.phone_verified) {
+        return NextResponse.json({ error: 'Live payments require a verified mobile number. Please verify your phone number in Settings.', code: 'PHONE_VERIFICATION_REQUIRED' }, { status: 403 });
+      }
+      if (!merchant.upi_id || merchant.upi_id === 'pending@upi') {
+        return NextResponse.json({ error: 'Live payments require a configured settlement UPI ID. Please set your UPI ID in Settings.', code: 'UPI_ID_REQUIRED' }, { status: 400 });
+      }
     }
 
     // 2. If external_ref is provided (e.g. from payment links), check for existing orders
