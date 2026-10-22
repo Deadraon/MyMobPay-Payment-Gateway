@@ -304,8 +304,9 @@ export default function LoginPage() {
       if (!session?.user) return;
       if (isRedirectingRef.current) return;
 
-      // If currently in the middle of active manual signup form submission, don't interrupt
-      if (modeRef.current === 'signup' && isRegistrationSubmittedRef.current) {
+      // CRITICAL: In signup mode, NEVER auto-redirect to dashboard when an Email OTP is confirmed.
+      // The user MUST stay on the form to enter their phone number and verify via WhatsApp OTP.
+      if (modeRef.current === 'signup') {
         return;
       }
 

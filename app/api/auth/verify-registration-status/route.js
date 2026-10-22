@@ -92,11 +92,13 @@ export async function POST(req) {
       }
     }
 
-    // ── 4. Existing Merchant: Allow access immediately ───────────────────────
+    // ── 4. Existing Merchant ────────────────────────────────────────────────
     if (merchant) {
-      const hasPhone = Boolean(
-        merchant.phone_number &&
-        merchant.phone_number.trim().replace(/\D/g, '').length >= 10
+      const cleanPhone = (merchant.phone_number || '').trim().replace(/\D/g, '');
+      const hasValidPhone = Boolean(
+        cleanPhone.length === 10 &&
+        /^[6-9]\d{9}$/.test(cleanPhone) &&
+        !/^(\d)\1{9}$/.test(cleanPhone)
       );
 
       logAdminAction({
@@ -111,35 +113,36 @@ export async function POST(req) {
       return NextResponse.json({
         allowed: true,
         registered: true,
-        needsOnboarding: !hasPhone || merchant.upi_id === 'pending@upi',
+        needsOnboarding: !hasValidPhone || merchant.upi_id === 'pending@upi',
+        needsPhoneVerification: !hasValidPhone || !merchant.phone_verified,
         email: cleanEmail,
         merchantId: merchant.id,
         businessName: merchant.business_name || 'My Business',
-        phoneNumber: merchant.phone_number || null,
-        phoneVerified: Boolean(merchant.phone_verified),
+        phoneNumber: hasValidPhone ? merchant.phone_number : null,
+        phoneVerified: Boolean(merchant.phone_verified && hasValidPhone),
       });
     }
 
-    // ── 5. New OAuth Sign-in: Auto-provision merchant profile ────────────────
+    // ── 5. New OAuth Sign-in: Auto-provision pending merchant profile ────────
+    // Security: New profiles start as 'inactive' — trial requires ₹1.00 setup paywall activation
     if (userId) {
       const newKey = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
       const fallbackName = cleanEmail ? (cleanEmail.split('@')[0] || 'Merchant Partner') : 'Merchant Partner';
       const now = new Date();
-      const expiry = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3-day instant trial
 
       const newMerchantProfile = {
         id: userId,
         business_name: fallbackName,
         upi_id: 'pending@upi',
         api_key: newKey,
-        subscription_status: 'trial_3day',
-        subscription_expires_at: expiry.toISOString(),
+        subscription_status: 'inactive',
+        subscription_expires_at: null,
         theme_color: '#3B82F6',
         setup_progress: {
-          plan_type: 'trial_3day',
-          trial_activated_at: now.toISOString(),
-          trial_expires_at: expiry.toISOString(),
+          plan_type: 'inactive',
+          created_at: now.toISOString(),
           onboarding_needed: true,
+          phone_needed: true,
         },
       };
 
@@ -154,7 +157,7 @@ export async function POST(req) {
         action: 'auth.oauth_signup',
         targetType: 'merchant',
         targetId: userId,
-        details: { businessName: fallbackName, provider: 'Google OAuth', plan: 'trial_3day' },
+        details: { businessName: fallbackName, provider: 'Google OAuth', plan: 'inactive' },
         request: req
       }).catch(() => {});
 
@@ -183,6 +186,7 @@ export async function POST(req) {
         registered: true,
         isNewMerchant: true,
         needsOnboarding: true,
+        needsPhoneVerification: true,
         email: cleanEmail,
         merchantId: userId,
         businessName: fallbackName,

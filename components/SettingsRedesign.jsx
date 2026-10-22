@@ -870,6 +870,14 @@ export default function SettingsRedesign({
 
   // Save All Settings to Supabase
   const handleSave = async () => {
+    if (formData.phone_number) {
+      const cleanPhone = formData.phone_number.trim().replace(/\D/g, '');
+      if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
+        setErrorMessage('Please enter a valid 10-digit Indian mobile number (e.g. 9876543210, cannot be dummy 0000000000).');
+        return;
+      }
+    }
+
     setSaving(true);
     setErrorMessage('');
     setStatusMessage('');

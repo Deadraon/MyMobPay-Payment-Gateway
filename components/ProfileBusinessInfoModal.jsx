@@ -121,6 +121,12 @@ export default function ProfileBusinessInfoModal({
       return;
     }
 
+    const cleanPhone = (phoneNumber || '').trim().replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
+      setErrorMessage('Please enter a valid 10-digit Indian mobile number (starting with 6-9, cannot be dummy 0000000000).');
+      return;
+    }
+
     setSaving(true);
     setErrorMessage('');
     setSaveSuccess(false);
