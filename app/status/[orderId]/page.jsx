@@ -320,6 +320,7 @@ export default function StatusPage() {
       );
     }
 
+    return (
       <div className="min-h-screen bg-slate-50 flex flex-col">
         <Header badge={
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
