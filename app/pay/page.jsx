@@ -116,7 +116,7 @@ function PayPageContent() {
   const paramOrderId  = searchParams.get('order_id') || searchParams.get('id') || '';
   const cleanParamOrderId = (paramOrderId || '').trim().replace(/^[-#]+/, '');
   const paramMethod   = searchParams.get('method')   || searchParams.get('payment_method') || '';
-  const cleanParamMethod = ['upi', 'card', 'bank', 'crypto', 'cod'].includes((paramMethod || '').toLowerCase()) ? (paramMethod || '').toLowerCase() : null;
+  const cleanParamMethod = ['upi', 'card', 'bank', 'crypto'].includes((paramMethod || '').toLowerCase()) ? (paramMethod || '').toLowerCase() : null;
 
   const routeToken    = (params?.token || paramToken || '').trim();
   const hasToken      = Boolean(routeToken && /^[0-9a-fA-F]{24,}$/.test(routeToken));
@@ -138,10 +138,10 @@ function PayPageContent() {
   const [custName,     setCustName]     = useState(paramName);
   const [custPhone,    setCustPhone]    = useState(paramPhone);
 
-  /* Desktop method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' | 'cod' */
+  /* Desktop method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' */
   const [activeOpt,    setActiveOpt]    = useState(cleanParamMethod);
 
-  /* Mobile method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' | 'cod' */
+  /* Mobile method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' */
   const [selectedMethod, setSelectedMethod] = useState(cleanParamMethod);
 
   /* Mobile accordion selection */
@@ -157,14 +157,7 @@ function PayPageContent() {
   const [cardBusy,     setCardBusy]     = useState(false);
   const [cardMsg,      setCardMsg]      = useState('');
 
-  /* COD state */
-  const [codName,      setCodName]      = useState(paramName || '');
-  const [codPhone,     setCodPhone]     = useState(paramPhone || '');
-  const [codAddress,   setCodAddress]   = useState('');
-  const [codPincode,   setCodPincode]   = useState('');
-  const [codCity,      setCodCity]      = useState('');
-  const [codBusy,      setCodBusy]      = useState(false);
-  const [codMsg,       setCodMsg]       = useState('');
+
 
   /* View navigation: 'vChecking' | 'vPaidExpired' | 'vPay' | 'vOk' | 'vExp' | 'vNotFound' | 'vTokenExpired' */
   const [curView,      setCurView]      = useState((cleanParamOrderId || hasToken || paramRef) ? 'vChecking' : 'vPay');
@@ -1076,38 +1069,7 @@ function PayPageContent() {
     }
   };
 
-  /* Submit COD Order */
-  const submitCodOrder = async (e) => {
-    if (e) e.preventDefault();
-    if (!codName.trim() || !codPhone.trim() || !codAddress.trim() || !codPincode.trim()) {
-      setCodMsg('Please fill in Name, Phone, Address, and Pincode.');
-      return;
-    }
-    setCodBusy(true);
-    setCodMsg('');
-    try {
-      const res = await fetch('/api/orders/confirm-cod', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          order_id: activeId,
-          customer_name: codName.trim(),
-          customer_phone: codPhone.trim(),
-          delivery_address: codAddress.trim(),
-          pincode: codPincode.trim(),
-          city: codCity.trim() || 'N/A'
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to confirm COD');
-      setCodMsg('✓ Cash on Delivery order confirmed! Redirecting…');
-      handleSuccess();
-    } catch (err) {
-      setCodMsg(err.message);
-    } finally {
-      setCodBusy(false);
-    }
-  };
+
 
   /* ───────────────────────────────────────────────────────────
      CHECKING SESSION VIEW (Fast loader while verifying if already paid)
@@ -1638,20 +1600,6 @@ function PayPageContent() {
           setCardOtp={setCardOtp}
           cardBusy={cardBusy}
           cardMsg={cardMsg}
-          submitCardPayment={submitCardPayment}
-          codName={codName}
-          setCodName={setCodName}
-          codPhone={codPhone}
-          setCodPhone={setCodPhone}
-          codAddress={codAddress}
-          setCodAddress={setCodAddress}
-          codPincode={codPincode}
-          setCodPincode={setCodPincode}
-          codCity={codCity}
-          setCodCity={setCodCity}
-          codBusy={codBusy}
-          codMsg={codMsg}
-          submitCodOrder={submitCodOrder}
         />
       </div>
 
@@ -2631,106 +2579,7 @@ function PayPageContent() {
                     </div>
                   )}
 
-                  {/* ── B.5: COD METHOD VIEW ── */}
-                  {selectedMethod === 'cod' && (
-                    <div className="mob-checkout-card" style={{ textAlign: 'left' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Cash on Delivery</h4>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: '#059669' }}>{fmtInr(displayAmt)}</span>
-                      </div>
 
-                      <p style={{ margin: '0 0 14px', fontSize: 12.5, color: '#64748b', lineHeight: 1.4 }}>
-                        Fill your delivery address below. You can pay ₹{displayAmt} in cash or UPI when your shipment arrives.
-                      </p>
-
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Receiver Name"
-                        value={codName}
-                        onChange={e => setCodName(e.target.value)}
-                        style={{ width: '100%', minHeight: 44, border: '1px solid #cbd5e1', borderRadius: 10, padding: '0 12px', fontSize: 13.5, marginBottom: 10, boxSizing: 'border-box' }}
-                      />
-
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                        Contact Phone
-                      </label>
-                      <input
-                        type="tel"
-                        placeholder="10-digit mobile number"
-                        value={codPhone}
-                        onChange={e => setCodPhone(e.target.value)}
-                        style={{ width: '100%', minHeight: 44, border: '1px solid #cbd5e1', borderRadius: 10, padding: '0 12px', fontSize: 13.5, marginBottom: 10, boxSizing: 'border-box' }}
-                      />
-
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                        Delivery Address
-                      </label>
-                      <textarea
-                        rows={2}
-                        placeholder="Flat, House No., Building, Street"
-                        value={codAddress}
-                        onChange={e => setCodAddress(e.target.value)}
-                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: 10, padding: '8px 12px', fontSize: 13.5, marginBottom: 10, boxSizing: 'border-box', resize: 'none' }}
-                      />
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                            Pincode
-                          </label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            maxLength={6}
-                            placeholder="6-digit PIN"
-                            value={codPincode}
-                            onChange={e => setCodPincode(e.target.value)}
-                            style={{ width: '100%', minHeight: 44, border: '1px solid #cbd5e1', borderRadius: 10, padding: '0 12px', fontSize: 13.5, boxSizing: 'border-box' }}
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                            City / Area
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="City"
-                            value={codCity}
-                            onChange={e => setCodCity(e.target.value)}
-                            style={{ width: '100%', minHeight: 44, border: '1px solid #cbd5e1', borderRadius: 10, padding: '0 12px', fontSize: 13.5, boxSizing: 'border-box' }}
-                          />
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        disabled={codBusy}
-                        onClick={submitCodOrder}
-                        style={{
-                          width: '100%',
-                          minHeight: 48,
-                          border: 0,
-                          borderRadius: 12,
-                          background: '#059669',
-                          color: '#fff',
-                          fontWeight: 700,
-                          fontSize: 14,
-                          cursor: codBusy ? 'not-allowed' : 'pointer'
-                        }}
-                      >
-                        {codBusy ? 'Confirming Order…' : 'Confirm Cash on Delivery Order'}
-                      </button>
-
-                      {codMsg && (
-                        <p style={{ margin: '8px 0 0', fontSize: 12, fontWeight: 600, color: codMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
-                          {codMsg}
-                        </p>
-                      )}
-                    </div>
-                  )}
 
                   {/* Trust badge */}
                   <div className="trust">
@@ -2759,7 +2608,7 @@ function PayPageContent() {
 
                 {/* Animated Green Tick Icon (Razorpay / Top Fintech Style) */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
-                  <PaymentSuccessTick size="lg" sound={true} isCod={selectedMethod === 'cod'} />
+                  <PaymentSuccessTick size="lg" sound={true} />
                 </div>
 
                 <div className="animate-cascade-2">
@@ -2774,7 +2623,7 @@ function PayPageContent() {
                 <div className="rcp animate-cascade-3" style={{ textAlign: 'left', margin: '16px 0', background: '#f8fafc', padding: '16px', borderRadius: 16, border: '1px solid #e2e8f0' }}>
                   <div><span>Order Reference</span><span style={{ fontFamily: 'monospace', fontWeight: 700 }} title={activeId}>{formatRefId(activeId) || 'DEMO'}</span></div>
                   <div><span>Amount Paid</span><span style={{ color: '#059669', fontWeight: 800 }}>{fmtInr(displayAmt)}</span></div>
-                  <div><span>Payment Method</span><span>{selectedMethod === 'card' ? 'Credit / Debit Card' : selectedMethod === 'bank' ? 'Direct Bank Transfer' : selectedMethod === 'crypto' ? 'Crypto USDT (TRC20)' : selectedMethod === 'cod' ? 'Cash on Delivery (COD)' : 'UPI Instant Settlement'}</span></div>
+                  <div><span>Payment Method</span><span>{selectedMethod === 'card' ? 'Credit / Debit Card' : selectedMethod === 'bank' ? 'Direct Bank Transfer' : selectedMethod === 'crypto' ? 'Crypto USDT (TRC20)' : 'UPI Instant Settlement'}</span></div>
                   <div><span>Transaction Status</span><span style={{ color: '#059669', fontWeight: 700 }}>✓ Verified & Paid</span></div>
                   <div><span>Settlement Time</span><span>{okTime || new Date().toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })}</span></div>
                 </div>
@@ -3519,10 +3368,7 @@ export default function PayPage() {
             color: #d97706;
           }
 
-          .mob-opt-cod {
-            background: #ecfdf5;
-            color: #059669;
-          }
+
 
           .mob-opt-body {
             flex: 1;

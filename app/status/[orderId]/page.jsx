@@ -320,43 +320,36 @@ export default function StatusPage() {
       );
     }
 
-    const isCodOrder = order?.utr?.startsWith('COD_') || order?.note?.includes('COD Delivery');
-
-    return (
       <div className="min-h-screen bg-slate-50 flex flex-col">
         <Header badge={
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold ${
-            isCodOrder ? 'bg-blue-500/15 text-blue-500 border border-blue-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-          }`}>
-            <span className={`w-1.5 h-1.5 rounded-full inline-block ${isCodOrder ? 'bg-blue-500 animate-pulse' : 'bg-emerald-500'}`} />
-            {isCodOrder ? 'COD Confirmed' : 'Verified'}
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <span className="w-1.5 h-1.5 rounded-full inline-block bg-emerald-500" />
+            Verified
           </span>
         } />
         <main className="flex-1 flex items-center justify-center px-4 py-10">
           <div className="w-full max-w-sm animate-scale-up">
             <div className="bg-white rounded-3xl border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-              <div className={`h-1 w-full ${isCodOrder ? 'bg-blue-600' : 'bg-emerald-500'}`} />
+              <div className="h-1 w-full bg-emerald-500" />
               <div className="p-6 text-center space-y-3">
                 <div className="flex justify-center -my-1">
-                  <PaymentSuccessTick size="lg" sound={true} isCod={isCodOrder} />
+                  <PaymentSuccessTick size="lg" sound={true} />
                 </div>
                 <div className="animate-cascade-2">
                   <h2 className="text-2xl font-black text-slate-900">
-                    {isCodOrder ? 'Order Confirmed!' : 'Payment Confirmed!'}
+                    Payment Confirmed!
                   </h2>
-                  <p className={`text-sm font-semibold mt-1 ${isCodOrder ? 'text-blue-600' : 'text-emerald-600'}`}>
-                    {isCodOrder
-                      ? `₹${parseFloat(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })} payable upon delivery`
-                      : `₹${parseFloat(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })} received successfully`}
+                  <p className="text-sm font-semibold mt-1 text-emerald-600">
+                    ₹{parseFloat(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })} received successfully
                   </p>
                 </div>
               </div>
               <div className="mx-5 mb-4 rounded-xl bg-slate-50 border border-slate-100 px-4 py-1 animate-cascade-3">
                 <Row label="Order ID" value={orderId} displayValue={formatRefId(orderId)} mono />
                 <Row label="Amount" value={`₹${parseFloat(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`} green />
-                <Row label="Method" value={isCodOrder ? 'Cash on Delivery (Physical)' : (order.method || (order?.utr?.length > 30 ? 'Crypto' : 'UPI'))} />
-                <Row label="Status" value={isCodOrder ? 'Order Placed' : 'Verified'} badge />
-                <Row label={isCodOrder ? "COD Ref No." : "UTR / Ref No."} value={order.utr || 'Auto-verified'} mono />
+                <Row label="Method" value={order.method || (order?.utr?.length > 30 ? 'Crypto' : 'UPI')} />
+                <Row label="Status" value="Verified" badge />
+                <Row label="UTR / Ref No." value={order.utr || 'Auto-verified'} mono />
                 <Row label="Placed On" value={fmt(order.created_at)} />
                 <Row label="Confirmed At" value={fmt(order.verified_at)} />
                 {order.note && <Row label="Details" value={order.note} />}

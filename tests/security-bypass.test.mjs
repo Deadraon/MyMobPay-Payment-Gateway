@@ -39,7 +39,7 @@ test('--- Security Bypass & Payment Integrity Verification Suite ---', async (t)
     assert.strictEqual(isValidIndianMobile(''), false, 'Empty phone must be rejected');
   });
 
-  await t.test('2. Cash on delivery (COD) guard rejects digital SaaS subscriptions', () => {
+  await t.test('2. Subscription order note detection strictly identifies platform orders', () => {
     const isSubscriptionOrder = (order) => {
       return Boolean(
         (order.note && (
@@ -57,21 +57,11 @@ test('--- Security Bypass & Payment Integrity Verification Suite ---', async (t)
     assert.strictEqual(isSubscriptionOrder({ note: 'Trial_Setup_3Day' }), true, 'Trial setup must be identified');
     assert.strictEqual(isSubscriptionOrder({ note: 'Autopay_Setup_3DayTrial' }), true, 'Autopay setup must be identified');
     assert.strictEqual(isSubscriptionOrder({ merchant_id: 'dd45279e-7a2c-413c-9e24-24d88011b680' }), true, 'Platform merchant order must be identified');
-    assert.strictEqual(isSubscriptionOrder({ note: 'Sneakers Purchase Order #102', merchant_id: 'random-mid' }), false, 'Standard e-commerce physical order must allow COD');
+    assert.strictEqual(isSubscriptionOrder({ note: 'Sneakers Purchase Order #102', merchant_id: 'random-mid' }), false, 'Standard e-commerce physical order');
   });
 
-  await t.test('3. checkAndProcessSubscription strictly blocks COD, mock UTR, and unverified orders', async () => {
+  await t.test('3. checkAndProcessSubscription strictly blocks mock UTR and unverified orders', async () => {
     // None of these invalid orders should throw or process live subscriptions
-    await checkAndProcessSubscription({
-      id: 'ord_cod_test',
-      status: 'verified',
-      mode: 'live',
-      method: 'COD',
-      utr: 'COD_ABC123',
-      note: 'Subscription_1month',
-      external_ref: 'target_mid'
-    }, '');
-
     await checkAndProcessSubscription({
       id: 'ord_mock_test',
       status: 'verified',

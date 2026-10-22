@@ -86,9 +86,8 @@ export async function POST(req) {
           .eq('status', 'verified')
           .maybeSingle();
         if (ord && (ord.merchant_id === actualMerchantId || ord.external_ref === actualMerchantId)) {
-          const isCodOrMock = ord.method === 'COD' || 
-                              (ord.utr && (ord.utr.startsWith('COD_') || ord.utr.startsWith('TS_MOCK_') || ord.utr.startsWith('TEST_')));
-          if (!isCodOrMock && ord.mode !== 'test') {
+          const isMockOrder = ord.utr && (ord.utr.startsWith('TS_MOCK_') || ord.utr.startsWith('TEST_'));
+          if (!isMockOrder && ord.mode !== 'test') {
             verifiedOrder = ord;
           }
         }
@@ -100,9 +99,8 @@ export async function POST(req) {
           .eq('status', 'verified')
           .maybeSingle();
         if (ord && (ord.merchant_id === actualMerchantId || ord.external_ref === actualMerchantId)) {
-          const isCodOrMock = ord.method === 'COD' || 
-                              (ord.utr && (ord.utr.startsWith('COD_') || ord.utr.startsWith('TS_MOCK_') || ord.utr.startsWith('TEST_')));
-          if (!isCodOrMock && ord.mode !== 'test') {
+          const isMockOrder = ord.utr && (ord.utr.startsWith('TS_MOCK_') || ord.utr.startsWith('TEST_'));
+          if (!isMockOrder && ord.mode !== 'test') {
             verifiedOrder = ord;
           }
         }

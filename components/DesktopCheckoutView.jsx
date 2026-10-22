@@ -217,22 +217,7 @@ export default function DesktopCheckoutView({
   cardOtp,
   setCardOtp,
   cardBusy,
-  cardMsg,
   submitCardPayment,
-  /* Optional COD props */
-  codName,
-  setCodName,
-  codPhone,
-  setCodPhone,
-  codAddress,
-  setCodAddress,
-  codPincode,
-  setCodPincode,
-  codCity,
-  setCodCity,
-  codBusy,
-  codMsg,
-  submitCodOrder,
 }) {
   const [lang, setLang] = useState('en'); // 'en' | 'hi'
   const [selectedCrypto, setSelectedCrypto] = useState('USDT');
@@ -360,27 +345,7 @@ export default function DesktopCheckoutView({
   const activeCardBusy = cardBusy !== undefined ? cardBusy : localCardBusy;
   const activeCardMsg = cardMsg !== undefined ? cardMsg : localCardMsg;
 
-  // Local COD state fallbacks
-  const [localCodName, setLocalCodName] = useState('');
-  const [localCodPhone, setLocalCodPhone] = useState('');
-  const [localCodAddress, setLocalCodAddress] = useState('');
-  const [localCodPincode, setLocalCodPincode] = useState('');
-  const [localCodCity, setLocalCodCity] = useState('');
-  const [localCodBusy, setLocalCodBusy] = useState(false);
-  const [localCodMsg, setLocalCodMsg] = useState('');
 
-  const activeCodName = codName !== undefined ? codName : localCodName;
-  const onCodNameChange = setCodName || setLocalCodName;
-  const activeCodPhone = codPhone !== undefined ? codPhone : localCodPhone;
-  const onCodPhoneChange = setCodPhone || setLocalCodPhone;
-  const activeCodAddress = codAddress !== undefined ? codAddress : localCodAddress;
-  const onCodAddressChange = setCodAddress || setLocalCodAddress;
-  const activeCodPincode = codPincode !== undefined ? codPincode : localCodPincode;
-  const onCodPincodeChange = setCodPincode || setLocalCodPincode;
-  const activeCodCity = codCity !== undefined ? codCity : localCodCity;
-  const onCodCityChange = setCodCity || setLocalCodCity;
-  const activeCodBusy = codBusy !== undefined ? codBusy : localCodBusy;
-  const activeCodMsg = codMsg !== undefined ? codMsg : localCodMsg;
 
   // Fallback handlers if parent doesn't provide them
   const handleCardSubmit = async (e) => {
@@ -424,41 +389,7 @@ export default function DesktopCheckoutView({
     }
   };
 
-  const handleCodSubmit = async (e) => {
-    if (typeof submitCodOrder === 'function') {
-      return submitCodOrder(e);
-    }
-    if (e) e.preventDefault();
-    if (!activeCodName.trim() || !activeCodPhone.trim() || !activeCodAddress.trim() || !activeCodPincode.trim()) {
-      if (setCodMsg) setCodMsg('Please fill in Name, Phone, Address, and Pincode.');
-      else setLocalCodMsg('Please fill in Name, Phone, Address, and Pincode.');
-      return;
-    }
-    setLocalCodBusy(true);
-    setLocalCodMsg('');
-    try {
-      const res = await fetch('/api/orders/confirm-cod', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          order_id: safeActiveId,
-          customer_name: activeCodName.trim(),
-          customer_phone: activeCodPhone.trim(),
-          delivery_address: activeCodAddress.trim(),
-          pincode: activeCodPincode.trim(),
-          city: activeCodCity.trim() || 'N/A'
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to confirm COD');
-      setLocalCodMsg('✓ Cash on Delivery order confirmed! Redirecting…');
-      if (typeof handleReturn === 'function') handleReturn();
-    } catch (err) {
-      setLocalCodMsg(err.message);
-    } finally {
-      setLocalCodBusy(false);
-    }
-  };
+
 
   // Auto-redirect immediately when payment is confirmed (bypass Screen 1 delay)
   React.useEffect(() => {
@@ -551,7 +482,7 @@ export default function DesktopCheckoutView({
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Payment Method</span>
             <span className="text-xs font-bold text-slate-800 uppercase">
-              {activeOpt === 'bank' ? 'Bank Transfer (IMPS/NEFT)' : activeOpt === 'crypto' ? 'Crypto Settlement' : activeOpt === 'card' ? 'Credit / Debit Card' : activeOpt === 'cod' ? 'Cash on Delivery (COD)' : 'UPI Instant Settlement'}
+              {activeOpt === 'bank' ? 'Bank Transfer (IMPS/NEFT)' : activeOpt === 'crypto' ? 'Crypto Settlement' : activeOpt === 'card' ? 'Credit / Debit Card' : 'UPI Instant Settlement'}
             </span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">

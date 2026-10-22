@@ -123,7 +123,6 @@ export default function PaymentSuccessTick({
   showRipples = true,
   showParticles = true,
   showSheen = true,
-  isCod = false,
   className = '',
 }) {
   const soundPlayedRef = useRef(false);
@@ -149,30 +148,18 @@ export default function PaymentSuccessTick({
 
   const currentSize = sizeMap[size] || sizeMap.lg;
 
-  // Color schemes (Emerald Green for verified payments, Blue for COD orders)
-  const colors = isCod
-    ? {
-        bg: 'from-blue-600 via-indigo-600 to-sky-500',
-        shadow: 'shadow-[0_18px_40px_-6px_rgba(37,99,235,0.48)]',
-        ripple1: 'bg-blue-400/35',
-        ripple2: 'bg-blue-300/25',
-        ripple3: 'bg-indigo-400/15',
-        stroke: '#ffffff',
-        orbitGradFrom: '#3b82f6',
-        orbitGradMid: '#60a5fa',
-        orbitGradTo: '#93c5fd',
-      }
-    : {
-        bg: 'from-[#059669] via-[#10b981] to-[#34d399]',
-        shadow: 'shadow-[0_18px_40px_-6px_rgba(16,185,129,0.48)]',
-        ripple1: 'bg-emerald-400/35',
-        ripple2: 'bg-emerald-300/25',
-        ripple3: 'bg-teal-400/15',
-        stroke: '#ffffff',
-        orbitGradFrom: '#059669',
-        orbitGradMid: '#10b981',
-        orbitGradTo: '#6ee7b7',
-      };
+  // Color schemes (Emerald Green for verified payments)
+  const colors = {
+    bg: 'from-[#059669] via-[#10b981] to-[#34d399]',
+    shadow: 'shadow-[0_18px_40px_-6px_rgba(16,185,129,0.48)]',
+    ripple1: 'bg-emerald-400/35',
+    ripple2: 'bg-emerald-300/25',
+    ripple3: 'bg-teal-400/15',
+    stroke: '#ffffff',
+    orbitGradFrom: '#059669',
+    orbitGradMid: '#10b981',
+    orbitGradTo: '#6ee7b7',
+  };
 
   return (
     <div
@@ -195,7 +182,7 @@ export default function PaymentSuccessTick({
             fill="none"
           >
             <defs>
-              <linearGradient id={`orbitGrad_${isCod ? 'cod' : 'upi'}`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="orbitGrad_upi" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor={colors.orbitGradFrom} stopOpacity="0.05" />
                 <stop offset="65%" stopColor={colors.orbitGradMid} stopOpacity="0.85" />
                 <stop offset="100%" stopColor={colors.orbitGradTo} stopOpacity="1" />
@@ -205,7 +192,7 @@ export default function PaymentSuccessTick({
               cx="50"
               cy="50"
               r="44"
-              stroke={`url(#orbitGrad_${isCod ? 'cod' : 'upi'})`}
+              stroke="url(#orbitGrad_upi)"
               strokeWidth="4"
               strokeLinecap="round"
               strokeDasharray="276"
@@ -270,7 +257,7 @@ export default function PaymentSuccessTick({
                 {isStar ? (
                   <svg
                     viewBox="0 0 24 24"
-                    fill={isCod ? '#60a5fa' : p.color}
+                    fill={p.color}
                     className="w-full h-full drop-shadow-sm"
                   >
                     <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" />
@@ -278,12 +265,12 @@ export default function PaymentSuccessTick({
                 ) : isShard ? (
                   <span
                     className="block w-full h-1/2 rounded-[1px] rotate-45"
-                    style={{ backgroundColor: isCod ? '#93c5fd' : p.color }}
+                    style={{ backgroundColor: p.color }}
                   />
                 ) : (
                   <span
                     className="block w-full h-full rounded-full shadow-sm"
-                    style={{ backgroundColor: isCod ? '#60a5fa' : p.color }}
+                    style={{ backgroundColor: p.color }}
                   />
                 )}
               </span>
@@ -296,9 +283,7 @@ export default function PaymentSuccessTick({
       <div
         className={`relative ${currentSize.badge} rounded-full bg-gradient-to-tr ${colors.bg} flex items-center justify-center ${currentSize.border} border-white ${colors.shadow} overflow-hidden z-10`}
         style={{
-          animation: `successBadgePop 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) 0.62s both, ${
-            isCod ? 'successAmbientGlowCod' : 'successAmbientGlow'
-          } 2.6s ease-in-out 1.9s infinite`,
+          animation: 'successBadgePop 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) 0.62s both, successAmbientGlow 2.6s ease-in-out 1.9s infinite',
           transformOrigin: 'center center',
         }}
       >
