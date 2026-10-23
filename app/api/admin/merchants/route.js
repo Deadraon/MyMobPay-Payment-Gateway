@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { verifyAdminAuth } from '@/lib/adminSettings';
+import { verifyAdminAuth, ensureAdminMerchant, DEFAULT_ADMIN_EMAILS, PLATFORM_ADMIN_USER_ID } from '@/lib/adminSettings';
 import { sendAdminNewSignupNotification, sendMerchantOnboardingOutreachEmail } from '@/lib/mailer';
 import { logAdminAction } from '@/lib/adminAudit';
+import { purgeAccountCompletely } from '@/lib/adminAccountDeletion';
 import crypto from 'crypto';
+
+export { purgeAccountCompletely };
 
 // GET: Fetch all registered merchants and all signups with complete direct details
 export async function GET(request) {
@@ -198,6 +201,22 @@ export async function POST(request) {
       });
     }
 
+    // Action: Delete any existing account completely from database
+    if (action === 'deleteAccount' || action === 'deleteMerchant') {
+      const targetId = merchantId || body.accountId || body.userId;
+      const result = await purgeAccountCompletely({
+        accountId: targetId,
+        email: payload?.email || body.email,
+        query: payload?.query || body.query
+      }, request);
+
+      if (!result.success) {
+        return NextResponse.json({ error: result.error }, { status: result.status || 400 });
+      }
+
+      return NextResponse.json(result);
+    }
+
     if (!merchantId) {
       return NextResponse.json({ error: 'merchantId is required' }, { status: 400 });
     }
@@ -339,3 +358,49 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+// DELETE: Delete an account completely via DELETE HTTP method
+export async function DELETE(request) {
+  try {
+    const isAuthorized = await verifyAdminAuth(request);
+    if (!isAuthorized) {
+      return NextResponse.json({ error: 'Unauthorized: Access Denied' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const idFromQuery = searchParams.get('id') || searchParams.get('merchantId') || searchParams.get('accountId') || searchParams.get('userId');
+    const emailFromQuery = searchParams.get('email');
+    const queryParam = searchParams.get('query');
+
+    let bodyData = {};
+    try {
+      bodyData = await request.json();
+    } catch (e) {
+      // Body may be empty in standard DELETE requests
+    }
+
+    const targetId = idFromQuery || bodyData.accountId || bodyData.merchantId || bodyData.userId;
+    const targetEmail = emailFromQuery || bodyData.email;
+    const targetQuery = queryParam || bodyData.query;
+
+    if (!targetId && !targetEmail && !targetQuery) {
+      return NextResponse.json({ error: 'accountId, email, or query parameter is required' }, { status: 400 });
+    }
+
+    const result = await purgeAccountCompletely({
+      accountId: targetId,
+      email: targetEmail,
+      query: targetQuery
+    }, request);
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: result.status || 400 });
+    }
+
+    return NextResponse.json(result);
+  } catch (err) {
+    console.error('API admin merchants DELETE error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+

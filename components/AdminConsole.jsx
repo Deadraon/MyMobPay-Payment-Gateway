@@ -24,6 +24,7 @@ import DisputesTab from './admin/DisputesTab';
 import DeveloperTab from './admin/DeveloperTab';
 import ReportsTab from './admin/ReportsTab';
 import EmailsTab from './admin/EmailsTab';
+import DeleteAccountModal from './admin/DeleteAccountModal';
 
 import { 
   Lock, 
@@ -102,6 +103,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const [selectedOrderForDrawer, setSelectedOrderForDrawer] = useState(null);
   const [selectedMerchantForDrawer, setSelectedMerchantForDrawer] = useState(null);
   const [reconcileModalOrder, setReconcileModalOrder] = useState(null);
+  const [accountToDelete, setAccountToDelete] = useState(null);
   const [manualUtrInput, setManualUtrInput] = useState('');
   const [globalSearch, setGlobalSearch] = useState('');
 
@@ -545,6 +547,47 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
     await handleUpdateMerchant(userId, { phone_number: phone });
   };
 
+  // 9b. Delete Account Completely from Database
+  const handleDeleteAccount = async (identifier, metadata) => {
+    setActionLoading(true);
+    try {
+      const headers = await getAuthHeaders();
+      headers['Content-Type'] = 'application/json';
+      const res = await fetch('/api/admin/merchants', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          action: 'deleteAccount',
+          accountId: identifier,
+          payload: metadata
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to delete account');
+      }
+
+      showToast(data.message || 'Account completely wiped from database', 'info');
+      setAccountToDelete(null);
+
+      // Close drawer if it was displaying this merchant
+      if (selectedMerchantForDrawer && (selectedMerchantForDrawer.id === identifier || selectedMerchantForDrawer.email === identifier)) {
+        setSelectedMerchantForDrawer(null);
+      }
+
+      // Re-fetch merchants and signups
+      await Promise.all([
+        fetchMerchantsData(),
+        fetchAllOrders()
+      ]);
+    } catch (err) {
+      showToast(err.message, 'error');
+      throw err;
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // 10. Gift Code Operations
   const handleCreateGiftCode = async (codePayload) => {
     setActionLoading(true);
@@ -769,6 +812,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
               loading={loading}
               onSelectMerchant={(m) => setSelectedMerchantForDrawer(m)}
               onToggleStatus={handleToggleStatus}
+              onRequestDelete={(m) => setAccountToDelete(m)}
               actionLoading={actionLoading}
               showToast={showToast}
             />
@@ -780,6 +824,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
               loading={loading}
               onSendOutreachEmail={handleSendOutreachEmail}
               onUpdatePhone={handleUpdatePhone}
+              onRequestDelete={(s) => setAccountToDelete(s)}
               actionLoading={actionLoading}
               showToast={showToast}
             />
@@ -909,6 +954,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
           onUpdateMerchant={handleUpdateMerchant}
           onRotateApiKey={handleRotateApiKey}
           onExtendSubscription={handleExtendSubscription}
+          onRequestDelete={(m) => setAccountToDelete(m)}
           actionLoading={actionLoading}
           showToast={showToast}
           getAuthHeaders={getAuthHeaders}
@@ -965,6 +1011,16 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
           </div>
         </div>
       )}
+
+      {/* Permanent Account Purge Modal */}
+      <DeleteAccountModal
+        isOpen={Boolean(accountToDelete)}
+        onClose={() => setAccountToDelete(null)}
+        targetAccount={accountToDelete}
+        allAccounts={allSignups}
+        onConfirmDelete={handleDeleteAccount}
+        actionLoading={actionLoading}
+      />
 
     </div>
   );

@@ -18,7 +18,8 @@ import {
   Info,
   Clock,
   Sparkles,
-  ChevronDown
+  ChevronDown,
+  Trash2
 } from 'lucide-react';
 import { ADMIN_ROLES, ROLE_PERMISSIONS } from '@/lib/adminRbac';
 
@@ -196,6 +197,41 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
           if (!res.ok) throw new Error(data.error || 'Failed to reset 2FA');
 
           if (showToast) showToast(`2FA reset for ${user.email}`, 'info');
+          fetchUsers();
+        } catch (err) {
+          if (showToast) showToast(err.message, 'error');
+        } finally {
+          setActionLoading(false);
+          setConfirmModal(null);
+        }
+      }
+    });
+  };
+
+  // Handle delete admin
+  const handleDeleteAdmin = (user) => {
+    setConfirmModal({
+      title: 'Remove Administrator',
+      message: `Are you sure you want to permanently delete administrator account for ${user.email}? They will completely lose admin access and be removed from the database.`,
+      confirmLabel: 'Delete Admin',
+      isDanger: true,
+      onConfirm: async () => {
+        setActionLoading(true);
+        try {
+          const headers = getAuthHeaders ? await getAuthHeaders() : {};
+          headers['Content-Type'] = 'application/json';
+          const res = await fetch('/api/admin/users', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              action: 'delete_admin',
+              userId: user.id
+            })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to remove administrator');
+
+          if (showToast) showToast(`Administrator ${user.email} removed`, 'info');
           fetchUsers();
         } catch (err) {
           if (showToast) showToast(err.message, 'error');
@@ -455,6 +491,15 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
                             }`}
                           >
                             {u.is_active ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteAdmin(u)}
+                            disabled={actionLoading || isProtectedSuperAdmin}
+                            title={isProtectedSuperAdmin ? 'Primary root administrator cannot be removed' : 'Delete administrator account'}
+                            className="p-1.5 rounded-xl border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>

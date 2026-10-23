@@ -22,7 +22,8 @@ import {
   EyeOff,
   Lock,
   Building,
-  FileText
+  FileText,
+  Trash2
 } from 'lucide-react';
 import { 
   maskBankAccount, 
@@ -39,6 +40,7 @@ export default function MerchantDrawer({
   onUpdateMerchant,
   onRotateApiKey,
   onExtendSubscription,
+  onRequestDelete,
   actionLoading = false,
   showToast,
   getAuthHeaders
@@ -472,6 +474,31 @@ export default function MerchantDrawer({
                 </button>
               ))}
             </div>
+          {/* Danger Zone: Permanent Account Deletion */}
+          <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200/90 space-y-3">
+            <div className="flex items-start gap-2.5">
+              <div className="p-1.5 rounded-xl bg-rose-100 text-rose-700 shrink-0 mt-0.5">
+                <ShieldAlert className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-xs text-rose-950">
+                  Danger Zone: Permanent Account Purge
+                </h4>
+                <p className="text-[11px] text-rose-700 leading-relaxed mt-0.5">
+                  Completely erase this merchant, their Supabase Auth account, store credentials, payment orders, payment links, and KYC compliance records from the database. This action is irreversible.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => onRequestDelete && onRequestDelete(merchant)}
+              disabled={actionLoading}
+              className="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Delete Account Completely</span>
+            </button>
           </div>
 
         </div>

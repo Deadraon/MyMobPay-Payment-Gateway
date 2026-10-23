@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { verifyAdminAuth, ensureAdminMerchant } from '@/lib/adminSettings';
+import { verifyAdminAuth, ensureAdminMerchant, DEFAULT_ADMIN_EMAILS, PLATFORM_ADMIN_USER_ID } from '@/lib/adminSettings';
 import { ADMIN_ROLES, hasPermission, PERMISSIONS } from '@/lib/adminRbac';
 import { logAdminAction } from '@/lib/adminAudit';
 
@@ -219,6 +219,39 @@ export async function POST(request) {
       });
 
       return NextResponse.json({ success: true, message: `2FA reset for ${target.email}`, users });
+    }
+
+    if (action === 'delete_admin') {
+      if (!userId) return NextResponse.json({ error: 'userId is required' }, { status: 400 });
+
+      const target = users.find(u => u.id === userId || u.email === userId);
+      if (!target) return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
+
+      // Guard: Primary root platform administrators cannot be deleted
+      const isRoot = 
+        target.id === PLATFORM_ADMIN_USER_ID || 
+        DEFAULT_ADMIN_EMAILS.some(e => e.toLowerCase() === target.email?.toLowerCase()?.trim());
+
+      if (isRoot) {
+        return NextResponse.json({ error: 'Primary root administrator cannot be deleted' }, { status: 403 });
+      }
+
+      users = users.filter(u => u.id !== target.id && u.email !== target.email);
+      await saveAdminUsers(users);
+
+      try {
+        await supabaseAdmin.from('admin_users').delete().or(`id.eq.${target.id},email.eq.${target.email}`);
+      } catch (e) {}
+
+      await logAdminAction({
+        action: 'admin_user.deleted',
+        targetType: 'admin_user',
+        targetId: target.id,
+        details: { email: target.email, role: target.role },
+        request
+      });
+
+      return NextResponse.json({ success: true, message: `Administrator ${target.email} removed`, users });
     }
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
