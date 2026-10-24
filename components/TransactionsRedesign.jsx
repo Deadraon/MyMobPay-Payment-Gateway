@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
+import { useModalTransition } from './useModalTransition';
 import {
   Search,
   Download,
@@ -57,9 +58,20 @@ export default function TransactionsRedesign({
   const [showAddBankModal, setShowAddBankModal] = useState(false);
   const [copiedKey, setCopiedKey] = useState(null);
 
+  // Transitions.dev: Modal Transitions (06-modal.md)
+  const lastOrderRef = useRef(selectedOrder);
+  if (selectedOrder) lastOrderRef.current = selectedOrder;
+  const activeSelectedOrder = selectedOrder || lastOrderRef.current;
+  const { isMounted: isAuditModalMounted, modalClass: auditModalClass, overlayClass: auditOverlayClass } = useModalTransition(Boolean(selectedOrder));
+  const { isMounted: isAddBankModalMounted, modalClass: addBankModalClass, overlayClass: addBankOverlayClass } = useModalTransition(showAddBankModal);
+
   // Refund Tracker States
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [refundOrder, setRefundOrder] = useState(null);
+  const lastRefundOrderRef = useRef(refundOrder);
+  if (refundOrder) lastRefundOrderRef.current = refundOrder;
+  const activeRefundOrder = refundOrder || lastRefundOrderRef.current;
+  const { isMounted: isRefundModalMounted, modalClass: refundModalClass, overlayClass: refundOverlayClass } = useModalTransition(Boolean(showRefundModal && refundOrder));
   const [refundAmount, setRefundAmount] = useState('');
   const [refundUtr, setRefundUtr] = useState('');
   const [refundReason, setRefundReason] = useState('Customer requested cancellation');
@@ -1193,11 +1205,19 @@ export default function TransactionsRedesign({
                           e.stopPropagation();
                           handleCopy(canonicalId, `id_${order.id}`);
                         }}
-                        className="text-slate-400 hover:text-slate-700 p-1 rounded-md shrink-0"
+                        className="text-slate-400 hover:text-slate-700 p-1 rounded-md shrink-0 flex items-center justify-center"
                         title="Copy ID"
+                        aria-label="Copy order ID"
                         type="button"
                       >
-                        {copiedKey === `id_${order.id}` ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span className="t-icon-swap" data-state={copiedKey === `id_${order.id}` ? 'b' : 'a'}>
+                          <span className="t-icon" data-icon="a" aria-hidden={copiedKey === `id_${order.id}`}>
+                            <Copy className="w-3.5 h-3.5" />
+                          </span>
+                          <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== `id_${order.id}`}>
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          </span>
+                        </span>
                       </button>
                     </div>
 
@@ -1345,11 +1365,19 @@ export default function TransactionsRedesign({
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-         7. TRANSACTION DETAILS MODAL
+         7. TRANSACTION DETAILS MODAL (transitions-dev: 06-modal.md)
          ═══════════════════════════════════════════════════════════ */}
-      {selectedOrder && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden animate-scaleUp">
+      {isAuditModalMounted && activeSelectedOrder && (
+        <div 
+          className={`fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 ${auditOverlayClass}`}
+          onClick={() => setSelectedOrder(null)}
+        >
+          <div 
+            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden ${auditModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Modal Header */}
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
               <div className="flex items-center gap-3">
@@ -1358,7 +1386,7 @@ export default function TransactionsRedesign({
                 </div>
                 <div className="flex flex-col">
                   <h3 className="text-base font-extrabold text-[#0c2340]">Transaction Audit Details</h3>
-                  <span className="text-xs font-mono text-slate-400">ID: {selectedOrder.id}</span>
+                  <span className="text-xs font-mono text-slate-400">ID: {activeSelectedOrder.id}</span>
                 </div>
               </div>
               <button
@@ -1418,11 +1446,19 @@ export default function TransactionsRedesign({
                     {selectedOrder.utr && (
                       <button
                         onClick={() => handleCopy(selectedOrder.utr, 'modal_utr')}
-                        className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer"
+                        className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer flex items-center justify-center"
                         type="button"
                         title="Copy UTR"
+                        aria-label="Copy UTR number"
                       >
-                        {copiedKey === 'modal_utr' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                        <span className="t-icon-swap" data-state={copiedKey === 'modal_utr' ? 'b' : 'a'}>
+                          <span className="t-icon" data-icon="a" aria-hidden={copiedKey === 'modal_utr'}>
+                            <Copy className="w-3 h-3" />
+                          </span>
+                          <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'modal_utr'}>
+                            <Check className="w-3 h-3 text-emerald-600" />
+                          </span>
+                        </span>
                       </button>
                     )}
                   </div>
@@ -1433,11 +1469,19 @@ export default function TransactionsRedesign({
                         <span className="text-xs font-mono font-bold text-amber-800">{selectedOrder.customer_utr}</span>
                         <button
                           onClick={() => handleCopy(selectedOrder.customer_utr, 'modal_cust_utr')}
-                          className="text-amber-500 hover:text-amber-800 p-0.5 cursor-pointer"
+                          className="text-amber-500 hover:text-amber-800 p-0.5 cursor-pointer flex items-center justify-center"
                           type="button"
                           title="Copy Customer UTR"
+                          aria-label="Copy Customer UTR"
                         >
-                          {copiedKey === 'modal_cust_utr' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                          <span className="t-icon-swap" data-state={copiedKey === 'modal_cust_utr' ? 'b' : 'a'}>
+                            <span className="t-icon" data-icon="a" aria-hidden={copiedKey === 'modal_cust_utr'}>
+                              <Copy className="w-3 h-3" />
+                            </span>
+                            <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'modal_cust_utr'}>
+                              <Check className="w-3 h-3 text-emerald-600" />
+                            </span>
+                          </span>
                         </button>
                       </div>
                     </div>
@@ -1592,9 +1636,17 @@ export default function TransactionsRedesign({
                   }}
                   className="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
                   type="button"
+                  aria-label="Copy audit trail receipt"
                 >
-                  {copiedKey === 'modal_receipt' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  Copy Trail
+                  <span className="t-icon-swap" data-state={copiedKey === 'modal_receipt' ? 'b' : 'a'}>
+                    <span className="t-icon" data-icon="a" aria-hidden={copiedKey === 'modal_receipt'}>
+                      <Copy className="w-3.5 h-3.5" />
+                    </span>
+                    <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'modal_receipt'}>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    </span>
+                  </span>
+                  <span>Copy Trail</span>
                 </button>
 
                 <div className="flex items-center gap-2">
@@ -1652,11 +1704,19 @@ export default function TransactionsRedesign({
       )}
 
       {/* ═══════════════════════════════════════════════════════════
-         8. ADD BANK ACCOUNT MODAL
+         8. ADD BANK ACCOUNT MODAL (transitions-dev: 06-modal.md)
          ═══════════════════════════════════════════════════════════ */}
-      {showAddBankModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden animate-scaleUp">
+      {isAddBankModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 ${addBankOverlayClass}`}
+          onClick={() => setShowAddBankModal(false)}
+        >
+          <div 
+            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden ${addBankModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
               <div className="flex items-center gap-3">
@@ -1788,11 +1848,23 @@ export default function TransactionsRedesign({
       )}
 
       {/* ══════════════════════════════════════════════════════════
-          OUTBOUND REFUND TRACKER MODAL (DIRECT UPI MODEL)
+          OUTBOUND REFUND TRACKER MODAL (DIRECT UPI MODEL) (transitions-dev: 06-modal.md)
           ══════════════════════════════════════════════════════════ */}
-      {showRefundModal && refundOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 overflow-hidden max-h-[92vh] overflow-y-auto animate-scaleUp">
+      {isRefundModalMounted && activeRefundOrder && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs ${refundOverlayClass}`}
+          onClick={() => {
+            setShowRefundModal(false);
+            setRefundError(null);
+            setRefundSuccessMsg(null);
+          }}
+        >
+          <div 
+            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 overflow-hidden max-h-[92vh] overflow-y-auto ${refundModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
@@ -1801,7 +1873,7 @@ export default function TransactionsRedesign({
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900 text-base">Record Outbound Refund</h3>
-                  <p className="text-xs text-slate-500">Order #{refundOrder.id?.slice(0, 10)}... • Direct UPI Tracking</p>
+                  <p className="text-xs text-slate-500">Order #{activeRefundOrder.id?.slice(0, 10)}... • Direct UPI Tracking</p>
                 </div>
               </div>
               <button

@@ -16,6 +16,7 @@ import {
   Activity,
   Layers
 } from 'lucide-react';
+import { useModalTransition } from '../useModalTransition';
 
 export default function DeveloperTab({ showToast, getAuthHeaders }) {
   const [logs, setLogs] = useState([]);
@@ -23,6 +24,12 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
   const [loading, setLoading] = useState(true);
   const [retryingId, setRetryingId] = useState(null);
   const [inspectedPayload, setInspectedPayload] = useState(null);
+  const { isMounted: isPayloadMounted, modalClass, overlayClass } = useModalTransition(Boolean(inspectedPayload));
+  const lastPayloadRef = React.useRef(null);
+  if (inspectedPayload) {
+    lastPayloadRef.current = inspectedPayload;
+  }
+  const activePayload = inspectedPayload || lastPayloadRef.current;
 
   const fetchDeveloperData = useCallback(async () => {
     setLoading(true);
@@ -229,10 +236,18 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
         </div>
       </div>
 
-      {/* Payload Inspector Modal */}
-      {inspectedPayload && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-fadeIn">
-          <div className="bg-slate-950 text-slate-100 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-800 space-y-4 animate-scale-up">
+      {/* Payload Inspector Modal (transitions-dev 06-modal.md) */}
+      {isPayloadMounted && activePayload && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 ${overlayClass}`}
+          onClick={() => setInspectedPayload(null)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-slate-950 text-slate-100 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-800 space-y-4 ${modalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Code2 className="w-5 h-5 text-blue-400" />
@@ -244,20 +259,20 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
             <div className="space-y-2 text-xs">
               <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-300">
                 <span className="text-slate-500 block">Target Route:</span>
-                <span className="text-blue-400 break-all">{inspectedPayload.target_url}</span>
+                <span className="text-blue-400 break-all">{activePayload.target_url}</span>
               </div>
 
               <div>
                 <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider block mb-1">Raw JSON Payload</span>
                 <pre className="p-3 rounded-2xl bg-black border border-slate-800 text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-56">
-                  {JSON.stringify(inspectedPayload.payload, null, 2)}
+                  {JSON.stringify(activePayload.payload, null, 2)}
                 </pre>
               </div>
 
               <div>
                 <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider block mb-1">Server Response Body</span>
                 <pre className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-300">
-                  {inspectedPayload.response_body || 'No response body recorded'}
+                  {activePayload.response_body || 'No response body recorded'}
                 </pre>
               </div>
             </div>

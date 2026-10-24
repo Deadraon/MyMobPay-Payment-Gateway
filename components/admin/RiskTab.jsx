@@ -19,6 +19,7 @@ import {
   Smartphone,
   CreditCard
 } from 'lucide-react';
+import { useModalTransition } from '../useModalTransition';
 
 export default function RiskTab({ showToast, getAuthHeaders }) {
   const [blocklist, setBlocklist] = useState([]);
@@ -32,6 +33,7 @@ export default function RiskTab({ showToast, getAuthHeaders }) {
 
   // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const { isMounted: isAddMounted, modalClass: addModalClass, overlayClass: addOverlayClass } = useModalTransition(isAddOpen);
   const [newItemType, setNewItemType] = useState('phone');
   const [newItemValue, setNewItemValue] = useState('');
   const [newItemReason, setNewItemReason] = useState('');
@@ -388,10 +390,18 @@ export default function RiskTab({ showToast, getAuthHeaders }) {
         </div>
       </div>
 
-      {/* Add Blocklist Modal */}
-      {isAddOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-up">
+      {/* Add Blocklist Modal (transitions-dev 06-modal.md) */}
+      {isAddMounted && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 ${addOverlayClass}`}
+          onClick={() => setIsAddOpen(false)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 ${addModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-rose-600" />

@@ -33,6 +33,7 @@ import {
   maskPan, 
   maskGstin 
 } from '@/lib/adminMasking';
+import { useModalTransition } from '../useModalTransition';
 
 export default function MerchantDrawer({
   merchant,
@@ -56,6 +57,12 @@ export default function MerchantDrawer({
   const [revealedFields, setRevealedFields] = useState({});
   // Unmask modal: { open: boolean, field: string, label: string }
   const [revealModal, setRevealModal] = useState({ open: false, field: '', label: '' });
+  const { isMounted: isRevealMounted, modalClass: revealModalClass, overlayClass: revealOverlayClass } = useModalTransition(revealModal.open);
+  const lastRevealModalRef = React.useRef(revealModal);
+  if (revealModal.open) {
+    lastRevealModalRef.current = revealModal;
+  }
+  const activeRevealModal = revealModal.open ? revealModal : lastRevealModalRef.current;
   const [revealReason, setRevealReason] = useState('');
   const [revealLoading, setRevealLoading] = useState(false);
 
@@ -525,10 +532,21 @@ export default function MerchantDrawer({
         </div>
       </div>
 
-      {/* Sensitive Data Reveal Modal */}
-      {revealModal.open && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-up">
+      {/* Sensitive Data Reveal Modal (transitions-dev 06-modal.md) */}
+      {isRevealMounted && (
+        <div 
+          className={`fixed inset-0 z-60 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 ${revealOverlayClass}`}
+          onClick={() => {
+            setRevealModal({ open: false, field: '', label: '' });
+            setRevealReason('');
+          }}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 ${revealModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center gap-2.5 text-slate-900 border-b border-slate-100 pb-3">
               <div className="p-2 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200">
                 <Lock className="w-5 h-5" />
@@ -540,7 +558,7 @@ export default function MerchantDrawer({
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              You are requesting to view the raw <strong>{revealModal.label}</strong> for <strong>{businessName}</strong>. This unmask event will be permanently recorded in the tamper-evident audit ledger.
+              You are requesting to view the raw <strong>{activeRevealModal.label}</strong> for <strong>{businessName}</strong>. This unmask event will be permanently recorded in the tamper-evident audit ledger.
             </p>
 
             <form onSubmit={submitUnmask} className="space-y-4 text-xs">

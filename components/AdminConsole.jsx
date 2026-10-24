@@ -25,6 +25,7 @@ import DeveloperTab from './admin/DeveloperTab';
 import ReportsTab from './admin/ReportsTab';
 import EmailsTab from './admin/EmailsTab';
 import DeleteAccountModal from './admin/DeleteAccountModal';
+import { useModalTransition } from './useModalTransition';
 
 import { 
   Lock, 
@@ -103,6 +104,12 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const [selectedOrderForDrawer, setSelectedOrderForDrawer] = useState(null);
   const [selectedMerchantForDrawer, setSelectedMerchantForDrawer] = useState(null);
   const [reconcileModalOrder, setReconcileModalOrder] = useState(null);
+  const { isMounted: isReconcileMounted, modalClass: reconcileModalClass, overlayClass: reconcileOverlayClass } = useModalTransition(Boolean(reconcileModalOrder));
+  const lastReconcileOrderRef = React.useRef(null);
+  if (reconcileModalOrder) {
+    lastReconcileOrderRef.current = reconcileModalOrder;
+  }
+  const activeReconcileOrder = reconcileModalOrder || lastReconcileOrderRef.current;
   const [accountToDelete, setAccountToDelete] = useState(null);
   const [manualUtrInput, setManualUtrInput] = useState('');
   const [globalSearch, setGlobalSearch] = useState('');
@@ -961,10 +968,18 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         />
       )}
 
-      {/* Manual UTR Reconciliation Modal */}
-      {reconcileModalOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200/80 space-y-4 animate-scale-up">
+      {/* Manual UTR Reconciliation Modal (transitions-dev 06-modal.md) */}
+      {isReconcileMounted && activeReconcileOrder && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 ${reconcileOverlayClass}`}
+          onClick={() => setReconcileModalOrder(null)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200/80 space-y-4 ${reconcileModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="font-bold text-slate-900 text-sm">
                 Manual UTR Reconciliation
@@ -978,7 +993,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
             </div>
 
             <p className="text-xs text-slate-500 leading-relaxed">
-              Verify payment of <strong>₹{reconcileModalOrder.amount}</strong> for Order #{reconcileModalOrder.id.slice(0, 8)}. 
+              Verify payment of <strong>₹{activeReconcileOrder.amount}</strong> for Order #{activeReconcileOrder.id.slice(0, 8)}. 
               This will update the order to <strong className="text-emerald-600">verified</strong>, notify the merchant webhook, and update their dashboard.
             </p>
 

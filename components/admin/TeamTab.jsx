@@ -21,6 +21,7 @@ import {
   ChevronDown,
   Trash2
 } from 'lucide-react';
+import { useModalTransition } from '../useModalTransition';
 import { ADMIN_ROLES, ROLE_PERMISSIONS } from '@/lib/adminRbac';
 
 const ROLE_COLORS = {
@@ -45,8 +46,15 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteName, setInviteName] = useState('');
   const [inviteRole, setInviteRole] = useState(ADMIN_ROLES.SUPPORT);
+  const { isMounted: isInviteMounted, modalClass: inviteModalClass, overlayClass: inviteOverlayClass } = useModalTransition(isInviteOpen);
 
   const [confirmModal, setConfirmModal] = useState(null); // { title, message, onConfirm }
+  const { isMounted: isConfirmMounted, modalClass: confirmModalClass, overlayClass: confirmOverlayClass } = useModalTransition(Boolean(confirmModal));
+  const lastConfirmModalRef = React.useRef(null);
+  if (confirmModal) {
+    lastConfirmModalRef.current = confirmModal;
+  }
+  const activeConfirmModal = confirmModal || lastConfirmModalRef.current;
   const [showMatrix, setShowMatrix] = useState(false);
 
   // Fetch users
@@ -484,13 +492,17 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
                             onClick={() => handleToggleStatus(u)}
                             disabled={actionLoading || isProtectedSuperAdmin}
                             title={u.is_active ? 'Deactivate access' : 'Activate access'}
+                            aria-label={u.is_active ? 'Deactivate access' : 'Activate access'}
                             className={`p-1.5 rounded-xl border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer ${
                               u.is_active 
                                 ? 'border-rose-200 text-rose-600 hover:bg-rose-50' 
                                 : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
                             }`}
                           >
-                            {u.is_active ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                            <span className="t-icon-swap" data-state={u.is_active ? 'a' : 'b'}>
+                              <Lock className="t-icon t-icon--a w-3.5 h-3.5" aria-hidden={!u.is_active} />
+                              <Unlock className="t-icon t-icon--b w-3.5 h-3.5" aria-hidden={u.is_active} />
+                            </span>
                           </button>
 
                           <button
@@ -512,10 +524,18 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
         </div>
       </div>
 
-      {/* Invite Modal */}
-      {isInviteOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-up">
+      {/* Invite Modal (transitions-dev 06-modal.md) */}
+      {isInviteMounted && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 ${inviteOverlayClass}`}
+          onClick={() => setIsInviteOpen(false)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 ${inviteModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-blue-600" />
@@ -592,12 +612,20 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
         </div>
       )}
 
-      {/* Confirmation Modal */}
-      {confirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-up">
+      {/* Confirmation Modal (transitions-dev 06-modal.md) */}
+      {isConfirmMounted && activeConfirmModal && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 ${confirmOverlayClass}`}
+          onClick={() => setConfirmModal(null)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 ${confirmModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center gap-2.5 text-slate-900">
-              {confirmModal.isDanger ? (
+              {activeConfirmModal.isDanger ? (
                 <div className="p-2 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200">
                   <AlertTriangle className="w-5 h-5" />
                 </div>
@@ -606,11 +634,11 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
               )}
-              <h3 className="font-bold text-sm leading-tight">{confirmModal.title}</h3>
+              <h3 className="font-bold text-sm leading-tight">{activeConfirmModal.title}</h3>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              {confirmModal.message}
+              {activeConfirmModal.message}
             </p>
 
             <div className="pt-2 flex items-center justify-end gap-2 text-xs">
@@ -623,15 +651,15 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
               </button>
               <button
                 type="button"
-                onClick={confirmModal.onConfirm}
+                onClick={activeConfirmModal.onConfirm}
                 disabled={actionLoading}
                 className={`px-4 py-2 rounded-xl text-white font-bold transition-all shadow-xs cursor-pointer ${
-                  confirmModal.isDanger 
+                  activeConfirmModal.isDanger 
                     ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20' 
                     : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'
                 }`}
               >
-                {confirmModal.confirmLabel || 'Confirm'}
+                {activeConfirmModal.confirmLabel || 'Confirm'}
               </button>
             </div>
           </div>

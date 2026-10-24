@@ -640,8 +640,16 @@ export default function DashboardOverviewRedesign({
                   onClick={copyVpa}
                   className="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors cursor-pointer shrink-0"
                   title="Copy VPA"
+                  aria-label="Copy UPI VPA"
                 >
-                  {copiedVpa ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span className="t-icon-swap" data-state={copiedVpa ? 'b' : 'a'}>
+                    <span className="t-icon" data-icon="a" aria-hidden={copiedVpa}>
+                      <Copy className="w-3.5 h-3.5" />
+                    </span>
+                    <span className="t-icon" data-icon="b" aria-hidden={!copiedVpa}>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    </span>
+                  </span>
                 </button>
               </div>
               <p className="text-[11px] text-slate-500 leading-tight">

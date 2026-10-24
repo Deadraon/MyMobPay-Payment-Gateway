@@ -723,9 +723,17 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
               type="button"
               onClick={handleCopySummary}
               className="w-full flex items-center justify-center gap-2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer"
+              aria-label={copiedCsv ? "Copied summary to clipboard" : "Copy summary for CA"}
             >
-              {copiedCsv ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-500" />}
-              {copiedCsv ? 'Copied to Clipboard!' : 'Copy Summary for CA'}
+              <span className="t-icon-swap" data-state={copiedCsv ? 'b' : 'a'}>
+                <span className="t-icon" data-icon="a" aria-hidden={copiedCsv}>
+                  <Copy className="w-3.5 h-3.5 text-slate-500" />
+                </span>
+                <span className="t-icon" data-icon="b" aria-hidden={!copiedCsv}>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                </span>
+              </span>
+              <span>{copiedCsv ? 'Copied to Clipboard!' : 'Copy Summary for CA'}</span>
             </button>
           </div>
         </div>

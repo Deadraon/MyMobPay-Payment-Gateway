@@ -12,6 +12,7 @@ import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
 import { formatMerchantId } from '@/lib/merchantId';
 import PaymentSuccessTick from '@/components/PaymentSuccessTick';
+import { useModalTransition } from '@/components/useModalTransition';
 
 export default function ConsoleActivationPaywall({
   profile,
@@ -51,6 +52,8 @@ export default function ConsoleActivationPaywall({
   const [language, setLanguage] = useState('en'); // 'en' | 'hi'
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showEnterpriseModal, setShowEnterpriseModal] = useState(false);
+  const { isMounted: isHelpModalMounted, modalClass: helpModalClass, overlayClass: helpOverlayClass } = useModalTransition(showHelpModal);
+  const { isMounted: isEnterpriseModalMounted, modalClass: enterpriseModalClass, overlayClass: enterpriseOverlayClass } = useModalTransition(showEnterpriseModal);
   const [manualUtr, setManualUtr] = useState('');
   const [isVerifyingUtr, setIsVerifyingUtr] = useState(false);
   const [utrError, setUtrError] = useState('');
@@ -916,18 +919,13 @@ export default function ConsoleActivationPaywall({
                     onClick={handleCopyVpa}
                     className="h-9 px-3.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-sky-700 text-xs font-semibold flex items-center justify-center shadow-xs transition-all cursor-pointer shrink-0 gap-1.5" 
                     type="button"
+                    aria-label={copiedVpa ? "Copied UPI ID" : "Copy UPI ID"}
                   >
-                    {copiedVpa ? (
-                      <>
-                        <Check className="w-4 h-4 text-emerald-600" />
-                        <span className="text-emerald-700">Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        <span>Copy UPI ID</span>
-                      </>
-                    )}
+                    <span className="t-icon-swap" data-state={copiedVpa ? 'b' : 'a'}>
+                      <Copy className="t-icon t-icon--a w-4 h-4" aria-hidden={copiedVpa} />
+                      <Check className="t-icon t-icon--b w-4 h-4 text-emerald-600" aria-hidden={!copiedVpa} />
+                    </span>
+                    <span className={copiedVpa ? "text-emerald-700 font-bold" : ""}>{copiedVpa ? 'Copied!' : 'Copy UPI ID'}</span>
                   </button>
                 </div>
               </div>
@@ -1066,10 +1064,18 @@ export default function ConsoleActivationPaywall({
         <span className="font-mono text-[12px]">Merchant ID: {merchantId}</span>
       </div>
 
-      {/* Help Modal */}
-      {showHelpModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      {/* Help Modal (transitions-dev 06-modal.md) */}
+      {isHelpModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 ${helpOverlayClass}`}
+          onClick={() => setShowHelpModal(false)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 ${helpModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-sky-600" />
@@ -1095,10 +1101,18 @@ export default function ConsoleActivationPaywall({
         </div>
       )}
 
-      {/* Custom Enterprise Modal */}
-      {showEnterpriseModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      {/* Custom Enterprise Modal (transitions-dev 06-modal.md) */}
+      {isEnterpriseModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 ${enterpriseOverlayClass}`}
+          onClick={() => setShowEnterpriseModal(false)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 ${enterpriseModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-[#0284c7]" />

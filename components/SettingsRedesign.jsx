@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useDropdownTransition } from './useDropdownTransition';
+import { useModalTransition } from './useModalTransition';
 import {
   Landmark,
   Building2,
@@ -226,6 +228,8 @@ export default function SettingsRedesign({
   const [bankAccounts, setBankAccounts] = useState([]);
   const [showAddBankModal, setShowAddBankModal] = useState(false);
   const [showSwitchBankDropdown, setShowSwitchBankDropdown] = useState(false);
+  const { isMounted: isSwitchBankMounted, dropdownClass: switchBankDropdownClass } = useDropdownTransition(showSwitchBankDropdown);
+  const { isMounted: isAddBankModalMounted, modalClass: addBankModalClass, overlayClass: addBankOverlayClass } = useModalTransition(showAddBankModal);
   const [newBankForm, setNewBankForm] = useState({
     bank_name: 'State Bank of India (SBI)',
     custom_bank_name: '',
@@ -241,6 +245,7 @@ export default function SettingsRedesign({
 
   // ── Edit Bank Account State ──────────────────────────────────
   const [showEditBankModal, setShowEditBankModal] = useState(false);
+  const { isMounted: isEditBankModalMounted, modalClass: editBankModalClass, overlayClass: editBankOverlayClass } = useModalTransition(showEditBankModal);
   const [editBankForm, setEditBankForm] = useState({
     id: '',
     bank_name: 'State Bank of India (SBI)',
@@ -316,6 +321,7 @@ export default function SettingsRedesign({
     ];
   });
   const [showAddOutletModal, setShowAddOutletModal] = useState(false);
+  const { isMounted: isAddOutletModalMounted, modalClass: addOutletModalClass, overlayClass: addOutletOverlayClass } = useModalTransition(showAddOutletModal);
   const [newOutletName, setNewOutletName] = useState('');
   const [newOutletVpa, setNewOutletVpa] = useState('');
   const [outletError, setOutletError] = useState(null);
@@ -323,6 +329,7 @@ export default function SettingsRedesign({
 
   // VPA Change Request State
   const [showVpaChangeModal, setShowVpaChangeModal] = useState(false);
+  const { isMounted: isVpaModalMounted, modalClass: vpaModalClass, overlayClass: vpaOverlayClass } = useModalTransition(showVpaChangeModal);
   const [pendingVpaRequest, setPendingVpaRequest] = useState(() => {
     try {
       const stored = typeof window !== 'undefined' ? localStorage.getItem(`mmp_vpa_req_${profile?.id}`) : null;
@@ -1307,8 +1314,11 @@ export default function SettingsRedesign({
                         <ChevronRight className={`w-3 h-3 transition-transform ${showSwitchBankDropdown ? 'rotate-90' : ''}`} />
                       </button>
 
-                      {showSwitchBankDropdown && (
-                        <div className="absolute right-0 mt-2 w-72 bg-white text-slate-800 border border-slate-200 rounded-xl shadow-xl z-50 p-2 flex flex-col gap-1 animate-scaleUp">
+                      {isSwitchBankMounted && (
+                        <div 
+                          className={`absolute right-0 mt-2 w-72 bg-white text-slate-800 border border-slate-200 rounded-xl shadow-xl z-50 p-2 flex flex-col gap-1 ${switchBankDropdownClass}`}
+                          data-origin="top-right"
+                        >
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
                             Select Settlement Destination
                           </span>
@@ -1488,8 +1498,12 @@ export default function SettingsRedesign({
                                 type="button"
                                 onClick={() => setMaskedAccountIds((prev) => ({ ...prev, [acc.id]: !prev[acc.id] }))}
                                 className="text-slate-400 hover:text-slate-600 cursor-pointer"
+                                aria-label={isMasked ? "Show account number" : "Hide account number"}
                               >
-                                {isMasked ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                                <span className="t-icon-swap" data-state={isMasked ? 'a' : 'b'}>
+                                  <Eye className="t-icon t-icon--a w-3 h-3" aria-hidden={!isMasked} />
+                                  <EyeOff className="t-icon t-icon--b w-3 h-3" aria-hidden={isMasked} />
+                                </span>
                               </button>
                             </div>
                           </div>
@@ -2586,11 +2600,19 @@ export default function SettingsRedesign({
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          MODAL: ADD NEW BANK ACCOUNT (Solid White, No Blur)
+          MODAL: ADD NEW BANK ACCOUNT (transitions-dev: 06-modal.md)
           ═══════════════════════════════════════════════════════════ */}
-      {showAddBankModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 animate-fadeIn">
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-scaleUp">
+      {isAddBankModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs ${addBankOverlayClass}`}
+          onClick={() => setShowAddBankModal(false)}
+        >
+          <div 
+            className={`bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden ${addBankModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Modal Header */}
             <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
               <div className="flex items-center gap-3">
@@ -2759,10 +2781,18 @@ export default function SettingsRedesign({
         </div>
       )}
 
-      {/* ─── EDIT BANK ACCOUNT MODAL ─── */}
-      {showEditBankModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4 relative max-h-[90vh] overflow-y-auto">
+      {/* ─── EDIT BANK ACCOUNT MODAL (transitions-dev: 06-modal.md) ─── */}
+      {isEditBankModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs ${editBankOverlayClass}`}
+          onClick={() => setShowEditBankModal(false)}
+        >
+          <div 
+            className={`bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4 relative max-h-[90vh] overflow-y-auto ${editBankModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -2930,11 +2960,19 @@ export default function SettingsRedesign({
       )}
 
       {/* ══════════════════════════════════════════════════════════
-          SECURE VPA CHANGE REQUEST MODAL (ANTI-HIJACKING)
+          SECURE VPA CHANGE REQUEST MODAL (transitions-dev: 06-modal.md)
           ══════════════════════════════════════════════════════════ */}
-      {showVpaChangeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 animate-scaleUp">
+      {isVpaModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs ${vpaOverlayClass}`}
+          onClick={() => setShowVpaChangeModal(false)}
+        >
+          <div 
+            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 ${vpaModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-3">
@@ -3053,11 +3091,22 @@ export default function SettingsRedesign({
       )}
 
       {/* ══════════════════════════════════════════════════════════
-          ADD BILLING COUNTER / BRANCH OUTLET MODAL
+          ADD BILLING COUNTER / BRANCH OUTLET MODAL (transitions-dev: 06-modal.md)
           ══════════════════════════════════════════════════════════ */}
-      {showAddOutletModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4 animate-scaleUp">
+      {isAddOutletModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs ${addOutletOverlayClass}`}
+          onClick={() => {
+            setShowAddOutletModal(false);
+            setOutletError(null);
+          }}
+        >
+          <div 
+            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4 ${addOutletModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-3">

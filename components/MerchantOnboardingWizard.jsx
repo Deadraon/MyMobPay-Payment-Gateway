@@ -20,6 +20,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useModalTransition } from './useModalTransition';
 
 const COMMON_UPI_HANDLES = [
   '@okaxis',
@@ -39,6 +40,8 @@ export default function MerchantOnboardingWizard({
   onProfileUpdated,
   initialStep = 1
 }) {
+  const effectiveOpen = isOpen !== undefined ? isOpen : true;
+  const { isMounted, modalClass, overlayClass } = useModalTransition(effectiveOpen);
   const [currentStep, setCurrentStep] = useState(initialStep);
 
   // Step 1: UPI ID state
@@ -324,10 +327,16 @@ export default function MerchantOnboardingWizard({
     }
   ];
 
+  if (!isMounted) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
-      {/* ─── TWO-COLUMN OBSIDIAN & GOLD MODAL CONTAINER ─── */}
-      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl shadow-black/40 border border-slate-800/20 overflow-hidden flex flex-col md:flex-row max-h-[92vh]">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md ${overlayClass}`}>
+      {/* ─── TWO-COLUMN OBSIDIAN & GOLD MODAL CONTAINER (transitions-dev: 06-modal.md) ─── */}
+      <div 
+        className={`relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl shadow-black/40 border border-slate-800/20 overflow-hidden flex flex-col md:flex-row max-h-[92vh] ${modalClass}`}
+        role="dialog"
+        aria-modal="true"
+      >
         
         {/* ══════════════════════════════════════════════════════════
             LEFT PANEL: VERTICAL TIMELINE RAIL (MIDNIGHT OBSIDIAN & GOLD)
@@ -682,8 +691,16 @@ export default function MerchantOnboardingWizard({
                       type="button"
                       onClick={() => copyToClipboard(forwardingEmail, setCopiedEmail)}
                       className="h-11 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all cursor-pointer shrink-0"
+                      aria-label="Copy forwarding email address"
                     >
-                      {copiedEmail ? <Check className="w-4 h-4 stroke-[3]" /> : <Copy className="w-4 h-4" />}
+                      <span className="t-icon-swap" data-state={copiedEmail ? 'b' : 'a'}>
+                        <span className="t-icon" data-icon="a" aria-hidden={copiedEmail}>
+                          <Copy className="w-4 h-4" />
+                        </span>
+                        <span className="t-icon" data-icon="b" aria-hidden={!copiedEmail}>
+                          <Check className="w-4 h-4 stroke-[3]" />
+                        </span>
+                      </span>
                       <span>{copiedEmail ? 'Copied' : 'Copy'}</span>
                     </button>
                   </div>

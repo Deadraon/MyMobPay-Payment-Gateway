@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
+import { useDropdownTransition } from '@/components/useDropdownTransition';
 
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32, textSize = 'text-xl sm:text-2xl' }) => {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
@@ -65,6 +66,7 @@ const InstagramIcon = ({ className = 'w-4 h-4' }) => (
 export default function HomePage() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isMounted: isMobileMenuMounted, dropdownClass: mobileMenuDropdownClass } = useDropdownTransition(isMobileMenuOpen);
   const [monthlyVolume, setMonthlyVolume] = useState(500000); // 5 Lakhs default
   const [productCategory, setProductCategory] = useState('gateway');
   const [productSubFilter, setProductSubFilter] = useState('top');
@@ -230,22 +232,32 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Mobile hamburger button */}
+          {/* Mobile hamburger button with transitions-dev icon swap (09-icon-swap.md) */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors shadow-2xs border border-slate-200/70"
+            className="lg:hidden p-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors shadow-2xs border border-slate-200/70 flex items-center justify-center"
             title="Toggle Menu"
             aria-label="Toggle Navigation Menu"
           >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <span className="t-icon-swap" data-state={isMobileMenuOpen ? 'b' : 'a'}>
+              <span className="t-icon" data-icon="a" aria-hidden={isMobileMenuOpen}>
+                <Menu className="w-5 h-5" />
+              </span>
+              <span className="t-icon" data-icon="b" aria-hidden={!isMobileMenuOpen}>
+                <X className="w-5 h-5" />
+              </span>
+            </span>
           </button>
 
         </div>
       </header>
 
-      {/* Mobile Drawer Navigation */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 bottom-0 top-[96px] sm:top-[116px] z-40 bg-white flex flex-col pt-6 px-6 pb-8 animate-fadeIn border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto">
+      {/* Mobile Drawer Navigation (transitions-dev: 05-menu-dropdown.md) */}
+      {isMobileMenuMounted && (
+        <div 
+          className={`lg:hidden fixed inset-x-0 bottom-0 top-[96px] sm:top-[116px] z-40 bg-white flex flex-col pt-6 px-6 pb-8 border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto ${mobileMenuDropdownClass}`}
+          data-origin="top-center"
+        >
           <div className="flex flex-col space-y-4">
             <button onClick={() => {
               setIsMobileMenuOpen(false);
@@ -913,24 +925,27 @@ export default function HomePage() {
                   </span>
                 </div>
 
+                {/* Copy button with transitions-dev icon swap (09-icon-swap.md) */}
                 <button 
                   onClick={() => {
                     setCopiedDevSnippet(true);
                     setTimeout(() => setCopiedDevSnippet(false), 2000);
                   }}
-                  className="flex items-center gap-1.5 text-xs font-mono text-slate-300 hover:text-white px-3 py-1 rounded-lg bg-blue-950/40 border border-blue-800/40 transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-mono text-slate-300 hover:text-white px-3 py-1 rounded-lg bg-blue-950/40 border border-blue-800/40 transition-colors cursor-pointer"
+                  title={copiedDevSnippet ? "Copied" : "Copy snippet"}
+                  aria-label={copiedDevSnippet ? "Code snippet copied" : "Copy code snippet"}
                 >
-                  {copiedDevSnippet ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-blue-400" />
-                      <span className="text-blue-400 font-semibold">Copied</span>
-                    </>
-                  ) : (
-                    <>
+                  <span className="t-icon-swap" data-state={copiedDevSnippet ? 'b' : 'a'}>
+                    <span className="t-icon" data-icon="a" aria-hidden={copiedDevSnippet}>
                       <Copy className="w-3.5 h-3.5" />
-                      <span>Copy</span>
-                    </>
-                  )}
+                    </span>
+                    <span className="t-icon" data-icon="b" aria-hidden={!copiedDevSnippet}>
+                      <Check className="w-3.5 h-3.5 text-blue-400" />
+                    </span>
+                  </span>
+                  <span className={copiedDevSnippet ? 'text-blue-400 font-semibold' : ''}>
+                    {copiedDevSnippet ? 'Copied' : 'Copy'}
+                  </span>
                 </button>
               </div>
 

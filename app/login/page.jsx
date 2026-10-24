@@ -12,6 +12,7 @@ import {
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
+import { useModalTransition } from '@/components/useModalTransition';
 
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) => {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
@@ -286,6 +287,7 @@ export default function LoginPage() {
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrTimer, setQrTimer] = useState(45);
   const [qrChallenge, setQrChallenge] = useState('mymob-auth-session');
+  const { isMounted: isQrModalMounted, modalClass: qrModalClass, overlayClass: qrOverlayClass } = useModalTransition(showQrModal);
 
   // Refs to allow onAuthStateChange callback to access current UI state synchronously
   const modeRef = useRef(mode);
@@ -1750,8 +1752,12 @@ export default function LoginPage() {
                           type="button"
                           onClick={() => setShowPassword(prev => !prev)}
                           className="text-[#64748d] hover:text-[#0d253d] p-1 cursor-pointer"
+                          aria-label={showPassword ? "Hide password" : "Show password"}
                         >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          <span className="t-icon-swap" data-state={showPassword ? 'b' : 'a'}>
+                            <Eye className="t-icon t-icon--a w-4 h-4" aria-hidden={showPassword} />
+                            <EyeOff className="t-icon t-icon--b w-4 h-4" aria-hidden={!showPassword} />
+                          </span>
                         </button>
                       </div>
                     </div>
@@ -1911,8 +1917,12 @@ export default function LoginPage() {
                           type="button"
                           onClick={() => setShowPassword(prev => !prev)}
                           className="text-[#64748d] hover:text-[#0d253d] p-1 cursor-pointer"
+                          aria-label={showPassword ? "Hide password" : "Show password"}
                         >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          <span className="t-icon-swap" data-state={showPassword ? 'b' : 'a'}>
+                            <Eye className="t-icon t-icon--a w-4 h-4" aria-hidden={showPassword} />
+                            <EyeOff className="t-icon t-icon--b w-4 h-4" aria-hidden={!showPassword} />
+                          </span>
                         </button>
                       </div>
                     </div>
@@ -2155,8 +2165,12 @@ export default function LoginPage() {
                           type="button"
                           onClick={() => setShowNewPassword(!showNewPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                          aria-label={showNewPassword ? "Hide password" : "Show password"}
                         >
-                          {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          <span className="t-icon-swap" data-state={showNewPassword ? 'b' : 'a'}>
+                            <Eye className="t-icon t-icon--a w-4 h-4" aria-hidden={showNewPassword} />
+                            <EyeOff className="t-icon t-icon--b w-4 h-4" aria-hidden={!showNewPassword} />
+                          </span>
                         </button>
                       </div>
                     </div>
@@ -2325,10 +2339,18 @@ export default function LoginPage() {
 
       </div>
 
-      {/* ── Interactive QR Code Modal ── */}
-      {showQrModal && (
-        <div className="fixed inset-0 z-50 bg-[#0d253d]/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 text-center animate-scale-up relative border border-slate-200">
+      {/* ── Interactive QR Code Modal (transitions-dev 06-modal.md) ── */}
+      {isQrModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 bg-[#0d253d]/70 backdrop-blur-sm flex items-center justify-center p-4 ${qrOverlayClass}`}
+          onClick={() => setShowQrModal(false)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 text-center relative border border-slate-200 ${qrModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-3">
               <span className="text-lg font-bold text-[#0d253d]">Scan to Log in</span>
               <button 

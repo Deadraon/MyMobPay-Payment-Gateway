@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useDropdownTransition } from '../useDropdownTransition';
 import { 
   Mail, 
   Send, 
@@ -122,6 +123,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const [recipientMode, setRecipientMode] = useState('merchant');
   const [selectedMerchantId, setSelectedMerchantId] = useState('');
   const [merchantSearch, setMerchantSearch] = useState('');
+  const { isMounted: isSearchDropdownMounted, dropdownClass: searchDropdownClass } = useDropdownTransition(Boolean(merchantSearch.trim()));
   const [customEmail, setCustomEmail] = useState('');
   const [recipientName, setRecipientName] = useState('');
 
@@ -469,9 +471,12 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                   />
                 </div>
 
-                {/* Dropdown Suggestions */}
-                {merchantSearch && (
-                  <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg divide-y divide-slate-100">
+                {/* Dropdown Suggestions (transitions-dev: 05-menu-dropdown.md) */}
+                {isSearchDropdownMounted && (
+                  <div 
+                    className={`max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg divide-y divide-slate-100 ${searchDropdownClass}`}
+                    data-origin="top-center"
+                  >
                     {filteredMerchantsDropdown.map(m => (
                       <div
                         key={m.id}

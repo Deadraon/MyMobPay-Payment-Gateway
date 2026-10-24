@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatMerchantId } from '@/lib/merchantId';
+import { useModalTransition } from './useModalTransition';
 
 export default function ProfileBusinessInfoModal({ 
   isOpen, 
@@ -22,6 +23,7 @@ export default function ProfileBusinessInfoModal({
 }) {
   const [activeTab, setActiveTab] = useState('business'); // 'business' | 'settlement'
   const [copiedKey, setCopiedKey] = useState(null);
+  const { isMounted, modalClass, overlayClass } = useModalTransition(isOpen);
 
   // Editable Form State
   const [businessName, setBusinessName] = useState('');
@@ -100,7 +102,7 @@ export default function ProfileBusinessInfoModal({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isMounted) return null;
 
   // Merchant ID formatting - single unified display format
   const shortMid = formatMerchantId(profile?.id || user?.id);
@@ -178,14 +180,16 @@ export default function ProfileBusinessInfoModal({
   const planBadgeText = isTrial ? '3-Day Trial' : isActive ? 'Active Pro' : 'Sandbox Active';
 
   return (
-    // Overlay with minor backdrop blur to cleanly outstand the popup
+    // Overlay with transitions-dev modal transition (06-modal.md)
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/40 backdrop-blur-[3px] transition-all animate-fadeIn"
+      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/40 backdrop-blur-[3px] ${overlayClass}`}
       onClick={onClose}
     >
       <div 
         id="profile-business-modal-card"
-        className="bg-white border border-slate-200/90 rounded-2xl shadow-2xl flex flex-col w-full max-w-xl overflow-hidden max-h-[92vh] animate-scaleUp"
+        className={`bg-white border border-slate-200/90 rounded-2xl shadow-2xl flex flex-col w-full max-w-xl overflow-hidden max-h-[92vh] ${modalClass}`}
+        role="dialog"
+        aria-modal="true"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Header (Clean typography, zero extra svg icons) */}
@@ -245,11 +249,10 @@ export default function ProfileBusinessInfoModal({
                 className="p-1 rounded-md hover:bg-slate-100 text-slate-500 transition-colors cursor-pointer"
                 title="Copy Merchant ID"
               >
-                {copiedKey === 'mid-badge' ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5 text-slate-400" />
-                )}
+                <span className="t-icon-swap" data-state={copiedKey === 'mid-badge' ? 'b' : 'a'}>
+                  <Copy className="t-icon t-icon--a w-3.5 h-3.5 text-slate-400" aria-hidden={copiedKey === 'mid-badge'} />
+                  <Check className="t-icon t-icon--b w-3.5 h-3.5 text-emerald-600" aria-hidden={copiedKey !== 'mid-badge'} />
+                </span>
               </button>
             </div>
           </div>
@@ -464,10 +467,18 @@ export default function ProfileBusinessInfoModal({
                     <button
                       type="button"
                       onClick={() => copyToClipboard(upiId, 'upi-vpa')}
-                      className="absolute right-2.5 top-2.5 p-1 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
+                      className="absolute right-2.5 top-2.5 p-1 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer flex items-center justify-center"
                       title="Copy UPI ID"
+                      aria-label="Copy UPI ID"
                     >
-                      {copiedKey === 'upi-vpa' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span className="t-icon-swap" data-state={copiedKey === 'upi-vpa' ? 'b' : 'a'}>
+                        <span className="t-icon" data-icon="a" aria-hidden={copiedKey === 'upi-vpa'}>
+                          <Copy className="w-3.5 h-3.5" />
+                        </span>
+                        <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'upi-vpa'}>
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        </span>
+                      </span>
                     </button>
                   )}
                 </div>

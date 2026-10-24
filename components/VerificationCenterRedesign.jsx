@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
+import { useModalTransition } from './useModalTransition';
 import {
   ShieldCheck,
   AlertTriangle,
@@ -101,6 +102,11 @@ export default function VerificationCenterRedesign({
 
   // Manual verify modal state
   const [manualVerifyOrder, setManualVerifyOrder] = useState(null);
+  const lastManualOrderRef = useRef(manualVerifyOrder);
+  if (manualVerifyOrder) lastManualOrderRef.current = manualVerifyOrder;
+  const activeManualOrder = manualVerifyOrder || lastManualOrderRef.current;
+  const { isMounted: isManualModalMounted, modalClass: manualModalClass, overlayClass: manualOverlayClass } = useModalTransition(Boolean(manualVerifyOrder));
+
   const [manualUtr, setManualUtr] = useState('');
   const [manualReason, setManualReason] = useState('bank_statement');
   const [manualRemarks, setManualRemarks] = useState('');
@@ -146,6 +152,11 @@ export default function VerificationCenterRedesign({
   });
 
   const [selectedDispute, setSelectedDispute] = useState(null);
+  const lastDisputeRef = useRef(selectedDispute);
+  if (selectedDispute) lastDisputeRef.current = selectedDispute;
+  const activeDispute = selectedDispute || lastDisputeRef.current;
+  const { isMounted: isDisputeModalMounted, modalClass: disputeModalClass, overlayClass: disputeOverlayClass } = useModalTransition(Boolean(selectedDispute));
+
   const [disputeFilter, setDisputeFilter] = useState('all'); // 'all' | 'open' | 'awaiting_merchant' | 'resolved'
   const [disputeNote, setDisputeNote] = useState('');
   const [disputeActionMsg, setDisputeActionMsg] = useState(null);
@@ -772,10 +783,18 @@ export default function VerificationCenterRedesign({
                               <button
                                 type="button"
                                 onClick={() => handleCopy(order.id, `ord-${order.id}`)}
-                                className="text-slate-400 hover:text-slate-600"
+                                className="text-slate-400 hover:text-slate-600 inline-flex items-center justify-center"
                                 title="Copy full Order ID"
+                                aria-label="Copy full Order ID"
                               >
-                                {copiedKey === `ord-${order.id}` ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                                <span className="t-icon-swap" data-state={copiedKey === `ord-${order.id}` ? 'b' : 'a'}>
+                                  <span className="t-icon" data-icon="a" aria-hidden={copiedKey === `ord-${order.id}`}>
+                                    <Copy className="w-3 h-3" />
+                                  </span>
+                                  <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== `ord-${order.id}`}>
+                                    <Check className="w-3 h-3 text-emerald-600" />
+                                  </span>
+                                </span>
                               </button>
                             </div>
                             <p className="text-[11px] text-slate-500 mt-0.5 truncate max-w-[200px]">
@@ -1221,11 +1240,19 @@ export default function VerificationCenterRedesign({
       )}
 
       {/* ═════════════════════════════════════════════════════════════
-          MODAL: DISPUTE DETAIL & AUDIT TIMELINE REVIEWER
+          MODAL: DISPUTE DETAIL & AUDIT TIMELINE (transitions-dev: 06-modal.md)
          ═════════════════════════════════════════════════════════════ */}
-      {selectedDispute && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[92vh] overflow-y-auto animate-scaleUp">
+      {isDisputeModalMounted && activeDispute && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs ${disputeOverlayClass}`}
+          onClick={() => setSelectedDispute(null)}
+        >
+          <div 
+            className={`bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[92vh] overflow-y-auto ${disputeModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-3">
@@ -1233,8 +1260,8 @@ export default function VerificationCenterRedesign({
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-base">Dispute Case #{selectedDispute.id}</h3>
-                  <p className="text-xs text-slate-500">Order #{selectedDispute.orderId?.slice(0, 10)} • Customer Claim Review</p>
+                  <h3 className="font-bold text-slate-900 text-base">Dispute Case #{activeDispute.id}</h3>
+                  <p className="text-xs text-slate-500">Order #{activeDispute.orderId?.slice(0, 10)} • Customer Claim Review</p>
                 </div>
               </div>
               <button
@@ -1351,11 +1378,19 @@ export default function VerificationCenterRedesign({
       )}
 
       {/* ═════════════════════════════════════════════════════════════
-          MODAL: MANUAL VERIFY (MARK AS PAID)
+          MODAL: MANUAL VERIFY (transitions-dev: 06-modal.md)
          ═════════════════════════════════════════════════════════════ */}
-      {manualVerifyOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      {isManualModalMounted && activeManualOrder && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs ${manualOverlayClass}`}
+          onClick={() => setManualVerifyOrder(null)}
+        >
+          <div 
+            className={`bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 ${manualModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
@@ -1364,7 +1399,7 @@ export default function VerificationCenterRedesign({
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-slate-900">Manual Payment Verification</h3>
-                  <p className="text-[11px] text-slate-500 font-mono">Order #{manualVerifyOrder.id?.slice(0, 8)}</p>
+                  <p className="text-[11px] text-slate-500 font-mono">Order #{activeManualOrder.id?.slice(0, 8)}</p>
                 </div>
               </div>
               <button

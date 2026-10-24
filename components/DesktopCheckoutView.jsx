@@ -963,11 +963,10 @@ export default function DesktopCheckoutView({
                                   title="Copy Order Reference"
                                   aria-label="Copy Order Reference"
                                 >
-                                  {copiedField === 'orderId' ? (
-                                    <IconCheck className="w-3.5 h-3.5 text-emerald-600" />
-                                  ) : (
-                                    <IconCopy className="w-3.5 h-3.5 text-on-surface-variant" />
-                                  )}
+                                  <span className="t-icon-swap" data-state={copiedField === 'orderId' ? 'b' : 'a'}>
+                                    <IconCopy className="t-icon t-icon--a w-3.5 h-3.5 text-on-surface-variant" aria-hidden={copiedField === 'orderId'} />
+                                    <IconCheck className="t-icon t-icon--b w-3.5 h-3.5 text-emerald-600" aria-hidden={copiedField !== 'orderId'} />
+                                  </span>
                                 </button>
                               </div>
                             </div>
@@ -1240,11 +1239,10 @@ export default function DesktopCheckoutView({
                             }}
                             type="button"
                           >
-                            {copiedField === 'upi' || copyFeedback ? (
-                              <IconCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                            ) : (
-                              <IconCopy className="w-4 h-4 flex-shrink-0" />
-                            )}
+                            <span className="t-icon-swap" data-state={copiedField === 'upi' || copyFeedback ? 'b' : 'a'}>
+                              <IconCopy className="t-icon t-icon--a w-4 h-4 flex-shrink-0" aria-hidden={Boolean(copiedField === 'upi' || copyFeedback)} />
+                              <IconCheck className="t-icon t-icon--b w-4 h-4 text-emerald-600 flex-shrink-0" aria-hidden={!Boolean(copiedField === 'upi' || copyFeedback)} />
+                            </span>
                             <span className="copy-label">
                               {copiedField === 'upi' || copyFeedback ? 'Copied!' : 'Copy UPI ID'}
                             </span>
@@ -1433,11 +1431,10 @@ export default function DesktopCheckoutView({
                               aria-label="Copy virtual account number"
                               onClick={() => handleCopyText(displayBankAcc, 'acc')}
                             >
-                              {copiedField === 'acc' ? (
-                                <IconCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                              ) : (
-                                <IconCopy className="w-4 h-4 flex-shrink-0" />
-                              )}
+                              <span className="t-icon-swap" data-state={copiedField === 'acc' ? 'b' : 'a'}>
+                                <IconCopy className="t-icon t-icon--a w-4 h-4 flex-shrink-0" aria-hidden={copiedField === 'acc'} />
+                                <IconCheck className="t-icon t-icon--b w-4 h-4 text-emerald-600 flex-shrink-0" aria-hidden={copiedField !== 'acc'} />
+                              </span>
                             </button>
                           </span>
                         </div>
@@ -1451,11 +1448,10 @@ export default function DesktopCheckoutView({
                               aria-label="Copy IFSC code"
                               onClick={() => handleCopyText(displayBankIfsc, 'ifsc')}
                             >
-                              {copiedField === 'ifsc' ? (
-                                <IconCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                              ) : (
-                                <IconCopy className="w-4 h-4 flex-shrink-0" />
-                              )}
+                              <span className="t-icon-swap" data-state={copiedField === 'ifsc' ? 'b' : 'a'}>
+                                <IconCopy className="t-icon t-icon--a w-4 h-4 flex-shrink-0" aria-hidden={copiedField === 'ifsc'} />
+                                <IconCheck className="t-icon t-icon--b w-4 h-4 text-emerald-600 flex-shrink-0" aria-hidden={copiedField !== 'ifsc'} />
+                              </span>
                             </button>
                           </span>
                         </div>
@@ -1643,11 +1639,10 @@ export default function DesktopCheckoutView({
                             aria-label="Copy deposit address"
                             onClick={() => handleCopyText(cryptoRates[selectedCrypto].address, 'crypto')}
                           >
-                            {copiedField === 'crypto' ? (
-                              <IconCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                            ) : (
-                              <IconCopy className="w-4 h-4 flex-shrink-0" />
-                            )}
+                            <span className="t-icon-swap" data-state={copiedField === 'crypto' ? 'b' : 'a'}>
+                              <IconCopy className="t-icon t-icon--a w-4 h-4 flex-shrink-0" aria-hidden={copiedField === 'crypto'} />
+                              <IconCheck className="t-icon t-icon--b w-4 h-4 text-emerald-600 flex-shrink-0" aria-hidden={copiedField !== 'crypto'} />
+                            </span>
                           </button>
                         </div>
                         <div className="p-2.5 bg-surface-container-lowest rounded-lg font-mono text-[11px] text-on-surface truncate border border-outline-variant/30 select-all" id="cryptoAddress">

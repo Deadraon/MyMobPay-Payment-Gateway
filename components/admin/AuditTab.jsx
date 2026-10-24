@@ -17,6 +17,7 @@ import {
   Lock,
   FileText
 } from 'lucide-react';
+import { useModalTransition } from '../useModalTransition';
 
 export default function AuditTab({ showToast, getAuthHeaders }) {
   const [logs, setLogs] = useState([]);
@@ -25,6 +26,12 @@ export default function AuditTab({ showToast, getAuthHeaders }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [actionFilter, setActionFilter] = useState('all');
   const [selectedLogForModal, setSelectedLogForModal] = useState(null);
+  const { isMounted: isModalMounted, modalClass, overlayClass } = useModalTransition(Boolean(selectedLogForModal));
+  const lastLogRef = React.useRef(null);
+  if (selectedLogForModal) {
+    lastLogRef.current = selectedLogForModal;
+  }
+  const activeLog = selectedLogForModal || lastLogRef.current;
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -262,10 +269,18 @@ export default function AuditTab({ showToast, getAuthHeaders }) {
         </div>
       </div>
 
-      {/* JSON Inspector Modal */}
-      {selectedLogForModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-up">
+      {/* JSON Inspector Modal (transitions-dev 06-modal.md) */}
+      {isModalMounted && activeLog && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 ${overlayClass}`}
+          onClick={() => setSelectedLogForModal(null)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 ${modalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-purple-600" />
@@ -283,21 +298,21 @@ export default function AuditTab({ showToast, getAuthHeaders }) {
 
             <div className="space-y-2 text-xs">
               <div className="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl font-mono text-[11px]">
-                <div><span className="text-slate-400">Action:</span> <strong>{selectedLogForModal.action}</strong></div>
-                <div><span className="text-slate-400">Role:</span> <strong>{selectedLogForModal.actor_role}</strong></div>
-                <div><span className="text-slate-400">Actor:</span> {selectedLogForModal.actor_email}</div>
-                <div><span className="text-slate-400">IP:</span> {selectedLogForModal.ip_address}</div>
+                <div><span className="text-slate-400">Action:</span> <strong>{activeLog.action}</strong></div>
+                <div><span className="text-slate-400">Role:</span> <strong>{activeLog.actor_role}</strong></div>
+                <div><span className="text-slate-400">Actor:</span> {activeLog.actor_email}</div>
+                <div><span className="text-slate-400">IP:</span> {activeLog.ip_address}</div>
               </div>
 
               <div>
                 <p className="font-bold text-slate-700 mb-1 text-[11px]">Action Details &amp; Payload:</p>
                 <pre className="p-3 bg-slate-900 text-emerald-400 font-mono text-[11px] rounded-xl overflow-x-auto max-h-60">
-                  {JSON.stringify(selectedLogForModal.details || {}, null, 2)}
+                  {JSON.stringify(activeLog.details || {}, null, 2)}
                 </pre>
               </div>
 
               <p className="text-[10px] text-slate-400 font-mono">
-                Entry ID: {selectedLogForModal.id} • User-Agent: {selectedLogForModal.user_agent}
+                Entry ID: {activeLog.id} • User-Agent: {activeLog.user_agent}
               </p>
             </div>
 

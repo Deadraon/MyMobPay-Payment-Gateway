@@ -37,6 +37,8 @@ import AdminConsole from '@/components/AdminConsole';
 
 import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
 import { formatMerchantId } from '@/lib/merchantId';
+import { useDropdownTransition } from '@/components/useDropdownTransition';
+import { useModalTransition } from '@/components/useModalTransition';
 
 import { 
 
@@ -253,13 +255,27 @@ export default function DashboardPage() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
+  // Transitions.dev: Menu Dropdowns (05-menu-dropdown.md) & Modals (06-modal.md)
+  const { isMounted: isProfileDropdownMounted, dropdownClass: profileDropdownClass } = useDropdownTransition(isProfileDropdownOpen);
+  const { isMounted: isNotificationMounted, dropdownClass: notificationDropdownClass } = useDropdownTransition(isNotificationOpen);
+  const { isMounted: isProfileModalMounted, modalClass: profileModalClass, overlayClass: profileOverlayClass } = useModalTransition(isProfileModalOpen);
+  const { isMounted: isCommandPaletteMounted, modalClass: commandPaletteModalClass, overlayClass: commandPaletteOverlayClass } = useModalTransition(isCommandPaletteOpen);
+  const { isMounted: isHistoryReceiptMounted, modalClass: historyReceiptModalClass, overlayClass: historyReceiptOverlayClass } = useModalTransition(Boolean(selectedHistoryOrder));
+  const lastHistoryOrderRef = useRef(null);
+  if (selectedHistoryOrder) {
+    lastHistoryOrderRef.current = selectedHistoryOrder;
+  }
+  const activeHistoryOrder = selectedHistoryOrder || lastHistoryOrderRef.current;
+
   // Unified modal/drawer open flag for scroll lock and background freezing
   const isAnyModalOrDrawerOpen = Boolean(
     isNotificationOpen ||
     isMobileMenuOpen ||
     isProfileDropdownOpen ||
     isBusinessInfoModalOpen ||
-    isProfileModalOpen
+    isProfileModalOpen ||
+    isCommandPaletteOpen ||
+    selectedHistoryOrder
   );
 
   // Prevent background scrolling when any mobile drawer, notification flyout, or modal is active
@@ -3116,8 +3132,12 @@ echo "Order Created: " . $data['orderId'];
               className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0"
               type="button"
               title="Toggle Menu"
+              aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              <span className="t-icon-swap" data-state={isMobileMenuOpen ? 'b' : 'a'}>
+                <Menu className="t-icon t-icon--a w-5 h-5" aria-hidden={isMobileMenuOpen} />
+                <X className="t-icon t-icon--b w-5 h-5" aria-hidden={!isMobileMenuOpen} />
+              </span>
             </button>
 
             {/* Mobile Brand Logo */}
@@ -3235,17 +3255,18 @@ echo "Order Created: " . $data['orderId'];
                   )}
                 </button>
 
-                {/* Notifications Flyout Panel */}
-                {isNotificationOpen && (
+                {/* Notifications Flyout Panel (transitions-dev: 05-menu-dropdown.md) */}
+                {isNotificationMounted && (
                   <>
                     {/* Backdrop to dismiss on outside tap */}
                     <div
-                      className="fixed inset-0 z-[90] bg-slate-900/20 sm:bg-transparent"
+                      className={`fixed inset-0 z-[90] bg-slate-900/20 sm:bg-transparent transition-opacity duration-150 ${isNotificationOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                       onClick={() => setIsNotificationOpen(false)}
                       onTouchMove={(e) => e.preventDefault()}
                     />
                     <div 
-                      className="fixed left-2.5 right-2.5 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] animate-fadeIn"
+                      className={`fixed left-2.5 right-2.5 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] ${notificationDropdownClass}`}
+                      data-origin="top-right"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {/* Panel Header */}
@@ -3369,17 +3390,18 @@ echo "Order Created: " . $data['orderId'];
                 </div>
               </div>
 
-              {/* Dropdown Menu Modal */}
-              {isProfileDropdownOpen && (
+              {/* Dropdown Menu Modal (transitions-dev: 05-menu-dropdown.md) */}
+              {isProfileDropdownMounted && (
                 <>
                   {/* Mobile backdrop */}
                   <div
-                    className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs sm:bg-transparent"
+                    className={`fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs sm:bg-transparent transition-opacity duration-150 ${isProfileDropdownOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                     onClick={() => setIsProfileDropdownOpen(false)}
                     onTouchMove={(e) => e.preventDefault()}
                   />
                   <div 
-                    className="fixed right-2.5 top-[62px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
+                    className={`fixed right-2.5 top-[62px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 overflow-hidden ${profileDropdownClass}`}
+                    data-origin="top-right"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="px-4 py-2.5 border-b border-slate-100 flex flex-col gap-0.5">
@@ -4074,13 +4096,18 @@ echo "Order Created: " . $data['orderId'];
 
       </main>
 
-      {/* Premium Glassmorphic Centralized Settings Modal Overlay */}
-
-      {isProfileModalOpen && (
-
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fadeIn">
-
-          <div className="bg-white border border-slate-200/80 rounded-[32px] shadow-2xl flex flex-col md:flex-row w-full max-w-4xl overflow-hidden max-h-[85vh] relative animate-scaleUp">
+      {/* Premium Glassmorphic Centralized Settings Modal Overlay (transitions-dev: 06-modal.md) */}
+      {isProfileModalMounted && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md ${profileOverlayClass}`}
+          onClick={() => setIsProfileModalOpen(false)}
+        >
+          <div 
+            className={`bg-white border border-slate-200/80 rounded-[32px] shadow-2xl flex flex-col md:flex-row w-full max-w-4xl overflow-hidden max-h-[85vh] relative ${profileModalClass}`}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
 
             {/* Close Button */}
 
@@ -4738,13 +4765,13 @@ echo "Order Created: " . $data['orderId'];
         }}
       />
 
-      {/* Command Palette Working Search Panel Overlay */}
+      {/* Command Palette Working Search Panel Overlay (transitions-dev 06-modal.md) */}
 
-      {isCommandPaletteOpen && (
+      {isCommandPaletteMounted && (
 
         <div 
 
-          className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+          className={`fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4 bg-slate-900/60 backdrop-blur-sm ${commandPaletteOverlayClass}`}
 
           onClick={() => {
 
@@ -4758,7 +4785,9 @@ echo "Order Created: " . $data['orderId'];
 
           <div 
 
-            className="w-full max-w-xl bg-white border border-slate-200/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[60vh] animate-scaleUp"
+            role="dialog"
+            aria-modal="true"
+            className={`w-full max-w-xl bg-white border border-slate-200/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[60vh] ${commandPaletteModalClass}`}
 
             onClick={(e) => e.stopPropagation()}
 
@@ -5010,13 +5039,13 @@ echo "Order Created: " . $data['orderId'];
 
       )}
 
-      {/* Transaction Details Modal Overlay */}
+      {/* Transaction Details Modal Overlay (transitions-dev 06-modal.md) */}
 
-      {selectedHistoryOrder && (
+      {isHistoryReceiptMounted && activeHistoryOrder && (
 
         <div 
 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm ${historyReceiptOverlayClass}`}
 
           onClick={() => setSelectedHistoryOrder(null)}
 
@@ -5024,7 +5053,9 @@ echo "Order Created: " . $data['orderId'];
 
           <div 
 
-            className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-scaleUp"
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-sm mx-4 overflow-hidden ${historyReceiptModalClass}`}
 
             onClick={(e) => e.stopPropagation()}
 
@@ -5062,7 +5093,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Order ID</span>
 
-                <span className="text-xs font-mono font-bold text-slate-800 tracking-wide select-all">{selectedHistoryOrder.id}</span>
+                <span className="text-xs font-mono font-bold text-slate-800 tracking-wide select-all">{activeHistoryOrder.id}</span>
 
               </div>
 
@@ -5070,7 +5101,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Amount</span>
 
-                <span className="text-xs font-black text-emerald-500 font-bold">₹{parseFloat(selectedHistoryOrder.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span className="text-xs font-black text-emerald-500 font-bold">₹{parseFloat(activeHistoryOrder.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
 
               </div>
 
@@ -5078,7 +5109,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Method</span>
 
-                <span className="text-xs font-bold text-slate-800">{selectedHistoryOrder.method || 'UPI'}</span>
+                <span className="text-xs font-bold text-slate-800">{activeHistoryOrder.method || 'UPI'}</span>
 
               </div>
 
@@ -5098,41 +5129,41 @@ echo "Order Created: " . $data['orderId'];
 
                 <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">UTR / Ref No.</span>
 
-                <span className="text-xs font-mono font-bold text-slate-800 tracking-wide select-all">{selectedHistoryOrder.utr || 'Auto-verified'}</span>
+                <span className="text-xs font-mono font-bold text-slate-800 tracking-wide select-all">{activeHistoryOrder.utr || 'Auto-verified'}</span>
 
               </div>
 
-              {selectedHistoryOrder.note && (
+              {activeHistoryOrder.note && (
 
                 <div className="flex justify-between items-center py-2.5">
 
                   <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Purpose / Note</span>
 
-                  <span className="text-xs font-bold text-slate-700 max-w-[60%] truncate" title={selectedHistoryOrder.note}>{selectedHistoryOrder.note}</span>
+                  <span className="text-xs font-bold text-slate-700 max-w-[60%] truncate" title={activeHistoryOrder.note}>{activeHistoryOrder.note}</span>
 
                 </div>
 
               )}
 
-              {selectedHistoryOrder.customer_name && (
+              {activeHistoryOrder.customer_name && (
 
                 <div className="flex justify-between items-center py-2.5">
 
                   <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Customer</span>
 
-                  <span className="text-xs font-bold text-slate-800">{selectedHistoryOrder.customer_name}</span>
+                  <span className="text-xs font-bold text-slate-800">{activeHistoryOrder.customer_name}</span>
 
                 </div>
 
               )}
 
-              {selectedHistoryOrder.customer_phone && (
+              {activeHistoryOrder.customer_phone && (
 
                 <div className="flex justify-between items-center py-2.5">
 
                   <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Phone</span>
 
-                  <span className="text-xs font-bold font-mono text-slate-800">{selectedHistoryOrder.customer_phone}</span>
+                  <span className="text-xs font-bold font-mono text-slate-800">{activeHistoryOrder.customer_phone}</span>
 
                 </div>
 
@@ -5144,13 +5175,13 @@ echo "Order Created: " . $data['orderId'];
 
                 <span className="text-xs font-bold text-slate-700">
 
-                  {new Date(selectedHistoryOrder.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })}
+                  {new Date(activeHistoryOrder.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })}
 
                 </span>
 
               </div>
 
-              {selectedHistoryOrder.verified_at && (
+              {activeHistoryOrder.verified_at && (
 
                 <div className="flex justify-between items-center py-2.5">
 
@@ -5158,7 +5189,7 @@ echo "Order Created: " . $data['orderId'];
 
                   <span className="text-xs font-bold text-slate-700">
 
-                    {new Date(selectedHistoryOrder.verified_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })}
+                    {new Date(activeHistoryOrder.verified_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })}
 
                   </span>
 
@@ -5174,7 +5205,7 @@ echo "Order Created: " . $data['orderId'];
 
                 onClick={() => {
 
-                  navigator.clipboard.writeText(selectedHistoryOrder.id);
+                  navigator.clipboard.writeText(activeHistoryOrder.id);
 
                   alert("Copied Order ID!");
 

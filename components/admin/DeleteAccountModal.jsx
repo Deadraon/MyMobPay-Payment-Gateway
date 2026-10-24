@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useModalTransition } from '../useModalTransition';
 import { 
   AlertTriangle, 
   Trash2, 
@@ -32,6 +33,7 @@ export default function DeleteAccountModal({
   const [confirmInput, setConfirmInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [copiedId, setCopiedId] = useState(false);
+  const { isMounted, modalClass, overlayClass } = useModalTransition(isOpen);
 
   // Synchronize when modal opens or targetAccount changes
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function DeleteAccountModal({
     ).slice(0, 5);
   }, [searchTerm, selectedAccount, allAccounts]);
 
-  if (!isOpen) return null;
+  if (!isMounted) return null;
 
   const currentTarget = selectedAccount || (
     searchTerm.trim() ? {
@@ -97,9 +99,9 @@ export default function DeleteAccountModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 animate-fadeIn">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 ${overlayClass}`}>
       <div 
-        className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-rose-200 space-y-5 animate-scale-up text-slate-800"
+        className={`bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-rose-200 space-y-5 text-slate-800 ${modalClass}`}
         role="dialog"
         aria-modal="true"
       >
@@ -233,7 +235,10 @@ export default function DeleteAccountModal({
                 className="text-slate-400 hover:text-slate-800 p-1 rounded"
                 title="Copy ID"
               >
-                {copiedId ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                <span className="t-icon-swap" data-state={copiedId ? 'b' : 'a'}>
+                  <Copy className="t-icon t-icon--a w-3.5 h-3.5" aria-hidden={copiedId} />
+                  <Check className="t-icon t-icon--b w-3.5 h-3.5 text-emerald-600" aria-hidden={!copiedId} />
+                </span>
               </button>
             </div>
           </div>

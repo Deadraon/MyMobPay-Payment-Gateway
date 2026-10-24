@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useModalTransition } from './useModalTransition';
 import {
   CheckCircle,
   Building2,
@@ -58,6 +59,8 @@ export default function SubscriptionRedesign({
   const [selectedPlanId, setSelectedPlanId] = useState('1month');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showContactSalesModal, setShowContactSalesModal] = useState(false);
+  const { isMounted: isDetailsModalMounted, modalClass: detailsModalClass, overlayClass: detailsOverlayClass } = useModalTransition(showDetailsModal);
+  const { isMounted: isContactSalesModalMounted, modalClass: contactSalesModalClass, overlayClass: contactSalesOverlayClass } = useModalTransition(showContactSalesModal);
   const [invoiceFilter, setInvoiceFilter] = useState('all'); // 'all', 'paid'
   const [isActivating, setIsActivating] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -1034,11 +1037,11 @@ export default function SubscriptionRedesign({
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-         MODAL 1: MANAGE SUBSCRIPTION (FULL CURRENT DETAILS)
+         MODAL 1: MANAGE SUBSCRIPTION (transitions-dev: 06-modal.md)
          ═══════════════════════════════════════════════════════════ */}
-      {showDetailsModal && (
+      {isDetailsModalMounted && (
         <div 
-          className="fixed inset-0 z-50 bg-[#000d21]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+          className={`fixed inset-0 z-50 bg-[#000d21]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 ${detailsOverlayClass}`}
           onClick={() => setShowDetailsModal(false)}
           onTouchMove={(e) => {
             if (e.target === e.currentTarget) e.preventDefault();
@@ -1046,7 +1049,9 @@ export default function SubscriptionRedesign({
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden animate-scaleUp"
+            className={`bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden ${detailsModalClass}`}
+            role="dialog"
+            aria-modal="true"
           >
             {/* Modal Header (Fixed at top) */}
             <div className="shrink-0 px-5 sm:px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
@@ -1186,11 +1191,11 @@ export default function SubscriptionRedesign({
       {/* Modal 3 removed permanently in favor of real live /pay checkout page */}
 
       {/* ═══════════════════════════════════════════════════════════
-         MODAL 4: CONTACT ENTERPRISE SALES MODAL
+         MODAL 4: CONTACT ENTERPRISE SALES (transitions-dev: 06-modal.md)
          ═══════════════════════════════════════════════════════════ */}
-      {showContactSalesModal && (
+      {isContactSalesModalMounted && (
         <div 
-          className="fixed inset-0 z-50 bg-[#000d21]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+          className={`fixed inset-0 z-50 bg-[#000d21]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 ${contactSalesOverlayClass}`}
           onClick={() => setShowContactSalesModal(false)}
           onTouchMove={(e) => {
             if (e.target === e.currentTarget) e.preventDefault();
@@ -1198,7 +1203,9 @@ export default function SubscriptionRedesign({
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden animate-scaleUp"
+            className={`bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden ${contactSalesModalClass}`}
+            role="dialog"
+            aria-modal="true"
           >
             <div className="shrink-0 px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
               <h3 className="text-sm font-bold text-[#000d21]">Enterprise &amp; High-Throughput</h3>

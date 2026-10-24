@@ -275,18 +275,34 @@ export default function DeveloperConsoleRedesign({
                   <button
                     type="button"
                     onClick={() => setShowLiveKey(!showLiveKey)}
-                    className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all cursor-pointer"
+                    className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all cursor-pointer flex items-center justify-center"
                     title={showLiveKey ? 'Hide key' : 'Reveal key'}
+                    aria-label={showLiveKey ? 'Hide secret key' : 'Reveal secret key'}
                   >
-                    {showLiveKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    <span className="t-icon-swap" data-state={showLiveKey ? 'b' : 'a'}>
+                      <span className="t-icon" data-icon="a" aria-hidden={showLiveKey}>
+                        <Eye className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="t-icon" data-icon="b" aria-hidden={!showLiveKey}>
+                        <EyeOff className="w-3.5 h-3.5" />
+                      </span>
+                    </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleCopy(liveKeyStr, 'live_key')}
-                    className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all border border-blue-200 cursor-pointer"
+                    className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all border border-blue-200 cursor-pointer flex items-center justify-center"
                     title="Copy live key"
+                    aria-label="Copy live key"
                   >
-                    {copiedKey === 'live_key' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span className="t-icon-swap" data-state={copiedKey === 'live_key' ? 'b' : 'a'}>
+                      <span className="t-icon" data-icon="a" aria-hidden={copiedKey === 'live_key'}>
+                        <Copy className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'live_key'}>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      </span>
+                    </span>
                   </button>
                 </div>
 
@@ -329,18 +345,34 @@ export default function DeveloperConsoleRedesign({
                   <button
                     type="button"
                     onClick={() => setShowTestKey(!showTestKey)}
-                    className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all cursor-pointer"
+                    className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all cursor-pointer flex items-center justify-center"
                     title={showTestKey ? 'Hide key' : 'Reveal key'}
+                    aria-label={showTestKey ? 'Hide test key' : 'Reveal test key'}
                   >
-                    {showTestKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    <span className="t-icon-swap" data-state={showTestKey ? 'b' : 'a'}>
+                      <span className="t-icon" data-icon="a" aria-hidden={showTestKey}>
+                        <Eye className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="t-icon" data-icon="b" aria-hidden={!showTestKey}>
+                        <EyeOff className="w-3.5 h-3.5" />
+                      </span>
+                    </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleCopy(testKeyStr, 'test_key')}
-                    className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all border border-blue-200 cursor-pointer"
+                    className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all border border-blue-200 cursor-pointer flex items-center justify-center"
                     title="Copy test key"
+                    aria-label="Copy test key"
                   >
-                    {copiedKey === 'test_key' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span className="t-icon-swap" data-state={copiedKey === 'test_key' ? 'b' : 'a'}>
+                      <span className="t-icon" data-icon="a" aria-hidden={copiedKey === 'test_key'}>
+                        <Copy className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'test_key'}>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      </span>
+                    </span>
                   </button>
                 </div>
 
@@ -443,16 +475,34 @@ export default function DeveloperConsoleRedesign({
                   <button
                     type="button"
                     onClick={() => setShowWebhookSecret(!showWebhookSecret)}
-                    className="p-1.5 bg-slate-200 hover:bg-slate-300 rounded-lg text-slate-700 text-xs"
+                    className="p-1.5 bg-slate-200 hover:bg-slate-300 rounded-lg text-slate-700 text-xs flex items-center justify-center"
+                    title={showWebhookSecret ? 'Hide secret' : 'Reveal secret'}
+                    aria-label={showWebhookSecret ? 'Hide webhook secret' : 'Reveal webhook secret'}
                   >
-                    {showWebhookSecret ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    <span className="t-icon-swap" data-state={showWebhookSecret ? 'b' : 'a'}>
+                      <span className="t-icon" data-icon="a" aria-hidden={showWebhookSecret}>
+                        <Eye className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="t-icon" data-icon="b" aria-hidden={!showWebhookSecret}>
+                        <EyeOff className="w-3.5 h-3.5" />
+                      </span>
+                    </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleCopy(webhookSecretStr, 'whsec')}
-                    className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs"
+                    className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs flex items-center justify-center"
+                    title="Copy webhook secret"
+                    aria-label="Copy webhook secret"
                   >
-                    {copiedKey === 'whsec' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span className="t-icon-swap" data-state={copiedKey === 'whsec' ? 'b' : 'a'}>
+                      <span className="t-icon" data-icon="a" aria-hidden={copiedKey === 'whsec'}>
+                        <Copy className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'whsec'}>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      </span>
+                    </span>
                   </button>
                 </div>
               </div>
@@ -596,10 +646,17 @@ export default function DeveloperConsoleRedesign({
                     : `<?php\n$ch = curl_init('https://mymob.tech/api/payment/create');\ncurl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'x-api-key: ${liveKeyStr}']);\ncurl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['amount' => 499.00, 'note' => 'Order_101']));\n$res = curl_exec($ch);`,
                   'snippet'
                 )}
-                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold inline-flex items-center gap-1 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold inline-flex items-center gap-1.5 cursor-pointer"
               >
-                {copiedKey === 'snippet' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                {copiedKey === 'snippet' ? 'Copied!' : 'Copy Code'}
+                <span className="t-icon-swap" data-state={copiedKey === 'snippet' ? 'b' : 'a'}>
+                  <span className="t-icon" data-icon="a" aria-hidden={copiedKey === 'snippet'}>
+                    <Copy className="w-3.5 h-3.5 text-slate-300" />
+                  </span>
+                  <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'snippet'}>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  </span>
+                </span>
+                <span>{copiedKey === 'snippet' ? 'Copied!' : 'Copy Code'}</span>
               </button>
             </div>
 

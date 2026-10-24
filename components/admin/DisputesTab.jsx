@@ -24,6 +24,7 @@ import {
   Filter,
   X
 } from 'lucide-react';
+import { useModalTransition } from '../useModalTransition';
 
 const FALLBACK_DISPUTES = [];
 
@@ -37,12 +38,19 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
 
   // Selected dispute modal
   const [selectedDispute, setSelectedDispute] = useState(null);
+  const { isMounted: isDisputeMounted, modalClass: disputeModalClass, overlayClass: disputeOverlayClass } = useModalTransition(Boolean(selectedDispute));
+  const lastDisputeRef = React.useRef(null);
+  if (selectedDispute) {
+    lastDisputeRef.current = selectedDispute;
+  }
+  const activeDispute = selectedDispute || lastDisputeRef.current;
   const [newStatus, setNewStatus] = useState('evidence_requested');
   const [statusNote, setStatusNote] = useState('');
   const [notifyMerchantEmail, setNotifyMerchantEmail] = useState(true);
 
   // New dispute modal
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const { isMounted: isCreateMounted, modalClass: createModalClass, overlayClass: createOverlayClass } = useModalTransition(isCreateOpen);
   const [formUtr, setFormUtr] = useState('');
   const [formAmount, setFormAmount] = useState('');
   const [formPhone, setFormPhone] = useState('');
@@ -533,10 +541,18 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
                           <span className="text-[11px] text-slate-600 font-semibold">UTR: {d.utr}</span>
                           <button
                             onClick={() => copyToClipboard(d.utr, 'UTR')}
-                            className="text-slate-400 hover:text-slate-600 p-0.5 rounded cursor-pointer"
+                            className="text-slate-400 hover:text-slate-600 p-0.5 rounded cursor-pointer flex items-center justify-center"
                             title="Copy UTR"
+                            aria-label="Copy UTR number"
                           >
-                            {copiedUtr === d.utr ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                            <span className="t-icon-swap" data-state={copiedUtr === d.utr ? 'b' : 'a'}>
+                              <span className="t-icon" data-icon="a" aria-hidden={copiedUtr === d.utr}>
+                                <Copy className="w-3 h-3" />
+                              </span>
+                              <span className="t-icon" data-icon="b" aria-hidden={copiedUtr !== d.utr}>
+                                <Check className="w-3 h-3 text-emerald-600" />
+                              </span>
+                            </span>
                           </button>
                         </div>
                       </td>
@@ -591,16 +607,24 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
         </div>
       </div>
 
-      {/* ── Selected Dispute Modal (Manage & Update Evidence) ─────────── */}
-      {selectedDispute && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-fadeIn my-8">
+      {/* ── Selected Dispute Modal (Manage & Update Evidence) (transitions-dev 06-modal.md) ── */}
+      {isDisputeMounted && activeDispute && (
+        <div 
+          className={`fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto ${disputeOverlayClass}`}
+          onClick={() => setSelectedDispute(null)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl max-w-xl w-full p-6 space-y-5 shadow-2xl border border-slate-100 my-8 ${disputeModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">Dispute Operations Ticket</span>
                 <h3 className="text-base font-black text-slate-900 flex items-center gap-2 mt-0.5">
-                  <span>Claim #{selectedDispute.id}</span>
-                  {getStatusBadge(selectedDispute.status)}
+                  <span>Claim #{activeDispute.id}</span>
+                  {getStatusBadge(activeDispute.status)}
                 </h3>
               </div>
               <button
@@ -615,37 +639,37 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
             <div className="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs">
               <div>
                 <p className="text-slate-400 text-[10px] uppercase font-bold">UTR / Order ID</p>
-                <p className="font-mono font-bold text-slate-800 mt-0.5">{selectedDispute.utr}</p>
-                <p className="font-mono text-[10px] text-slate-400">{selectedDispute.order_id}</p>
+                <p className="font-mono font-bold text-slate-800 mt-0.5">{activeDispute.utr}</p>
+                <p className="font-mono text-[10px] text-slate-400">{activeDispute.order_id}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-[10px] uppercase font-bold">Claimed Amount</p>
-                <p className="font-mono font-black text-slate-900 text-sm mt-0.5">₹{selectedDispute.amount}</p>
+                <p className="font-mono font-black text-slate-900 text-sm mt-0.5">₹{activeDispute.amount}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-[10px] uppercase font-bold">Payer Contact</p>
-                <p className="font-semibold text-slate-800 mt-0.5">{selectedDispute.customer_name}</p>
-                <p className="font-mono text-[10px] text-slate-500">{selectedDispute.customer_phone}</p>
+                <p className="font-semibold text-slate-800 mt-0.5">{activeDispute.customer_name}</p>
+                <p className="font-mono text-[10px] text-slate-500">{activeDispute.customer_phone}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-[10px] uppercase font-bold">Target Merchant Store</p>
-                <p className="font-semibold text-slate-800 mt-0.5">{selectedDispute.merchant_name}</p>
-                <p className="font-mono text-[10px] text-slate-500 truncate">{selectedDispute.merchant_email}</p>
+                <p className="font-semibold text-slate-800 mt-0.5">{activeDispute.merchant_name}</p>
+                <p className="font-mono text-[10px] text-slate-500 truncate">{activeDispute.merchant_email}</p>
               </div>
             </div>
 
             {/* Customer Reason / Complaint */}
             <div className="bg-rose-50/70 border border-rose-200/80 p-3.5 rounded-2xl text-xs">
               <span className="font-bold text-rose-900 block mb-1">Customer Statement / Inquiry Reason:</span>
-              <p className="text-rose-800 leading-relaxed">{selectedDispute.reason || 'No statement provided by customer.'}</p>
+              <p className="text-rose-800 leading-relaxed">{activeDispute.reason || 'No statement provided by customer.'}</p>
             </div>
 
             {/* Timeline Audit */}
-            {selectedDispute.timeline && selectedDispute.timeline.length > 0 && (
+            {activeDispute.timeline && activeDispute.timeline.length > 0 && (
               <div className="space-y-2">
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Claim Activity Log</span>
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3.5 space-y-2 max-h-36 overflow-y-auto">
-                  {selectedDispute.timeline.map((item, idx) => (
+                  {activeDispute.timeline.map((item, idx) => (
                     <div key={idx} className="text-[11px] flex items-start gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
                       <div className="flex-1">
@@ -725,10 +749,18 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
         </div>
       )}
 
-      {/* ── New Dispute Intake Modal ───────────────────────────────────── */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-100 animate-fadeIn my-8">
+      {/* ── New Dispute Intake Modal (transitions-dev 06-modal.md) ── */}
+      {isCreateMounted && (
+        <div 
+          className={`fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto ${createOverlayClass}`}
+          onClick={() => setIsCreateOpen(false)}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className={`bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-100 my-8 ${createModalClass}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <h3 className="text-base font-black text-slate-900 flex items-center gap-2">

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import QRCode from 'react-qr-code';
+import { useModalTransition } from './useModalTransition';
 import {
   Link as LinkIcon,
   Copy,
@@ -213,8 +214,9 @@ export default function PaymentLinksRedesign({
   const [mobileStudioTab, setMobileStudioTab] = useState('configure'); // 'configure' | 'preview'
   const [showMobileQr, setShowMobileQr] = useState(false);
 
-  // Static / Permanent Counter QR State
+  // Static / Permanent Counter QR State (transitions-dev: 06-modal.md)
   const [showStaticQrModal, setShowStaticQrModal] = useState(false);
+  const { isMounted: isStaticQrModalMounted, modalClass: staticQrModalClass, overlayClass: staticQrOverlayClass } = useModalTransition(showStaticQrModal);
   const [staticQrAmountType, setStaticQrAmountType] = useState('any'); // 'any' | 'fixed'
   const [staticQrAmount, setStaticQrAmount] = useState('100');
   const [staticQrNote, setStaticQrNote] = useState('Store Counter Payment');
@@ -1920,9 +1922,13 @@ export default function PaymentLinksRedesign({
                         <button
                           type="button"
                           onClick={() => copyText(activeUrl, 'Payment Link')}
-                          className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shrink-0 flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                          className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shrink-0 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
+                          aria-label={copiedId === activeUrl ? "Payment Link copied" : "Copy Payment Link"}
                         >
-                          {copiedId === activeUrl ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span className="t-icon-swap" data-state={copiedId === activeUrl ? 'b' : 'a'}>
+                            <Copy className="t-icon t-icon--a w-3.5 h-3.5" aria-hidden={copiedId === activeUrl} />
+                            <Check className="t-icon t-icon--b w-3.5 h-3.5 text-emerald-400" aria-hidden={copiedId !== activeUrl} />
+                          </span>
                           <span>{copiedId === activeUrl ? 'Copied!' : 'Copy'}</span>
                         </button>
                       </div>
@@ -2191,7 +2197,10 @@ export default function PaymentLinksRedesign({
                           className={`inline-flex items-center gap-1.5 text-xs font-medium px-3.5 py-2 rounded-xl transition-all ${copiedId === activeUrl ? 'bg-emerald-600 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white'}`}
                           id="copy-link-btn"
                         >
-                          {copiedId === activeUrl ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span className="t-icon-swap" data-state={copiedId === activeUrl ? 'b' : 'a'}>
+                            <Copy className="t-icon t-icon--a w-3.5 h-3.5" aria-hidden={copiedId === activeUrl} />
+                            <Check className="t-icon t-icon--b w-3.5 h-3.5" aria-hidden={copiedId !== activeUrl} />
+                          </span>
                           <span>{copiedId === activeUrl ? 'Copied!' : 'Copy'}</span>
                         </button>
                       </div>
@@ -2586,11 +2595,19 @@ export default function PaymentLinksRedesign({
                       </span>
                       <button
                         onClick={() => copyText(link.id, 'Link ID')}
-                        className="text-slate-400 hover:text-blue-600 p-1 rounded-md shrink-0"
+                        className="text-slate-400 hover:text-blue-600 p-1 rounded-md shrink-0 flex items-center justify-center"
                         title="Copy Link ID"
+                        aria-label="Copy Link ID"
                         type="button"
                       >
-                        {copiedId === link.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span className="t-icon-swap" data-state={copiedId === link.id ? 'b' : 'a'}>
+                          <span className="t-icon" data-icon="a" aria-hidden={copiedId === link.id}>
+                            <Copy className="w-3.5 h-3.5" />
+                          </span>
+                          <span className="t-icon" data-icon="b" aria-hidden={copiedId !== link.id}>
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          </span>
+                        </span>
                       </button>
                     </div>
 
@@ -2668,8 +2685,16 @@ export default function PaymentLinksRedesign({
                           ? 'bg-emerald-600 text-white border-emerald-600'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                       }`}
+                      aria-label="Copy Payment Link"
                     >
-                      {copiedId === link.url ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span className="t-icon-swap" data-state={copiedId === link.url ? 'b' : 'a'}>
+                        <span className="t-icon" data-icon="a" aria-hidden={copiedId === link.url}>
+                          <Copy className="w-3.5 h-3.5" />
+                        </span>
+                        <span className="t-icon" data-icon="b" aria-hidden={copiedId !== link.url}>
+                          <Check className="w-3.5 h-3.5" />
+                        </span>
+                      </span>
                       <span>{copiedId === link.url ? 'Copied' : 'Copy'}</span>
                     </button>
 
@@ -2796,12 +2821,12 @@ export default function PaymentLinksRedesign({
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-          STATIC / COUNTER QR CODE MODAL — RETAIL STANDEE STUDIO
+          STATIC / COUNTER QR CODE MODAL — RETAIL STANDEE STUDIO (transitions-dev: 06-modal.md)
           ══════════════════════════════════════════════════════════ */}
-      {mounted && showStaticQrModal && typeof document !== 'undefined' && createPortal(
+      {mounted && isStaticQrModalMounted && typeof document !== 'undefined' && createPortal(
         <div
           id="standee-modal-backdrop"
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in overscroll-contain select-none"
+          className={`fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-slate-950/75 backdrop-blur-md overscroll-contain select-none ${staticQrOverlayClass}`}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setShowStaticQrModal(false);
@@ -2871,7 +2896,9 @@ export default function PaymentLinksRedesign({
           `}</style>
 
           <div
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden relative"
+            className={`bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden relative ${staticQrModalClass}`}
+            role="dialog"
+            aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
             
