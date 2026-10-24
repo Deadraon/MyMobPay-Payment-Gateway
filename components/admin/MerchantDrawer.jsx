@@ -474,6 +474,8 @@ export default function MerchantDrawer({
                 </button>
               ))}
             </div>
+          </div>
+
           {/* Danger Zone: Permanent Account Deletion */}
           <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200/90 space-y-3">
             <div className="flex items-start gap-2.5">
