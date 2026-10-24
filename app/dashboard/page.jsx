@@ -254,6 +254,8 @@ export default function DashboardPage() {
 
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [paletteSearchQuery, setPaletteSearchQuery] = useState('');
 
   // Transitions.dev: Menu Dropdowns (05-menu-dropdown.md) & Modals (06-modal.md)
   const { isMounted: isProfileDropdownMounted, dropdownClass: profileDropdownClass } = useDropdownTransition(isProfileDropdownOpen);
@@ -291,10 +293,6 @@ export default function DashboardPage() {
       };
     }
   }, [isAnyModalOrDrawerOpen]);
-
-  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-
-  const [paletteSearchQuery, setPaletteSearchQuery] = useState('');
 
   const [theme, setTheme] = useState('dark');
 
