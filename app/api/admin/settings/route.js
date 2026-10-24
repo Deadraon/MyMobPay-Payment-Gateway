@@ -48,6 +48,7 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
+    const { action } = body || {};
     const isAuthorized = await verifyAdminAuth(request);
     if (!isAuthorized) {
       return NextResponse.json({ error: 'Unauthorized: Access Denied' }, { status: 401 });

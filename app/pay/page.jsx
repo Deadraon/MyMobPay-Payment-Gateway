@@ -966,7 +966,7 @@ function PayPageContent() {
     if (!utr.trim()) return;
     setUtrBusy(true); setUtrMsg('');
     try {
-      const targetId = activeId || orderId || linkToken || routeToken || cleanParamOrderId || paramRef;
+      const targetId = activeId || orderId || routeToken || cleanParamOrderId || paramRef;
       const r = await fetch('/api/orders/verify-utr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1600,6 +1600,7 @@ function PayPageContent() {
           setCardOtp={setCardOtp}
           cardBusy={cardBusy}
           cardMsg={cardMsg}
+          setCardMsg={setCardMsg}
         />
       </div>
 

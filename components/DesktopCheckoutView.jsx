@@ -217,6 +217,8 @@ export default function DesktopCheckoutView({
   cardOtp,
   setCardOtp,
   cardBusy,
+  cardMsg,
+  setCardMsg,
   submitCardPayment,
 }) {
   const [lang, setLang] = useState('en'); // 'en' | 'hi'
@@ -344,8 +346,7 @@ export default function DesktopCheckoutView({
   const onCardOtpChange = setCardOtp || setLocalCardOtp;
   const activeCardBusy = cardBusy !== undefined ? cardBusy : localCardBusy;
   const activeCardMsg = cardMsg !== undefined ? cardMsg : localCardMsg;
-
-
+  const onCardMsgChange = setCardMsg || setLocalCardMsg;
 
   // Fallback handlers if parent doesn't provide them
   const handleCardSubmit = async (e) => {
@@ -354,14 +355,12 @@ export default function DesktopCheckoutView({
     }
     if (e) e.preventDefault();
     if (orderMode !== 'test') {
-      if (setCardMsg) setCardMsg('Direct card gateway is reserved for test mode. For live payments, please switch to UPI or Net Banking.');
-      else setLocalCardMsg('Direct card gateway is reserved for test mode. For live payments, please switch to UPI or Net Banking.');
+      onCardMsgChange('Direct card gateway is reserved for test mode. For live payments, please switch to UPI or Net Banking.');
       return;
     }
     const cleanNum = activeCardNumber.replace(/\s+/g, '');
     if (cleanNum.length < 15) {
-      if (setCardMsg) setCardMsg('Please enter a valid 16-digit card number.');
-      else setLocalCardMsg('Please enter a valid 16-digit card number.');
+      onCardMsgChange('Please enter a valid 16-digit card number.');
       return;
     }
     setLocalCardBusy(true);

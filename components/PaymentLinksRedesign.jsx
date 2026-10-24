@@ -513,6 +513,7 @@ export default function PaymentLinksRedesign({
       const mockRef = refCode.trim() || mockOrderId;
       const newUrl = `${host}/pay?order_id=${mockOrderId}&amount=${mockAmt.toFixed(2)}&ref=${mockRef}`;
       
+      const rand = Math.random().toString(36).substring(2);
       setActiveUrl(newUrl);
       setActiveLinkId('pl_' + rand.slice(0, 8));
       setGeneratedLinkData({
