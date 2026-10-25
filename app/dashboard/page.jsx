@@ -19,7 +19,8 @@ import {
   Clock, CheckCircle2, XCircle, Code, ChevronRight, BookOpen,
 
   Menu, TrendingUp, AlertCircle, Star, Crown, Shield, ShieldCheck, BarChart3, Calendar, Zap, ChevronDown,
-  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell, LifeBuoy, HelpCircle
+  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell, LifeBuoy, HelpCircle,
+  Receipt
 } from 'lucide-react';
 
 import QRCode from 'react-qr-code';
@@ -34,6 +35,8 @@ import ReportsRedesign from '@/components/ReportsRedesign';
 import DeveloperConsoleRedesign from '@/components/DeveloperConsoleRedesign';
 import SupportHelpRedesign from '@/components/SupportHelpRedesign';
 import AdminConsole from '@/components/AdminConsole';
+import PlatformSubscriptionsHub from '@/components/PlatformSubscriptionsHub';
+import { isSubscriptionOrder } from '@/lib/subscriptionOrders';
 
 import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
 import { formatMerchantId } from '@/lib/merchantId';
@@ -142,8 +145,16 @@ export default function DashboardPage() {
   // Transaction States
 
   const [orders, setOrders] = useState([]);
-
   const [ordersLoading, setOrdersLoading] = useState(false);
+
+  // Separate regular merchant store orders from platform SaaS subscription orders
+  const merchantOrders = useMemo(() => {
+    return orders.filter(o => !isSubscriptionOrder(o));
+  }, [orders]);
+
+  const subscriptionOrders = useMemo(() => {
+    return orders.filter(o => isSubscriptionOrder(o));
+  }, [orders]);
 
   const [emailLogs, setEmailLogs] = useState([]);
 
@@ -522,7 +533,7 @@ export default function DashboardPage() {
 
     const query = paletteSearchQuery.toLowerCase();
 
-    return orders.filter(o => 
+    return merchantOrders.filter(o => 
 
       (o.id && o.id.toLowerCase().includes(query)) ||
 
@@ -534,7 +545,7 @@ export default function DashboardPage() {
 
     ).slice(0, 5);
 
-  }, [paletteSearchQuery, orders]);
+  }, [paletteSearchQuery, merchantOrders]);
 
   const openProfileModal = (tabName = 'profile') => {
 
@@ -2189,7 +2200,7 @@ export default function DashboardPage() {
 
   const filteredOrders = useMemo(() => {
 
-    return orders.filter(o => {
+    return merchantOrders.filter(o => {
 
       // Separator filter based on environment mode
 
@@ -2229,7 +2240,7 @@ export default function DashboardPage() {
 
     });
 
-  }, [orders, searchQuery, statusFilter, profile]);
+  }, [merchantOrders, searchQuery, statusFilter, profile]);
 
   // Calculations for Metrics Cards
 
@@ -2237,7 +2248,7 @@ export default function DashboardPage() {
 
     const activeSandbox = profile?.sandbox_mode !== false;
 
-    const modeFiltered = orders.filter(o => (o.mode === 'test') === activeSandbox);
+    const modeFiltered = merchantOrders.filter(o => (o.mode === 'test') === activeSandbox);
 
     // Filter by timeframe
 
@@ -2319,7 +2330,7 @@ export default function DashboardPage() {
 
     };
 
-  }, [orders, profile, analyticsTimeframe]);
+  }, [merchantOrders, profile, analyticsTimeframe]);
 
   // Compile Time-Series Data for Area Chart over selected timeframe
 
@@ -2327,7 +2338,7 @@ export default function DashboardPage() {
 
     const activeSandbox = profile?.sandbox_mode !== false;
 
-    const modeFiltered = orders.filter(o => (o.mode === 'test') === activeSandbox);
+    const modeFiltered = merchantOrders.filter(o => (o.mode === 'test') === activeSandbox);
 
     const verified = modeFiltered.filter(o => o.status === 'verified');
 
@@ -2391,7 +2402,7 @@ export default function DashboardPage() {
 
     }));
 
-  }, [orders, profile, analyticsTimeframe]);
+  }, [merchantOrders, profile, analyticsTimeframe]);
 
   const CustomTooltip = ({ active, payload, label }) => {
 
@@ -2782,114 +2793,117 @@ echo "Order Created: " . $data['orderId'];
             <div className="h-px bg-slate-800 my-1.5" />
 
             {/* Category: MAIN */}
-            <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
+            <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
               Main
             </p>
 
             <button
               onClick={() => setActiveTab('overview')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
-                activeTab === 'overview'
-                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={{ color: '#ffffff' }}
+              className={`t-sidebar-nav-item ${activeTab === 'overview' ? 'is-active' : ''}`}
             >
-              <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-teal-300' : 'text-slate-200'}`} />
-              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Dashboard</span>
+              <span className="t-sidebar-indicator" />
+              <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+              <span className="truncate">Dashboard</span>
             </button>
 
             <button
               onClick={() => setActiveTab('payment-links')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
-                activeTab === 'payment-links'
-                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={{ color: '#ffffff' }}
+              className={`t-sidebar-nav-item ${activeTab === 'payment-links' ? 'is-active' : ''}`}
             >
-              <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-teal-300' : 'text-slate-200'}`} />
-              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Payment Links</span>
+              <span className="t-sidebar-indicator" />
+              <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+              <span className="truncate">Payment Links</span>
             </button>
 
             {/* Category: OPERATIONS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
               Operations
             </p>
 
             <button
               onClick={() => setActiveTab('verification')}
               type="button"
-              className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
-                activeTab === 'verification'
-                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={{ color: '#ffffff' }}
+              className={`t-sidebar-nav-item justify-between ${activeTab === 'verification' ? 'is-active' : ''}`}
             >
-              <div className="flex items-center gap-3">
-                <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-teal-300' : 'text-slate-200'}`} />
-                <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Verification</span>
+              <span className="t-sidebar-indicator" />
+              <div className="flex items-center gap-3 min-w-0">
+                <ShieldCheck className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                <span className="truncate">Verification</span>
               </div>
-              {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
+              {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0">
+                  {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
                 </span>
               )}
             </button>
 
             {/* Category: REPORTS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
               Reports &amp; Analytics
             </p>
 
             <button
               onClick={() => setActiveTab('transactions')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
-                activeTab === 'transactions'
-                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={{ color: '#ffffff' }}
+              className={`t-sidebar-nav-item ${activeTab === 'transactions' ? 'is-active' : ''}`}
             >
-              <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-teal-300' : 'text-slate-200'}`} />
-              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Transactions</span>
+              <span className="t-sidebar-indicator" />
+              <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+              <span className="truncate">Transactions</span>
             </button>
 
             <button
               onClick={() => setActiveTab('reports')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
-                activeTab === 'reports'
-                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={{ color: '#ffffff' }}
+              className={`t-sidebar-nav-item ${activeTab === 'reports' ? 'is-active' : ''}`}
             >
-              <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-teal-300' : 'text-slate-200'}`} />
-              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Reports &amp; GST</span>
+              <span className="t-sidebar-indicator" />
+              <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+              <span className="truncate">Reports &amp; GST</span>
             </button>
 
+            {/* Category: PLATFORM SAAS REVENUE (ADMIN ONLY) */}
+            {isAdminUser && (
+              <>
+                <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Platform SaaS</span>
+                  <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">Admin</span>
+                </p>
+
+                <button
+                  onClick={() => setActiveTab('saas-subscriptions')}
+                  type="button"
+                  className={`t-sidebar-nav-item justify-between ${activeTab === 'saas-subscriptions' ? 'is-active' : ''}`}
+                >
+                  <span className="t-sidebar-indicator" />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Receipt className="w-4 h-4 shrink-0 t-sidebar-icon text-amber-400" />
+                    <span className="truncate">SaaS Subscriptions</span>
+                  </div>
+                  {subscriptionOrders.length > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-500/20 text-blue-300 border border-blue-500/40 shrink-0">
+                      {subscriptionOrders.length}
+                    </span>
+                  )}
+                </button>
+              </>
+            )}
+
             {/* Category: DEVELOPER & SETTINGS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
               Others
             </p>
 
             <button
               onClick={() => setActiveTab('developer')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
-                activeTab === 'developer'
-                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={{ color: '#ffffff' }}
+              className={`t-sidebar-nav-item ${activeTab === 'developer' ? 'is-active' : ''}`}
             >
-              <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-teal-300' : 'text-slate-200'}`} />
-              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Developer Hub</span>
+              <span className="t-sidebar-indicator" />
+              <Code className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+              <span className="truncate">Developer Hub</span>
             </button>
 
             <button
@@ -2898,29 +2912,21 @@ echo "Order Created: " . $data['orderId'];
                 setActiveTab('settings');
               }}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
-                activeTab === 'settings'
-                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={{ color: '#ffffff' }}
+              className={`t-sidebar-nav-item ${activeTab === 'settings' ? 'is-active' : ''}`}
             >
-              <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-teal-300' : 'text-slate-200'}`} />
-              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Settings</span>
+              <span className="t-sidebar-indicator" />
+              <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+              <span className="truncate">Settings</span>
             </button>
 
             <button
               onClick={() => setActiveTab('support')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
-                activeTab === 'support'
-                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={{ color: '#ffffff' }}
+              className={`t-sidebar-nav-item ${activeTab === 'support' ? 'is-active' : ''}`}
             >
-              <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-teal-300' : 'text-slate-200'}`} />
-              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Support &amp; Help</span>
+              <span className="t-sidebar-indicator" />
+              <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+              <span className="truncate">Support &amp; Help</span>
             </button>
           </nav>
         </div>
@@ -3097,7 +3103,7 @@ echo "Order Created: " . $data['orderId'];
                   type="button"
                 >
                   <Bell className="w-5 h-5 text-current" />
-                  {orders.filter(o => o.status === 'verified').length > 0 && (
+                  {merchantOrders.filter(o => o.status === 'verified').length > 0 && (
                     <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white animate-pulse"></span>
                   )}
                 </button>
@@ -3121,7 +3127,7 @@ echo "Order Created: " . $data['orderId'];
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-[#0c2340]">Activity &amp; Notifications</span>
                           <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full font-mono">
-                            {orders.slice(0, 8).length}
+                            {merchantOrders.slice(0, 8).length}
                           </span>
                         </div>
                         <button
@@ -3139,7 +3145,7 @@ echo "Order Created: " . $data['orderId'];
                         className="flex-1 overflow-y-auto overscroll-contain divide-y divide-slate-100 touch-pan-y"
                         style={{ WebkitOverflowScrolling: 'touch' }}
                       >
-                        {orders.slice(0, 8).map((order) => {
+                        {merchantOrders.slice(0, 8).map((order) => {
                           const isPaid = order.status === 'verified' || order.status === 'paid';
                           return (
                             <div
@@ -3413,7 +3419,7 @@ echo "Order Created: " . $data['orderId'];
                   <div className="h-px bg-slate-800 my-2" />
 
                   {/* Category: General */}
-                  <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                  <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     Main
                   </p>
                   <button
@@ -3422,14 +3428,11 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
-                      activeTab === 'overview'
-                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
-                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
-                    }`}
+                    className={`t-sidebar-nav-item ${activeTab === 'overview' ? 'is-active' : ''}`}
                   >
-                    <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-teal-400' : 'text-slate-500'}`} />
-                    Overview
+                    <span className="t-sidebar-indicator" />
+                    <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+                    <span className="truncate">Dashboard</span>
                   </button>
                   <button
                     onClick={() => {
@@ -3437,19 +3440,15 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
-                      activeTab === 'payment-links'
-                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                        : 'text-white hover:bg-white/10'
-                    }`}
-                    style={{ color: '#ffffff' }}
+                    className={`t-sidebar-nav-item ${activeTab === 'payment-links' ? 'is-active' : ''}`}
                   >
-                    <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-teal-300' : 'text-slate-200'}`} />
-                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Payment Links</span>
+                    <span className="t-sidebar-indicator" />
+                    <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+                    <span className="truncate">Payment Links</span>
                   </button>
 
                   {/* Category: Operations */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     Operations
                   </p>
                   <button
@@ -3458,26 +3457,22 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
-                      activeTab === 'verification'
-                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                        : 'text-white hover:bg-white/10'
-                    }`}
-                    style={{ color: '#ffffff' }}
+                    className={`t-sidebar-nav-item justify-between ${activeTab === 'verification' ? 'is-active' : ''}`}
                   >
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-teal-300' : 'text-slate-200'}`} />
-                      <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Verification</span>
+                    <span className="t-sidebar-indicator" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <ShieldCheck className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">Verification</span>
                     </div>
-                    {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                        {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
+                    {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0">
+                        {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
                       </span>
                     )}
                   </button>
 
                   {/* Category: Reports & Analytics */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     Reports &amp; Analytics
                   </p>
                   <button
@@ -3486,15 +3481,11 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
-                      activeTab === 'transactions'
-                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                        : 'text-white hover:bg-white/10'
-                    }`}
-                    style={{ color: '#ffffff' }}
+                    className={`t-sidebar-nav-item ${activeTab === 'transactions' ? 'is-active' : ''}`}
                   >
-                    <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-teal-300' : 'text-slate-200'}`} />
-                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Transactions</span>
+                    <span className="t-sidebar-indicator" />
+                    <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+                    <span className="truncate">Transactions</span>
                   </button>
                   <button
                     onClick={() => {
@@ -3502,19 +3493,44 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
-                      activeTab === 'reports'
-                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                        : 'text-white hover:bg-white/10'
-                    }`}
-                    style={{ color: '#ffffff' }}
+                    className={`t-sidebar-nav-item ${activeTab === 'reports' ? 'is-active' : ''}`}
                   >
-                    <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-teal-300' : 'text-slate-200'}`} />
-                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Reports &amp; GST</span>
+                    <span className="t-sidebar-indicator" />
+                    <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+                    <span className="truncate">Reports &amp; GST</span>
                   </button>
 
+                  {/* Category: Platform SaaS (Admin Only) */}
+                  {isAdminUser && (
+                    <>
+                      <p className="px-3 pt-3 pb-1 text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                        <span>Platform SaaS</span>
+                        <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">Admin</span>
+                      </p>
+                      <button
+                        onClick={() => {
+                          setActiveTab('saas-subscriptions');
+                          setIsMobileMenuOpen(false);
+                        }}
+                        type="button"
+                        className={`t-sidebar-nav-item justify-between ${activeTab === 'saas-subscriptions' ? 'is-active' : ''}`}
+                      >
+                        <span className="t-sidebar-indicator" />
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Receipt className="w-4 h-4 shrink-0 t-sidebar-icon text-amber-400" />
+                          <span className="truncate">SaaS Subscriptions</span>
+                        </div>
+                        {subscriptionOrders.length > 0 && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-500/20 text-blue-300 border border-blue-500/40 shrink-0">
+                            {subscriptionOrders.length}
+                          </span>
+                        )}
+                      </button>
+                    </>
+                  )}
+
                   {/* Category: Developer & Settings */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     Others
                   </p>
                   <button
@@ -3523,15 +3539,11 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
-                      activeTab === 'developer'
-                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                        : 'text-white hover:bg-white/10'
-                    }`}
-                    style={{ color: '#ffffff' }}
+                    className={`t-sidebar-nav-item ${activeTab === 'developer' ? 'is-active' : ''}`}
                   >
-                    <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-teal-300' : 'text-slate-200'}`} />
-                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Developer Hub</span>
+                    <span className="t-sidebar-indicator" />
+                    <Code className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+                    <span className="truncate">Developer Hub</span>
                   </button>
                   <button
                     onClick={() => {
@@ -3540,15 +3552,11 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
-                      activeTab === 'settings'
-                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                        : 'text-white hover:bg-white/10'
-                    }`}
-                    style={{ color: '#ffffff' }}
+                    className={`t-sidebar-nav-item ${activeTab === 'settings' ? 'is-active' : ''}`}
                   >
-                    <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-teal-300' : 'text-slate-200'}`} />
-                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Settings</span>
+                    <span className="t-sidebar-indicator" />
+                    <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+                    <span className="truncate">Settings</span>
                   </button>
 
                   <button
@@ -3557,15 +3565,11 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
-                      activeTab === 'support'
-                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
-                        : 'text-white hover:bg-white/10'
-                    }`}
-                    style={{ color: '#ffffff' }}
+                    className={`t-sidebar-nav-item ${activeTab === 'support' ? 'is-active' : ''}`}
                   >
-                    <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-teal-300' : 'text-slate-200'}`} />
-                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Support &amp; Help Desk</span>
+                    <span className="t-sidebar-indicator" />
+                    <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
+                    <span className="truncate">Support &amp; Help Desk</span>
                   </button>
                 </nav>
               </div>
@@ -3775,7 +3779,7 @@ echo "Order Created: " . $data['orderId'];
             {activeTab === 'payment-links' && (
               <PaymentLinksRedesign
                 profile={profile}
-                orders={orders}
+                orders={merchantOrders}
                 payLinkHistory={payLinkHistory}
                 setPayLinkHistory={setPayLinkHistory}
                 setActiveTab={setActiveTab}
@@ -3783,16 +3787,13 @@ echo "Order Created: " . $data['orderId'];
             )}
 
             {/* ═══════════════════════════════════════════════════════════
-
                TAB: OVERVIEW
-
                ═══════════════════════════════════════════════════════════ */}
-
             {activeTab === 'overview' && (
               <DashboardOverviewRedesign
                 profile={profile}
                 stats={stats}
-                orders={orders}
+                orders={merchantOrders}
                 analyticsTimeframe={analyticsTimeframe}
                 setAnalyticsTimeframe={setAnalyticsTimeframe}
                 setActiveTab={setActiveTab}
@@ -3802,26 +3803,19 @@ echo "Order Created: " . $data['orderId'];
             )}
 
             {/* ═══════════════════════════════════════════════════════════
-
                TAB: SUBSCRIPTION
-
                ═══════════════════════════════════════════════════════════ */}
-
             {activeTab === 'subscription' && (
-
               <div className="space-y-6">
-
                 <SubscriptionRedesign
                 profile={profile}
                 historyOrders={historyOrders}
-                orders={orders}
+                orders={merchantOrders}
                 onRefreshProfile={() => fetchProfile(user?.id)}
                 onProfileUpdate={setProfile}
                 setActiveTab={setActiveTab}
               />
-
               </div>
-
             )}
 
             {/* ═══════════════════════════════════════════════════════════
@@ -3830,7 +3824,7 @@ echo "Order Created: " . $data['orderId'];
             {activeTab === 'transactions' && (
               <TransactionsRedesign
                 profile={profile}
-                orders={orders}
+                orders={merchantOrders}
                 onRefresh={fetchOrders}
                 setActiveTab={setActiveTab}
                 onProfileUpdate={setProfile}
@@ -3843,7 +3837,7 @@ echo "Order Created: " . $data['orderId'];
             {activeTab === 'verification' && (
               <VerificationCenterRedesign
                 profile={profile}
-                orders={orders}
+                orders={merchantOrders}
                 emailLogs={emailLogs}
                 onRefresh={() => {
                   if (user?.id) {
@@ -3861,7 +3855,20 @@ echo "Order Created: " . $data['orderId'];
             {activeTab === 'reports' && (
               <ReportsRedesign
                 profile={profile}
-                orders={orders}
+                orders={merchantOrders}
+                onRefresh={() => {
+                  if (user?.id) fetchOrders(user.id);
+                }}
+                setActiveTab={setActiveTab}
+              />
+            )}
+
+            {/* ═══════════════════════════════════════════════════════════
+               TAB: PLATFORM SAAS SUBSCRIPTIONS (ADMIN ONLY)
+               ═══════════════════════════════════════════════════════════ */}
+            {activeTab === 'saas-subscriptions' && isAdminUser && (
+              <PlatformSubscriptionsHub
+                subscriptionOrders={subscriptionOrders}
                 onRefresh={() => {
                   if (user?.id) fetchOrders(user.id);
                 }}

@@ -857,6 +857,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
             <SubscriptionsTab
               merchants={merchants}
               giftCodes={giftCodes}
+              orders={orders}
               onExtendSubscription={handleExtendSubscription}
               onCreateGiftCode={handleCreateGiftCode}
               onDeleteGiftCode={handleDeleteGiftCode}
