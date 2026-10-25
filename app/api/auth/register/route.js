@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { sendWelcomeEmail, sendAdminNewSignupNotification } from '@/lib/mailer';
 import { formatMerchantId } from '@/lib/merchantId';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { validateStrongPassword } from '@/lib/passwordValidation';
 
 export async function POST(req) {
   // Rate limit: max 10 register attempts per IP per minute
@@ -16,72 +17,79 @@ export async function POST(req) {
   }
 
   try {
-    const { email, password, businessName, upiId, phone } = await req.json();
+    const { email, password, businessName, upiId, phone, userId: requestUserId } = await req.json();
 
-    // ── 1. Validate Email & Password format ─────────────────────────
+    // ── 1. Validate Email & Strong Password format ───────────────────
     if (!email || !email.includes('@')) {
       return NextResponse.json({ error: 'Please provide a valid email address.' }, { status: 400 });
     }
 
-    if (!password || password.length < 6) {
-      return NextResponse.json({ error: 'Password must be at least 6 characters long.' }, { status: 400 });
+    const pwdCheck = validateStrongPassword(password);
+    if (!pwdCheck.valid) {
+      return NextResponse.json({ error: pwdCheck.error }, { status: 400 });
     }
 
-    // ── 2. Validate & Enforce Mandatory WhatsApp Phone ──────────────
+    // ── 2. Validate & Enforce Mandatory Mobile Phone ─────────────────
     const cleanPhone = (phone || '').toString().trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
       return NextResponse.json({
-        error: 'Please enter a valid 10-digit Indian mobile number (cannot be dummy numbers like 0000000000 or 9999999999).'
+        error: 'Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).'
+      }, { status: 400 });
+    }
+
+    // ── 3. Validate Mandatory Business Name & UPI ID ─────────────────
+    if (!businessName || !businessName.trim()) {
+      return NextResponse.json({
+        error: 'Please enter your Business / Brand Name to complete registration.'
+      }, { status: 400 });
+    }
+
+    if (!upiId || !upiId.trim() || !upiId.includes('@')) {
+      return NextResponse.json({
+        error: 'Please enter a valid Settlement UPI ID (e.g. store@upi, merchant@okaxis).'
       }, { status: 400 });
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const finalBusinessName = (businessName && businessName.trim()) ? businessName.trim() : (cleanEmail.split('@')[0] || 'My Merchant Store');
-    const finalUpiId = (upiId && upiId.includes('@')) ? upiId.trim() : `${cleanEmail.split('@')[0]}@upi`;
+    const finalBusinessName = businessName.trim();
+    const finalUpiId = upiId.trim().toLowerCase();
 
-    // ── 3. Enforce WhatsApp OTP Verification ────────────────────────
-    const dbPhone = `+91${cleanPhone}`;
-    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-    const { data: verifiedWaOtp, error: waOtpError } = await supabaseAdmin
-      .from('whatsapp_otps')
-      .select('id, verified, created_at')
-      .eq('phone', dbPhone)
-      .eq('verified', true)
-      .gte('created_at', thirtyMinutesAgo)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (waOtpError) {
-      console.error('[REGISTER API] WhatsApp OTP verification check error:', waOtpError);
+    // ── 4. Verify Email Confirmation (via OTP or Google OAuth) ───────
+    let existingUser = null;
+    if (requestUserId) {
+      const { data: uData } = await supabaseAdmin.auth.admin.getUserById(requestUserId);
+      if (uData?.user) {
+        existingUser = uData.user;
+      }
     }
 
-    if (!verifiedWaOtp) {
-      return NextResponse.json({
-        error: `Mobile number (+91 ${cleanPhone}) has not been verified via WhatsApp OTP. Please verify your mobile number with the OTP sent to your WhatsApp to complete registration.`
-      }, { status: 400 });
+    if (!existingUser) {
+      const { data: userListData, error: listError } = await supabaseAdmin.auth.admin.listUsers({
+        page: 1,
+        perPage: 1000,
+      });
+
+      if (listError) {
+        console.error('[REGISTER API] listUsers error:', listError);
+        return NextResponse.json({
+          error: 'Authentication service temporarily busy. Please try again in a moment.'
+        }, { status: 500 });
+      }
+
+      existingUser = userListData?.users?.find(
+        u => u.email?.toLowerCase() === cleanEmail
+      ) || null;
     }
 
-    // ── 4. Enforce Email OTP Verification ───────────────────────────
-    const { data: userListData, error: listError } = await supabaseAdmin.auth.admin.listUsers({
-      page: 1,
-      perPage: 1000,
-    });
+    const isConfirmed = Boolean(
+      existingUser?.email_confirmed_at || 
+      existingUser?.app_metadata?.provider === 'google' ||
+      existingUser?.identities?.some(id => id.provider === 'google')
+    );
 
-    if (listError) {
-      console.error('[REGISTER API] listUsers error:', listError);
+    if (!existingUser || !isConfirmed) {
       return NextResponse.json({
-        error: 'Authentication service temporarily busy. Please try again in a moment.'
-      }, { status: 500 });
-    }
-
-    const existingUser = userListData?.users?.find(
-      u => u.email?.toLowerCase() === cleanEmail
-    ) || null;
-
-    if (!existingUser || !existingUser.email_confirmed_at) {
-      return NextResponse.json({
-        error: `Email address (${cleanEmail}) has not been verified via OTP. Please click "Verify Email" to receive and confirm your 6-digit verification code before registering.`
+        error: `Email address (${cleanEmail}) has not been verified. Please click "Verify" to confirm your email address before registering.`
       }, { status: 400 });
     }
 

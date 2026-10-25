@@ -19,7 +19,7 @@ import {
   Clock, CheckCircle2, XCircle, Code, ChevronRight, BookOpen,
 
   Menu, TrendingUp, AlertCircle, Star, Crown, Shield, ShieldCheck, BarChart3, Calendar, Zap, ChevronDown,
-  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell, LifeBuoy
+  QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell, LifeBuoy, HelpCircle
 } from 'lucide-react';
 
 import QRCode from 'react-qr-code';
@@ -45,6 +45,8 @@ import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid 
 
 } from 'recharts';
+
+const formatINR = (n) => '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-primary)' }) => (
   <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300 hover:scale-[1.02]`}>
@@ -2715,174 +2717,7 @@ echo "Order Created: " . $data['orderId'];
     );
   }
 
-  const renderSetupGuidePanel = () => {
-    const isUpiConnected = Boolean(profile?.upi_id && profile?.upi_id !== 'pending@upi');
-    const isEmailForwardingActive = Boolean(profile?.setup_progress?.email_forwarding);
-    const hasBankLinked = Boolean(profile?.bank_name || profile?.bank_account_number);
-    const isWebhookActive = Boolean(profile?.webhook_url);
 
-    return (
-      <div className="space-y-6 animate-fadeIn font-sans">
-        {/* Hero Card */}
-        <div className="bg-gradient-to-br from-[#0c2340] via-[#102d54] to-[#1a3a60] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="max-w-2xl space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-blue-300" />
-                <span>Zero-Fee Setup Blueprint</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
-                0 to 100 Production Setup Guide
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                Connect your receiving UPI handle and bank account to collect instant customer payments with 0% gateway fees. Every payment settles straight to your account in T+0 real time.
-              </p>
-            </div>
-
-          </div>
-        </div>
-
-        {/* 5-Phase Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Phase 1: Direct Bank & UPI Settlement */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                  Phase 1: Receiving Node
-                </span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isUpiConnected || hasBankLinked ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-                  {isUpiConnected || hasBankLinked ? 'Connected' : 'Action Required'}
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-blue-600" />
-                Direct UPI ID &amp; Bank Settlement Rail
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Specify your commercial or personal UPI handle (e.g. yourname@okaxis). Customer UPI payments credit directly to this account with zero intermediary hold.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setSettingsCategory('banking');
-                setActiveTab('settings');
-              }}
-              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <span>{isUpiConnected ? 'Manage Receiving UPI / Bank' : 'Configure UPI Receiving Handle'}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Phase 2: Notification Listener */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  Phase 2: Auto-Verification
-                </span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isEmailForwardingActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-                  {isEmailForwardingActive ? 'Verified' : 'Setup Required'}
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-indigo-600" />
-                Bank Email Auto-Forwarding Listener
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Set up an auto-forwarding rule in your Gmail so bank deposit notifications match orders in under 500ms without requiring expensive aggregators.
-              </p>
-            </div>
-
-          </div>
-
-          {/* Phase 3: Instant Payment Links */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  Phase 3: No-Code Collection
-                </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                  Ready
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <LinkIcon className="w-4 h-4 text-emerald-600" />
-                Create One-Click UPI Payment Links
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Generate instant checkout links and QR codes to share on WhatsApp, email, or invoices. Customers scan with any UPI app to complete checkout.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setActiveTab('payment-links')}
-              className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <span>Launch Payment Links Studio</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Phase 4: API & Webhooks */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200">
-                  Phase 4: Developer Integration
-                </span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isWebhookActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
-                  {isWebhookActive ? 'Webhook Configured' : 'Optional'}
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Code className="w-4 h-4 text-violet-600" />
-                REST APIs &amp; HMAC Webhooks
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Plug our REST API into your Node.js, Python, or Next.js app. Receive instant cryptographic webhook events as soon as UPI payments settle.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setSettingsCategory('api');
-                setActiveTab('settings');
-              }}
-              className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <span>Manage API Keys &amp; Webhooks</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Phase 5 Banner: Instant Payment Link */}
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <LinkIcon className="w-4 h-4 text-blue-600" />
-              <h4 className="text-sm font-bold text-slate-900">Phase 5: Create Instant Payment Links</h4>
-            </div>
-            <p className="text-xs text-slate-600">
-              Generate one-click payment URLs or QR codes to collect custom payments with instant direct-to-bank settlement.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setActiveTab('payment-links')}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 shadow-sm cursor-pointer"
-          >
-            <span>Create Payment Link</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
 
@@ -2891,39 +2726,39 @@ echo "Order Created: " . $data['orderId'];
                   {/* ═══════════════════════════════════════════════════════════
          DESKTOP SIDEBAR (Original Menu Items with Modern Design)
          ═══════════════════════════════════════════════════════════ */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-slate-200/80 z-50 hidden md:flex flex-col justify-between shadow-[1px_0_4px_0_rgba(0,0,0,0.02)] select-none">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-[#0F172A] border-r border-slate-800 z-50 hidden md:flex flex-col justify-between shadow-[4px_0_24px_0_rgba(0,0,0,0.25)] select-none text-slate-100">
         <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Logo & Brand (Bigger & Aligned) */}
-          <div className="px-6 pt-7 pb-4 flex items-center">
-            <MyMobPayLogo className="w-44 lg:w-48 h-auto transition-transform hover:scale-[1.02]" textColor="#0c2340" />
+          {/* Logo & Brand */}
+          <div className="px-6 pt-6 pb-4 flex items-center">
+            <MyMobPayLogo className="w-44 lg:w-48 h-auto transition-transform hover:scale-[1.02]" textColor="#FFFFFF" />
           </div>
 
           {/* Navigation Links with Original Categories */}
-          <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+          <nav className="flex-1 px-4 py-1 space-y-1 overflow-y-auto">
             {/* Pinned: Subscription Console */}
             <button
               onClick={handleScrollToSubscription}
               type="button"
-              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold ${
+              className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs transition-all border font-bold cursor-pointer ${
                 activeTab === 'subscription'
-                  ? 'bg-blue-600/15 text-blue-700 border-blue-500/30 shadow-xs'
+                  ? 'bg-blue-600/30 text-blue-200 border-blue-500/40 shadow-xs'
                   : profile?.subscription_status === 'active'
-                  ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/25 hover:bg-emerald-500/15'
-                  : 'bg-amber-500/10 text-amber-700 border-amber-500/25 hover:bg-amber-500/15'
+                  ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25 hover:bg-emerald-500/20'
+                  : 'bg-amber-500/10 text-amber-300 border-amber-500/25 hover:bg-amber-500/20'
               }`}
             >
               <Crown className={`w-4 h-4 shrink-0 ${
                 activeTab === 'subscription'
-                  ? 'text-blue-600'
+                  ? 'text-blue-400'
                   : profile?.subscription_status === 'active'
-                  ? 'text-emerald-600'
-                  : 'text-amber-500'
+                  ? 'text-emerald-400'
+                  : 'text-amber-400'
               }`} />
               <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
                 {profile?.subscription_status === 'active' ? 'Premium Active' : 'Premium Subscription'}
               </span>
               <span className={`w-2 h-2 rounded-full shrink-0 ${
-                profile?.subscription_status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'
+                profile?.subscription_status === 'active' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
               }`} />
             </button>
 
@@ -2932,9 +2767,9 @@ echo "Order Created: " . $data['orderId'];
               <button
                 onClick={() => setActiveTab('admin')}
                 type="button"
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 ${
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 ${
                   activeTab === 'admin'
-                    ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-300'
+                    ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-400/40'
                     : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent'
                 }`}
                 title="Access SaaS Super Admin Console"
@@ -2945,111 +2780,111 @@ echo "Order Created: " . $data['orderId'];
               </button>
             )}
 
-            <div className="h-px bg-slate-100 my-2" />
+            <div className="h-px bg-slate-800 my-1.5" />
 
-            {/* Category: General */}
-            <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-              General
+            {/* Category: MAIN */}
+            <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+              Main
             </p>
 
             <button
               onClick={() => setActiveTab('overview')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'overview'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
+                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
               }`}
             >
-              <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-blue-600' : 'text-slate-400'}`} />
-              Overview
+              <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-teal-400' : 'text-slate-500'}`} />
+              <span>Dashboard</span>
             </button>
 
             <button
               onClick={() => setActiveTab('payment-links')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'payment-links'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
+                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
               }`}
             >
-              <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-blue-600' : 'text-slate-400'}`} />
-              Payment Links
+              <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-teal-400' : 'text-slate-500'}`} />
+              <span>Payment Links</span>
             </button>
 
-            {/* Category: Operations */}
-            <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            {/* Category: OPERATIONS */}
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
               Operations
             </p>
 
             <button
               onClick={() => setActiveTab('verification')}
               type="button"
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+              className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'verification'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
+                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
               }`}
             >
               <div className="flex items-center gap-3">
-                <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-blue-600' : 'text-slate-400'}`} />
+                <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-teal-400' : 'text-slate-500'}`} />
                 <span>Verification</span>
               </div>
               {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                   {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
                 </span>
               )}
             </button>
 
-            {/* Category: Reports */}
-            <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            {/* Category: REPORTS */}
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
               Reports &amp; Analytics
             </p>
 
             <button
               onClick={() => setActiveTab('transactions')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'transactions'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
+                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
               }`}
             >
-              <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-blue-600' : 'text-slate-400'}`} />
-              Transactions
+              <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-teal-400' : 'text-slate-500'}`} />
+              <span>Transactions</span>
             </button>
 
             <button
               onClick={() => setActiveTab('reports')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'reports'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
+                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
               }`}
             >
-              <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-blue-600' : 'text-slate-400'}`} />
-              Reports &amp; GST
+              <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-teal-400' : 'text-slate-500'}`} />
+              <span>Reports &amp; GST</span>
             </button>
 
-            {/* Category: Developer & Settings */}
-            <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-              Developer &amp; Settings
+            {/* Category: DEVELOPER & SETTINGS */}
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+              Others
             </p>
 
             <button
               onClick={() => setActiveTab('developer')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'developer'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
+                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
               }`}
             >
-              <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-blue-600' : 'text-slate-400'}`} />
-              Developer Hub
+              <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-teal-400' : 'text-slate-500'}`} />
+              <span>Developer Hub</span>
             </button>
 
             <button
@@ -3058,57 +2893,44 @@ echo "Order Created: " . $data['orderId'];
                 setActiveTab('settings');
               }}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'settings'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
+                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
               }`}
             >
-              <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-blue-600' : 'text-slate-400'}`} />
-              Settings
-            </button>
-
-            <button
-              onClick={() => setActiveTab('setup-guide')}
-              type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
-                activeTab === 'setup-guide'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === 'setup-guide' ? 'text-blue-600' : 'text-slate-400'}`} />
-              0 to 100 Setup Guide
+              <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-teal-400' : 'text-slate-500'}`} />
+              <span>Settings</span>
             </button>
 
             <button
               onClick={() => setActiveTab('support')}
               type="button"
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'support'
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
+                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
               }`}
             >
-              <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-blue-600' : 'text-slate-400'}`} />
-              Support &amp; Help Desk
+              <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-teal-400' : 'text-slate-500'}`} />
+              <span>Support &amp; Help</span>
             </button>
           </nav>
         </div>
 
         {/* Sidebar Footer */}
-        <div className="px-6 pb-6 pt-3 border-t border-slate-100 flex flex-col gap-3">
+        <div className="px-6 pb-6 pt-3 border-t border-slate-800 flex flex-col gap-3">
           <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>API Live Rails</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-slate-300">API Live Rails</span>
             </div>
-            <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">v2.1</span>
+            <span className="text-[11px] font-mono text-slate-300 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">v2.1</span>
           </div>
           <button
             onClick={handleSignOut}
             type="button"
-            className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-xl transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
@@ -3127,7 +2949,7 @@ echo "Order Created: " . $data['orderId'];
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0"
+              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
               type="button"
               title="Toggle Menu"
               aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -3149,7 +2971,7 @@ echo "Order Created: " . $data['orderId'];
                 onClick={() => {
                   if (profile?.sandbox_mode !== false) toggleSandboxMode();
                 }}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
                   profile?.sandbox_mode === false
                     ? 'bg-white text-blue-600 shadow-sm border border-slate-200/60'
                     : 'text-slate-500 hover:text-slate-900'
@@ -3173,7 +2995,7 @@ echo "Order Created: " . $data['orderId'];
                 onClick={() => {
                   if (profile?.sandbox_mode === false) toggleSandboxMode();
                 }}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
                   profile?.sandbox_mode !== false
                     ? 'bg-white text-amber-600 shadow-sm border border-slate-200/60 font-semibold'
                     : 'text-slate-500 hover:text-slate-900'
@@ -3208,14 +3030,34 @@ echo "Order Created: " . $data['orderId'];
               <kbd
                 onClick={() => setIsCommandPaletteOpen(true)}
                 className="absolute right-3 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs cursor-pointer hover:bg-slate-50 hover:text-slate-700"
-                title="Open Command Palette (⌘K)"
+                title="Search (⌘ 1)"
               >
-                ⌘K
+                ⌘ 1
               </kbd>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4 lg:gap-5 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink-0">
+            {/* AI Assistant Button (Inspired by Reference) */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('support')}
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/90 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+              <span>AI Assistant</span>
+            </button>
+
+            {/* Help Button (Single Clean Icon) */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('support')}
+              className="hidden sm:inline-flex p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Help & Documentation"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+
             {/* Mobile Mode Switcher Pill */}
             <button
               onClick={toggleSandboxMode}
@@ -3239,7 +3081,7 @@ echo "Order Created: " . $data['orderId'];
                     setIsNotificationOpen(!isNotificationOpen);
                     setIsProfileDropdownOpen(false);
                   }}
-                  className={`relative p-2.5 rounded-xl border transition-all ${
+                  className={`relative p-2.5 rounded-xl border transition-all cursor-pointer ${
                     isNotificationOpen
                       ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-xs'
                       : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 border-slate-200/80 bg-white'
@@ -3263,7 +3105,7 @@ echo "Order Created: " . $data['orderId'];
                       onTouchMove={(e) => e.preventDefault()}
                     />
                     <div 
-                      className={`fixed left-2.5 right-2.5 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] ${notificationDropdownClass}`}
+                      className={`fixed left-2.5 right-2.5 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] text-slate-900 ${notificationDropdownClass}`}
                       data-origin="top-right"
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -3349,16 +3191,6 @@ echo "Order Created: " . $data['orderId'];
                   </>
                 )}
               </div>
-
-              {/* Docs / Help Icon */}
-              <button
-                onClick={() => setActiveTab('setup-guide')}
-                className="hidden sm:flex items-center justify-center p-2.5 text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
-                title="Documentation & Setup Guide"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-xl">help_outline</span>
-              </button>
             </div>
 
             <div className="h-8 w-[1px] bg-slate-200 mx-0.5 sm:mx-1"></div>
@@ -3476,16 +3308,16 @@ echo "Order Created: " . $data['orderId'];
             onTouchMove={(e) => { if (e.target === e.currentTarget) e.preventDefault(); }}
           >
             <div 
-              className="w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between p-5 sm:p-6 select-none overflow-hidden animate-slide-right"
+              className="w-80 max-w-[85vw] bg-[#0F172A] text-white h-full shadow-2xl flex flex-col justify-between p-5 sm:p-6 select-none overflow-hidden animate-slide-right border-r border-slate-800"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex flex-col gap-4 min-h-0 flex-1">
                 {/* Drawer Header: Logo + Close */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <MyMobPayLogo className="w-36 h-auto" textColor="#0c2340" />
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <MyMobPayLogo className="w-36 h-auto" textColor="#FFFFFF" />
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-2 text-slate-400 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
+                    className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
                     type="button"
                     aria-label="Close menu"
                   >
@@ -3499,23 +3331,23 @@ echo "Order Created: " . $data['orderId'];
                     setIsMobileMenuOpen(false);
                     setIsBusinessInfoModalOpen(true);
                   }}
-                  className="w-full flex items-center gap-3 p-3 bg-slate-50 hover:bg-blue-50/50 border border-slate-200/80 hover:border-blue-200 rounded-2xl transition-all text-left cursor-pointer group shrink-0"
+                  className="w-full flex items-center gap-3 p-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] rounded-2xl transition-all text-left cursor-pointer group shrink-0"
                   title="View Profile and Settings"
                   type="button"
                 >
                   <div 
                     className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0"
-                    style={{ backgroundColor: profile?.theme_color || '#3B82F6' }}
+                    style={{ backgroundColor: profile?.theme_color || '#0D9488' }}
                   >
                     {merchantInitials || 'M'}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                    <p className="text-xs font-bold text-white truncate group-hover:text-teal-400 transition-colors">
                       {profile?.business_name || profile?.owner_name || 'My Business'}
                     </p>
-                    <p className="text-[11px] font-mono text-slate-500 truncate">{user?.email || 'merchant@mymob.tech'}</p>
+                    <p className="text-[11px] font-mono text-slate-400 truncate">{user?.email || 'merchant@mymob.tech'}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                 </button>
 
                 {/* Navigation Links */}
@@ -3527,26 +3359,26 @@ echo "Order Created: " . $data['orderId'];
                       handleScrollToSubscription();
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold ${
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer ${
                       activeTab === 'subscription'
-                        ? 'bg-blue-600/15 text-blue-700 border-blue-500/30 shadow-xs'
+                        ? 'bg-blue-600/30 text-blue-200 border-blue-500/40 shadow-xs'
                         : profile?.subscription_status === 'active'
-                        ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/25 hover:bg-emerald-500/15'
-                        : 'bg-amber-500/10 text-amber-700 border-amber-500/25 hover:bg-amber-500/15'
+                        ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25 hover:bg-emerald-500/20'
+                        : 'bg-amber-500/10 text-amber-300 border-amber-500/25 hover:bg-amber-500/20'
                     }`}
                   >
                     <Crown className={`w-4 h-4 shrink-0 ${
                       activeTab === 'subscription'
-                        ? 'text-blue-600'
+                        ? 'text-blue-400'
                         : profile?.subscription_status === 'active'
-                        ? 'text-emerald-600'
-                        : 'text-amber-500'
+                        ? 'text-emerald-400'
+                        : 'text-amber-400'
                     }`} />
                     <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
                       {profile?.subscription_status === 'active' ? 'Premium Active' : 'Premium Subscription'}
                     </span>
                     <span className={`w-2 h-2 rounded-full shrink-0 ${
-                      profile?.subscription_status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'
+                      profile?.subscription_status === 'active' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
                     }`} />
                   </button>
 
@@ -3560,7 +3392,7 @@ echo "Order Created: " . $data['orderId'];
                       type="button"
                       className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 ${
                         activeTab === 'admin'
-                          ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-300'
+                          ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-400/40'
                           : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent'
                       }`}
                       title="Access SaaS Super Admin Console"
@@ -3571,11 +3403,11 @@ echo "Order Created: " . $data['orderId'];
                     </button>
                   )}
 
-                  <div className="h-px bg-slate-100 my-2" />
+                  <div className="h-px bg-slate-800 my-2" />
 
                   {/* Category: General */}
-                  <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                    General
+                  <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    Main
                   </p>
                   <button
                     onClick={() => {
@@ -3583,13 +3415,13 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
                       activeTab === 'overview'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
+                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
                     }`}
                   >
-                    <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-teal-400' : 'text-slate-500'}`} />
                     Overview
                   </button>
                   <button
@@ -3598,18 +3430,18 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
                       activeTab === 'payment-links'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
+                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
                     }`}
                   >
-                    <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-teal-400' : 'text-slate-500'}`} />
                     Payment Links
                   </button>
 
                   {/* Category: Operations */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
                     Operations
                   </p>
                   <button
@@ -3618,25 +3450,25 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
                       activeTab === 'verification'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
+                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-blue-600' : 'text-slate-400'}`} />
+                      <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-teal-400' : 'text-slate-500'}`} />
                       <span>Verification</span>
                     </div>
                     {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                         {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
                       </span>
                     )}
                   </button>
 
                   {/* Category: Reports & Analytics */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
                     Reports &amp; Analytics
                   </p>
                   <button
@@ -3645,13 +3477,13 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
                       activeTab === 'transactions'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
+                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
                     }`}
                   >
-                    <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-teal-400' : 'text-slate-500'}`} />
                     Transactions
                   </button>
                   <button
@@ -3660,19 +3492,19 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
                       activeTab === 'reports'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
+                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
                     }`}
                   >
-                    <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-teal-400' : 'text-slate-500'}`} />
                     Reports &amp; GST
                   </button>
 
                   {/* Category: Developer & Settings */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                    Developer &amp; Settings
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    Others
                   </p>
                   <button
                     onClick={() => {
@@ -3680,13 +3512,13 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
                       activeTab === 'developer'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
+                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
                     }`}
                   >
-                    <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-teal-400' : 'text-slate-500'}`} />
                     Developer Hub
                   </button>
                   <button
@@ -3696,56 +3528,42 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
                       activeTab === 'settings'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
+                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
                     }`}
                   >
-                    <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-teal-400' : 'text-slate-500'}`} />
                     Settings
                   </button>
-                  <button
-                    onClick={() => {
-                      setActiveTab('setup-guide');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
-                      activeTab === 'setup-guide'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                    }`}
-                  >
-                    <BookOpen className={`w-4 h-4 shrink-0 ${activeTab === 'setup-guide' ? 'text-blue-600' : 'text-slate-400'}`} />
-                    0 to 100 Setup Guide
-                  </button>
+
                   <button
                     onClick={() => {
                       setActiveTab('support');
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
                       activeTab === 'support'
-                        ? 'bg-blue-50 text-blue-600 font-bold border border-blue-100 shadow-2xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
+                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
                     }`}
                   >
-                    <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-teal-400' : 'text-slate-500'}`} />
                     Support &amp; Help Desk
                   </button>
                 </nav>
               </div>
 
               {/* Drawer Footer */}
-              <div className="pt-3.5 pb-8 sm:pb-3.5 border-t border-slate-100 flex flex-col gap-2.5">
+              <div className="pt-3.5 pb-8 sm:pb-3.5 border-t border-slate-800 flex flex-col gap-2.5">
                 <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>API Live Rails</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span className="text-slate-300">API Live Rails</span>
                   </div>
-                  <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">v2.1</span>
+                  <span className="text-[11px] font-mono text-slate-300 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">v2.1</span>
                 </div>
                 <button
                   onClick={() => {
@@ -3753,7 +3571,7 @@ echo "Order Created: " . $data['orderId'];
                     handleSignOut();
                   }}
                   type="button"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors border border-red-100/60"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-xl transition-colors border border-rose-500/20 cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" /> Sign Out
                 </button>
@@ -3801,11 +3619,9 @@ echo "Order Created: " . $data['orderId'];
 
               <div>
 
-                <h2 className="text-3xl font-black text-slate-900 capitalize">{activeTab === 'setup-guide' ? '0 to 100 Setup Guide' : activeTab === 'api' ? 'API Credentials' : activeTab === 'subscription' ? 'Subscription Console' : activeTab === 'payment-links' ? 'Payment Links' : activeTab}</h2>
+                <h2 className="text-3xl font-black text-slate-900 capitalize">{activeTab === 'api' ? 'API Credentials' : activeTab === 'subscription' ? 'Subscription Console' : activeTab === 'payment-links' ? 'Payment Links' : activeTab}</h2>
 
                 <p className="text-sm text-slate-500 font-medium mt-1">
-
-                  {activeTab === 'setup-guide' && 'Follow the 5-phase master blueprint to configure direct settlement, notification listeners, and webhooks for 100% automated payment receiving.'}
 
                   {activeTab === 'overview' && 'Real-time overview of business revenue and platform subscription details.'}
 
@@ -3940,7 +3756,7 @@ echo "Order Created: " . $data['orderId'];
 
                ═══════════════════════════════════════════════════════════ */}
 
-            {activeTab === 'setup-guide' && renderSetupGuidePanel()}
+
 
             {activeTab === 'payment-links' && (
               <PaymentLinksRedesign

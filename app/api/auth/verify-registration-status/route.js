@@ -100,97 +100,69 @@ export async function POST(req) {
         /^[6-9]\d{9}$/.test(cleanPhone) &&
         !/^(\d)\1{9}$/.test(cleanPhone)
       );
+      const hasValidUpi = Boolean(
+        merchant.upi_id && 
+        merchant.upi_id !== 'pending@upi' && 
+        merchant.upi_id.includes('@')
+      );
+      const hasValidBusiness = Boolean(
+        merchant.business_name && 
+        merchant.business_name.trim().length > 0 && 
+        merchant.business_name !== 'My Business'
+      );
 
-      logAdminAction({
-        actor: { id: merchant.id, email: cleanEmail, role: 'merchant' },
-        action: 'auth.login_success',
-        targetType: 'merchant',
-        targetId: merchant.id,
-        details: { businessName: merchant.business_name, provider: 'Google OAuth / Session' },
-        request: req
-      }).catch(() => {});
+      const isComplete = Boolean(hasValidPhone && hasValidUpi && hasValidBusiness);
 
+      if (isComplete) {
+        logAdminAction({
+          actor: { id: merchant.id, email: cleanEmail, role: 'merchant' },
+          action: 'auth.login_success',
+          targetType: 'merchant',
+          targetId: merchant.id,
+          details: { businessName: merchant.business_name, provider: 'Google OAuth / Session' },
+          request: req
+        }).catch(() => {});
+
+        return NextResponse.json({
+          allowed: true,
+          registered: true,
+          isComplete: true,
+          needsRegistration: false,
+          email: cleanEmail,
+          merchantId: merchant.id,
+          businessName: merchant.business_name,
+          phoneNumber: merchant.phone_number,
+          phoneVerified: true,
+        });
+      }
+
+      // If merchant record exists but lacks phone or UPI or real business name, require registration completion
       return NextResponse.json({
         allowed: true,
-        registered: true,
-        needsOnboarding: !hasValidPhone || merchant.upi_id === 'pending@upi',
-        needsPhoneVerification: !hasValidPhone || !merchant.phone_verified,
+        registered: false,
+        isComplete: false,
+        needsRegistration: true,
         email: cleanEmail,
         merchantId: merchant.id,
-        businessName: merchant.business_name || 'My Business',
-        phoneNumber: hasValidPhone ? merchant.phone_number : null,
-        phoneVerified: Boolean(merchant.phone_verified && hasValidPhone),
+        businessName: hasValidBusiness ? merchant.business_name : '',
+        phoneNumber: hasValidPhone ? cleanPhone : '',
+        upiId: hasValidUpi ? merchant.upi_id : '',
       });
     }
 
-    // ── 5. New OAuth Sign-in: Auto-provision pending merchant profile ────────
-    // Security: New profiles start as 'inactive' — trial requires ₹1.00 setup paywall activation
+    // ── 5. New OAuth Sign-in: Prompt to complete registration details ────────
     if (userId) {
-      const newKey = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
-      const fallbackName = cleanEmail ? (cleanEmail.split('@')[0] || 'Merchant Partner') : 'Merchant Partner';
-      const now = new Date();
-
-      const newMerchantProfile = {
-        id: userId,
-        business_name: fallbackName,
-        upi_id: 'pending@upi',
-        api_key: newKey,
-        subscription_status: 'inactive',
-        subscription_expires_at: null,
-        theme_color: '#3B82F6',
-        setup_progress: {
-          plan_type: 'inactive',
-          created_at: now.toISOString(),
-          onboarding_needed: true,
-          phone_needed: true,
-        },
-      };
-
-      const { data: insertedMerchant, error: insertErr } = await supabaseAdmin
-        .from('merchants')
-        .insert(newMerchantProfile)
-        .select()
-        .maybeSingle();
-
-      logAdminAction({
-        actor: { id: userId, email: cleanEmail, role: 'merchant' },
-        action: 'auth.oauth_signup',
-        targetType: 'merchant',
-        targetId: userId,
-        details: { businessName: fallbackName, provider: 'Google OAuth', plan: 'inactive' },
-        request: req
-      }).catch(() => {});
-
-      if (insertErr) {
-        console.error('[VERIFY-REGISTRATION-STATUS] Merchant auto-provision error:', insertErr);
-      }
-
-      // Notify platform admins of new signup in background
-      try {
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://mymob.tech'}/api/auth/notify-signup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId,
-            email: cleanEmail,
-            name: fallbackName,
-            provider: 'Google OAuth',
-          }),
-        }).catch(e => console.warn('Notify signup silent warning:', e?.message));
-      } catch (notifyErr) {
-        console.warn('Silent notify warning:', notifyErr?.message);
-      }
-
       return NextResponse.json({
         allowed: true,
-        registered: true,
+        registered: false,
+        isComplete: false,
+        needsRegistration: true,
         isNewMerchant: true,
-        needsOnboarding: true,
-        needsPhoneVerification: true,
         email: cleanEmail,
         merchantId: userId,
-        businessName: fallbackName,
-        phoneNumber: null,
+        businessName: '',
+        phoneNumber: '',
+        upiId: '',
       });
     }
 

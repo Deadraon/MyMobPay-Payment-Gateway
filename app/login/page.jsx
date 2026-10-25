@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -13,6 +13,7 @@ import Link from 'next/link';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 import { useModalTransition } from '@/components/useModalTransition';
+import { validateStrongPassword, getPasswordCriteria } from '@/lib/passwordValidation';
 
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) => {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
@@ -277,6 +278,11 @@ export default function LoginPage() {
   // Registration Fields (Signup only)
   const [businessName, setBusinessName] = useState('');
   const [upiId, setUpiId] = useState('');
+  const [isOAuthSignup, setIsOAuthSignup] = useState(false);
+  const [oauthUserId, setOauthUserId] = useState(null);
+
+  // Real-time strong password criteria calculation
+  const passwordCriteria = useMemo(() => getPasswordCriteria(password), [password]);
 
   // Status & Feedback
   const [loading, setLoading] = useState(false);
@@ -312,16 +318,11 @@ export default function LoginPage() {
     const handleAuthRedirect = async (session) => {
       if (!session?.user) return;
       if (isRedirectingRef.current) return;
+      if (modeRef.current === 'reset') return;
+      if (isRegistrationSubmittedRef.current) return;
 
-      // CRITICAL: In signup or reset mode, NEVER auto-redirect to dashboard.
-      // Signup requires completing phone & WhatsApp OTP. Reset requires setting a new password.
-      if (modeRef.current === 'signup' || modeRef.current === 'reset') {
-        return;
-      }
-
-      isRedirectingRef.current = true;
       setLoading(true);
-      setMessage('Signing in with Google Workspace...');
+      setMessage('Verifying account status with Google Workspace...');
 
       try {
         const verifyRes = await fetch('/api/auth/verify-registration-status', {
@@ -335,7 +336,9 @@ export default function LoginPage() {
 
         const verifyData = await verifyRes.json();
 
-        if (verifyData && verifyData.allowed) {
+        // 1. If merchant is fully registered with complete details (phone, business name, upi)
+        if (verifyData && verifyData.allowed && verifyData.registered && verifyData.isComplete) {
+          isRedirectingRef.current = true;
           setMessage('Authenticated successfully! Launching merchant dashboard...');
           let target = '/dashboard';
           if (typeof window !== 'undefined') {
@@ -346,6 +349,22 @@ export default function LoginPage() {
           } else {
             router.replace(target);
           }
+          return;
+        }
+
+        // 2. If user authenticated via Google Workspace but needs to complete registration details
+        if (verifyData && (verifyData.needsRegistration || !verifyData.isComplete)) {
+          setMode('signup');
+          setIsOAuthSignup(true);
+          setOauthUserId(session.user.id);
+          setEmail(session.user.email || '');
+          setIsEmailVerified(true);
+          if (verifyData.businessName) setBusinessName(verifyData.businessName);
+          if (verifyData.phoneNumber) setPhone(verifyData.phoneNumber);
+          if (verifyData.upiId) setUpiId(verifyData.upiId);
+          setMessage('Google account verified! Please set a strong password and complete your merchant details below to register.');
+          setLoading(false);
+          isRedirectingRef.current = false;
           return;
         }
 
@@ -921,14 +940,15 @@ export default function LoginPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
-    }
-
     if (action === 'signup') {
+      const pwdCheck = validateStrongPassword(password);
+      if (!pwdCheck.valid) {
+        setError(pwdCheck.error);
+        return;
+      }
+
       const cleanPhone = phone.trim().replace(/\D/g, '');
-      if (!cleanPhone || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
         setError('Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).');
         return;
       }
@@ -952,6 +972,7 @@ export default function LoginPage() {
             email: email.trim().toLowerCase(),
             phone: cleanPhone,
             upiId: upiId.trim().toLowerCase(),
+            userId: oauthUserId || undefined,
           }),
         });
         const checkData = await checkRes.json();
@@ -964,8 +985,8 @@ export default function LoginPage() {
         console.warn('Registration pre-check error:', checkErr);
       }
 
-      // ── Enforce Email OTP Verification ──
-      if (!isEmailVerified) {
+      // ── Enforce Email OTP Verification (if not already verified via Google) ──
+      if (!isEmailVerified && !isOAuthSignup) {
         if (emailOtpSent && emailOtp.length === 6) {
           const { error: verifyErr } = await supabase.auth.verifyOtp({
             email: email.trim().toLowerCase(),
@@ -981,28 +1002,6 @@ export default function LoginPage() {
         } else {
           isRegistrationSubmittedRef.current = false;
           setError('Please verify your merchant email address with the 6-digit OTP code before creating your account.');
-          return;
-        }
-      }
-
-      // ── Enforce WhatsApp Phone OTP Verification ──
-      if (!isPhoneVerified) {
-        if (phoneOtpSent && phoneOtp.length === 6) {
-          const res = await fetch('/api/auth/whatsapp-otp/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: cleanPhone, otp: phoneOtp.trim(), purpose: 'signup' }),
-          });
-          const data = await res.json();
-          if (!res.ok || !data.verified) {
-            isRegistrationSubmittedRef.current = false;
-            setError(data.error || 'WhatsApp OTP verification failed. Please check the code.');
-            return;
-          }
-          setIsPhoneVerified(true);
-        } else {
-          isRegistrationSubmittedRef.current = false;
-          setError('Please verify your mobile number via WhatsApp OTP before creating your account.');
           return;
         }
       }
@@ -1025,6 +1024,7 @@ export default function LoginPage() {
             businessName: businessName.trim(),
             upiId: upiId.trim(),
             phone: phone.trim(),
+            userId: oauthUserId || null,
           }),
         });
 
@@ -1039,21 +1039,24 @@ export default function LoginPage() {
           throw new Error(data.error || `Registration failed (HTTP ${res.status})`);
         }
 
-        // Automatically sign in client session
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: password,
-        });
+        // If not already in an OAuth session, sign in with password
+        if (!isOAuthSignup) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password: password,
+          });
 
-        if (signInError) {
-          setMessage('Account created! Please sign in with your credentials.');
-          setMode('signin');
-        } else {
-          setMessage('Account created! Launching your merchant console...');
-          setTimeout(() => {
-            window.location.href = '/dashboard';
-          }, 600);
+          if (signInError) {
+            setMessage('Account created! Please sign in with your credentials.');
+            setMode('signin');
+            return;
+          }
         }
+
+        setMessage('Account created successfully! Launching your merchant console...');
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 600);
 
       } else if (action === 'signin') {
         let loginEmail = email.trim();
@@ -1779,9 +1782,22 @@ export default function LoginPage() {
                   </form>
                 )}
 
-                {/* ── Mode: Sign Up Form (Unified with Email OTP Verification inside) ── */}
+                {/* ── Mode: Sign Up Form (Unified with Email OTP Verification & Mandatory Details) ── */}
                 {mode === 'signup' && (
                   <form onSubmit={(e) => { e.preventDefault(); handleAuth('signup'); }} className="mt-6 flex flex-col space-y-4">
+                    {/* Google OAuth Completion Alert Banner */}
+                    {isOAuthSignup && (
+                      <div className="p-3.5 rounded-xl bg-blue-50/90 border border-blue-200/80 flex items-start gap-2.5 text-xs text-blue-900 shadow-2xs">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <span className="font-bold block text-blue-900">Google Workspace Connected</span>
+                          <span className="text-[11px] text-blue-700 leading-tight block mt-0.5">
+                            Authenticated as <strong>{email}</strong>. Please create a strong password and complete your mandatory business details to register your merchant account.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Merchant Email Address with inline OTP verification */}
                     <div className="flex flex-col space-y-1.5">
                       <div className="flex items-center justify-between">
@@ -1792,7 +1808,7 @@ export default function LoginPage() {
                         {isEmailVerified && (
                           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                            Verified
+                            {isOAuthSignup ? 'Google Verified' : 'Verified'}
                           </span>
                         )}
                       </div>
@@ -1806,7 +1822,7 @@ export default function LoginPage() {
                         <input
                           type="email"
                           required
-                          disabled={isEmailVerified || loading}
+                          disabled={isEmailVerified || loading || isOAuthSignup}
                           value={email}
                           onChange={(e) => {
                             setEmail(e.target.value);
@@ -1816,7 +1832,12 @@ export default function LoginPage() {
                           placeholder="merchant@company.com"
                           className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium disabled:opacity-85"
                         />
-                        {isEmailVerified ? (
+                        {isOAuthSignup ? (
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0 ml-2">
+                            <Check className="w-3 h-3 text-emerald-600" />
+                            Google Verified
+                          </span>
+                        ) : isEmailVerified ? (
                           <button
                             type="button"
                             onClick={() => {
@@ -1896,21 +1917,24 @@ export default function LoginPage() {
                       )}
                     </div>
 
-                    {/* Create Password */}
+                    {/* Create Strong Password */}
                     <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                        <span>Create Password (min 6 chars)</span>
-                        <span className="text-red-500">*</span>
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
+                          <span>Create Password (8+ chars)</span>
+                          <span className="text-red-500">*</span>
+                        </label>
+                        <span className="text-[10px] text-[#64748d] font-medium">1 Upper, 1 Number, 1 Symbol</span>
+                      </div>
                       <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
                         <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                         <input
                           type={showPassword ? 'text' : 'password'}
                           required
-                          minLength={6}
+                          minLength={8}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          placeholder="••••••••••••"
+                          placeholder="e.g. MyMobPay@2026"
                           className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
                         />
                         <button
@@ -1925,6 +1949,38 @@ export default function LoginPage() {
                           </span>
                         </button>
                       </div>
+
+                      {/* Real-time Password Strength Criteria Checklist */}
+                      {password.length > 0 && (
+                        <div className="p-2.5 rounded-lg bg-[#f6f9fc] border border-[#e3e8ee] space-y-1 text-[11px] mt-1">
+                          <div className="grid grid-cols-2 gap-1.5">
+                            <span className={`flex items-center gap-1.5 ${passwordCriteria.hasMinLength ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
+                              <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasMinLength ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
+                                {passwordCriteria.hasMinLength ? '✓' : '·'}
+                              </span>
+                              8+ Characters
+                            </span>
+                            <span className={`flex items-center gap-1.5 ${passwordCriteria.hasUppercase ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
+                              <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasUppercase ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
+                                {passwordCriteria.hasUppercase ? '✓' : '·'}
+                              </span>
+                              1 Uppercase (A-Z)
+                            </span>
+                            <span className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
+                              <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
+                                {passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? '✓' : '·'}
+                              </span>
+                              Number &amp; Symbol
+                            </span>
+                            <span className={`flex items-center gap-1.5 ${passwordCriteria.noSequenceOrRepeat ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
+                              <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.noSequenceOrRepeat ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
+                                {passwordCriteria.noSequenceOrRepeat ? '✓' : '·'}
+                              </span>
+                              No 123 / 111
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Business / Brand Name */}
@@ -1946,7 +2002,7 @@ export default function LoginPage() {
                       </div>
                     </div>
 
-                    {/* Receiving UPI ID */}
+                    {/* Settlement UPI ID */}
                     <div className="flex flex-col space-y-1.5">
                       <label className="text-xs font-semibold text-[#0d253d] flex items-center justify-between">
                         <span className="flex items-center gap-1">
@@ -1989,26 +2045,19 @@ export default function LoginPage() {
                       </p>
                     </div>
 
-                    {/* Mobile Phone Number with WhatsApp OTP verification */}
+                    {/* Mobile Phone Number (Mandatory - Verification disabled for now) */}
                     <div className="flex flex-col space-y-1.5">
                       <div className="flex items-center justify-between">
                         <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
                           <span>Mobile Number (WhatsApp)</span>
                           <span className="text-red-500">*</span>
                         </label>
-                        {isPhoneVerified && (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                            Verified
-                          </span>
-                        )}
+                        <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 font-semibold">
+                          Mandatory
+                        </span>
                       </div>
 
-                      <div className={`flex items-center rounded-lg px-3 transition-all border ${
-                        isPhoneVerified 
-                          ? 'bg-emerald-50/40 border-emerald-300' 
-                          : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs'
-                      }`}>
+                      <div className="flex items-center rounded-lg px-3 transition-all border bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs">
                         <div className="flex items-center gap-1.5 pr-2.5 py-2.5 text-[#0d253d] text-xs font-semibold border-r border-[#e3e8ee] shrink-0 select-none">
                           <IndianFlag className="w-4 h-3" />
                           <span>+91</span>
@@ -2017,127 +2066,44 @@ export default function LoginPage() {
                           type="tel"
                           maxLength={10}
                           required
-                          disabled={isPhoneVerified || loading}
+                          disabled={loading}
                           value={phone}
-                          onChange={(e) => {
-                            setPhone(e.target.value.replace(/\D/g, ''));
-                            if (isPhoneVerified) setIsPhoneVerified(false);
-                            if (phoneOtpSent) setPhoneOtpSent(false);
-                          }}
+                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                           placeholder="10-digit mobile number"
-                          className="w-full bg-transparent py-2.5 pl-3 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans tracking-normal disabled:opacity-85"
+                          className="w-full bg-transparent py-2.5 pl-3 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans tracking-normal"
                         />
-                        {isPhoneVerified ? (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsPhoneVerified(false);
-                              setPhoneOtpSent(false);
-                              setPhoneOtp('');
-                            }}
-                            className="text-[11px] text-[#533afd] font-medium hover:underline shrink-0 pl-2 cursor-pointer"
-                          >
-                            Change
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={handleSendPhoneOtp}
-                            disabled={loading || phone.trim().replace(/\D/g, '').length !== 10}
-                            className="shrink-0 ml-2 px-2.5 py-1.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] disabled:opacity-40 text-white rounded-full text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
-                          >
-                            {loading && !phoneOtpSent ? (
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : phoneOtpSent ? (
-                              'Resend OTP'
-                            ) : (
-                              'Verify'
-                            )}
-                          </button>
-                        )}
                       </div>
-
-                      {/* Inline WhatsApp OTP Verification Box */}
-                      {phoneOtpSent && !isPhoneVerified && (
-                        <div className="mt-2 p-3.5 rounded-xl bg-[#f6f9fc]/70 border border-[#e3e8ee] space-y-3">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-[11px] font-semibold text-[#0d253d] flex items-center gap-1.5">
-                              <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
-                              <span>OTP sent to <strong className="text-[#0d253d]">+91 {phone}</strong></span>
-                            </span>
-                            {phoneTimer > 0 ? (
-                              <span className="text-[10px] text-[#64748d]">
-                                Resend in <strong>{phoneTimer}s</strong>
-                              </span>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={handleSendPhoneOtp}
-                                disabled={loading}
-                                className="text-[10px] font-bold text-[#533afd] hover:underline cursor-pointer"
-                              >
-                                Resend OTP
-                              </button>
-                            )}
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <label className="text-[11px] font-medium text-[#64748d] block text-center">
-                              Enter 6-Digit WhatsApp Verification Code
-                            </label>
-                            <OtpBoxInput value={phoneOtp} onChange={setPhoneOtp} disabled={loading} />
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={handleVerifyPhoneOtp}
-                            disabled={loading || phoneOtp.length !== 6}
-                            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
-                          >
-                            {loading ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : (
-                              <>
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                <span>Confirm WhatsApp OTP</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      )}
+                      <p className="text-[11px] text-[#64748d]">
+                        10-digit Indian mobile number for critical transaction alerts and account security.
+                      </p>
                     </div>
 
                     {/* Submit Button */}
                     <button
                       type="submit"
-                      disabled={loading || !isEmailVerified || !isPhoneVerified}
+                      disabled={loading || !isEmailVerified || !passwordCriteria.allMet || !businessName.trim() || !upiId.trim() || phone.replace(/\D/g, '').length !== 10}
                       className={`w-full h-11 rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all duration-200 mt-2 cursor-pointer disabled:cursor-not-allowed ${
-                        isEmailVerified && isPhoneVerified
+                        isEmailVerified && passwordCriteria.allMet && businessName.trim() && upiId.trim() && phone.replace(/\D/g, '').length === 10
                           ? 'bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white shadow-sm'
                           : 'bg-slate-100 text-[#64748d] border border-[#e3e8ee] opacity-80'
                       }`}
                     >
                       {loading ? (
                         <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      ) : isEmailVerified && isPhoneVerified ? (
-                        <>
-                          <span>Create Merchant Account</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </>
-                      ) : !isEmailVerified && !isPhoneVerified ? (
-                        <>
-                          <ShieldCheck className="w-4 h-4 text-slate-400" />
-                          <span>Verify Email &amp; WhatsApp to Continue</span>
-                        </>
                       ) : !isEmailVerified ? (
                         <>
                           <Mail className="w-4 h-4 text-slate-400" />
                           <span>Verify Email to Continue</span>
                         </>
+                      ) : isOAuthSignup ? (
+                        <>
+                          <span>Complete Registration &amp; Launch Console</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </>
                       ) : (
                         <>
-                          <MessageCircle className="w-4 h-4 text-slate-400" />
-                          <span>Verify WhatsApp to Continue</span>
+                          <span>Create Merchant Account</span>
+                          <ArrowRight className="w-4 h-4" />
                         </>
                       )}
                     </button>
@@ -2215,7 +2181,7 @@ export default function LoginPage() {
                   <div className="relative my-6 flex items-center justify-center">
                     <div className="w-full h-px bg-[#e3e8ee]"></div>
                     <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold uppercase tracking-wider">
-                      {mode === 'signup' ? 'ALREADY REGISTERED?' : 'OR CONTINUE WITH'}
+                      OR
                     </span>
                   </div>
                 )}
@@ -2234,7 +2200,7 @@ export default function LoginPage() {
                       <path d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.26C.46 8.18 0 9.99 0 12s.46 3.82 1.26 5.42l4.02-3.13z" fill="#FBBC05"></path>
                       <path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.25 2.64 1.26 6.58l4.02 3.13c.95-2.83 3.6-4.96 6.72-4.96z" fill="#EA4335"></path>
                     </svg>
-                    <span>{mode === 'signup' ? 'Sign In with Registered Google Account' : 'Continue with Google Workspace'}</span>
+                    <span>Continue with Google</span>
                   </button>
                 )}
                 {/* QR Code Express Login Bar (in Signin mode, desktop only) */}
