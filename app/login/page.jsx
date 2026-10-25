@@ -1248,24 +1248,39 @@ export default function LoginPage() {
           throw new Error(data.error || `Registration failed (HTTP ${res.status})`);
         }
 
-        // If not already in an OAuth session, sign in with password
-        if (!isOAuthSignup) {
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email: email.trim(),
-            password: password,
-          });
+        // Ensure fresh, authenticated session with newly set credentials
+        // (Supabase admin.updateUserById revokes prior sessions for security,
+        // so signInWithPassword guarantees a fresh, valid session token before routing to /dashboard)
+        isRedirectingRef.current = true;
+        isRegistrationSubmittedRef.current = true;
 
-          if (signInError) {
-            setMessage('Account created! Please sign in with your credentials.');
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: password,
+        });
+
+        if (signInError) {
+          console.warn('[REGISTER] Re-auth after registration notice:', signInError);
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) {
+            isRedirectingRef.current = false;
+            isRegistrationSubmittedRef.current = false;
+            setMessage('Account registered! Please sign in with your credentials.');
             setMode('signin');
             return;
           }
         }
 
         setMessage('Account created successfully! Launching your merchant console...');
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 600);
+        let target = '/dashboard';
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const red = params.get('redirect');
+          if (red && !red.startsWith('/login')) target = red;
+          window.location.href = target;
+        } else {
+          router.replace(target);
+        }
 
       } else if (action === 'signin') {
         let loginEmail = email.trim();

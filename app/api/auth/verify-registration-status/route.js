@@ -55,15 +55,22 @@ export async function POST(req) {
 
     // ── 2. Check if a merchant profile already exists for this userId ─────────
     let merchant = null;
+    let authUser = null;
+
     if (userId) {
       const { data: mById, error: errById } = await supabaseAdmin
         .from('merchants')
-        .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status, business_website')
+        .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status, setup_progress')
         .eq('id', userId)
         .maybeSingle();
 
       if (!errById && mById) {
         merchant = mById;
+      }
+
+      const { data: uData } = await supabaseAdmin.auth.admin.getUserById(userId);
+      if (uData?.user) {
+        authUser = uData.user;
       }
     }
 
@@ -79,9 +86,10 @@ export async function POST(req) {
       ) || [];
 
       for (const u of matchedUsers) {
+        if (!authUser) authUser = u;
         const { data: mByMatchedUser } = await supabaseAdmin
           .from('merchants')
-          .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status, business_website')
+          .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status, setup_progress')
           .eq('id', u.id)
           .maybeSingle();
 
@@ -92,26 +100,86 @@ export async function POST(req) {
       }
     }
 
-    // ── 4. Existing Merchant ────────────────────────────────────────────────
-    if (merchant) {
-      const cleanPhone = (merchant.phone_number || '').trim().replace(/\D/g, '');
-      const hasValidPhone = Boolean(
-        cleanPhone.length === 10 &&
-        /^[6-9]\d{9}$/.test(cleanPhone) &&
-        !/^(\d)\1{9}$/.test(cleanPhone)
+    // ── 4. Verify Merchant Completion & Auto-heal from User Metadata ─────────
+    let rawPhone = (merchant?.phone_number || '').trim().replace(/\D/g, '');
+    let cleanPhone = rawPhone.slice(-10);
+    let hasValidPhone = Boolean(
+      cleanPhone.length === 10 &&
+      /^[6-9]\d{9}$/.test(cleanPhone) &&
+      !/^(\d)\1{9}$/.test(cleanPhone)
+    );
+    let hasValidUpi = Boolean(
+      merchant?.upi_id && 
+      merchant.upi_id !== 'pending@upi' && 
+      merchant.upi_id.includes('@')
+    );
+    let hasValidBusiness = Boolean(
+      merchant?.business_name && 
+      merchant.business_name.trim().length > 0 && 
+      merchant.business_name !== 'My Business'
+    );
+
+    let isComplete = Boolean(hasValidPhone && hasValidUpi && hasValidBusiness);
+
+    // If merchant record is incomplete but auth user_metadata has the completed onboarding info, auto-heal
+    if (!isComplete && authUser?.user_metadata) {
+      const metaBusiness = (authUser.user_metadata.business_name || '').toString().trim();
+      const metaUpi = (authUser.user_metadata.upi_id || '').toString().trim().toLowerCase();
+      const metaRawPhone = (authUser.user_metadata.phone || '').toString().trim().replace(/\D/g, '');
+      const metaPhone = metaRawPhone.slice(-10);
+      const metaWebsite = authUser.user_metadata.business_website || authUser.user_metadata.website_url || '';
+
+      const metaPhoneValid = Boolean(
+        metaPhone.length === 10 &&
+        /^[6-9]\d{9}$/.test(metaPhone) &&
+        !/^(\d)\1{9}$/.test(metaPhone)
       );
-      const hasValidUpi = Boolean(
-        merchant.upi_id && 
-        merchant.upi_id !== 'pending@upi' && 
-        merchant.upi_id.includes('@')
+      const metaUpiValid = Boolean(
+        metaUpi && metaUpi !== 'pending@upi' && metaUpi.includes('@')
       );
-      const hasValidBusiness = Boolean(
-        merchant.business_name && 
-        merchant.business_name.trim().length > 0 && 
-        merchant.business_name !== 'My Business'
+      const metaBusinessValid = Boolean(
+        metaBusiness.length > 0 && metaBusiness !== 'My Business'
       );
 
-      const isComplete = Boolean(hasValidPhone && hasValidUpi && hasValidBusiness);
+      if (metaPhoneValid && metaUpiValid && metaBusinessValid) {
+        const targetMerchantId = merchant?.id || userId || authUser.id;
+        const { data: healedMerchant, error: healError } = await supabaseAdmin
+          .from('merchants')
+          .upsert({
+            id: targetMerchantId,
+            business_name: metaBusiness,
+            upi_id: metaUpi,
+            phone_number: metaPhone,
+            phone_verified: true,
+            subscription_status: merchant?.subscription_status || 'inactive',
+            sandbox_mode: true,
+            theme_color: '#3B82F6',
+            setup_progress: {
+              ...(merchant?.setup_progress || {}),
+              website_url: metaWebsite,
+              business_website: metaWebsite,
+              onboarding_completed_at: new Date().toISOString(),
+            },
+          }, { onConflict: 'id' })
+          .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status, setup_progress')
+          .maybeSingle();
+
+        if (!healError && healedMerchant) {
+          merchant = healedMerchant;
+          cleanPhone = metaPhone;
+          hasValidPhone = true;
+          hasValidUpi = true;
+          hasValidBusiness = true;
+          isComplete = true;
+        }
+      }
+    }
+
+    if (merchant) {
+      const websiteUrl = merchant?.setup_progress?.website_url || 
+                         merchant?.setup_progress?.business_website || 
+                         authUser?.user_metadata?.business_website || 
+                         authUser?.user_metadata?.website_url || '';
 
       if (isComplete) {
         logAdminAction({
@@ -131,8 +199,10 @@ export async function POST(req) {
           email: cleanEmail,
           merchantId: merchant.id,
           businessName: merchant.business_name,
-          phoneNumber: merchant.phone_number,
+          phoneNumber: cleanPhone,
+          upiId: merchant.upi_id,
           phoneVerified: true,
+          websiteUrl,
         });
       }
 
@@ -147,7 +217,7 @@ export async function POST(req) {
         businessName: hasValidBusiness ? merchant.business_name : '',
         phoneNumber: hasValidPhone ? cleanPhone : '',
         upiId: hasValidUpi ? merchant.upi_id : '',
-        websiteUrl: merchant.business_website || '',
+        websiteUrl,
       });
     }
 

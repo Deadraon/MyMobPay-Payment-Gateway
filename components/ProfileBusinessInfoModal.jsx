@@ -134,14 +134,12 @@ export default function ProfileBusinessInfoModal({
     setSaveSuccess(false);
 
     try {
+      const existingProgress = profile?.setup_progress || {};
       const updatePayload = {
         business_name: businessName.trim(),
         owner_name: ownerName.trim(),
-        phone_number: phoneNumber.trim(),
-        phone: phoneNumber.trim(),
+        phone_number: cleanPhone,
         business_category: businessCategory,
-        support_email: supportEmail.trim(),
-        business_website: businessWebsite.trim(),
         gstin: gstin.trim(),
         business_address: businessAddress.trim(),
         upi_id: upiId.trim(),
@@ -149,6 +147,12 @@ export default function ProfileBusinessInfoModal({
         bank_ifsc: bankIfsc.trim().toUpperCase(),
         bank_account_name: bankAccountName.trim(),
         bank_name: bankName.trim(),
+        setup_progress: {
+          ...(typeof existingProgress === 'object' && existingProgress !== null ? existingProgress : {}),
+          website_url: businessWebsite.trim(),
+          business_website: businessWebsite.trim(),
+          support_email: supportEmail.trim(),
+        },
       };
 
       const { data, error } = await supabase

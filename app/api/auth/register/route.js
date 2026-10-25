@@ -181,6 +181,14 @@ export async function POST(req) {
     }
 
     // ── 7. Insert / Upsert merchant profile in public.merchants ──────
+    const existingProgress = existingMerchant?.setup_progress || {};
+    const updatedProgress = {
+      ...(typeof existingProgress === 'object' && existingProgress !== null ? existingProgress : {}),
+      website_url: finalWebsiteUrl || '',
+      business_website: finalWebsiteUrl || '',
+      onboarding_completed_at: new Date().toISOString(),
+    };
+
     const { error: merchantError } = await supabaseAdmin
       .from('merchants')
       .upsert({
@@ -189,14 +197,17 @@ export async function POST(req) {
         upi_id: finalUpiId,
         phone_number: cleanPhone,
         phone_verified: true,
-        business_website: finalWebsiteUrl || null,
         subscription_status: 'inactive',
         sandbox_mode: true,
         theme_color: '#3B82F6',
+        setup_progress: updatedProgress,
       }, { onConflict: 'id' });
 
     if (merchantError) {
-      console.error('[REGISTER API] Merchant profile upsert warning:', merchantError);
+      console.error('[REGISTER API] Merchant profile upsert error:', merchantError);
+      return NextResponse.json({
+        error: `Could not complete registration profile setup: ${merchantError.message}`,
+      }, { status: 500 });
     }
 
     // ── 8. Dispatch Welcome & Merchant Credentials Email ────────────
