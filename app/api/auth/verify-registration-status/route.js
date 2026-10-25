@@ -176,10 +176,11 @@ export async function POST(req) {
     });
   } catch (err) {
     console.error('[VERIFY-REGISTRATION-STATUS] Unexpected error:', err);
-    // On unexpected server error, allow authenticated OAuth user into dashboard rather than permanently locking them out
     return NextResponse.json({
       allowed: true,
-      registered: true,
+      registered: false,
+      isComplete: false,
+      needsRegistration: true,
       fallback: true,
       warning: 'Proceeding with safe session fallback.',
     });

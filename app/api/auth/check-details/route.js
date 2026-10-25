@@ -40,17 +40,23 @@ export async function POST(req) {
             // Check if user has an active or completed merchant profile
             const { data: merchantProf } = await supabaseAdmin
               .from('merchants')
-              .select('id, business_name, upi_id')
+              .select('id, business_name, upi_id, phone_number')
               .eq('id', userFound.id)
               .maybeSingle();
 
-            if (
+            const profPhone = (merchantProf?.phone_number || '').trim().replace(/\D/g, '');
+            const hasCompleteProfile = Boolean(
               merchantProf &&
               merchantProf.business_name &&
+              merchantProf.business_name.trim().length > 0 &&
               merchantProf.business_name !== 'My Business' &&
               merchantProf.upi_id &&
-              merchantProf.upi_id !== 'pending@upi'
-            ) {
+              merchantProf.upi_id !== 'pending@upi' &&
+              merchantProf.upi_id.includes('@') &&
+              profPhone.length === 10
+            );
+
+            if (hasCompleteProfile) {
               return NextResponse.json({
                 available: false,
                 field: 'email',

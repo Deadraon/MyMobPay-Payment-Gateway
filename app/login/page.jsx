@@ -334,6 +334,9 @@ export default function LoginPage() {
   modeRef.current = mode;
   const isRegistrationSubmittedRef = useRef(false);
   const isRedirectingRef = useRef(false);
+  const isOAuthSignupRef = useRef(isOAuthSignup);
+  isOAuthSignupRef.current = isOAuthSignup;
+  const isEmailOtpVerifyingRef = useRef(false);
 
   // Handle URL query parameters & password recovery hash on initial mount
   useEffect(() => {
@@ -352,11 +355,13 @@ export default function LoginPage() {
 
   // Supabase Auth State Change Listener (for Google OAuth redirects & existing sessions)
   useEffect(() => {
-    const handleAuthRedirect = async (session) => {
+    const handleAuthRedirect = async (session, isExplicitOAuthRedirect = false) => {
       if (!session?.user) return;
       if (isRedirectingRef.current) return;
       if (modeRef.current === 'reset') return;
       if (isRegistrationSubmittedRef.current) return;
+
+      const hasUrlGoogleFlag = typeof window !== 'undefined' && window.location.search.includes('googleAuth=true');
 
       setLoading(true);
       setMessage('Verifying account status with Google Workspace...');
@@ -393,6 +398,33 @@ export default function LoginPage() {
 
         // 2. If user authenticated via Google Workspace but needs to complete registration details
         if (verifyData && (verifyData.needsRegistration || !verifyData.isComplete)) {
+          // If the user arrived directly at /login without an active Google redirect or is doing normal Email OTP signup:
+          // Never trap them into an incomplete OAuth state!
+          if (!hasUrlGoogleFlag && !isExplicitOAuthRedirect) {
+            // Case A: User was verifying their Email OTP on the standard signup form
+            if (modeRef.current === 'signup' && !isOAuthSignupRef.current) {
+              setIsEmailVerified(true);
+              setLoading(false);
+              setMessage('');
+              setError('');
+              isRedirectingRef.current = false;
+              return;
+            }
+
+            // Case B: Stale incomplete session in browser storage from an earlier abandoned visit.
+            // Cleanly sign out so user is NOT trapped, and can start fresh with Google verification or email OTP.
+            try {
+              await supabase.auth.signOut();
+            } catch (e) {}
+            setLoading(false);
+            setMessage('');
+            setError('');
+            setIsOAuthSignup(false);
+            isRedirectingRef.current = false;
+            return;
+          }
+
+          // Active Google OAuth signup flow (just redirected back from Google): Launch step-by-step wizard
           setMode('signup');
           setIsOAuthSignup(true);
           setOauthStep(1);
@@ -432,13 +464,15 @@ export default function LoginPage() {
         return;
       }
       if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) {
-        handleAuthRedirect(session);
+        const isExplicit = typeof window !== 'undefined' && window.location.search.includes('googleAuth=true');
+        handleAuthRedirect(session, isExplicit);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user && modeRef.current !== 'reset') {
-        handleAuthRedirect(session);
+        const isExplicit = typeof window !== 'undefined' && window.location.search.includes('googleAuth=true');
+        handleAuthRedirect(session, isExplicit);
       }
     });
 
@@ -714,6 +748,7 @@ export default function LoginPage() {
     setError('');
     setMessage('');
     setLoading(true);
+    isEmailOtpVerifyingRef.current = true;
 
     try {
       const { data, error: verifyErr } = await supabase.auth.verifyOtp({
@@ -749,6 +784,7 @@ export default function LoginPage() {
       console.error('Email OTP verify error:', err);
       setError(formatCustomerError(err));
     } finally {
+      isEmailOtpVerifyingRef.current = false;
       setLoading(false);
     }
   };
@@ -1055,9 +1091,26 @@ export default function LoginPage() {
   };
 
   const handleSignOutToSwitchAccount = async () => {
+    const discardingUserId = oauthUserId;
+    const discardingEmail = email;
+    setLoading(true);
     try {
       await supabase.auth.signOut();
     } catch (e) {}
+
+    // Clean up partial uncompleted auth user so email is completely released
+    if (discardingUserId || discardingEmail) {
+      try {
+        await fetch('/api/auth/cleanup-incomplete-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: discardingUserId, email: discardingEmail }),
+        });
+      } catch (cleanErr) {
+        console.warn('Cleanup incomplete signup notice:', cleanErr);
+      }
+    }
+
     setIsOAuthSignup(false);
     setOauthUserId(null);
     setEmail('');
@@ -1068,7 +1121,11 @@ export default function LoginPage() {
     setPhone('');
     setUpiId('');
     setOauthStep(1);
-    setMode('signin');
+    setIsEmailVerified(false);
+    setMode('signup');
+    setError('');
+    setMessage('');
+    setLoading(false);
     if (typeof window !== 'undefined') {
       window.history.replaceState({}, '', '/login');
     }
@@ -2364,6 +2421,18 @@ export default function LoginPage() {
                                 <ArrowRight className="w-4 h-4" />
                               </>
                             )}
+                          </button>
+                        </div>
+
+                        {/* Option to cancel and start over */}
+                        <div className="mt-4 text-center">
+                          <button
+                            type="button"
+                            onClick={handleSignOutToSwitchAccount}
+                            disabled={loading}
+                            className="text-[11px] text-[#64748d] hover:text-[#533afd] transition-colors cursor-pointer"
+                          >
+                            Want to sign up with Email OTP or a different account? <span className="underline font-semibold">Start Over</span>
                           </button>
                         </div>
                       </form>

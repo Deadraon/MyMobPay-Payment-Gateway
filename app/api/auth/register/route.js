@@ -100,17 +100,23 @@ export async function POST(req) {
     // ── 5. Check if user is already a completed merchant ────────────
     const { data: existingMerchant } = await supabaseAdmin
       .from('merchants')
-      .select('id, business_name, upi_id')
+      .select('id, business_name, upi_id, phone_number')
       .eq('id', existingUser.id)
       .maybeSingle();
 
-    if (
+    const existingPhone = (existingMerchant?.phone_number || '').trim().replace(/\D/g, '');
+    const isCompletedMerchant = Boolean(
       existingMerchant &&
       existingMerchant.business_name &&
+      existingMerchant.business_name.trim().length > 0 &&
       existingMerchant.business_name !== 'My Business' &&
       existingMerchant.upi_id &&
-      existingMerchant.upi_id !== 'pending@upi'
-    ) {
+      existingMerchant.upi_id !== 'pending@upi' &&
+      existingMerchant.upi_id.includes('@') &&
+      existingPhone.length === 10
+    );
+
+    if (isCompletedMerchant) {
       return NextResponse.json({
         error: 'An account with this email is already registered and active. Please click "Log In" above.',
         code: 'email_exists',
