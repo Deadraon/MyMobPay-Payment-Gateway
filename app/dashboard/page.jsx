@@ -36,6 +36,7 @@ import DeveloperConsoleRedesign from '@/components/DeveloperConsoleRedesign';
 import SupportHelpRedesign from '@/components/SupportHelpRedesign';
 import AdminConsole from '@/components/AdminConsole';
 import PlatformSubscriptionsHub from '@/components/PlatformSubscriptionsHub';
+import PremiumTierBadge from '@/components/PremiumTierBadge';
 import { isSubscriptionOrder } from '@/lib/subscriptionOrders';
 
 import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
@@ -2745,32 +2746,14 @@ echo "Order Created: " . $data['orderId'];
 
           {/* Navigation Links with Original Categories */}
           <nav className="flex-1 px-4 py-1 space-y-1 overflow-y-auto">
-            {/* Pinned: Subscription Console */}
-            <button
-              onClick={handleScrollToSubscription}
-              type="button"
-              className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs transition-all border font-bold cursor-pointer ${
-                activeTab === 'subscription'
-                  ? 'bg-blue-600/30 text-blue-200 border-blue-500/40 shadow-xs'
-                  : profile?.subscription_status === 'active'
-                  ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25 hover:bg-emerald-500/20'
-                  : 'bg-amber-500/10 text-amber-300 border-amber-500/25 hover:bg-amber-500/20'
-              }`}
-            >
-              <Crown className={`w-4 h-4 shrink-0 ${
-                activeTab === 'subscription'
-                  ? 'text-blue-400'
-                  : profile?.subscription_status === 'active'
-                  ? 'text-emerald-400'
-                  : 'text-amber-400'
-              }`} />
-              <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
-                {profile?.subscription_status === 'active' ? 'Premium Active' : 'Premium Subscription'}
-              </span>
-              <span className={`w-2 h-2 rounded-full shrink-0 ${
-                profile?.subscription_status === 'active' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
-              }`} />
-            </button>
+            {/* Pinned: Premium Subscription Status Badge */}
+            <div className="mb-1">
+              <PremiumTierBadge
+                profile={profile}
+                activeTab={activeTab}
+                onClick={handleScrollToSubscription}
+              />
+            </div>
 
             {/* Pinned: Admin Console (Super Admin) */}
             {isAdminUser && (
@@ -3365,35 +3348,17 @@ echo "Order Created: " . $data['orderId'];
 
                 {/* Navigation Links */}
                 <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto overscroll-contain touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
-                  {/* Pinned: Subscription */}
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      handleScrollToSubscription();
-                    }}
-                    type="button"
-                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer ${
-                      activeTab === 'subscription'
-                        ? 'bg-blue-600/30 text-blue-200 border-blue-500/40 shadow-xs'
-                        : profile?.subscription_status === 'active'
-                        ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25 hover:bg-emerald-500/20'
-                        : 'bg-amber-500/10 text-amber-300 border-amber-500/25 hover:bg-amber-500/20'
-                    }`}
-                  >
-                    <Crown className={`w-4 h-4 shrink-0 ${
-                      activeTab === 'subscription'
-                        ? 'text-blue-400'
-                        : profile?.subscription_status === 'active'
-                        ? 'text-emerald-400'
-                        : 'text-amber-400'
-                    }`} />
-                    <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
-                      {profile?.subscription_status === 'active' ? 'Premium Active' : 'Premium Subscription'}
-                    </span>
-                    <span className={`w-2 h-2 rounded-full shrink-0 ${
-                      profile?.subscription_status === 'active' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
-                    }`} />
-                  </button>
+                  {/* Pinned: Premium Subscription Status Badge */}
+                  <div className="mb-1">
+                    <PremiumTierBadge
+                      profile={profile}
+                      activeTab={activeTab}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        handleScrollToSubscription();
+                      }}
+                    />
+                  </div>
 
                   {/* Pinned: Super Admin Console (if Super Admin) */}
                   {isAdminUser && (
