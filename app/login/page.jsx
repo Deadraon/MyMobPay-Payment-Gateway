@@ -2324,7 +2324,7 @@ export default function LoginPage() {
                             type="submit"
                             disabled={
                               loading ||
-                              (oauthStep === 1 && !passwordCriteria.isValid) ||
+                              (oauthStep === 1 && !(passwordCriteria?.isValid || passwordCriteria?.allMet)) ||
                               (oauthStep === 2 && businessName.trim().length < 2) ||
                               (oauthStep === 3 && !noWebsite && websiteUrl.trim().length > 0 && !/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/.test(websiteUrl.trim())) ||
                               (oauthStep === 4 && (!upiId.trim().includes('@') || upiId.trim().length < 5)) ||
@@ -2635,9 +2635,9 @@ export default function LoginPage() {
                       {/* Submit Button */}
                       <button
                         type="submit"
-                        disabled={loading || !isEmailVerified || !passwordCriteria.isValid || !businessName.trim() || !upiId.trim() || phone.replace(/\D/g, '').length !== 10}
+                        disabled={loading || !isEmailVerified || !(passwordCriteria?.isValid || passwordCriteria?.allMet) || !businessName.trim() || !upiId.trim() || phone.replace(/\D/g, '').length !== 10}
                         className={`w-full h-11 rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all duration-200 mt-2 cursor-pointer disabled:cursor-not-allowed ${
-                          isEmailVerified && passwordCriteria.isValid && businessName.trim() && upiId.trim() && phone.replace(/\D/g, '').length === 10
+                          isEmailVerified && (passwordCriteria?.isValid || passwordCriteria?.allMet) && businessName.trim() && upiId.trim() && phone.replace(/\D/g, '').length === 10
                             ? 'bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white shadow-sm'
                             : 'bg-slate-100 text-[#64748d] border border-[#e3e8ee] opacity-80'
                         }`}
