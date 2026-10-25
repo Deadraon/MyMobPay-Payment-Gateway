@@ -240,11 +240,11 @@ function PayPageContent() {
   }, []);
 
   /* Derived values */
-  const isMandate     = orderNote === 'Trial_Setup_3Day' || orderNote === 'Autopay_Setup_3DayTrial';
+  const isMandate     = false;
   const displayAmt    = orderAmount ?? (amount ? parseFloat(amount) : null);
   const activeId      = (orderId || cleanParamOrderId || tempId).replace(/^[-#]+/, '');
   const isPlatformKey = (paramApiKey || '').replace(/^(test_|live_)/, '') === CONFIG.platformApiKey;
-  const isSetupOrSubscription = isMandate || (orderNote && (orderNote.includes('Trial_Setup') || orderNote.includes('Autopay') || orderNote.includes('Subscription')));
+  const isSetupOrSubscription = Boolean(orderNote && orderNote.includes('Subscription'));
 
   const upiId         = getValidUpiId(merchant);
   const rawBizName    = (isPlatformKey || isSetupOrSubscription)
@@ -889,7 +889,7 @@ function PayPageContent() {
           callback_url: callback,
           project,
           lid,
-          is_mandate: note === 'Trial_Setup_3Day' || note === 'Autopay_Setup_3DayTrial'
+          is_mandate: false
         })
       });
       const data = await res.json();

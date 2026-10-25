@@ -1047,7 +1047,7 @@ export default function DashboardPage() {
         }
       }
 
-      // Safety auto-activation: if user has a verified trial or subscription order in the orders table, ensure status is active!
+      // Safety auto-activation: if user has a verified subscription order in the orders table, ensure status is active!
       if (data.subscription_status !== 'active') {
         const { data: verifiedOrders } = await supabase
           .from('orders')
@@ -1059,9 +1059,8 @@ export default function DashboardPage() {
 
         if (verifiedOrders && verifiedOrders.length > 0) {
           const ord = verifiedOrders[0];
-          const isTrial = ord.note === 'Trial_Setup_3Day' || ord.note === 'Autopay_Setup_3DayTrial';
           const orderDate = new Date(ord.verified_at || ord.created_at);
-          const durationDays = isTrial ? 3 : 30;
+          const durationDays = 30;
           const expiryDate = new Date(orderDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
           if (expiryDate > new Date()) {
@@ -1070,10 +1069,8 @@ export default function DashboardPage() {
             const currProg = data.setup_progress || {};
             const updatedProg = {
               ...currProg,
-              trial_activated_at: isTrial ? orderDate.toISOString() : (currProg.trial_activated_at || null),
-              trial_expires_at: isTrial ? expiryDate.toISOString() : (currProg.trial_expires_at || null),
-              subscription_activated_at: !isTrial ? orderDate.toISOString() : (currProg.subscription_activated_at || null),
-              plan_type: isTrial ? 'trial_3day' : 'subscription',
+              subscription_activated_at: orderDate.toISOString(),
+              plan_type: 'subscription',
               last_payment_at: orderDate.toISOString(),
               last_order_id: ord.id
             };
@@ -1089,10 +1086,7 @@ export default function DashboardPage() {
             const currProg = data.setup_progress || {};
             const updatedProg = {
               ...currProg,
-              trial_activated_at: isTrial ? orderDate.toISOString() : (currProg.trial_activated_at || null),
-              trial_expires_at: isTrial ? expiryDate.toISOString() : (currProg.trial_expires_at || null),
-              trial_expired: isTrial ? true : (currProg.trial_expired || false),
-              plan_type: isTrial ? 'trial_3day' : (currProg.plan_type || 'subscription'),
+              plan_type: currProg.plan_type || 'subscription',
               last_order_id: ord.id
             };
             data.setup_progress = updatedProg;
@@ -1385,7 +1379,7 @@ export default function DashboardPage() {
 
       if (!isSubActive && !isAdmin) {
         setActiveTab('subscription');
-        alert('🔒 Live Production Mode is locked.\n\nPlease start your 3-Day Free Trial or activate a subscription plan to accept live customer payments and unlock your Live API Key!');
+        alert('🔒 Live Production Mode is locked.\n\nPlease activate a subscription plan to accept live customer payments and unlock your Live API Key!');
         return;
       }
     }
@@ -2651,9 +2645,9 @@ echo "Order Created: " . $data['orderId'];
   const isInactiveNow = profile?.subscription_status !== 'active' || isSubExpired;
 
   // Paywall blocker removed: Merchants have immediate access to dashboard with Test API key!
-  // Live mode and Live API keys are locked behind subscription/trial.
+  // Live mode and Live API keys are locked behind subscription.
 
-  // Helper: Get comprehensive subscription and trial details
+  // Helper: Get comprehensive subscription details
   const getSubscriptionDetails = () => {
     if (!profile) return null;
     const isSubActive = profile.subscription_status === 'active';
@@ -2663,23 +2657,16 @@ echo "Order Created: " . $data['orderId'];
     const active = isSubActive && isValidExpiry && !isExpired;
 
     const setupProg = profile.setup_progress || {};
-    const isTrial = setupProg.plan_type === 'trial_3day' || 
-                    setupProg.plan_type === 'autopay_trial' || 
-                    Boolean(setupProg.trial_activated_at) ||
-                    Boolean(historyOrders.find(o => o.status === 'verified' && (o.note === 'Trial_Setup_3Day' || o.note === 'Autopay_Setup_3DayTrial')));
 
     let activatedAt = null;
-    if (setupProg.trial_activated_at) {
-      activatedAt = new Date(setupProg.trial_activated_at);
-    } else if (setupProg.subscription_activated_at) {
+    if (setupProg.subscription_activated_at) {
       activatedAt = new Date(setupProg.subscription_activated_at);
     } else {
-      const verifiedSub = historyOrders.find(o => o.status === 'verified' && (o.note?.includes('Trial') || o.note?.startsWith('Subscription_')));
+      const verifiedSub = historyOrders.find(o => o.status === 'verified' && o.note?.startsWith('Subscription_'));
       if (verifiedSub) {
         activatedAt = new Date(verifiedSub.verified_at || verifiedSub.created_at);
       } else if (expiresAt) {
-        const daysToSubtract = isTrial ? 3 : 30;
-        activatedAt = new Date(expiresAt.getTime() - daysToSubtract * 24 * 60 * 60 * 1000);
+        activatedAt = new Date(expiresAt.getTime() - 30 * 24 * 60 * 60 * 1000);
       } else {
         activatedAt = profile.created_at ? new Date(profile.created_at) : null;
       }
@@ -2692,8 +2679,7 @@ echo "Order Created: " . $data['orderId'];
 
     return {
       active,
-      isTrial,
-      planName: isTrial ? '3-Day Free Trial' : 'Premium Subscription Tier',
+      planName: 'Premium Subscription Tier',
       activatedAt,
       expiresAt,
       daysLeft,
@@ -2977,7 +2963,7 @@ echo "Order Created: " . $data['orderId'];
                     : 'text-slate-500 hover:text-slate-900'
                 }`}
                 type="button"
-                title={profile?.subscription_status !== 'active' ? 'Live Mode locked - Activate trial or subscribe' : 'Live Mode'}
+                title={profile?.subscription_status !== 'active' ? 'Live Mode locked - Subscribe to activate' : 'Live Mode'}
               >
                 {profile?.subscription_status === 'active' ? (
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>

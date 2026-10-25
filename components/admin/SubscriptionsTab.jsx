@@ -93,14 +93,14 @@ export default function SubscriptionsTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">3-Day Trials</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Sandbox / Trials</p>
               <h3 className="text-3xl font-black text-blue-900 mt-2">{trialCount}</h3>
             </div>
             <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
               <Clock className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-blue-700 font-bold mt-2">Evaluating platform</p>
+          <p className="text-xs text-blue-700 font-bold mt-2">Sandbox or evaluating</p>
         </div>
 
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
@@ -224,7 +224,7 @@ export default function SubscriptionsTab({
                   onChange={(e) => setCodeDays(Number(e.target.value))}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none"
                 >
-                  <option value={7}>7 Days Trial</option>
+                  <option value={7}>7 Days Extension</option>
                   <option value={30}>30 Days Standard</option>
                   <option value={90}>90 Days Quarterly</option>
                   <option value={365}>365 Days Annual</option>

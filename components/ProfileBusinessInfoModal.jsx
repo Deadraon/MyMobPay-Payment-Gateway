@@ -179,9 +179,8 @@ export default function ProfileBusinessInfoModal({
   };
 
   // Status Badge
-  const isTrial = profile?.subscription_status === 'trial' || profile?.setup_progress?.plan_type === 'trial_3day';
   const isActive = profile?.subscription_status === 'active';
-  const planBadgeText = isTrial ? '3-Day Trial' : isActive ? 'Active Pro' : 'Sandbox Active';
+  const planBadgeText = isActive ? 'Active Pro' : 'Sandbox Active';
 
   return (
     // Overlay with transitions-dev modal transition (06-modal.md)

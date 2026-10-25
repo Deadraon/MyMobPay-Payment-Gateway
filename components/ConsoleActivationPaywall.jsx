@@ -24,26 +24,7 @@ export default function ConsoleActivationPaywall({
   handleSignOut,
   onActivationComplete,
 }) {
-  // Check if merchant has already consumed their 1-time 3-day free trial
-  const hasUsedTrial = Boolean(
-    profile?.setup_progress?.trial_activated_at ||
-    profile?.setup_progress?.plan_type === 'trial_3day' ||
-    profile?.setup_progress?.plan_type === 'autopay_trial' ||
-    profile?.setup_progress?.trial_expired ||
-    historyOrders?.some(o => 
-      (o.status === 'verified' || o.status === 'completed' || o.status === 'success') &&
-      (o.note === 'Trial_Setup_3Day' || o.note === 'Autopay_Setup_3DayTrial' || (Number(o.amount) === 1 && !o.note?.includes('Subscription')))
-    )
-  );
-
-  const [selectedPlan, setSelectedPlan] = useState(() => (hasUsedTrial ? '1m' : 'trial')); // 'trial' | '1m' | '3m' | 'custom'
-
-  // If user has already used trial, switch default plan to 1m
-  useEffect(() => {
-    if (hasUsedTrial && selectedPlan === 'trial') {
-      setSelectedPlan('1m');
-    }
-  }, [hasUsedTrial]);
+  const [selectedPlan, setSelectedPlan] = useState('1m'); // '1m' | '3m' | 'custom'
 
   const [copiedVpa, setCopiedVpa] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
@@ -78,7 +59,7 @@ export default function ConsoleActivationPaywall({
   // Also check if historyOrders has verified subscription order
   useEffect(() => {
     if (historyOrders && historyOrders.length > 0) {
-      const SUBSCRIPTION_NOTES = ['Trial_Setup_3Day', 'Subscription_1Month', 'Subscription_3Month', 'Custom_Enterprise'];
+      const SUBSCRIPTION_NOTES = ['Subscription_1Month', 'Subscription_2Month', 'Subscription_3Month', 'Custom_Enterprise'];
       const verifiedSubOrder = historyOrders.find(o => 
         (o.status === 'verified' || o.status === 'completed' || o.status === 'success') &&
         SUBSCRIPTION_NOTES.some(n => o.note?.includes(n))
@@ -135,24 +116,11 @@ export default function ConsoleActivationPaywall({
 
   // Plans config
   const plans = {
-    trial: {
-      id: 'trial',
-      title: language === 'hi' ? '3-दिन निःशुल्क ट्रायल' : '3-Day Free Trial',
-      badge: hasUsedTrial ? (language === 'hi' ? 'समाप्त' : 'Expired') : (language === 'hi' ? 'अनुशंसित' : 'Recommended'),
-      badgeColor: hasUsedTrial ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-emerald-100 text-emerald-800',
-      priceText: '₹1.00',
-      priceSub: hasUsedTrial ? (language === 'hi' ? 'ट्रायल समाप्त' : 'Trial Ended') : (language === 'hi' ? '₹1.00 सेटअप शुल्क' : '₹1.00 Setup Fee'),
-      desc: hasUsedTrial ? (language === 'hi' ? '1-बार का ट्रायल समाप्त हो चुका है' : '1-time trial already used') : (language === 'hi' ? 'कोई ऑटो-डेबिट नहीं, रिफंडेबल चेक' : 'No auto-debits, refundable check'),
-      amount: 1,
-      note: 'Trial_Setup_3Day',
-      icon: Zap,
-      iconColor: hasUsedTrial ? 'bg-slate-100 text-slate-400' : 'bg-emerald-50 text-emerald-600',
-    },
     '1m': {
       id: '1m',
       title: language === 'hi' ? '1 महीना स्टार्टर' : '1 Month Starter',
-      badge: hasUsedTrial ? (language === 'hi' ? 'अनुशंसित' : 'Recommended') : '₹499',
-      badgeColor: hasUsedTrial ? 'bg-emerald-100 text-emerald-800 font-extrabold' : 'bg-sky-100 text-sky-800',
+      badge: language === 'hi' ? 'अनुशंसित' : 'Recommended',
+      badgeColor: 'bg-emerald-100 text-emerald-800 font-extrabold',
       priceText: '₹499.00',
       priceSub: '₹499 / mo',
       desc: language === 'hi' ? 'पूर्ण डैशबोर्ड और लाइव वेबहुक एक्सेस' : 'Full dashboard & live webhook access',
@@ -189,7 +157,7 @@ export default function ConsoleActivationPaywall({
     }
   };
 
-  const currentPlan = plans[selectedPlan] || (hasUsedTrial ? plans['1m'] : plans.trial);
+  const currentPlan = plans[selectedPlan] || plans['1m'];
   const payUrl = currentPlan.amount > 0 
     ? `/pay?api_key=${CONFIG.platformApiKey}&amount=${currentPlan.amount}&ref=${profile?.id || ''}&note=${currentPlan.note}&callback=${encodeURIComponent(callbackUrl)}`
     : '#';
@@ -247,8 +215,6 @@ export default function ConsoleActivationPaywall({
 
         if (recentOrder && recentOrder.status === 'pending') {
           setStatusMsg(`Payment for Order ${recentOrder.id} is pending bank confirmation. Please wait for bank sync or enter UTR on checkout.`);
-        } else if (hasUsedTrial) {
-          setStatusMsg(`Your 3-day trial has ended. Please scan the QR code to complete payment of ₹${currentPlan.amount} for ${currentPlan.title} to unlock.`);
         } else {
           setStatusMsg('No recent payment detected. Please scan the QR code to complete activation.');
         }
@@ -337,7 +303,7 @@ export default function ConsoleActivationPaywall({
   };
 
   // Only show past subscription if there's a verified/completed subscription order
-  const SUBSCRIPTION_NOTES = ['Trial_Setup_3Day', 'Subscription_1Month', 'Subscription_3Month', 'Custom_Enterprise'];
+  const SUBSCRIPTION_NOTES = ['Subscription_1Month', 'Subscription_2Month', 'Subscription_3Month', 'Custom_Enterprise'];
   const latestPastOrder = historyOrders && historyOrders.length > 0
     ? historyOrders.find(o =>
         (o.status === 'verified' || o.status === 'completed' || o.status === 'success') &&
@@ -355,7 +321,7 @@ export default function ConsoleActivationPaywall({
     const amountDisplay = activeOrder?.amount ? `₹${Number(activeOrder.amount).toFixed(2)}` : currentPlan.priceText;
     const expiryDateStr = profile?.subscription_expires_at 
       ? new Date(profile.subscription_expires_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-      : (selectedPlan === '1m' ? '30 Days Full Access' : selectedPlan === '3m' ? '90 Days Full Access' : '3 Days Free Trial');
+      : (selectedPlan === '3m' ? '90 Days Full Access' : '30 Days Full Access');
 
     return (
       <div className="bg-slate-100 font-sans text-slate-800 antialiased min-h-screen flex flex-col justify-center items-center py-6 px-3 sm:px-6">
@@ -553,8 +519,8 @@ export default function ConsoleActivationPaywall({
               <div className="flex items-center space-x-2 text-slate-300 text-xs mt-0.5">
                 <span>{merchantId}</span>
                 <span>•</span>
-                <span className={hasUsedTrial ? "text-amber-300 font-medium" : "text-sky-300 font-medium"}>
-                  {hasUsedTrial ? 'Trial Expired • Upgrade Required' : 'Merchant Activation & Console Unlock'}
+                <span className="text-sky-300 font-medium">
+                  Merchant Activation & Console Unlock
                 </span>
               </div>
             </div>
@@ -596,21 +562,6 @@ export default function ConsoleActivationPaywall({
 
         </div>
 
-        {/* Trial Expired Alert Banner */}
-        {hasUsedTrial && (
-          <div className="bg-amber-50 border-b border-amber-200 px-5 py-3 flex items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-amber-900 font-medium">
-              <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>
-                <strong>Your 3-Day Free Trial has ended.</strong> Please select a standard subscription plan (1 Month Starter or 3 Months Growth) below to unlock full console access.
-              </span>
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 shrink-0 border border-amber-300">
-              Renewal Required
-            </span>
-          </div>
-        )}
-
         {/* Main Body: Split Rail Architecture */}
         <div className="grid grid-cols-1 md:grid-cols-12 min-h-[560px]">
           
@@ -621,66 +572,7 @@ export default function ConsoleActivationPaywall({
                 {language === 'hi' ? 'सक्रियण योजना चुनें' : 'Select Activation Plan'}
               </p>
 
-              {/* Option 1: 3-Day Free Trial */}
-              <div 
-                onClick={() => {
-                  if (hasUsedTrial) {
-                    setStatusMsg('Your 3-day free trial has expired. Please select 1 Month Starter or 3 Months Growth.');
-                    return;
-                  }
-                  setSelectedPlan('trial');
-                }}
-                className={`w-full text-left p-3.5 rounded-xl transition-all flex items-center justify-between ${
-                  hasUsedTrial
-                    ? 'bg-slate-100/80 border border-slate-200 opacity-60 cursor-not-allowed select-none'
-                    : selectedPlan === 'trial' 
-                      ? 'bg-white border-2 border-emerald-500 shadow-sm cursor-pointer' 
-                      : 'bg-white hover:bg-slate-50 border border-slate-200 cursor-pointer'
-                }`}
-                id="plan-trial"
-                title={hasUsedTrial ? "Free trial already used" : "3-Day Free Trial"}
-              >
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-                    hasUsedTrial ? 'bg-slate-200 text-slate-500' : 'bg-emerald-50 text-emerald-600'
-                  }`}>
-                    {hasUsedTrial ? (
-                      <Lock className="w-5 h-5 text-slate-500" />
-                    ) : (
-                      <Zap className="w-6 h-6 fill-emerald-600 text-emerald-600" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-1.5">
-                      <span className={`text-sm font-bold ${hasUsedTrial ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
-                        {plans.trial.title}
-                      </span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
-                        hasUsedTrial ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                      }`}>
-                        {plans.trial.badge}
-                      </span>
-                    </div>
-                    <p className={`text-xs font-semibold mt-0.5 ${hasUsedTrial ? 'text-slate-400' : 'text-emerald-700'}`}>
-                      {hasUsedTrial ? 'Trial completed' : plans.trial.priceSub}
-                    </p>
-                    <p className="text-[11px] text-slate-500">
-                      {plans.trial.desc}
-                    </p>
-                  </div>
-                </div>
-                {hasUsedTrial ? (
-                  <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded">
-                    Claimed
-                  </span>
-                ) : selectedPlan === 'trial' ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 font-bold" />
-                ) : (
-                  <ChevronRight className="w-5 h-5 text-slate-300 font-bold" />
-                )}
-              </div>
-
-              {/* Option 2: 1 Month Starter */}
+              {/* Option 1: 1 Month Starter */}
               <div 
                 onClick={() => setSelectedPlan('1m')}
                 className={`w-full text-left p-3.5 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
@@ -984,15 +876,7 @@ export default function ConsoleActivationPaywall({
                 <span className="text-slate-500 text-[11px]">
                   {latestPastOrder ? (
                     <>
-                      {latestPastOrder.amount === 1 || latestPastOrder.note?.includes('Trial') ? (
-                        <>
-                          Past Trial: <strong className="text-slate-700 font-semibold">₹1 verified</strong> (Ref: {latestPastOrder.id?.replace(/^[-#]+/, '')}) • <span className="text-amber-600 font-semibold">Trial Expired</span>
-                        </>
-                      ) : (
-                        <>
-                          Past Subscription: <strong className="text-slate-700 font-semibold">₹{latestPastOrder.amount} {latestPastOrder.status}</strong> (Ref: {latestPastOrder.id?.replace(/^[-#]+/, '')})
-                        </>
-                      )}
+                      Past Subscription: <strong className="text-slate-700 font-semibold">₹{latestPastOrder.amount} {latestPastOrder.status}</strong> (Ref: {latestPastOrder.id?.replace(/^[-#]+/, '')})
                     </>
                   ) : (
                     <>

@@ -12,7 +12,7 @@ import { logAdminAction } from '@/lib/adminAudit';
  * Rules:
  * 1. Platform Admins (chauhankunal695@gmail.com, deadraon@gmail.com, deadraon1@gmail.com) are ALWAYS allowed immediately.
  * 2. Existing merchants (even with partial profiles) are granted access.
- * 3. Fresh Google OAuth sign-ins are auto-provisioned with a 3-day trial profile and welcomed into onboarding.
+ * 3. Fresh Google OAuth sign-ins are auto-provisioned into sandbox mode and welcomed into onboarding.
  * 4. Never unilaterally delete merchant records or force signouts on authentic users.
  */
 export async function POST(req) {

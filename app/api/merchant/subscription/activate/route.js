@@ -57,20 +57,13 @@ export async function POST(req) {
 
     const isTrial = planId === 'trial' || planId === 'trial_3day';
     if (isTrial) {
-      const alreadyUsed = Boolean(
-        merchant.setup_progress?.trial_activated_at ||
-        merchant.setup_progress?.plan_type === 'trial_3day' ||
-        merchant.setup_progress?.trial_expired
-      );
-      if (alreadyUsed) {
-        return NextResponse.json({
-          error: 'Your 3-day free trial has already been used on this account. Please select a standard subscription plan.',
-          code: 'TRIAL_ALREADY_USED',
-        }, { status: 400 });
-      }
+      return NextResponse.json({
+        error: 'Free trial is no longer offered. Please select a standard subscription plan.',
+        code: 'TRIAL_DEPRECATED',
+      }, { status: 400 });
     }
 
-    // SECURITY: ALL plan activations (including 3-day trial ₹1 setup) MUST be backed by a verified order or authorized admin session
+    // SECURITY: ALL plan activations MUST be backed by a verified order or authorized admin session
     const { verifyAdminAuth } = await import('@/lib/adminSettings');
     const isAdmin = await verifyAdminAuth(req);
 
@@ -108,16 +101,14 @@ export async function POST(req) {
 
       if (!verifiedOrder) {
         return NextResponse.json({
-          error: isTrial 
-            ? 'Activating the 3-day trial requires payment of the ₹1.00 setup fee.' 
-            : 'Paid subscription activation requires a verified transaction or active administrator authorization.',
+          error: 'Paid subscription activation requires a verified transaction or active administrator authorization.',
           code: 'UNVERIFIED_PAYMENT'
         }, { status: 403 });
       }
     }
 
     // 2. Calculate new expiry date
-    const effectiveDays = isTrial ? 3 : durationDays;
+    const effectiveDays = durationDays || 30;
     const currentExpiry = merchant.subscription_expires_at ? new Date(merchant.subscription_expires_at) : new Date();
     const baseDate = currentExpiry > new Date() ? currentExpiry : new Date();
     const newExpiry = new Date(baseDate.getTime() + effectiveDays * 24 * 60 * 60 * 1000);
@@ -125,10 +116,9 @@ export async function POST(req) {
     const nowIso = new Date().toISOString();
     const updatedProgress = {
       ...(merchant.setup_progress || {}),
-      plan_type: isTrial ? 'trial_3day' : planId,
+      plan_type: planId,
       last_payment_at: nowIso,
       subscription_activated_at: nowIso,
-      ...(isTrial ? { trial_activated_at: nowIso } : {}),
     };
 
     // 3. Update merchant subscription in database (unlock live mode on trial/subscription)

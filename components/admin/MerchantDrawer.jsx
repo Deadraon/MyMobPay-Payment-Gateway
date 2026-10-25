@@ -259,7 +259,7 @@ export default function MerchantDrawer({
               {[
                 { id: 'active', label: 'Active', desc: 'Accepting checkouts', color: 'border-emerald-300 text-emerald-800 bg-emerald-50' },
                 { id: 'frozen', label: 'Frozen / Suspend', desc: 'Halt all links', color: 'border-rose-300 text-rose-800 bg-rose-50' },
-                { id: 'trial', label: 'Trial Mode', desc: '3-day evaluation', color: 'border-blue-300 text-blue-800 bg-blue-50' },
+                { id: 'inactive', label: 'Inactive', desc: 'Subscription required', color: 'border-amber-300 text-amber-800 bg-amber-50' },
               ].map(st => (
                 <button
                   key={st.id}

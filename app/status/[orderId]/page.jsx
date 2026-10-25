@@ -161,8 +161,8 @@ export default function StatusPage() {
       target = null;
     }
 
-    // 2. Automatic fallback for Trial and Subscription payments (Platform self-service dashboard)
-    if (!target && (order?.note === 'Trial_Setup_3Day' || order?.note === 'Autopay_Setup_3DayTrial' || order?.note?.startsWith('Subscription_'))) {
+    // 2. Automatic fallback for Subscription payments (Platform self-service dashboard)
+    if (!target && order?.note?.startsWith('Subscription_')) {
       target = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : '/dashboard';
     }
 
@@ -284,10 +284,10 @@ export default function StatusPage() {
   if (callback && (callback.includes('/webhook') || callback.includes('/api/'))) {
     callback = null;
   }
-  if (!callback && (order?.note === 'Trial_Setup_3Day' || order?.note === 'Autopay_Setup_3DayTrial' || order?.note?.startsWith('Subscription_'))) {
+  if (!callback && order?.note?.startsWith('Subscription_')) {
     callback = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : '/dashboard';
   }
-  const isTrialOrSub = order?.note === 'Trial_Setup_3Day' || order?.note === 'Autopay_Setup_3DayTrial' || order?.note?.startsWith('Subscription_');
+  const isTrialOrSub = order?.note?.startsWith('Subscription_');
 
   /* ═══════════════════════════════════════════════════════════
      VERIFIED (CHECK FOR 24-HOUR EXPIRATION)

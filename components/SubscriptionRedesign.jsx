@@ -39,22 +39,6 @@ export default function SubscriptionRedesign({
   onProfileUpdate,
   setActiveTab
 }) {
-  // ── 3-Day Trial Eligibility Check ─────────────────────────────
-  const hasUsedTrial = useMemo(() => {
-    return Boolean(
-      profile?.setup_progress?.trial_activated_at ||
-      profile?.setup_progress?.plan_type === 'trial_3day' ||
-      profile?.setup_progress?.plan_type === 'autopay_trial' ||
-      profile?.setup_progress?.trial_expired ||
-      profile?.subscription_plan === 'trial' ||
-      profile?.subscription_plan === '3day_trial' ||
-      historyOrders?.some(o => 
-        (o.status === 'verified' || o.status === 'completed' || o.status === 'success') &&
-        (o.note === 'Trial_Setup_3Day' || o.note === 'Autopay_Setup_3DayTrial' || (Number(o.amount) === 1 && !o.note?.includes('Subscription')))
-      )
-    );
-  }, [profile, historyOrders]);
-
   // ── Modal & Flow States ───────────────────────────────────────
   const [selectedPlanId, setSelectedPlanId] = useState('1month');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -101,7 +85,6 @@ export default function SubscriptionRedesign({
     const daysLeft = isValidExpiry ? Math.max(0, Math.ceil((expiresAt - new Date()) / 86400000)) : 0;
     const isCancelled = profile?.subscription_status === 'cancelled';
     const isActive = (profile?.subscription_status === 'active' || isStillActiveDate) && !isCancelled;
-    const isTrial = profile?.subscription_plan === 'trial' || profile?.subscription_plan === '3day_trial';
 
     // Format Expiry Date
     let expiryDateStr = 'Not Activated';
@@ -137,9 +120,7 @@ export default function SubscriptionRedesign({
     const totalDays = profile?.subscription_plan === '3months' ? 90 : profile?.subscription_plan === '2months' ? 60 : 30;
     const percentRemaining = totalDays > 0 ? Math.min(100, Math.max(0, Math.round((daysLeft / totalDays) * 100))) : 0;
 
-    const planTitle = isTrial
-      ? '3-Day Free Trial'
-      : profile?.subscription_plan === '3months'
+    const planTitle = profile?.subscription_plan === '3months'
       ? '3 Months Plan (Quarterly)'
       : profile?.subscription_plan === '2months'
       ? '2 Months Plan (Bi-Monthly)'
@@ -149,8 +130,6 @@ export default function SubscriptionRedesign({
       ? 1497
       : profile?.subscription_plan === '2months'
       ? 998
-      : isTrial
-      ? 0
       : 499;
 
     const paymentMethodUsed = historyOrders?.[0]?.payment_mode || historyOrders?.[0]?.payment_method || 'Direct UPI Settlement (0% MDR)';
@@ -161,7 +140,6 @@ export default function SubscriptionRedesign({
 
     return {
       isActive,
-      isTrial,
       isCancelled,
       daysLeft,
       totalDays,
@@ -290,10 +268,6 @@ export default function SubscriptionRedesign({
   // ── Directly open Real Checkout Page with Subscription Details ──
   const handleProceedToCheckout = async (planToUse = selectedPlan) => {
     if (!planToUse) return;
-    if (planToUse.isTrial) {
-      handleActivateTrial();
-      return;
-    }
     if (planToUse.isCustom) {
       setShowContactSalesModal(true);
       return;
@@ -342,54 +316,6 @@ export default function SubscriptionRedesign({
     }
   };
 
-  // ── Handle 3-Day Free Trial Direct Activation ─────────────────
-  const handleActivateTrial = async () => {
-    setIsActivating(true);
-    try {
-      const res = await fetch('/api/merchant/subscription/activate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          merchantId: profile?.id,
-          planId: 'trial',
-          planName: '3-Day Free Trial',
-          amount: 0,
-          durationDays: 3,
-        }),
-      });
-
-      const resData = await res.json();
-      if (!res.ok) {
-        throw new Error(resData.error || 'Failed to activate trial');
-      }
-
-      const newExpiry = resData.subscription_expires_at ? new Date(resData.subscription_expires_at) : new Date(Date.now() + 3 * 86400000);
-
-      if (onProfileUpdate) {
-        onProfileUpdate({
-          ...profile,
-          subscription_status: 'active',
-          subscription_plan: 'trial',
-          sandbox_mode: false,
-          subscription_expires_at: newExpiry.toISOString(),
-        });
-      }
-
-      if (onRefreshProfile) {
-        await onRefreshProfile();
-      }
-
-      triggerToast('🎉 3-Day Free Trial activated! Live Mode and Live API Key are now unlocked.');
-    } catch (err) {
-      console.error('Trial activation error:', err);
-      triggerToast(`Could not activate trial: ${err.message || 'Please try again.'}`);
-    } finally {
-      setIsActivating(false);
-    }
-  };
-
-
-
   // ── 100% Real Invoices Data (Zero Fake Info) ─────────────────
   const invoiceList = useMemo(() => {
     if (historyOrders && historyOrders.length > 0) {
@@ -430,40 +356,6 @@ export default function SubscriptionRedesign({
 
   return (
     <div className="flex flex-col max-w-7xl mx-auto w-full pb-8 gap-6 animate-fadeIn font-sans">
-      {/* ═══════════════════════════════════════════════════════════
-         0. 3-DAY FREE TRIAL HERO PROMO BANNER FOR NEW USERS
-         ═══════════════════════════════════════════════════════════ */}
-      {/* ── 0. SLEEK OFFER HEADLINE STRIP ─────────────────────── */}
-      {!hasUsedTrial && !subDetails.isActive && (
-        <div className="rounded-xl px-4 py-2.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/90 border border-blue-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-          <div className="flex items-center gap-2.5 text-xs text-slate-700 min-w-0">
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-600 text-white font-bold text-[10px] uppercase tracking-wide shrink-0">
-              <Zap className="w-3 h-3 fill-current" /> Special Offer
-            </span>
-            <span className="font-normal text-slate-800 text-xs sm:text-[13px]">
-              <strong className="font-bold text-[#000d21]">Try Live Mode free for 3 days:</strong> Unlock production API keys &amp; collect real UPI payments with 0% MDR upfront.
-            </span>
-          </div>
-          <button
-            type="button"
-            disabled={isActivating}
-            onClick={handleActivateTrial}
-            className="self-start sm:self-auto px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 shadow-2xs cursor-pointer disabled:opacity-60"
-          >
-            {isActivating ? (
-              <>
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Activating...</span>
-              </>
-            ) : (
-              <>
-                <span>Claim 3-Day Free Trial</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </>
-            )}
-          </button>
-        </div>
-      )}
 
       {/* ═══════════════════════════════════════════════════════════
          1. HIGH-IMPACT HERO ACTIVE SUBSCRIPTION CARD
@@ -488,16 +380,14 @@ export default function SubscriptionRedesign({
                   : 'bg-slate-400'
               }`} />
               {subDetails.isActive
-                ? (subDetails.isTrial ? 'Trial License' : 'Active License')
+                ? 'Active License'
                 : subDetails.isCancelled
                 ? 'Cancelled (Active until expiry)'
                 : 'License Inactive'}
             </div>
 
             <span className="text-lg font-bold text-[#000d21] tracking-tight">
-              {subDetails.isTrial
-                ? 'Trial Tier'
-                : profile?.subscription_plan === '3months'
+              {profile?.subscription_plan === '3months'
                 ? 'Quarterly Tier'
                 : profile?.subscription_plan === '2months'
                 ? 'Bi-Monthly Tier'
@@ -728,20 +618,14 @@ export default function SubscriptionRedesign({
                 key={plan.id}
                 onClick={() => setSelectedPlanId(plan.id)}
                 className={`cursor-pointer p-5 rounded-2xl bg-white border-2 transition-all flex flex-col justify-between gap-4 relative overflow-hidden group ${
-                  plan.isTrial
-                    ? isSelected
-                      ? 'border-emerald-600 shadow-md shadow-emerald-500/10'
-                      : 'border-emerald-200 hover:border-emerald-400 shadow-xs'
-                    : isSelected
+                  isSelected
                     ? 'border-blue-600 shadow-md shadow-blue-500/10'
                     : 'border-slate-200/80 hover:border-blue-300 shadow-xs'
                 }`}
               >
                 {/* Accent Corner Bubble matching Plan Color */}
                 <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300 ${
-                  plan.isTrial
-                    ? 'bg-emerald-500/10'
-                    : plan.isCustom
+                  plan.isCustom
                     ? 'bg-amber-500/10'
                     : plan.id === '3months' || plan.id === '2months'
                     ? 'bg-indigo-500/10'
@@ -753,7 +637,7 @@ export default function SubscriptionRedesign({
                       {plan.badge}
                     </span>
                     <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                      isSelected ? (plan.isTrial ? 'bg-emerald-600' : 'bg-blue-600') : 'bg-slate-100'
+                      isSelected ? 'bg-blue-600' : 'bg-slate-100'
                     }`}>
                       <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-white' : 'bg-transparent'}`} />
                     </div>
@@ -766,7 +650,7 @@ export default function SubscriptionRedesign({
 
                   <div className="flex items-baseline gap-1 py-1">
                     <span className="text-2xl font-bold text-[#000d21]">
-                      {plan.isCustom ? 'Custom' : plan.isTrial ? 'Free' : `₹${plan.amount.toLocaleString('en-IN')}`}
+                      {plan.isCustom ? 'Custom' : `₹${plan.amount.toLocaleString('en-IN')}`}
                     </span>
                     <span className="text-xs text-slate-400">
                       {plan.isCustom ? '/ tailored volume' : `/ ${plan.durationDays} days`}
@@ -776,7 +660,7 @@ export default function SubscriptionRedesign({
                   <ul className="flex flex-col gap-2 pt-3 border-t border-slate-100 text-xs text-slate-600">
                     {plan.features.map((feat, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${plan.isTrial ? 'text-emerald-600' : 'text-blue-600'}`} />
+                        <CheckCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-blue-600" />
                         <span className="leading-tight">{feat}</span>
                       </li>
                     ))}
@@ -789,25 +673,19 @@ export default function SubscriptionRedesign({
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedPlanId(plan.id);
-                    if (plan.isTrial) {
-                      handleActivateTrial();
-                    } else if (plan.isCustom) {
+                    if (plan.isCustom) {
                       setShowContactSalesModal(true);
                     } else {
                       handleProceedToCheckout(plan);
                     }
                   }}
                   className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
-                    plan.isTrial
-                      ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs shadow-emerald-500/20'
-                      : isSelected
+                    isSelected
                       ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-xs shadow-blue-500/20'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
-                  {plan.isTrial
-                    ? (isActivating && selectedPlanId === 'trial' ? 'Activating...' : 'Activate Free Trial')
-                    : plan.isCustom
+                  {plan.isCustom
                     ? 'Contact Sales'
                     : (isCheckingOut && selectedPlanId === plan.id)
                     ? 'Redirecting to Checkout...'
