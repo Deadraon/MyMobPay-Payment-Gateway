@@ -1223,9 +1223,9 @@ export default function SettingsRedesign({
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600'}`} />
                     <div className="flex flex-col truncate">
-                      <span className="truncate">{cat.label}</span>
+                      <span className={`truncate font-semibold ${isActive ? 'text-blue-700' : 'text-slate-800'}`}>{cat.label}</span>
                       {cat.subtitle && (
-                        <span className={`text-[10px] truncate font-normal ${isActive ? 'text-blue-500' : 'text-slate-400'}`}>
+                        <span className={`text-[10px] truncate font-medium ${isActive ? 'text-blue-600' : 'text-slate-500'}`}>
                           {cat.subtitle}
                         </span>
                       )}
@@ -1280,7 +1280,7 @@ export default function SettingsRedesign({
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="text-sm md:text-base font-bold text-white tracking-tight">
+                      <h2 className="text-sm md:text-base font-bold text-white tracking-tight" style={{ color: '#ffffff' }}>
                         {primaryBankAccount ? (
                           `Direct Settlement Account Active: ${primaryBankAccount.bank_name} (..${primaryBankAccount.bank_account_number ? primaryBankAccount.bank_account_number.slice(-4) : '••••'})`
                         ) : (
@@ -1293,7 +1293,7 @@ export default function SettingsRedesign({
                         {primaryBankAccount ? 'Verified' : 'Setup Required'}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 mt-0.5">
+                    <p className="text-xs text-white font-medium mt-1 leading-relaxed opacity-100" style={{ color: '#ffffff' }}>
                       {primaryBankAccount
                         ? 'Payments land directly in your merchant bank account within seconds via NPCI IMPS/UPI Rails.'
                         : 'Connect your business or personal bank account to receive automated instant IMPS settlements.'}

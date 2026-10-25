@@ -2782,7 +2782,7 @@ echo "Order Created: " . $data['orderId'];
             <div className="h-px bg-slate-800 my-1.5" />
 
             {/* Category: MAIN */}
-            <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
               Main
             </p>
 
@@ -2791,12 +2791,13 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'overview'
-                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
-                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                  : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: '#ffffff' }}
             >
-              <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-teal-400' : 'text-slate-500'}`} />
-              <span>Dashboard</span>
+              <LayoutDashboard className={`w-4 h-4 shrink-0 ${activeTab === 'overview' ? 'text-teal-300' : 'text-slate-200'}`} />
+              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Dashboard</span>
             </button>
 
             <button
@@ -2804,16 +2805,17 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'payment-links'
-                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
-                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                  : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: '#ffffff' }}
             >
-              <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-teal-400' : 'text-slate-500'}`} />
-              <span>Payment Links</span>
+              <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-teal-300' : 'text-slate-200'}`} />
+              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Payment Links</span>
             </button>
 
             {/* Category: OPERATIONS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
               Operations
             </p>
 
@@ -2822,13 +2824,14 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'verification'
-                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
-                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                  : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: '#ffffff' }}
             >
               <div className="flex items-center gap-3">
-                <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-teal-400' : 'text-slate-500'}`} />
-                <span>Verification</span>
+                <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-teal-300' : 'text-slate-200'}`} />
+                <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Verification</span>
               </div>
               {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
                 <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
@@ -2838,7 +2841,7 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             {/* Category: REPORTS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
               Reports &amp; Analytics
             </p>
 
@@ -2847,12 +2850,13 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'transactions'
-                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
-                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                  : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: '#ffffff' }}
             >
-              <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-teal-400' : 'text-slate-500'}`} />
-              <span>Transactions</span>
+              <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-teal-300' : 'text-slate-200'}`} />
+              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Transactions</span>
             </button>
 
             <button
@@ -2860,16 +2864,17 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'reports'
-                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
-                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                  : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: '#ffffff' }}
             >
-              <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-teal-400' : 'text-slate-500'}`} />
-              <span>Reports &amp; GST</span>
+              <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-teal-300' : 'text-slate-200'}`} />
+              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Reports &amp; GST</span>
             </button>
 
             {/* Category: DEVELOPER & SETTINGS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
               Others
             </p>
 
@@ -2878,12 +2883,13 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'developer'
-                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
-                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                  : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: '#ffffff' }}
             >
-              <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-teal-400' : 'text-slate-500'}`} />
-              <span>Developer Hub</span>
+              <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-teal-300' : 'text-slate-200'}`} />
+              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Developer Hub</span>
             </button>
 
             <button
@@ -2894,12 +2900,13 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'settings'
-                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
-                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                  : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: '#ffffff' }}
             >
-              <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-teal-400' : 'text-slate-500'}`} />
-              <span>Settings</span>
+              <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-teal-300' : 'text-slate-200'}`} />
+              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Settings</span>
             </button>
 
             <button
@@ -2907,29 +2914,30 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs transition-all text-left font-semibold cursor-pointer ${
                 activeTab === 'support'
-                  ? 'bg-white/10 text-white font-bold border border-white/10 shadow-xs'
-                  : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                  ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                  : 'text-white hover:bg-white/10'
               }`}
+              style={{ color: '#ffffff' }}
             >
-              <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-teal-400' : 'text-slate-500'}`} />
-              <span>Support &amp; Help</span>
+              <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-teal-300' : 'text-slate-200'}`} />
+              <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Support &amp; Help</span>
             </button>
           </nav>
         </div>
 
         {/* Sidebar Footer */}
         <div className="px-6 pb-6 pt-3 border-t border-slate-800 flex flex-col gap-3">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+          <div className="flex items-center justify-between text-xs font-medium">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-slate-300">API Live Rails</span>
+              <span className="text-white font-medium" style={{ color: '#ffffff' }}>API Live Rails</span>
             </div>
-            <span className="text-[11px] font-mono text-slate-300 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">v2.1</span>
+            <span className="text-[11px] font-mono text-slate-200 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">v2.1</span>
           </div>
           <button
             onClick={handleSignOut}
             type="button"
-            className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-xl transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-rose-300 hover:bg-rose-500/10 hover:text-rose-200 rounded-xl transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
@@ -3429,18 +3437,19 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
                       activeTab === 'payment-links'
-                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
-                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                        : 'text-white hover:bg-white/10'
                     }`}
+                    style={{ color: '#ffffff' }}
                   >
-                    <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-teal-400' : 'text-slate-500'}`} />
-                    Payment Links
+                    <LinkIcon className={`w-4 h-4 shrink-0 ${activeTab === 'payment-links' ? 'text-teal-300' : 'text-slate-200'}`} />
+                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Payment Links</span>
                   </button>
 
                   {/* Category: Operations */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
                     Operations
                   </p>
                   <button
@@ -3449,15 +3458,16 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
                       activeTab === 'verification'
-                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
-                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                        : 'text-white hover:bg-white/10'
                     }`}
+                    style={{ color: '#ffffff' }}
                   >
                     <div className="flex items-center gap-3">
-                      <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-teal-400' : 'text-slate-500'}`} />
-                      <span>Verification</span>
+                      <ShieldCheck className={`w-4 h-4 shrink-0 ${activeTab === 'verification' ? 'text-teal-300' : 'text-slate-200'}`} />
+                      <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Verification</span>
                     </div>
                     {orders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
                       <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
@@ -3467,7 +3477,7 @@ echo "Order Created: " . $data['orderId'];
                   </button>
 
                   {/* Category: Reports & Analytics */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
                     Reports &amp; Analytics
                   </p>
                   <button
@@ -3476,14 +3486,15 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
                       activeTab === 'transactions'
-                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
-                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                        : 'text-white hover:bg-white/10'
                     }`}
+                    style={{ color: '#ffffff' }}
                   >
-                    <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-teal-400' : 'text-slate-500'}`} />
-                    Transactions
+                    <CreditCard className={`w-4 h-4 shrink-0 ${activeTab === 'transactions' ? 'text-teal-300' : 'text-slate-200'}`} />
+                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Transactions</span>
                   </button>
                   <button
                     onClick={() => {
@@ -3491,18 +3502,19 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
                       activeTab === 'reports'
-                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
-                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                        : 'text-white hover:bg-white/10'
                     }`}
+                    style={{ color: '#ffffff' }}
                   >
-                    <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-teal-400' : 'text-slate-500'}`} />
-                    Reports &amp; GST
+                    <BarChart3 className={`w-4 h-4 shrink-0 ${activeTab === 'reports' ? 'text-teal-300' : 'text-slate-200'}`} />
+                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Reports &amp; GST</span>
                   </button>
 
                   {/* Category: Developer & Settings */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-300 uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
                     Others
                   </p>
                   <button
@@ -3511,14 +3523,15 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
                       activeTab === 'developer'
-                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
-                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                        : 'text-white hover:bg-white/10'
                     }`}
+                    style={{ color: '#ffffff' }}
                   >
-                    <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-teal-400' : 'text-slate-500'}`} />
-                    Developer Hub
+                    <Code className={`w-4 h-4 shrink-0 ${activeTab === 'developer' ? 'text-teal-300' : 'text-slate-200'}`} />
+                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Developer Hub</span>
                   </button>
                   <button
                     onClick={() => {
@@ -3527,14 +3540,15 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
                       activeTab === 'settings'
-                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
-                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                        : 'text-white hover:bg-white/10'
                     }`}
+                    style={{ color: '#ffffff' }}
                   >
-                    <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-teal-400' : 'text-slate-500'}`} />
-                    Settings
+                    <Briefcase className={`w-4 h-4 shrink-0 ${activeTab === 'settings' ? 'text-teal-300' : 'text-slate-200'}`} />
+                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Settings</span>
                   </button>
 
                   <button
@@ -3543,26 +3557,27 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-medium cursor-pointer ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-semibold cursor-pointer ${
                       activeTab === 'support'
-                        ? 'bg-white/10 text-white font-bold border border-white/10 shadow-2xs'
-                        : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100'
+                        ? 'bg-white/15 text-white font-bold border border-white/20 shadow-xs ring-1 ring-white/10'
+                        : 'text-white hover:bg-white/10'
                     }`}
+                    style={{ color: '#ffffff' }}
                   >
-                    <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-teal-400' : 'text-slate-500'}`} />
-                    Support &amp; Help Desk
+                    <LifeBuoy className={`w-4 h-4 shrink-0 ${activeTab === 'support' ? 'text-teal-300' : 'text-slate-200'}`} />
+                    <span className="text-white font-semibold" style={{ color: '#ffffff' }}>Support &amp; Help Desk</span>
                   </button>
                 </nav>
               </div>
 
               {/* Drawer Footer */}
               <div className="pt-3.5 pb-8 sm:pb-3.5 border-t border-slate-800 flex flex-col gap-2.5">
-                <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+                <div className="flex items-center justify-between text-xs font-medium">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span className="text-slate-300">API Live Rails</span>
+                    <span className="text-white font-medium" style={{ color: '#ffffff' }}>API Live Rails</span>
                   </div>
-                  <span className="text-[11px] font-mono text-slate-300 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">v2.1</span>
+                  <span className="text-[11px] font-mono text-slate-200 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">v2.1</span>
                 </div>
                 <button
                   onClick={() => {
@@ -3570,7 +3585,7 @@ echo "Order Created: " . $data['orderId'];
                     handleSignOut();
                   }}
                   type="button"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-xl transition-colors border border-rose-500/20 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/10 hover:text-rose-200 rounded-xl transition-colors border border-rose-500/20 cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" /> Sign Out
                 </button>
