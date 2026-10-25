@@ -239,10 +239,23 @@ export async function POST(req) {
       console.warn('[REGISTER API] Admin new signup notification notice:', adminNotifyErr?.message);
     }
 
+    // ── 10. Generate Supabase magiclink token for immediate authenticated session ──
+    let tokenHash = null;
+    try {
+      const { data: linkData } = await supabaseAdmin.auth.admin.generateLink({
+        type: 'magiclink',
+        email: cleanEmail,
+      });
+      tokenHash = linkData?.properties?.hashed_token || null;
+    } catch (linkEx) {
+      console.warn('[REGISTER API] generateLink warning:', linkEx?.message);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Account verified and registered successfully! Logging you in...',
       userId,
+      tokenHash,
     });
 
   } catch (err) {

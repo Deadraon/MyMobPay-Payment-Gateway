@@ -1117,26 +1117,39 @@ export default function DashboardPage() {
 
       if (error.code === 'PGRST116') {
         try {
+          // Check if user has metadata with valid onboarding data before defaulting to dummy values
+          const metaBusiness = user?.user_metadata?.business_name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'My Business';
+          const metaUpi = user?.user_metadata?.upi_id || 'pending@upi';
+          const metaPhone = (user?.user_metadata?.phone || '').toString().trim().replace(/\D/g, '');
+          const hasMetaComplete = Boolean(
+            metaUpi !== 'pending@upi' &&
+            metaUpi.includes('@') &&
+            metaBusiness !== 'My Business' &&
+            metaPhone.length >= 10
+          );
+
           const newKey = generateUUID();
-          const fallbackName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'My Business';
           const newProfile = {
             id: userId,
-            business_name: fallbackName,
-            upi_id: 'pending@upi',
+            business_name: metaBusiness,
+            upi_id: metaUpi,
+            phone_number: metaPhone ? (metaPhone.startsWith('+91') ? metaPhone : `+91${metaPhone.slice(-10)}`) : null,
+            phone_verified: Boolean(user?.user_metadata?.phone_verified || hasMetaComplete),
             api_key: newKey,
             subscription_status: 'inactive',
             subscription_expires_at: null,
             setup_progress: {
               plan_type: 'inactive',
               created_at: new Date().toISOString(),
-              onboarding_needed: true,
-              phone_needed: true,
+              onboarding_needed: !hasMetaComplete,
+              phone_needed: !hasMetaComplete,
+              business_website: user?.user_metadata?.business_website || user?.user_metadata?.website_url || '',
             },
           };
 
           const { data: insertedData, error: insertErr } = await supabase
             .from('merchants')
-            .insert(newProfile)
+            .upsert(newProfile, { onConflict: 'id' })
             .select()
             .single();
 

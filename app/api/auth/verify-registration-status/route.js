@@ -74,8 +74,17 @@ export async function POST(req) {
       }
     }
 
-    // ── 3. Check by Email across auth users if not found by direct userId ────
-    if (!merchant && cleanEmail) {
+    const isProfileComplete = (m) => {
+      if (!m) return false;
+      const ph = (m.phone_number || '').trim().replace(/\D/g, '').slice(-10);
+      const validPhone = ph.length === 10 && /^[6-9]\d{9}$/.test(ph) && !/^(\d)\1{9}$/.test(ph);
+      const validUpi = Boolean(m.upi_id && m.upi_id !== 'pending@upi' && m.upi_id.includes('@'));
+      const validBiz = Boolean(m.business_name && m.business_name.trim().length > 0 && m.business_name !== 'My Business');
+      return Boolean(validPhone && validUpi && validBiz);
+    };
+
+    // ── 3. Check by Email across auth users if not found or incomplete by ID ───
+    if ((!merchant || !isProfileComplete(merchant)) && cleanEmail) {
       const { data: userListData } = await supabaseAdmin.auth.admin.listUsers({
         page: 1,
         perPage: 1000,
@@ -93,10 +102,35 @@ export async function POST(req) {
           .eq('id', u.id)
           .maybeSingle();
 
-        if (mByMatchedUser) {
+        if (mByMatchedUser && isProfileComplete(mByMatchedUser)) {
           merchant = mByMatchedUser;
           break;
+        } else if (!merchant && mByMatchedUser) {
+          merchant = mByMatchedUser;
         }
+      }
+    }
+
+    // ── 3b. Synchronize complete merchant profile to active session userId ───
+    if (merchant && userId && merchant.id !== userId && isProfileComplete(merchant)) {
+      const { data: syncedMerchant, error: syncErr } = await supabaseAdmin
+        .from('merchants')
+        .upsert({
+          id: userId,
+          business_name: merchant.business_name,
+          upi_id: merchant.upi_id,
+          phone_number: merchant.phone_number,
+          phone_verified: merchant.phone_verified ?? true,
+          subscription_status: merchant.subscription_status || 'inactive',
+          sandbox_mode: merchant.sandbox_mode ?? true,
+          theme_color: merchant.theme_color || '#3B82F6',
+          setup_progress: merchant.setup_progress || {},
+        }, { onConflict: 'id' })
+        .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status, setup_progress')
+        .maybeSingle();
+
+      if (!syncErr && syncedMerchant) {
+        merchant = syncedMerchant;
       }
     }
 

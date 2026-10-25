@@ -16,28 +16,57 @@ export async function POST(req) {
   }
 
   try {
-    const { userId, email } = await req.json();
+    // ── SECURITY: Authenticate requesting session ─────────────────────
+    // Account cleanup/purge can ONLY be performed by the authenticated user themselves
+    // or by a platform administrator.
+    const authHeader = req.headers.get('authorization') || '';
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
 
-    if (!userId && !email) {
-      return NextResponse.json({ error: 'User ID or email is required.' }, { status: 400 });
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Authentication token is required to discard signup session.' },
+        { status: 401 }
+      );
     }
 
-    const cleanEmail = (email || '').toString().trim().toLowerCase();
+    const { data: authData, error: authError } = await supabaseAdmin.auth.getUser(token);
+    if (authError || !authData?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Invalid or expired session.' },
+        { status: 401 }
+      );
+    }
+
+    const sessionUser = authData.user;
+    const body = await req.json().catch(() => ({}));
+    const { userId, email } = body;
+
+    const cleanEmail = (email || sessionUser.email || '').toString().trim().toLowerCase();
+    const targetId = userId || sessionUser.id;
+
+    // Verify ownership: the authenticated session MUST match the target user ID or verified email
+    const isOwner = sessionUser.id === targetId || (sessionUser.email && sessionUser.email.toLowerCase() === cleanEmail);
+    const isAdmin = sessionUser.id === PLATFORM_ADMIN_USER_ID || DEFAULT_ADMIN_EMAILS.some(adm => adm.toLowerCase() === sessionUser.email?.toLowerCase());
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json(
+        { error: 'Forbidden: You cannot discard an account belonging to another user.' },
+        { status: 403 }
+      );
+    }
 
     // 1. Guard platform root administrators
     if (
-      (userId && userId === PLATFORM_ADMIN_USER_ID) ||
-      (cleanEmail && DEFAULT_ADMIN_EMAILS.some(adm => adm.toLowerCase() === cleanEmail))
+      targetId === PLATFORM_ADMIN_USER_ID ||
+      DEFAULT_ADMIN_EMAILS.some(adm => adm.toLowerCase() === cleanEmail)
     ) {
       return NextResponse.json({ error: 'Cannot delete platform admin account.' }, { status: 403 });
     }
 
     // 2. Resolve target user from Supabase Auth
     let targetUser = null;
-    if (userId) {
-      const { data: userData } = await supabaseAdmin.auth.admin.getUserById(userId);
-      if (userData?.user) targetUser = userData.user;
-    }
+    const { data: userData } = await supabaseAdmin.auth.admin.getUserById(targetId);
+    if (userData?.user) targetUser = userData.user;
 
     if (!targetUser && cleanEmail) {
       const { data: userListData } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
@@ -48,7 +77,22 @@ export async function POST(req) {
       return NextResponse.json({ success: true, message: 'User not found in auth records.' });
     }
 
-    const targetId = targetUser.id;
+    // Guard against deleting any account that has completed user_metadata
+    const meta = targetUser.user_metadata || {};
+    const metaPhone = (meta.phone || '').toString().trim().replace(/\D/g, '');
+    const isMetaCompleted = Boolean(
+      meta.business_name &&
+      meta.business_name !== 'My Business' &&
+      meta.upi_id &&
+      meta.upi_id !== 'pending@upi' &&
+      meta.upi_id.includes('@') &&
+      metaPhone.length === 10
+    );
+    if (isMetaCompleted) {
+      return NextResponse.json({
+        error: 'Cannot purge account: Account registration is already completed.',
+      }, { status: 400 });
+    }
 
     // 3. Check if user has an active/completed merchant profile
     const { data: merchantProf } = await supabaseAdmin

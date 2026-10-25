@@ -83,6 +83,21 @@ const IndianFlag = ({ className = 'w-4 h-3' }) => (
   </svg>
 );
 
+// ── Open-Redirect Prevention: Strict sanitization of client-provided redirect URLs ──
+function getSafeRedirectUrl(rawUrl, defaultUrl = '/dashboard') {
+  if (!rawUrl || typeof rawUrl !== 'string') return defaultUrl;
+  const trimmed = rawUrl.trim();
+  // Must start with '/' and not with '//' or '/\' (prevents protocol-relative URLs)
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.startsWith('/\\')) {
+    return defaultUrl;
+  }
+  // Disallow redirecting back to /login or /signup
+  if (trimmed.startsWith('/login') || trimmed.startsWith('/signup')) {
+    return defaultUrl;
+  }
+  return trimmed;
+}
+
 // ── Translate developer/system errors to clear, customer-friendly English ──
 function formatCustomerError(err) {
   if (!err) return '';
@@ -387,8 +402,7 @@ export default function LoginPage() {
           let target = '/dashboard';
           if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
-            const red = params.get('redirect');
-            if (red && !red.startsWith('/login')) target = red;
+            target = getSafeRedirectUrl(params.get('redirect'), '/dashboard');
             window.location.href = target;
           } else {
             router.replace(target);
@@ -782,8 +796,7 @@ export default function LoginPage() {
           let target = '/dashboard';
           if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
-            const red = params.get('redirect');
-            if (red && !red.startsWith('/login')) target = red;
+            target = getSafeRedirectUrl(params.get('redirect'), '/dashboard');
             window.location.href = target;
           } else {
             router.push(target);
@@ -852,8 +865,7 @@ export default function LoginPage() {
         let target = '/dashboard';
         if (typeof window !== 'undefined') {
           const params = new URLSearchParams(window.location.search);
-          const red = params.get('redirect');
-          if (red && !red.startsWith('/login')) target = red;
+          target = getSafeRedirectUrl(params.get('redirect'), '/dashboard');
           window.location.href = target;
         } else {
           router.push(target);
@@ -1104,22 +1116,30 @@ export default function LoginPage() {
     const discardingUserId = oauthUserId;
     const discardingEmail = email;
     setLoading(true);
-    try {
-      await supabase.auth.signOut();
-    } catch (e) {}
 
-    // Clean up partial uncompleted auth user so email is completely released
+    // Clean up partial uncompleted auth user while session is active
     if (discardingUserId || discardingEmail) {
       try {
-        await fetch('/api/auth/cleanup-incomplete-signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: discardingUserId, email: discardingEmail }),
-        });
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+        if (token) {
+          await fetch('/api/auth/cleanup-incomplete-signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ userId: discardingUserId, email: discardingEmail }),
+          });
+        }
       } catch (cleanErr) {
         console.warn('Cleanup incomplete signup notice:', cleanErr);
       }
     }
+
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {}
 
     setIsOAuthSignup(false);
     setOauthUserId(null);
@@ -1249,34 +1269,63 @@ export default function LoginPage() {
         }
 
         // Ensure fresh, authenticated session with newly set credentials
-        // (Supabase admin.updateUserById revokes prior sessions for security,
-        // so signInWithPassword guarantees a fresh, valid session token before routing to /dashboard)
         isRedirectingRef.current = true;
         isRegistrationSubmittedRef.current = true;
 
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: password,
-        });
+        let sessionActive = false;
 
-        if (signInError) {
-          console.warn('[REGISTER] Re-auth after registration notice:', signInError);
-          const { data: { session } } = await supabase.auth.getSession();
-          if (!session) {
-            isRedirectingRef.current = false;
-            isRegistrationSubmittedRef.current = false;
-            setMessage('Account registered! Please sign in with your credentials.');
-            setMode('signin');
-            return;
+        // 1. If register API provided a tokenHash, verify it to instantly establish session
+        if (data?.tokenHash) {
+          try {
+            const { error: otpError } = await supabase.auth.verifyOtp({
+              token_hash: data.tokenHash,
+              type: 'magiclink',
+            });
+            if (!otpError) {
+              sessionActive = true;
+            } else {
+              console.warn('[REGISTER] verifyOtp notice:', otpError?.message);
+            }
+          } catch (otpEx) {
+            console.warn('[REGISTER] verifyOtp exception:', otpEx);
           }
+        }
+
+        // 2. If session not yet active and password was provided, try signInWithPassword
+        if (!sessionActive && password) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password: password,
+          });
+
+          if (!signInError) {
+            sessionActive = true;
+          } else {
+            console.warn('[REGISTER] Re-auth password notice:', signInError?.message);
+          }
+        }
+
+        // 3. Fallback: Check if session is already present (e.g. from Google OAuth session)
+        if (!sessionActive) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            sessionActive = true;
+          }
+        }
+
+        if (!sessionActive) {
+          isRedirectingRef.current = false;
+          isRegistrationSubmittedRef.current = false;
+          setMessage('Account registered! Please sign in with your credentials.');
+          setMode('signin');
+          return;
         }
 
         setMessage('Account created successfully! Launching your merchant console...');
         let target = '/dashboard';
         if (typeof window !== 'undefined') {
           const params = new URLSearchParams(window.location.search);
-          const red = params.get('redirect');
-          if (red && !red.startsWith('/login')) target = red;
+          target = getSafeRedirectUrl(params.get('redirect'), '/dashboard');
           window.location.href = target;
         } else {
           router.replace(target);
@@ -1320,8 +1369,7 @@ export default function LoginPage() {
         let target = '/dashboard';
         if (typeof window !== 'undefined') {
           const params = new URLSearchParams(window.location.search);
-          const red = params.get('redirect');
-          if (red && !red.startsWith('/login')) target = red;
+          target = getSafeRedirectUrl(params.get('redirect'), '/dashboard');
         }
         setTimeout(() => {
           window.location.href = target;
