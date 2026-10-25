@@ -109,42 +109,88 @@ export default function PlatformSubscriptionsHub({
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* ── TOP BANNER: SEPARATE SAAS SECTION NOTICE ── */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 sm:p-6 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:flex items-center gap-3">
-          <button
-            onClick={() => setActiveTab && setActiveTab('admin')}
-            type="button"
-            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer"
-          >
-            <Shield className="w-4 h-4 text-blue-200" />
-            <span>Open Master Admin Console</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
+      <div className="bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#1E1B4B] border border-indigo-500/30 rounded-2xl p-5 sm:p-7 shadow-xl shadow-indigo-950/20 relative overflow-hidden">
+        {/* Ambient background glows */}
+        <div className="absolute -right-10 -top-10 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -left-10 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        
+        {/* Subtle grid pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)`,
+            backgroundSize: '24px 24px'
+          }}
+        />
 
-        <div className="relative z-10 space-y-2 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-[11px] font-bold text-indigo-300">
-            <Crown className="w-3.5 h-3.5 text-amber-400" />
-            <span>Platform Owner SaaS Revenue Stream</span>
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          {/* Left Column: Heading, Badge, Description, Benefit Pills */}
+          <div className="space-y-3 max-w-2xl">
+            {/* Top Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-[11px] font-bold text-indigo-200 backdrop-blur-md shadow-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+              </span>
+              <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/20" />
+              <span className="tracking-wide">Platform Owner • Dedicated SaaS Revenue Stream</span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-black text-white tracking-tight leading-tight">
+              SaaS Subscriptions &amp; License Inflow
+            </h1>
+
+            {/* Description - High-contrast crystal readable text */}
+            <p className="text-xs sm:text-sm text-[#cbd5e1] leading-relaxed font-normal">
+              This section is exclusively for your account. All software license fees paid by other merchants are tracked here separately so they do not mix with your normal store sales.
+            </p>
+
+            {/* Trust & Partition Feature Pills */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/10 text-[11px] font-medium text-[#e2e8f0]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Isolated from Store Ledger</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/10 text-[11px] font-medium text-[#e2e8f0]">
+                <Shield className="w-3.5 h-3.5 text-blue-400" />
+                <span>Direct Bank Rails (0% Escrow)</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/10 text-[11px] font-medium text-[#e2e8f0]">
+                <Clock className="w-3.5 h-3.5 text-amber-400" />
+                <span>Instant Webhook Matching</span>
+              </div>
+            </div>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
-            SaaS Subscriptions &amp; License Inflow
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            This section is exclusively for your account. All software license fees paid by other merchants are tracked here separately so they do not mix with your normal store sales.
-          </p>
 
-          <div className="pt-2 lg:hidden">
+          {/* Right Column: Master Admin Console Action Card */}
+          <div className="shrink-0 w-full lg:w-72 bg-white/[0.05] hover:bg-white/[0.07] border border-white/15 rounded-2xl p-4 backdrop-blur-md transition-all shadow-md flex flex-col gap-3">
+            <div className="flex items-center justify-between text-xs font-semibold text-[#cbd5e1]">
+              <div className="flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-emerald-400" />
+                <span>Master Admin Suite</span>
+              </div>
+              <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 px-1.5 py-0.5 rounded">
+                Root Access
+              </span>
+            </div>
+
             <button
               onClick={() => setActiveTab && setActiveTab('admin')}
               type="button"
-              className="w-full justify-center px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer"
+              className="w-full px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white text-xs font-bold transition-all shadow-lg shadow-blue-600/30 border border-white/20 flex items-center justify-between cursor-pointer group"
             >
-              <Shield className="w-4 h-4 text-blue-200" />
-              <span>Open Master Admin Console</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-white" />
+                <span>Open Admin Console</span>
+              </div>
+              <ArrowUpRight className="w-3.5 h-3.5 text-white/90 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
+
+            <div className="pt-0.5 border-t border-white/10 flex items-center justify-between text-[11px] text-[#94a3b8]">
+              <span>Active Merchants</span>
+              <span className="font-bold text-white tabular-nums">{metrics.verifiedCount} Licensed</span>
+            </div>
           </div>
         </div>
       </div>
