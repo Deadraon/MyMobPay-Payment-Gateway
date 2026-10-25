@@ -56,6 +56,14 @@ function todayIST() { const d = toIST(new Date().toISOString()); d.setHours(0,0,
 function yesterdayIST() { const d = todayIST(); d.setDate(d.getDate()-1); return d; }
 function formatINR(n) { return `₹${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; }
 function formatINRSlim(n) { return `₹${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`; }
+function formatYAxis(n) {
+  const val = Math.round(Number(n) || 0);
+  if (val <= 0) return '₹0';
+  if (val >= 10000000) return `₹${(val / 10000000).toFixed(val % 10000000 === 0 ? 0 : 1)}Cr`;
+  if (val >= 100000) return `₹${(val / 100000).toFixed(val % 100000 === 0 ? 0 : 1)}L`;
+  if (val >= 1000) return `₹${(val / 1000).toFixed(val % 1000 === 0 ? 0 : 1)}k`;
+  return `₹${val}`;
+}
 function isVerified(o) { const s=(o.status||'').toLowerCase(); return s==='verified'||s==='success'||s==='paid'||s==='completed'||s==='settled'; }
 function isPending(o)  { const s=(o.status||'').toLowerCase(); return s==='pending'||s==='processing'||s==='in_progress'; }
 function isFailed(o)   { const s=(o.status||'').toLowerCase(); return s==='failed'||s==='cancelled'||s==='rejected'||s==='declined'; }
@@ -169,34 +177,76 @@ export default function DashboardOverviewRedesign({
   const recentSettledInflow = thirtyDayTotal > 0 ? thirtyDayTotal : allTimeTotal;
   const todayInflow = todayTotal;
 
-  // Chart Data across 12 months (or recent chunks)
+  // Chart Data across 12 months computed directly from merchant's real verified orders
   const monthlyChartData = useMemo(() => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    // Inflow distribution matching the Payra reference dual-bar aesthetic
-    const baseInflow = [12, 14, 18, 16, 21, 19, 15, 17, 22, 18, 14, 20];
-    const baseOrders = [6, 8, 9, 7, 10, 9, 8, 9, 11, 8, 7, 9];
+    const now = new Date();
+    const currentYear = now.getFullYear();
 
-    return months.map((month, idx) => {
-      const incoming = (baseInflow[idx] * 450) + (todayInflow * 0.1);
-      const ordersCount = baseOrders[idx] * 8;
+    // Aggregate real collections and order counts per month
+    const monthlyStats = months.map((month, idx) => {
+      let incoming = 0;
+      let ordersCount = 0;
+
+      orders.forEach((o) => {
+        if (!o?.created_at || !isVerified(o)) return;
+        const d = toIST(o.created_at);
+        // Match orders in the current calendar year for this month
+        if (d.getFullYear() === currentYear && d.getMonth() === idx) {
+          incoming += parseFloat(o.amount) || 0;
+          ordersCount += 1;
+        }
+      });
+
       return {
         month,
         incoming,
         ordersCount,
-        inflowHeightPct: Math.min(Math.max((incoming / 12000) * 100, 20), 85),
-        ordersHeightPct: Math.min(Math.max((ordersCount / 120) * 100, 15), 65)
       };
     });
-  }, [todayInflow]);
+
+    const maxIncoming = Math.max(...monthlyStats.map(m => m.incoming), 0);
+    const maxOrders = Math.max(...monthlyStats.map(m => m.ordersCount), 0);
+    const scaleVolume = maxIncoming > 0 ? maxIncoming : 10000;
+    const scaleOrders = maxOrders > 0 ? maxOrders : 10;
+
+    return monthlyStats.map((item) => ({
+      ...item,
+      inflowHeightPct: item.incoming > 0 
+        ? Math.min(Math.max((item.incoming / scaleVolume) * 85, 10), 85)
+        : 0,
+      ordersHeightPct: item.ordersCount > 0 
+        ? Math.min(Math.max((item.ordersCount / scaleOrders) * 65, 8), 65)
+        : 0,
+    }));
+  }, [orders]);
+
+  const chartMaxVolume = useMemo(() => {
+    const maxVal = Math.max(...monthlyChartData.map(d => d.incoming), 0);
+    if (maxVal === 0) return 10000;
+    if (maxVal <= 1000) return 1000;
+    if (maxVal <= 5000) return 5000;
+    if (maxVal <= 10000) return 10000;
+    if (maxVal <= 25000) return 25000;
+    if (maxVal <= 50000) return 50000;
+    if (maxVal <= 100000) return 100000;
+    return Math.ceil(maxVal / 50000) * 50000;
+  }, [monthlyChartData]);
 
   // Generate SVG spline points for the smooth line graph running over the dual bars
   const splinePath = useMemo(() => {
     const totalBars = monthlyChartData.length;
     if (totalBars === 0) return '';
+    const hasAnyVolume = monthlyChartData.some(d => d.incoming > 0);
+    if (!hasAnyVolume) return '';
+
+    const maxIncoming = Math.max(...monthlyChartData.map(d => d.incoming), 1000);
     const points = monthlyChartData.map((d, i) => {
       const x = ((i + 0.5) / totalBars) * 100;
-      const y = 80 - (d.incoming / 12000) * 55;
-      return { x, y: Math.max(15, Math.min(y, 85)) };
+      const y = d.incoming > 0 
+        ? 85 - (d.incoming / maxIncoming) * 65 
+        : 88;
+      return { x, y: Math.max(15, Math.min(y, 88)) };
     });
 
     if (points.length < 2) return '';
@@ -675,32 +725,34 @@ export default function DashboardOverviewRedesign({
             {/* Y-Axis Reference Guide Lines */}
             <div className="absolute inset-x-0 inset-y-4 flex flex-col justify-between pointer-events-none opacity-40">
               <div className="border-b border-dashed border-slate-200 w-full flex items-center justify-between text-[10px] text-slate-400">
-                <span></span><span>₹20k</span>
+                <span></span><span>{formatYAxis(chartMaxVolume)}</span>
               </div>
               <div className="border-b border-dashed border-slate-200 w-full flex items-center justify-between text-[10px] text-slate-400">
-                <span></span><span>₹10k</span>
+                <span></span><span>{formatYAxis(chartMaxVolume * 0.66)}</span>
               </div>
               <div className="border-b border-dashed border-slate-200 w-full flex items-center justify-between text-[10px] text-slate-400">
-                <span></span><span>₹5k</span>
+                <span></span><span>{formatYAxis(chartMaxVolume * 0.33)}</span>
               </div>
               <div className="border-b border-dashed border-slate-200 w-full flex items-center justify-between text-[10px] text-slate-400">
-                <span></span><span>₹1k</span>
+                <span></span><span>₹0</span>
               </div>
             </div>
 
             {/* Dual Bars + Spline Layer */}
             <div className="relative h-32 w-full flex items-end justify-between px-2 pt-2">
-              {/* Background SVG Spline Curve */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" preserveAspectRatio="none" viewBox="0 0 100 100">
-                <path
-                  d={splinePath}
-                  fill="none"
-                  stroke="#0D9488"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  className="opacity-70 transition-all duration-300"
-                />
-              </svg>
+              {/* Background SVG Spline Curve (only rendered when real volume exists) */}
+              {splinePath ? (
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <path
+                    d={splinePath}
+                    fill="none"
+                    stroke="#0D9488"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    className="opacity-70 transition-all duration-300"
+                  />
+                </svg>
+              ) : null}
 
               {/* Dual Bar Pairs (Teal = Volume, Amber = Order count) */}
               {monthlyChartData.map((d) => (
@@ -712,13 +764,21 @@ export default function DashboardOverviewRedesign({
                 >
                   {/* Teal Bar (Collections Volume) */}
                   <div
-                    className="w-1.5 sm:w-2 rounded-t-full bg-[#14B8A6] group-hover:bg-[#0D9488] transition-all duration-150"
-                    style={{ height: `${d.inflowHeightPct}%` }}
+                    className={`w-1.5 sm:w-2 rounded-t-full transition-all duration-150 ${
+                      d.incoming > 0 
+                        ? 'bg-[#14B8A6] group-hover:bg-[#0D9488]' 
+                        : 'bg-slate-100 group-hover:bg-slate-200'
+                    }`}
+                    style={{ height: d.incoming > 0 ? `${d.inflowHeightPct}%` : '4px' }}
                   />
                   {/* Soft Amber Bar (Order frequency) */}
                   <div
-                    className="w-1.5 sm:w-2 rounded-t-full bg-[#F59E0B]/80 group-hover:bg-[#D97706] transition-all duration-150"
-                    style={{ height: `${d.ordersHeightPct}%` }}
+                    className={`w-1.5 sm:w-2 rounded-t-full transition-all duration-150 ${
+                      d.ordersCount > 0 
+                        ? 'bg-[#F59E0B]/80 group-hover:bg-[#D97706]' 
+                        : 'bg-slate-100 group-hover:bg-slate-200'
+                    }`}
+                    style={{ height: d.ordersCount > 0 ? `${d.ordersHeightPct}%` : '4px' }}
                   />
 
                   {/* Tooltip on Hover */}
