@@ -17,7 +17,11 @@ export async function POST(req) {
   }
 
   try {
-    const { email, password, businessName, upiId, phone, userId: requestUserId } = await req.json();
+    const { email, password, businessName, upiId, phone, websiteUrl, website, userId: requestUserId } = await req.json();
+    let finalWebsiteUrl = (websiteUrl || website || '').toString().trim();
+    if (finalWebsiteUrl && !/^https?:\/\//i.test(finalWebsiteUrl)) {
+      finalWebsiteUrl = `https://${finalWebsiteUrl}`;
+    }
 
     // ── 1. Validate Email & Strong Password format ───────────────────
     if (!email || !email.includes('@')) {
@@ -156,6 +160,8 @@ export async function POST(req) {
         business_name: finalBusinessName,
         upi_id: finalUpiId,
         phone: cleanPhone,
+        business_website: finalWebsiteUrl || '',
+        website_url: finalWebsiteUrl || '',
         phone_verified: true,
         email_verified: true,
       },
@@ -177,6 +183,7 @@ export async function POST(req) {
         upi_id: finalUpiId,
         phone_number: cleanPhone,
         phone_verified: true,
+        business_website: finalWebsiteUrl || null,
         subscription_status: 'inactive',
         sandbox_mode: true,
         theme_color: '#3B82F6',

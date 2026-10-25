@@ -58,7 +58,7 @@ export async function POST(req) {
     if (userId) {
       const { data: mById, error: errById } = await supabaseAdmin
         .from('merchants')
-        .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status')
+        .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status, business_website')
         .eq('id', userId)
         .maybeSingle();
 
@@ -81,7 +81,7 @@ export async function POST(req) {
       for (const u of matchedUsers) {
         const { data: mByMatchedUser } = await supabaseAdmin
           .from('merchants')
-          .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status')
+          .select('id, business_name, upi_id, phone_number, phone_verified, subscription_status, business_website')
           .eq('id', u.id)
           .maybeSingle();
 
@@ -147,6 +147,7 @@ export async function POST(req) {
         businessName: hasValidBusiness ? merchant.business_name : '',
         phoneNumber: hasValidPhone ? cleanPhone : '',
         upiId: hasValidUpi ? merchant.upi_id : '',
+        websiteUrl: merchant.business_website || '',
       });
     }
 
