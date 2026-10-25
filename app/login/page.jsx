@@ -7,13 +7,29 @@ import {
   Loader2, Lock, Mail, ArrowRight, ShieldCheck, 
   CheckCircle2, Building2, QrCode, Phone, Smartphone,
   Zap, Eye, EyeOff, AlertCircle, X, RefreshCw, MessageCircle,
-  Link2, Check, UserPlus, ShieldAlert, ChevronLeft
+  Link2, Check, UserPlus, ShieldAlert, ChevronLeft, Globe
 } from 'lucide-react';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 import { useModalTransition } from '@/components/useModalTransition';
 import { validateStrongPassword, getPasswordCriteria } from '@/lib/passwordValidation';
+
+// ── Helper: Detect Bank Name & Styling from UPI ID ──
+const getBankFromUpi = (upi) => {
+  if (!upi || !upi.includes('@')) return null;
+  const handle = upi.split('@')[1]?.toLowerCase();
+  if (!handle) return null;
+  if (handle.includes('hdfc')) return { name: 'HDFC Bank', color: 'text-blue-700 bg-blue-50 border-blue-200' };
+  if (handle.includes('sbi')) return { name: 'State Bank of India', color: 'text-sky-700 bg-sky-50 border-sky-200' };
+  if (handle.includes('icici')) return { name: 'ICICI Bank', color: 'text-amber-700 bg-amber-50 border-amber-200' };
+  if (handle.includes('axis')) return { name: 'Axis Bank', color: 'text-rose-700 bg-rose-50 border-rose-200' };
+  if (handle.includes('paytm')) return { name: 'Paytm Payments Bank', color: 'text-cyan-700 bg-cyan-50 border-cyan-200' };
+  if (handle.includes('ybl') || handle.includes('ibl')) return { name: 'Yes Bank / PhonePe', color: 'text-purple-700 bg-purple-50 border-purple-200' };
+  if (handle.includes('barodampay')) return { name: 'Bank of Baroda', color: 'text-orange-700 bg-orange-50 border-orange-200' };
+  if (handle.includes('kotak')) return { name: 'Kotak Mahindra Bank', color: 'text-red-700 bg-red-50 border-red-200' };
+  return { name: `@${handle} UPI Network`, color: 'text-indigo-700 bg-indigo-50 border-indigo-200' };
+};
 
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) => {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
@@ -278,9 +294,11 @@ export default function LoginPage() {
   // Registration Fields (Signup only)
   const [businessName, setBusinessName] = useState('');
   const [upiId, setUpiId] = useState('');
+  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [noWebsite, setNoWebsite] = useState(false);
   const [isOAuthSignup, setIsOAuthSignup] = useState(false);
   const [oauthUserId, setOauthUserId] = useState(null);
-  const [oauthStep, setOauthStep] = useState(1); // 1: Password | 2: Business | 3: UPI | 4: Phone
+  const [oauthStep, setOauthStep] = useState(1); // 1: Password | 2: Business | 3: Website | 4: UPI | 5: Phone
   const [stepDirection, setStepDirection] = useState('forward'); // 'forward' | 'backward'
 
   // Real-time strong password criteria calculation
@@ -308,11 +326,7 @@ export default function LoginPage() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('googleAuth') === 'true') {
-        isRedirectingRef.current = true;
-        setLoading(true);
-        setMessage('Google account verified! Launching merchant setup...');
-        window.location.replace(`/onboarding${window.location.search}${window.location.hash}`);
-        return;
+        setMode('signup');
       }
       if (params.get('mode') === 'signup') {
         setMode('signup');
@@ -363,9 +377,23 @@ export default function LoginPage() {
 
         // 2. If user authenticated via Google Workspace but needs to complete registration details
         if (verifyData && (verifyData.needsRegistration || !verifyData.isComplete)) {
-          isRedirectingRef.current = true;
-          setMessage('Google account verified! Redirecting to merchant setup...');
-          window.location.href = '/onboarding';
+          setMode('signup');
+          setIsOAuthSignup(true);
+          setOauthStep(1);
+          setOauthUserId(session.user.id);
+          setEmail(session.user.email || '');
+          setIsEmailVerified(true);
+          if (verifyData.businessName) setBusinessName(verifyData.businessName);
+          if (verifyData.phoneNumber) setPhone(verifyData.phoneNumber);
+          if (verifyData.upiId && verifyData.upiId !== 'pending@upi') setUpiId(verifyData.upiId);
+          if (verifyData.websiteUrl) setWebsiteUrl(verifyData.websiteUrl);
+          setMessage('');
+          setError('');
+          setLoading(false);
+          isRedirectingRef.current = false;
+          if (typeof window !== 'undefined' && window.location.search.includes('googleAuth=true')) {
+            window.history.replaceState({}, '', '/login');
+          }
           return;
         }
 
@@ -953,6 +981,19 @@ export default function LoginPage() {
       setStepDirection('forward');
       setOauthStep(3);
     } else if (oauthStep === 3) {
+      // Step 3: Website URL (Optional / Can skip)
+      const cleanWeb = websiteUrl.trim();
+      if (!noWebsite && cleanWeb) {
+        const domainPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+        if (!domainPattern.test(cleanWeb)) {
+          setError('Please enter a valid website URL (e.g. acmestudio.com) or click "Skip for now".');
+          return;
+        }
+      }
+      setStepDirection('forward');
+      setOauthStep(4);
+    } else if (oauthStep === 4) {
+      // Step 4: Settlement UPI ID
       const cleanUpi = upiId.trim().toLowerCase();
       if (!cleanUpi.includes('@') || cleanUpi.length < 5) {
         setError('Please enter a valid Settlement UPI ID (e.g. store@okhdfcbank).');
@@ -977,8 +1018,9 @@ export default function LoginPage() {
         setLoading(false);
       }
       setStepDirection('forward');
-      setOauthStep(4);
-    } else if (oauthStep === 4) {
+      setOauthStep(5);
+    } else if (oauthStep === 5) {
+      // Step 5: Phone Number
       const cleanPhone = phone.trim().replace(/\D/g, '');
       if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
         setError('Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).');
@@ -1005,6 +1047,8 @@ export default function LoginPage() {
     setEmail('');
     setPassword('');
     setBusinessName('');
+    setWebsiteUrl('');
+    setNoWebsite(false);
     setPhone('');
     setUpiId('');
     setOauthStep(1);
@@ -1105,6 +1149,7 @@ export default function LoginPage() {
             businessName: businessName.trim(),
             upiId: upiId.trim(),
             phone: phone.trim(),
+            websiteUrl: noWebsite ? '' : websiteUrl.trim(),
             userId: oauthUserId || null,
           }),
         });
@@ -1202,7 +1247,7 @@ export default function LoginPage() {
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
+          redirectTo: `${window.location.origin}/login?googleAuth=true`,
         },
       });
       if (authError) throw authError;
@@ -1391,7 +1436,7 @@ export default function LoginPage() {
                   </h1>
                   <p className="text-xs text-[#64748d] leading-relaxed font-light">
                     {isOAuthSignup
-                      ? 'Quick 4-step profile setup to start collecting instant payments'
+                      ? 'Quick 5-step profile setup to start collecting instant payments'
                       : mode === 'signin' 
                       ? 'Manage payments, instant settlements, and customer refunds' 
                       : mode === 'signup'
@@ -1910,26 +1955,28 @@ export default function LoginPage() {
                       <div className="mb-5">
                         <div className="flex items-center justify-between text-xs mb-2">
                           <span className="text-[11px] font-bold uppercase tracking-wider text-[#533afd] flex items-center gap-1.5">
-                            <span>Step {oauthStep} of 4</span>
+                            <span>Step {oauthStep} of 5</span>
                             <span className="text-[#64748d] font-normal">•</span>
                             <span className="text-[#0d253d]">
                               {oauthStep === 1 && 'Create Password'}
                               {oauthStep === 2 && 'Business Details'}
-                              {oauthStep === 3 && 'Settlement UPI'}
-                              {oauthStep === 4 && 'Mobile Security'}
+                              {oauthStep === 3 && 'Website / Store'}
+                              {oauthStep === 4 && 'Settlement UPI'}
+                              {oauthStep === 5 && 'Mobile Number'}
                             </span>
                           </span>
                           <span className="text-[10px] text-[#64748d] font-semibold">
-                            {oauthStep === 1 && '25%'}
-                            {oauthStep === 2 && '50%'}
-                            {oauthStep === 3 && '75%'}
-                            {oauthStep === 4 && '100%'}
+                            {oauthStep === 1 && '20%'}
+                            {oauthStep === 2 && '40%'}
+                            {oauthStep === 3 && '60%'}
+                            {oauthStep === 4 && '80%'}
+                            {oauthStep === 5 && '100%'}
                           </span>
                         </div>
                         <div className="w-full h-1.5 bg-[#f0f2f5] rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-[#533afd] rounded-full transition-all duration-300 ease-out"
-                            style={{ width: `${(oauthStep / 4) * 100}%` }}
+                            style={{ width: `${(oauthStep / 5) * 100}%` }}
                           />
                         </div>
                       </div>
@@ -2061,15 +2108,87 @@ export default function LoginPage() {
                             </div>
                           )}
 
-                          {/* ── STEP 3: Settlement UPI ID ── */}
+                          {/* ── STEP 3: Website URL (Optional / Can Skip) ── */}
                           {oauthStep === 3 && (
+                            <div className="space-y-4">
+                              <div>
+                                <div className="flex items-center justify-between mb-0.5">
+                                  <h2 className="text-sm font-semibold text-[#0d253d]">
+                                    Do you have a website or app?
+                                  </h2>
+                                  <span className="text-[10px] font-semibold text-[#64748d] bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                                    Optional
+                                  </span>
+                                </div>
+                                <p className="text-xs text-[#64748d] leading-relaxed">
+                                  Add your storefront or product link to configure webhook callbacks and automated checkout redirects.
+                                </p>
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
+                                    <span>Website or Store URL</span>
+                                  </label>
+                                  {websiteUrl.trim() && (
+                                    <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                                      <Check className="w-3 h-3" />
+                                      Valid URL
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className={`flex items-center rounded-lg px-3 transition-all border ${
+                                  noWebsite 
+                                    ? 'bg-slate-50 border-slate-200 opacity-60' 
+                                    : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs'
+                                }`}>
+                                  <Globe className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
+                                  <span className="text-xs text-[#64748d] font-mono mr-1 select-none">https://</span>
+                                  <input
+                                    type="text"
+                                    autoFocus={!noWebsite}
+                                    disabled={noWebsite || loading}
+                                    value={websiteUrl.replace(/^https?:\/\//i, '')}
+                                    onChange={(e) => {
+                                      setWebsiteUrl(e.target.value.trim());
+                                      if (noWebsite) setNoWebsite(false);
+                                    }}
+                                    placeholder="acmestudio.com"
+                                    className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans"
+                                  />
+                                </div>
+
+                                {/* No website quick-toggle checkbox */}
+                                <div className="pt-1">
+                                  <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                                    <input
+                                      type="checkbox"
+                                      checked={noWebsite}
+                                      onChange={(e) => {
+                                        setNoWebsite(e.target.checked);
+                                        if (e.target.checked) setWebsiteUrl('');
+                                      }}
+                                      className="w-3.5 h-3.5 rounded text-[#533afd] border-[#cbd5e1] focus:ring-[#533afd] cursor-pointer"
+                                    />
+                                    <span className="text-xs text-[#64748d] hover:text-[#0d253d]">
+                                      I don&apos;t have a website yet (UPI links will work directly)
+                                    </span>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* ── STEP 4: Settlement UPI ID ── */}
+                          {oauthStep === 4 && (
                             <div className="space-y-4">
                               <div>
                                 <h2 className="text-sm font-semibold text-[#0d253d] mb-0.5">
                                   Where should settlements route?
                                 </h2>
                                 <p className="text-xs text-[#64748d] leading-relaxed">
-                                  Enter your settlement UPI ID. All incoming payments route directly to your bank account with 0% gateway commission.
+                                  Enter your settlement UPI ID. All incoming customer payments route directly to your bank account with 0% gateway commission.
                                 </p>
                               </div>
 
@@ -2079,9 +2198,15 @@ export default function LoginPage() {
                                     <span>Settlement UPI ID</span>
                                     <span className="text-red-500">*</span>
                                   </label>
-                                  <span className="text-[10px] text-[#533afd] font-semibold bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
-                                    Direct Bank Routing
-                                  </span>
+                                  {getBankFromUpi(upiId) ? (
+                                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getBankFromUpi(upiId).color}`}>
+                                      {getBankFromUpi(upiId).name}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] text-[#533afd] font-semibold bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+                                      Direct Bank Routing
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
                                   <QrCode className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
@@ -2090,20 +2215,20 @@ export default function LoginPage() {
                                     autoFocus
                                     required
                                     value={upiId}
-                                    onChange={(e) => setUpiId(e.target.value)}
+                                    onChange={(e) => setUpiId(e.target.value.toLowerCase().trim())}
                                     placeholder="e.g. merchant@okhdfcbank"
                                     className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-mono"
                                   />
                                 </div>
                                 <p className="text-[11px] text-[#64748d]">
-                                  Supports all banks: @okhdfcbank, @oksbi, @okicici, @paytm, @ybl, etc.
+                                  Supports all bank UPI handles: @okhdfcbank, @oksbi, @okicici, @paytm, @ybl, etc.
                                 </p>
                               </div>
                             </div>
                           )}
 
-                          {/* ── STEP 4: Mobile Number (WhatsApp) ── */}
-                          {oauthStep === 4 && (
+                          {/* ── STEP 5: Mobile Number (WhatsApp) ── */}
+                          {oauthStep === 5 && (
                             <div className="space-y-4">
                               <div>
                                 <h2 className="text-sm font-semibold text-[#0d253d] mb-0.5">
@@ -2115,12 +2240,9 @@ export default function LoginPage() {
                               </div>
 
                               <div className="space-y-1.5">
-                                <div className="flex items-center justify-between">
-                                  <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                                    <span>Mobile Number (WhatsApp)</span>
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                </div>
+                                <label className="text-xs font-semibold text-[#0d253d] block">
+                                  Mobile Number (WhatsApp)
+                                </label>
 
                                 <div className="flex items-center rounded-lg px-3 transition-all border bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs">
                                   <div className="flex items-center gap-1.5 pr-2.5 py-2.5 text-[#0d253d] text-xs font-semibold border-r border-[#e3e8ee] shrink-0 select-none">
@@ -2155,6 +2277,12 @@ export default function LoginPage() {
                                   <span className="font-semibold text-[#0d253d]">{businessName || '—'}</span>
                                 </div>
                                 <div className="flex items-center justify-between text-[11px]">
+                                  <span className="text-[#64748d]">Website</span>
+                                  <span className="font-semibold text-[#0d253d] truncate max-w-[180px]">
+                                    {noWebsite || !websiteUrl.trim() ? 'Not provided (Can add later)' : websiteUrl.replace(/^https?:\/\//i, '')}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between text-[11px]">
                                   <span className="text-[#64748d]">Settlement UPI</span>
                                   <span className="font-mono font-semibold text-[#0d253d]">{upiId || '—'}</span>
                                 </div>
@@ -2177,23 +2305,39 @@ export default function LoginPage() {
                             </button>
                           )}
 
+                          {oauthStep === 3 && !noWebsite && !websiteUrl.trim() && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setNoWebsite(true);
+                                setStepDirection('forward');
+                                setOauthStep(4);
+                              }}
+                              disabled={loading}
+                              className="h-11 px-4 rounded-full border border-dashed border-[#cbd5e1] hover:border-[#94a3b8] bg-[#f8fafc] text-[#64748d] hover:text-[#0d253d] text-xs font-semibold transition-colors cursor-pointer"
+                            >
+                              <span>Skip for now</span>
+                            </button>
+                          )}
+
                           <button
                             type="submit"
                             disabled={
                               loading ||
                               (oauthStep === 1 && !passwordCriteria.isValid) ||
                               (oauthStep === 2 && businessName.trim().length < 2) ||
-                              (oauthStep === 3 && (!upiId.trim().includes('@') || upiId.trim().length < 5)) ||
-                              (oauthStep === 4 && (phone.trim().length !== 10 || !/^[6-9]\d{9}$/.test(phone.trim())))
+                              (oauthStep === 3 && !noWebsite && websiteUrl.trim().length > 0 && !/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/.test(websiteUrl.trim())) ||
+                              (oauthStep === 4 && (!upiId.trim().includes('@') || upiId.trim().length < 5)) ||
+                              (oauthStep === 5 && (phone.trim().length !== 10 || !/^[6-9]\d{9}$/.test(phone.trim())))
                             }
                             className="flex-1 h-11 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
                           >
                             {loading ? (
                               <>
                                 <Loader2 className="w-4 h-4 animate-spin text-white" />
-                                <span>{oauthStep === 4 ? 'Creating Merchant Account...' : 'Verifying...'}</span>
+                                <span>{oauthStep === 5 ? 'Creating Merchant Account...' : 'Verifying...'}</span>
                               </>
-                            ) : oauthStep === 4 ? (
+                            ) : oauthStep === 5 ? (
                               <>
                                 <span>Complete Setup &amp; Launch Dashboard</span>
                                 <ArrowRight className="w-4 h-4" />
