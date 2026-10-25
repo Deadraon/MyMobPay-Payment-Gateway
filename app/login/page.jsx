@@ -109,14 +109,28 @@ function formatCustomerError(err) {
     return 'This sign-in link has expired or has already been used. Please request a new link.';
   }
 
-  // 3. Credentials & Accounts
+  // 3. Field-specific uniqueness conflicts (UPI, Phone) - preserve exact user-friendly message!
+  if (lower.includes('settlement upi') || lower.includes('upi id') || (lower.includes('upi') && lower.includes('registered'))) {
+    return raw;
+  }
+  if (lower.includes('whatsapp') || lower.includes('mobile number') || (lower.includes('phone') && lower.includes('registered'))) {
+    return raw;
+  }
+
+  // 4. Credentials & Accounts
   if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) {
     return 'Incorrect email or password. Please double-check your details and try again.';
   }
   if (lower.includes('signups not allowed') || lower.includes('user not found')) {
     return 'No merchant account registered with this email. Please sign up below.';
   }
-  if (lower.includes('already registered') || lower.includes('user already exists') || lower.includes('email already')) {
+  if (
+    lower.includes('email is already') || 
+    lower.includes('email address is already') || 
+    lower.includes('email already') || 
+    (lower.includes('account with this email') && lower.includes('exists')) ||
+    (lower.includes('user already exists') && !lower.includes('upi') && !lower.includes('phone'))
+  ) {
     return 'An account with this email already exists. Please log in instead.';
   }
   if (lower.includes('email not confirmed')) {
@@ -362,7 +376,9 @@ export default function LoginPage() {
         // 1. If merchant is fully registered with complete details (phone, business name, upi)
         if (verifyData && verifyData.allowed && verifyData.registered && verifyData.isComplete) {
           isRedirectingRef.current = true;
-          setMessage('Authenticated successfully! Launching merchant dashboard...');
+          setMessage(modeRef.current === 'signup' 
+            ? 'Account already registered with this email. Launching your merchant dashboard...' 
+            : 'Authenticated successfully! Launching merchant dashboard...');
           let target = '/dashboard';
           if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
@@ -2349,12 +2365,6 @@ export default function LoginPage() {
                               </>
                             )}
                           </button>
-                        </div>
-
-                        <div className="text-center mt-3">
-                          <span className="text-[10px] text-[#64748d]">
-                            Press <kbd className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[9px] font-mono font-semibold">↵ Enter</kbd> to continue
-                          </span>
                         </div>
                       </form>
                     </div>

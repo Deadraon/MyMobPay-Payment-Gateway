@@ -19,13 +19,13 @@ export async function POST(req) {
   }
 
   try {
-    const { email, phone, upiId } = await req.json();
+    const { email, phone, upiId, userId } = await req.json();
 
     // ── 1. Check Email Uniqueness ───────────────────────────────────
     if (email) {
       const cleanEmail = email.toString().trim().toLowerCase();
       if (cleanEmail.includes('@')) {
-        // Check if a registered user exists with this email
+        // Check if a registered user exists with this email (excluding current user)
         const { data: userListData, error: listError } = await supabaseAdmin.auth.admin.listUsers({
           page: 1,
           perPage: 1000,
@@ -33,7 +33,7 @@ export async function POST(req) {
 
         if (!listError && userListData?.users) {
           const userFound = userListData.users.find(
-            u => u.email?.toLowerCase() === cleanEmail
+            u => u.email?.toLowerCase() === cleanEmail && (!userId || u.id !== userId)
           );
 
           if (userFound) {
@@ -68,11 +68,17 @@ export async function POST(req) {
       if (/^[6-9]\d{9}$/.test(cleanPhone)) {
         const dbPhone = `+91${cleanPhone}`;
         
-        // Check in public.merchants by phone_number
-        const { data: existingMerchantPhone, error: phoneErr } = await supabaseAdmin
+        // Check in public.merchants by phone_number (excluding current user)
+        let phoneQuery = supabaseAdmin
           .from('merchants')
           .select('id, phone_number, business_name')
-          .or(`phone_number.eq.${cleanPhone},phone_number.eq.${dbPhone},phone_number.eq.91${cleanPhone}`)
+          .or(`phone_number.eq.${cleanPhone},phone_number.eq.${dbPhone},phone_number.eq.91${cleanPhone}`);
+
+        if (userId) {
+          phoneQuery = phoneQuery.neq('id', userId);
+        }
+
+        const { data: existingMerchantPhone, error: phoneErr } = await phoneQuery
           .limit(1)
           .maybeSingle();
 
@@ -90,11 +96,17 @@ export async function POST(req) {
     if (upiId) {
       const cleanUpi = upiId.toString().trim().toLowerCase();
       if (cleanUpi.includes('@') && cleanUpi !== 'pending@upi') {
-        const { data: existingMerchantUpi, error: upiErr } = await supabaseAdmin
+        let upiQuery = supabaseAdmin
           .from('merchants')
           .select('id, upi_id, business_name')
           .ilike('upi_id', cleanUpi)
-          .neq('upi_id', 'pending@upi')
+          .neq('upi_id', 'pending@upi');
+
+        if (userId) {
+          upiQuery = upiQuery.neq('id', userId);
+        }
+
+        const { data: existingMerchantUpi, error: upiErr } = await upiQuery
           .limit(1)
           .maybeSingle();
 
