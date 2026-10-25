@@ -364,7 +364,7 @@ export default function LoginPage() {
       const hasUrlGoogleFlag = typeof window !== 'undefined' && window.location.search.includes('googleAuth=true');
 
       setLoading(true);
-      setMessage('Verifying account status with Google Workspace...');
+      setError('');
 
       try {
         const verifyRes = await fetch('/api/auth/verify-registration-status', {
@@ -532,6 +532,16 @@ export default function LoginPage() {
       isMounted = false;
     };
   }, []);
+
+  // Auto-dismiss transient feedback messages after 5 seconds
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   // Email OTP countdown timer
   useEffect(() => {
@@ -1526,9 +1536,19 @@ export default function LoginPage() {
                 )}
 
                 {message && (
-                  <div className="mt-4 bg-emerald-50/80 border border-emerald-200 text-emerald-700 p-3 rounded-xl text-xs font-medium flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>{message}</span>
+                  <div className="mt-4 bg-emerald-50/80 border border-emerald-200 text-emerald-700 p-3 rounded-xl text-xs font-medium flex items-center justify-between gap-2 shadow-2xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span className="leading-normal">{message}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setMessage('')}
+                      className="text-emerald-600 hover:text-emerald-800 p-0.5 rounded cursor-pointer shrink-0 ml-1"
+                      aria-label="Dismiss message"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 )}
 
