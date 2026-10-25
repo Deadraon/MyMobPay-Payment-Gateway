@@ -1113,8 +1113,48 @@ input[type=number] {
   background-color: #0d9488;
   border-color: #0d9488;
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+/* ─── Transitions.dev: Step Transition (08-page-side-by-side.md) ─── */
+.t-step-slide {
+  position: relative;
+  overflow: hidden;
 }
 
+@keyframes stepInForward {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
 
+@keyframes stepInBackward {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
 
+.t-step-forward {
+  animation: stepInForward var(--duration-fast, 250ms) var(--ease-smooth-out, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+}
 
+.t-step-backward {
+  animation: stepInBackward var(--duration-fast, 250ms) var(--ease-smooth-out, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-step-forward, .t-step-backward {
+    animation: none !important;
+  }
+}

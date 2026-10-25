@@ -7,7 +7,7 @@ import {
   Loader2, Lock, Mail, ArrowRight, ShieldCheck, 
   CheckCircle2, Building2, QrCode, Phone, Smartphone,
   Zap, Eye, EyeOff, AlertCircle, X, RefreshCw, MessageCircle,
-  Link2, Check, UserPlus, ShieldAlert
+  Link2, Check, UserPlus, ShieldAlert, ChevronLeft
 } from 'lucide-react';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
@@ -280,6 +280,8 @@ export default function LoginPage() {
   const [upiId, setUpiId] = useState('');
   const [isOAuthSignup, setIsOAuthSignup] = useState(false);
   const [oauthUserId, setOauthUserId] = useState(null);
+  const [oauthStep, setOauthStep] = useState(1); // 1: Password | 2: Business | 3: UPI | 4: Phone
+  const [stepDirection, setStepDirection] = useState('forward'); // 'forward' | 'backward'
 
   // Real-time strong password criteria calculation
   const passwordCriteria = useMemo(() => getPasswordCriteria(password), [password]);
@@ -356,13 +358,15 @@ export default function LoginPage() {
         if (verifyData && (verifyData.needsRegistration || !verifyData.isComplete)) {
           setMode('signup');
           setIsOAuthSignup(true);
+          setOauthStep(1);
           setOauthUserId(session.user.id);
           setEmail(session.user.email || '');
           setIsEmailVerified(true);
           if (verifyData.businessName) setBusinessName(verifyData.businessName);
           if (verifyData.phoneNumber) setPhone(verifyData.phoneNumber);
           if (verifyData.upiId) setUpiId(verifyData.upiId);
-          setMessage('Google account verified! Please set a strong password and complete your merchant details below to register.');
+          setMessage('');
+          setError('');
           setLoading(false);
           isRedirectingRef.current = false;
           return;
@@ -933,6 +937,86 @@ export default function LoginPage() {
     }
   };
 
+  // Dedicated Google OAuth Step-by-Step Handlers
+  const handleNextOAuthStep = async () => {
+    setError('');
+    if (oauthStep === 1) {
+      const pwdCheck = validateStrongPassword(password);
+      if (!pwdCheck.valid) {
+        setError(pwdCheck.error);
+        return;
+      }
+      setStepDirection('forward');
+      setOauthStep(2);
+    } else if (oauthStep === 2) {
+      if (!businessName.trim() || businessName.trim().length < 2) {
+        setError('Please enter a valid Business or Brand name (at least 2 characters).');
+        return;
+      }
+      setStepDirection('forward');
+      setOauthStep(3);
+    } else if (oauthStep === 3) {
+      const cleanUpi = upiId.trim().toLowerCase();
+      if (!cleanUpi.includes('@') || cleanUpi.length < 5) {
+        setError('Please enter a valid Settlement UPI ID (e.g. store@okhdfcbank).');
+        return;
+      }
+      setLoading(true);
+      try {
+        const checkRes = await fetch('/api/auth/check-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ upiId: cleanUpi, userId: oauthUserId || undefined }),
+        });
+        const checkData = await checkRes.json();
+        if (!checkRes.ok || checkData.available === false) {
+          setError(checkData.error || 'Settlement UPI ID is already registered by another merchant.');
+          setLoading(false);
+          return;
+        }
+      } catch (e) {
+        // proceed if check fails
+      } finally {
+        setLoading(false);
+      }
+      setStepDirection('forward');
+      setOauthStep(4);
+    } else if (oauthStep === 4) {
+      const cleanPhone = phone.trim().replace(/\D/g, '');
+      if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
+        setError('Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).');
+        return;
+      }
+      handleAuth('signup');
+    }
+  };
+
+  const handlePrevOAuthStep = () => {
+    setError('');
+    if (oauthStep > 1) {
+      setStepDirection('backward');
+      setOauthStep(prev => prev - 1);
+    }
+  };
+
+  const handleSignOutToSwitchAccount = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {}
+    setIsOAuthSignup(false);
+    setOauthUserId(null);
+    setEmail('');
+    setPassword('');
+    setBusinessName('');
+    setPhone('');
+    setUpiId('');
+    setOauthStep(1);
+    setMode('signin');
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', '/login');
+    }
+  };
+
   // Main Form Submit Handler
   const handleAuth = async (action) => {
     if (!email.trim() || !password.trim()) {
@@ -1300,10 +1384,18 @@ export default function LoginPage() {
               <div className="p-6 sm:p-8 bg-white">
                 <div className="text-center">
                   <h1 className="text-xl sm:text-2xl font-light text-[#0d253d] tracking-[-0.4px] mb-1 font-sohne">
-                    {mode === 'signin' ? 'Log in to Dashboard' : mode === 'signup' ? 'Create Merchant Account' : 'Set New Password'}
+                    {isOAuthSignup 
+                      ? 'Complete Merchant Setup' 
+                      : mode === 'signin' 
+                      ? 'Log in to Dashboard' 
+                      : mode === 'signup' 
+                      ? 'Create Merchant Account' 
+                      : 'Set New Password'}
                   </h1>
                   <p className="text-xs text-[#64748d] leading-relaxed font-light">
-                    {mode === 'signin' 
+                    {isOAuthSignup
+                      ? 'Quick 4-step profile setup to start collecting instant payments'
+                      : mode === 'signin' 
                       ? 'Manage payments, instant settlements, and customer refunds' 
                       : mode === 'signup'
                       ? 'Start collecting instant 0% direct UPI payments in minutes'
@@ -1325,8 +1417,8 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* ── Primary Auth Mode Switcher: Log In vs Sign Up (hidden in reset mode) ── */}
-                {mode !== 'reset' && (
+                {/* ── Primary Auth Mode Switcher: Log In vs Sign Up (hidden in reset mode & Google OAuth onboarding) ── */}
+                {mode !== 'reset' && !isOAuthSignup && (
                   <div className="mt-5 p-1 bg-[#f0f2f5] rounded-full grid grid-cols-2 gap-1 border border-[#e3e8ee] shadow-2xs">
                     <button 
                       type="button" 
@@ -2177,7 +2269,7 @@ export default function LoginPage() {
                 )}
 
                 {/* Soft Divider */}
-                {mode !== 'reset' && (
+                {mode !== 'reset' && !isOAuthSignup && (
                   <div className="relative my-6 flex items-center justify-center">
                     <div className="w-full h-px bg-[#e3e8ee]"></div>
                     <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold uppercase tracking-wider">
@@ -2187,7 +2279,7 @@ export default function LoginPage() {
                 )}
 
                 {/* Google Workspace Login */}
-                {mode !== 'reset' && (
+                {mode !== 'reset' && !isOAuthSignup && (
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
@@ -2203,8 +2295,9 @@ export default function LoginPage() {
                     <span>Continue with Google</span>
                   </button>
                 )}
+
                 {/* QR Code Express Login Bar (in Signin mode, desktop only) */}
-                {mode === 'signin' && (
+                {mode === 'signin' && !isOAuthSignup && (
                   <div className="mt-4 p-3.5 rounded-lg bg-[#f6f9fc] items-center justify-between gap-3 border border-[#e3e8ee]/60 hidden lg:flex">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center text-[#000d21] shadow-xs">
