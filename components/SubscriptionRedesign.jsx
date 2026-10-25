@@ -18,11 +18,7 @@ import {
   Clock,
   AlertTriangle,
   ArrowRight,
-  Activity,
   ShieldCheck,
-  Users,
-  Layers,
-  TrendingUp,
   HelpCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -497,98 +493,7 @@ export default function SubscriptionRedesign({
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════
-          USAGE METERS & PLAN QUOTAS
-          ═══════════════════════════════════════════════════════════ */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-slate-900 tracking-tight">
-                Plan Resource Quotas &amp; Usage
-              </h2>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                Healthy
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Real-time resource tracking against your flat-rate subscription.
-            </p>
-          </div>
-          <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100 self-start sm:self-auto">
-            0% MDR Policy Guaranteed
-          </span>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Meter 1: Monthly Transactions */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-700 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-blue-600" />
-                Monthly Transactions
-              </span>
-              <span className="font-mono font-bold text-slate-800 text-[11px]">
-                {orders?.length || 0} / 700 trx
-              </span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all" 
-                style={{ width: `${Math.min(100, Math.max(2, (((orders?.length || 0) / 700) * 100)))}%` }} 
-              />
-            </div>
-            <span className="text-[10px] text-slate-500 block">
-              {(((orders?.length || 0) / 700) * 100).toFixed(1)}% used • Resets on renewal date
-            </span>
-          </div>
-
-          {/* Meter 2: Direct UPI Monthly GMV */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-700 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
-                Monthly Direct UPI GMV
-              </span>
-              <span className="font-bold text-emerald-700 text-[11px]">Unlimited</span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-              <div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: '100%' }} />
-            </div>
-            <span className="text-[10px] text-slate-500 block">₹{orders.reduce((sum, o) => sum + (Number(o.amount) || 0), 0).toLocaleString('en-IN')} processed • 0% MDR</span>
-          </div>
-
-          {/* Meter 3: Billing Desks & Outlets */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-700 flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-indigo-600" />
-                Counter Outlets
-              </span>
-              <span className="font-mono font-bold text-slate-800 text-[11px]">2 / 5 active</span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-              <div className="bg-indigo-600 h-2 rounded-full transition-all" style={{ width: '40%' }} />
-            </div>
-            <span className="text-[10px] text-slate-500 block">40% capacity • Add more in Settings</span>
-          </div>
-
-          {/* Meter 4: Staff & RBAC Seats */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-700 flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-amber-600" />
-                Team Seats
-              </span>
-              <span className="font-mono font-bold text-slate-800 text-[11px]">1 / 10 seats</span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-              <div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: '10%' }} />
-            </div>
-            <span className="text-[10px] text-slate-500 block">10% capacity • Role-based access</span>
-          </div>
-        </div>
-      </div>
 
       {/* ═══════════════════════════════════════════════════════════
          2. EXTEND OR UPGRADE PLAN SECTION
