@@ -2217,7 +2217,7 @@ export default function LoginPage() {
                                     value={upiId}
                                     onChange={(e) => setUpiId(e.target.value.toLowerCase().trim())}
                                     placeholder="e.g. merchant@okhdfcbank"
-                                    className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-mono"
+                                    className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans"
                                   />
                                 </div>
                                 <p className="text-[11px] text-[#64748d]">
@@ -2284,7 +2284,7 @@ export default function LoginPage() {
                                 </div>
                                 <div className="flex items-center justify-between text-[11px]">
                                   <span className="text-[#64748d]">Settlement UPI</span>
-                                  <span className="font-mono font-semibold text-[#0d253d]">{upiId || '—'}</span>
+                                  <span className="font-semibold text-[#0d253d] font-sans">{upiId || '—'}</span>
                                 </div>
                               </div>
                             </div>
@@ -2594,7 +2594,7 @@ export default function LoginPage() {
                               }
                             }}
                             placeholder="e.g. merchant@okhdfcbank"
-                            className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-mono"
+                            className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans"
                           />
                         </div>
                         <p className="text-[11px] text-[#64748d]">
