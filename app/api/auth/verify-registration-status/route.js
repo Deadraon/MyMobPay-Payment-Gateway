@@ -46,6 +46,8 @@ export async function POST(req) {
       return NextResponse.json({
         allowed: true,
         registered: true,
+        isComplete: true,
+        needsRegistration: false,
         isAdmin: true,
         email: cleanEmail,
         merchantId: userId || PLATFORM_ADMIN_USER_ID,
@@ -76,11 +78,13 @@ export async function POST(req) {
 
     const isProfileComplete = (m) => {
       if (!m) return false;
+      if (m.subscription_status === 'active') return true;
+      if (m.setup_progress?.onboarding_completed) return true;
       const ph = (m.phone_number || '').trim().replace(/\D/g, '').slice(-10);
-      const validPhone = ph.length === 10 && /^[6-9]\d{9}$/.test(ph) && !/^(\d)\1{9}$/.test(ph);
+      const validPhone = ph.length === 10;
       const validUpi = Boolean(m.upi_id && m.upi_id !== 'pending@upi' && m.upi_id.includes('@'));
       const validBiz = Boolean(m.business_name && m.business_name.trim().length > 0 && m.business_name !== 'My Business');
-      return Boolean(validPhone && validUpi && validBiz);
+      return Boolean((validPhone && validUpi && validBiz) || (m.business_name && m.upi_id && m.upi_id !== 'pending@upi'));
     };
 
     // ── 3. Check by Email across auth users if not found or incomplete by ID ───
@@ -153,7 +157,12 @@ export async function POST(req) {
       merchant.business_name !== 'My Business'
     );
 
-    let isComplete = Boolean(hasValidPhone && hasValidUpi && hasValidBusiness);
+    let isComplete = Boolean(
+      (hasValidPhone && hasValidUpi && hasValidBusiness) ||
+      (merchant?.subscription_status === 'active') ||
+      (merchant?.setup_progress?.onboarding_completed) ||
+      (merchant?.business_name && merchant?.upi_id && merchant.upi_id !== 'pending@upi' && merchant.business_name !== 'My Business')
+    );
 
     // If merchant record is incomplete but auth user_metadata has the completed onboarding info, auto-heal
     if (!isComplete && authUser?.user_metadata) {

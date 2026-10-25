@@ -213,4 +213,76 @@ test('--- Auth Security & Vulnerability Audit Verification Suite ---', async (t)
     };
     assert.strictEqual(canPurgeAccount(dummyProfile).allowed, true);
   });
+
+  // ─────────────────────────────────────────────────────────────────
+  // 5. Google OAuth Existing Account Registration Bypass Logic
+  // ─────────────────────────────────────────────────────────────────
+  await t.test('5. Existing registered accounts & platform admins bypass signup wizard directly to dashboard', () => {
+    const evaluateAuthRouting = (verifyData) => {
+      const isAlreadyRegistered = Boolean(
+        verifyData &&
+        verifyData.allowed &&
+        (
+          verifyData.isAdmin ||
+          (verifyData.registered && (verifyData.isComplete || !verifyData.needsRegistration))
+        )
+      );
+
+      if (isAlreadyRegistered) {
+        return { action: 'redirect_dashboard', target: '/dashboard' };
+      }
+
+      if (verifyData && !verifyData.isAdmin && (verifyData.needsRegistration === true || !verifyData.registered)) {
+        return { action: 'launch_signup_wizard', step: 1 };
+      }
+
+      return { action: 'error_fallback' };
+    };
+
+    // Platform admin returning via Google OAuth
+    const adminVerifyData = {
+      allowed: true,
+      registered: true,
+      isComplete: true,
+      needsRegistration: false,
+      isAdmin: true,
+      email: 'chauhankunal695@gmail.com',
+      merchantId: 'dd45279e-7a2c-413c-9e24-24d88011b680',
+    };
+    assert.deepStrictEqual(evaluateAuthRouting(adminVerifyData), {
+      action: 'redirect_dashboard',
+      target: '/dashboard',
+    });
+
+    // Existing active merchant returning via Google OAuth
+    const existingMerchantData = {
+      allowed: true,
+      registered: true,
+      isComplete: true,
+      needsRegistration: false,
+      email: 'merchant@store.com',
+      merchantId: 'm-12345',
+      businessName: 'My Store',
+    };
+    assert.deepStrictEqual(evaluateAuthRouting(existingMerchantData), {
+      action: 'redirect_dashboard',
+      target: '/dashboard',
+    });
+
+    // Truly brand new user authenticating for the first time
+    const newUserData = {
+      allowed: true,
+      registered: false,
+      isComplete: false,
+      needsRegistration: true,
+      isNewMerchant: true,
+      email: 'brandnew@gmail.com',
+      merchantId: 'usr-new',
+    };
+    assert.deepStrictEqual(evaluateAuthRouting(newUserData), {
+      action: 'launch_signup_wizard',
+      step: 1,
+    });
+  });
 });
+

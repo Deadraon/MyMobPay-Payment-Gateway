@@ -357,9 +357,6 @@ export default function LoginPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('googleAuth') === 'true') {
-        setMode('signup');
-      }
       if (params.get('mode') === 'signup') {
         setMode('signup');
       } else if (params.get('mode') === 'reset' || window.location.hash.includes('type=recovery')) {
@@ -393,8 +390,17 @@ export default function LoginPage() {
 
         const verifyData = await verifyRes.json();
 
-        // 1. If merchant is fully registered with complete details (phone, business name, upi)
-        if (verifyData && verifyData.allowed && verifyData.registered && verifyData.isComplete) {
+        // 1. If user already has an existing account (or is platform admin), bypass signup & route directly to dashboard
+        const isAlreadyRegistered = Boolean(
+          verifyData &&
+          verifyData.allowed &&
+          (
+            verifyData.isAdmin ||
+            (verifyData.registered && (verifyData.isComplete || !verifyData.needsRegistration))
+          )
+        );
+
+        if (isAlreadyRegistered) {
           isRedirectingRef.current = true;
           setMessage(modeRef.current === 'signup' 
             ? 'Account already registered with this email. Launching your merchant dashboard...' 
@@ -403,6 +409,9 @@ export default function LoginPage() {
           if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
             target = getSafeRedirectUrl(params.get('redirect'), '/dashboard');
+            if (window.location.search.includes('googleAuth=true')) {
+              window.history.replaceState({}, '', '/login');
+            }
             window.location.href = target;
           } else {
             router.replace(target);
@@ -411,7 +420,7 @@ export default function LoginPage() {
         }
 
         // 2. If user authenticated via Google Workspace but needs to complete registration details
-        if (verifyData && (verifyData.needsRegistration || !verifyData.isComplete)) {
+        if (verifyData && !verifyData.isAdmin && (verifyData.needsRegistration === true || !verifyData.registered)) {
           // If the user arrived directly at /login without an active Google redirect or is doing normal Email OTP signup:
           // Never trap them into an incomplete OAuth state!
           if (!hasUrlGoogleFlag && !isExplicitOAuthRedirect) {
