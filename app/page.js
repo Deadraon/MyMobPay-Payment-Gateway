@@ -255,7 +255,7 @@ export default function HomePage() {
       {/* Mobile Drawer Navigation (transitions-dev: 05-menu-dropdown.md) */}
       {isMobileMenuMounted && (
         <div 
-          className={`lg:hidden fixed inset-x-0 bottom-0 top-[96px] sm:top-[116px] z-40 bg-white flex flex-col pt-6 px-6 pb-8 border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto ${mobileMenuDropdownClass}`}
+          className={`lg:hidden fixed inset-x-0 bottom-0 ${scrolled ? 'top-16 sm:top-20' : 'top-[96px] sm:top-[116px]'} z-40 bg-white flex flex-col pt-6 px-6 pb-8 border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto ${mobileMenuDropdownClass}`}
           data-origin="top-center"
         >
           <div className="flex flex-col space-y-4">
@@ -330,15 +330,15 @@ export default function HomePage() {
             </div>
 
             {/* Authoritative Headline with separate animated lines */}
-            <h1 className="font-sohne text-4xl sm:text-5xl lg:text-[56px] font-semibold text-[#0d253d] tracking-[-1.4px] leading-[1.08]">
+            <h1 className="font-sohne text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-semibold text-[#0d253d] tracking-tight leading-[1.14] sm:leading-[1.08]">
               <span className="block animate-fade-up delay-100 font-semibold">
                 Financial infrastructure for
               </span>
               <span className="block animate-fade-up delay-200 mt-1 font-semibold">
                 direct UPI payments.
               </span>
-              <span className="block text-[#533afd] font-semibold animate-fade-up delay-300 mt-2 min-h-[1.2em] text-3xl sm:text-4xl lg:text-[44px] tracking-[-0.96px]">
-                <span className="relative inline-block">
+              <span className="block text-[#533afd] font-semibold animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight">
+                <span className="relative inline-block break-words">
                   {typedLine}
                   <span className="inline-block w-[3px] h-[0.85em] bg-[#533afd] ml-1.5 align-middle animate-pulse" style={{ verticalAlign: 'baseline', marginTop: '-2px' }}>|</span>
                 </span>
@@ -346,22 +346,22 @@ export default function HomePage() {
             </h1>
 
             {/* Calm, Reassuring Subhead */}
-            <p className="font-sans text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150">
+            <p className="font-sans text-sm sm:text-base md:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150">
               Collect direct UPI and IMPS bank transfers with automated real-time reconciliation, signed HMAC webhooks, and 0% intermediary deductions.
             </p>
 
             {/* Razorpay-Grade Dual CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fade-up delay-200">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 animate-fade-up delay-200 w-full sm:w-auto">
               <Link 
                 href="/login?mode=signup" 
-                className="w-full sm:w-auto px-7 py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all shadow-sm text-center text-[15px] flex items-center justify-center gap-2 group cursor-pointer"
+                className="w-full sm:w-auto px-7 py-3.5 sm:py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all shadow-sm text-center text-[15px] flex items-center justify-center gap-2 group cursor-pointer"
               >
                 <span>Start now</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <a 
                 href="#developer-section"
-                className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-[#f6f9fc] border border-[#e3e8ee] text-[#273951] hover:text-[#0d253d] font-normal rounded-full transition-all text-center flex items-center justify-center gap-2 text-[15px] shadow-xs"
+                className="w-full sm:w-auto px-6 py-3.5 sm:py-3 bg-white hover:bg-[#f6f9fc] border border-[#e3e8ee] text-[#273951] hover:text-[#0d253d] font-normal rounded-full transition-all text-center flex items-center justify-center gap-2 text-[15px] shadow-xs"
               >
                 <span>Explore developer docs</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -369,18 +369,18 @@ export default function HomePage() {
             </div>
 
             {/* Proof Stats Row */}
-            <div className="pt-4 grid grid-cols-3 gap-4 sm:gap-8 max-w-md mx-auto lg:mx-0 border-t border-slate-200/80 text-slate-500 font-medium text-xs animate-fade-up delay-300">
-              <div>
-                <p className="text-slate-900 text-3xl font-bold tracking-tight">0%</p>
-                <p className="mt-1 text-xs text-slate-500 font-normal">Transaction fees</p>
+            <div className="pt-4 grid grid-cols-3 gap-2 sm:gap-6 max-w-md mx-auto lg:mx-0 border-t border-slate-200/80 text-slate-500 font-medium text-xs animate-fade-up delay-300">
+              <div className="text-center sm:text-left">
+                <p className="text-slate-900 text-2xl sm:text-3xl font-bold tracking-tight">0%</p>
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Transaction fees</p>
               </div>
-              <div>
-                <p className="text-slate-900 text-3xl font-bold tracking-tight">T+0</p>
-                <p className="mt-1 text-xs text-slate-500 font-normal">Instant bank credit</p>
+              <div className="text-center sm:text-left">
+                <p className="text-slate-900 text-2xl sm:text-3xl font-bold tracking-tight">T+0</p>
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Instant bank credit</p>
               </div>
-              <div>
-                <p className="text-slate-900 text-3xl font-bold tracking-tight">99.98%</p>
-                <p className="mt-1 text-xs text-slate-500 font-normal">Success rate</p>
+              <div className="text-center sm:text-left">
+                <p className="text-slate-900 text-2xl sm:text-3xl font-bold tracking-tight">99.98%</p>
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Success rate</p>
               </div>
             </div>
 
@@ -514,14 +514,14 @@ export default function HomePage() {
 
             </div> {/* closes phone-glow-container */}
 
-            {/* Metric float chips */}
-            <div className="absolute -left-6 top-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex flex-col gap-1 -rotate-6 animate-float">
+            {/* Metric float chips (visible on tablets/desktop, tucked on mobile to eliminate x-overflow) */}
+            <div className="hidden sm:flex absolute -left-6 top-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 -rotate-6 animate-float">
               <span className="text-[10px] font-semibold text-[#533afd] leading-none">Platform average</span>
               <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">Success rate</span>
               <span className="text-xl font-bold text-slate-900 leading-none mt-1">99.98%</span>
             </div>
 
-            <div className="absolute -right-6 bottom-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex flex-col gap-1 rotate-6 animate-float delay-500">
+            <div className="hidden sm:flex absolute -right-6 bottom-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 rotate-6 animate-float delay-500">
               <span className="text-[10px] font-semibold text-[#533afd] leading-none">Real-time routing</span>
               <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">Settlement</span>
               <span className="text-xl font-bold text-emerald-600 leading-none mt-1">0 seconds</span>
@@ -873,11 +873,11 @@ export default function HomePage() {
                 </span>
               </div>
 
-              {/* Language Switcher Tabs (Languages Actually Used & Supported) */}
+              {/* Language Switcher Tabs (Scrollable on mobile with smooth touch feel) */}
               <div
                 role="tablist"
                 aria-label="Code sample programming languages"
-                className="flex items-center gap-1.5 bg-[#0a1424] p-1.5 rounded-xl border border-blue-900/50 text-xs font-mono"
+                className="flex items-center gap-1.5 bg-[#0a1424] p-1.5 rounded-xl border border-blue-900/50 text-xs font-mono overflow-x-auto max-w-full scrollbar-none"
               >
                 {[
                   { id: 'curl', label: 'cURL' },
@@ -893,7 +893,7 @@ export default function HomePage() {
                     aria-selected={productDevLang === lang.id}
                     aria-controls="dev-terminal-body"
                     onClick={() => setProductDevLang(lang.id)}
-                    className={`px-3.5 py-1.5 rounded-lg transition-all font-semibold focus-visible:outline-2 focus-visible:outline-blue-400 ${
+                    className={`px-3.5 py-1.5 rounded-lg transition-all font-semibold shrink-0 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-blue-400 ${
                       productDevLang === lang.id 
                         ? 'bg-blue-600 text-white shadow-sm' 
                         : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -1026,20 +1026,20 @@ export default function HomePage() {
               </div>
 
               {/* Live Webhook Event Dispatch Panel */}
-              <div className="bg-[#040812] p-4 sm:p-5 border-t border-blue-900/30 space-y-2">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-blue-400 flex items-center gap-2 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                    POST /api/webhooks/settlement • 200 OK
+              <div className="bg-[#040812] p-3.5 sm:p-5 border-t border-blue-900/30 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs font-mono">
+                  <span className="text-blue-400 flex items-center gap-2 font-bold truncate">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0"></span>
+                    <span className="truncate">POST /api/webhooks/settlement • 200 OK</span>
                   </span>
-                  <span className="text-slate-400 font-medium">42ms latency</span>
+                  <span className="text-slate-400 font-medium text-[11px] shrink-0">42ms latency</span>
                 </div>
                 <div className="text-xs font-mono text-slate-300 bg-[#07101E] p-3 rounded-xl border border-blue-900/30">
-                  <div className="text-slate-400 text-[11px] pb-1.5 border-b border-blue-900/40 flex justify-between">
-                    <span>Header: x-mymobpay-signature: <strong className="text-blue-300">sha256=9f8a4e81...</strong></span>
-                    <span className="text-blue-400 font-semibold">HMAC Verified ✓</span>
+                  <div className="text-slate-400 text-[11px] pb-1.5 border-b border-blue-900/40 flex flex-wrap items-center justify-between gap-1">
+                    <span className="truncate">Header: x-mymobpay-signature: <strong className="text-blue-300">sha256=9f8a...</strong></span>
+                    <span className="text-blue-400 font-semibold shrink-0">HMAC Verified ✓</span>
                   </div>
-                  <div className="text-slate-200 pt-2">
+                  <div className="text-slate-200 pt-2 break-all text-[11px] sm:text-xs">
                     &#123; event: &quot;payment.settled&quot;, utr: &quot;329184029182&quot;, net: 1499.00, fee: 0.00, route: &quot;direct_bank&quot; &#125;
                   </div>
                 </div>
@@ -1058,26 +1058,26 @@ export default function HomePage() {
       <section id="pricing-section" className="py-24 bg-[#f5e9d4]/60 border-b border-[#e3e8ee] font-sohne">
         <div className="max-w-7xl mx-auto px-6">
           
-          <div className="rounded-2xl bg-[#f5e9d4] border border-[#ebd8bc] p-8 sm:p-12 shadow-sm">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="rounded-2xl bg-[#f5e9d4] border border-[#ebd8bc] p-5 sm:p-8 md:p-12 shadow-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               
               {/* Left Column: Heading & Slider */}
               <div className="lg:col-span-6">
-                <span className="text-xs uppercase tracking-wider font-semibold text-[#9b6829] mb-3 block">
+                <span className="text-xs uppercase tracking-wider font-semibold text-[#9b6829] mb-2 sm:mb-3 block">
                   Interactive Fee Calculator
                 </span>
-                <h2 className="text-3xl sm:text-[38px] font-light text-[#0d253d] tracking-[-0.64px] leading-tight mb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-[38px] font-light text-[#0d253d] tracking-tight leading-tight mb-3 sm:mb-4">
                   See how much revenue you retain every month.
                 </h2>
-                <p className="text-sm font-light text-[#273951] leading-relaxed mb-8">
+                <p className="text-xs sm:text-sm font-light text-[#273951] leading-relaxed mb-6 sm:mb-8">
                   Adjust your monthly transaction volume to see the compounding difference between standard 2% + GST gateway deductions versus MyMobPay direct passthrough.
                 </p>
 
                 {/* Range Slider */}
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center text-sm">
+                  <div className="flex justify-between items-center text-xs sm:text-sm">
                     <span className="text-[#64748d] font-light">Monthly Collection Volume:</span>
-                    <strong className="text-lg font-mono tabular-nums text-[#0d253d]">
+                    <strong className="text-base sm:text-lg font-mono tabular-nums text-[#0d253d]">
                       ₹{(monthlyVolume / 100000).toFixed(1)} Lakhs
                     </strong>
                   </div>
@@ -1100,30 +1100,30 @@ export default function HomePage() {
 
               {/* Right Column: Comparison Card */}
               <div className="lg:col-span-6">
-                <div className="bg-white rounded-xl border border-[#ebd8bc] p-6 sm:p-8 shadow-sm">
+                <div className="bg-white rounded-xl border border-[#ebd8bc] p-5 sm:p-8 shadow-sm">
                   
-                  <div className="space-y-4 pb-6 border-b border-[#e3e8ee]">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-[#64748d]">Traditional Gateways (2% + 18% GST)</span>
-                      <span className="text-sm font-mono text-[#ea2261] tabular-nums font-semibold">
+                  <div className="space-y-3.5 sm:space-y-4 pb-5 sm:pb-6 border-b border-[#e3e8ee]">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-[#64748d]">Traditional Gateways (2% + 18% GST)</span>
+                      <span className="text-xs sm:text-sm font-mono text-[#ea2261] tabular-nums font-semibold shrink-0 ml-2">
                         -₹{savings.traditionalTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo
                       </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-[#64748d]">MyMobPay Flat License</span>
-                      <span className="text-sm font-mono text-[#059669] tabular-nums font-semibold">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-[#64748d]">MyMobPay Flat License</span>
+                      <span className="text-xs sm:text-sm font-mono text-[#059669] tabular-nums font-semibold shrink-0 ml-2">
                         ₹499.00/mo (Fixed)
                       </span>
                     </div>
                   </div>
 
-                  <div className="pt-6">
-                    <div className="text-xs uppercase tracking-wider font-semibold text-[#64748d] mb-1">
+                  <div className="pt-5 sm:pt-6">
+                    <div className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-[#64748d] mb-1">
                       Net Monthly Savings
                     </div>
-                    <div className="text-4xl font-light text-[#059669] tracking-[-1px] font-mono tabular-nums">
-                      ₹{savings.netSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                      <span className="text-sm font-sans text-[#273951] font-light ml-2">retained</span>
+                    <div className="text-3xl sm:text-4xl font-light text-[#059669] tracking-tight font-mono tabular-nums flex items-baseline flex-wrap gap-1">
+                      <span>₹{savings.netSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                      <span className="text-xs sm:text-sm font-sans text-[#273951] font-light">retained</span>
                     </div>
                     <p className="text-xs text-[#64748d] mt-2">
                       That is <strong className="text-[#0d253d]">{savings.pctSaved}% savings</strong> directly redirected to your product development and growth.
@@ -1342,7 +1342,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch text-left">
             
             {/* Developer Sandbox Card */}
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between shadow-xs hover:border-slate-300 transition-all">
+            <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:border-slate-300 transition-all">
               <div className="space-y-6">
                 <div>
                   <span className="text-xs font-semibold text-slate-500">Sandbox environment</span>
@@ -1363,14 +1363,14 @@ export default function HomePage() {
               </div>
               <Link 
                 href="/login" 
-                className="mt-8 block w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-all text-center text-xs"
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-all text-center text-xs"
               >
                 Launch sandbox console
               </Link>
             </div>
 
             {/* Standard Plan (Highlighted) */}
-            <div className="bg-[#1c1e54] text-white border-none rounded-xl p-8 flex flex-col justify-between stripe-elevated-shadow relative scale-[1.02] overflow-hidden">
+            <div className="bg-[#1c1e54] text-white border-none rounded-2xl sm:rounded-xl p-6 sm:p-8 flex flex-col justify-between stripe-elevated-shadow relative md:scale-[1.02] scale-100 overflow-hidden">
               <div className="absolute top-4 right-4 bg-[#533afd] text-white text-[10px] font-semibold tracking-wider px-3 py-1 rounded-full uppercase">
                 Most popular
               </div>
@@ -1396,14 +1396,14 @@ export default function HomePage() {
               </div>
               <Link 
                 href="/login" 
-                className="mt-8 block w-full py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all text-center text-xs shadow-sm"
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all text-center text-xs shadow-sm"
               >
                 Activate Pro License &rarr;
               </Link>
             </div>
 
             {/* Pro/Enterprise Card */}
-            <div className="bg-white border border-slate-200 rounded-3xl p-8 flex flex-col justify-between hover:border-slate-300 transition-all shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-slate-300 transition-all shadow-xs">
               <div className="space-y-6">
                 <div>
                   <span className="text-xs font-semibold text-slate-500">Enterprise scale</span>
@@ -1422,7 +1422,7 @@ export default function HomePage() {
               </div>
               <Link
                 href="/login"
-                className="mt-8 block w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-all text-center text-xs"
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-all text-center text-xs"
               >
                 Contact for enterprise
               </Link>

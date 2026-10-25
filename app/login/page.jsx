@@ -256,7 +256,7 @@ function OtpBoxInput({ value, onChange, disabled }) {
   };
 
   return (
-    <div className="grid grid-cols-6 gap-2 w-full">
+    <div className="grid grid-cols-6 gap-1.5 sm:gap-2 w-full">
       {digits.map((d, i) => (
         <input
           key={i}
@@ -272,7 +272,7 @@ function OtpBoxInput({ value, onChange, disabled }) {
           onPaste={handlePaste}
           onClick={e => e.target.select()}
           placeholder={d ? '' : '·'}
-          className={`h-12 w-full text-center font-bold text-[20px] rounded-lg border-2 transition-all outline-none ${
+          className={`h-11 sm:h-12 w-full text-center font-bold text-[17px] sm:text-[20px] rounded-lg border-2 transition-all outline-none ${
             d
               ? 'bg-white border-[#533afd] text-[#0d253d] ring-2 ring-[#533afd]/20 shadow-xs'
               : 'bg-[#f6f9fc] border-[#e3e8ee] text-[#0d253d] placeholder:text-[#64748d]'
@@ -1578,7 +1578,7 @@ export default function LoginPage() {
             <div className="w-full bg-white rounded-2xl shadow-sm overflow-hidden border border-[#e3e8ee]">
               
               {/* Card Header */}
-              <div className="p-6 sm:p-8 bg-white">
+              <div className="p-5 sm:p-8 bg-white">
                 <div className="text-center">
                   <h1 className="text-xl sm:text-2xl font-light text-[#0d253d] tracking-[-0.4px] mb-1 font-sohne">
                     {isOAuthSignup 

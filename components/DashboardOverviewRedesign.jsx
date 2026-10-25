@@ -321,11 +321,11 @@ export default function DashboardOverviewRedesign({
           </div>
 
           {/* Section Title & Connection Badge */}
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
               Business Inflow &amp; Settlements
             </h1>
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/80">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/80 shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Direct to Bank
             </span>
@@ -337,11 +337,11 @@ export default function DashboardOverviewRedesign({
         </div>
 
         {/* Top-Right Action Buttons */}
-        <div className="flex items-center gap-2.5 self-start md:self-center">
+        <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setActiveTab?.('payment-links')}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold transition-all shadow-xs hover:shadow-sm active:scale-[0.98] cursor-pointer"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold transition-all shadow-xs hover:shadow-sm active:scale-[0.98] cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Create Payment Link</span>
@@ -350,7 +350,7 @@ export default function DashboardOverviewRedesign({
           <button
             type="button"
             onClick={() => setIsSettlementModalOpen(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/90 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-all shadow-2xs active:scale-[0.98] cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/90 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-all shadow-2xs active:scale-[0.98] cursor-pointer"
           >
             <Building2 className="w-4 h-4 text-slate-500" />
             <span>Bank Rails</span>
@@ -426,7 +426,7 @@ export default function DashboardOverviewRedesign({
             setSettingsCategory?.('banking');
             setActiveTab?.('settings');
           }}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200/90 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-3.5 py-2 bg-white border border-slate-200/90 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer w-full sm:w-auto"
         >
           <Sliders className="w-3.5 h-3.5 text-slate-500" />
           <span>Settlement Rules</span>
@@ -437,7 +437,7 @@ export default function DashboardOverviewRedesign({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
 
         {/* ── CARD 1: DIRECT SETTLEMENT RAIL (Left 5 Cols) ─────────── */}
-        <div className="lg:col-span-5 bg-white border border-[#E5EAE7] rounded-2xl p-6 shadow-xs flex flex-col justify-between relative hover:border-slate-300 transition-all">
+        <div className="lg:col-span-5 bg-white border border-[#E5EAE7] rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col justify-between relative hover:border-slate-300 transition-all">
           <div>
             {/* Header: Direct Settlement Rail + Info + 3-Dots */}
             <div className="flex items-center justify-between pb-3">
@@ -689,31 +689,31 @@ export default function DashboardOverviewRedesign({
         </div>
 
         {/* ── CARD 2: INFLOW VELOCITY & DUAL BAR/LINE CHART (Right 7 Cols) ─ */}
-        <div className="lg:col-span-7 bg-white border border-[#E5EAE7] rounded-2xl p-6 shadow-xs flex flex-col md:flex-row gap-6 items-stretch relative hover:border-slate-300 transition-all">
+        <div className="lg:col-span-7 bg-white border border-[#E5EAE7] rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col md:flex-row gap-4 sm:gap-6 items-stretch relative hover:border-slate-300 transition-all">
 
           {/* Sub-Column 1: Today & 30-Day Collections */}
-          <div className="flex md:flex-col justify-between gap-3 w-full md:w-44 shrink-0">
+          <div className="grid grid-cols-2 md:grid-cols-1 gap-2.5 sm:gap-3 w-full md:w-44 shrink-0">
             {/* Today Collections Stat */}
-            <div className="flex-1 p-3.5 rounded-xl bg-[#F8FAF9] border border-[#E5EAE7] flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#E6F4EA] text-[#137333] flex items-center justify-center shrink-0">
-                <ArrowDownLeft className="w-4 h-4 stroke-[2.5]" />
+            <div className="p-2.5 sm:p-3.5 rounded-xl bg-[#F8FAF9] border border-[#E5EAE7] flex items-center gap-2.5 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#E6F4EA] text-[#137333] flex items-center justify-center shrink-0">
+                <ArrowDownLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
               </div>
               <div className="min-w-0">
-                <span className="text-[11px] font-semibold text-slate-500 block">Today Inflow</span>
-                <span className="text-sm font-extrabold text-slate-900 tabular-nums block truncate">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 block truncate">Today Inflow</span>
+                <span className="text-xs sm:text-sm font-extrabold text-slate-900 tabular-nums block truncate">
                   {formatINR(todayInflow)}
                 </span>
               </div>
             </div>
 
             {/* Settled Orders Stat */}
-            <div className="flex-1 p-3.5 rounded-xl bg-[#F8FAF9] border border-[#E5EAE7] flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-4 h-4 stroke-[2]" />
+            <div className="p-2.5 sm:p-3.5 rounded-xl bg-[#F8FAF9] border border-[#E5EAE7] flex items-center gap-2.5 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
               </div>
               <div className="min-w-0">
-                <span className="text-[11px] font-semibold text-slate-500 block">Settled Orders</span>
-                <span className="text-sm font-extrabold text-slate-900 tabular-nums block truncate">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 block truncate">Settled Orders</span>
+                <span className="text-xs sm:text-sm font-extrabold text-slate-900 tabular-nums block truncate">
                   {allTimeVerified.length} Orders
                 </span>
               </div>
@@ -809,7 +809,7 @@ export default function DashboardOverviewRedesign({
       {/* ── TRANSACTIONS TABLE SECTION ──────────────────────────── */}
       <div className="bg-white border border-[#E5EAE7] rounded-2xl shadow-xs overflow-hidden">
         {/* Table Card Header */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-100">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4.5 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-slate-900">Transactions</h3>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
@@ -820,16 +820,17 @@ export default function DashboardOverviewRedesign({
           <button
             type="button"
             onClick={() => setActiveTab?.('transactions')}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           >
-            <span>Explore Order Ledger</span>
+            <span className="hidden sm:inline">Explore Order Ledger</span>
+            <span className="sm:hidden">Ledger</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           </button>
         </div>
 
         {/* Responsive Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto touch-pan-x scrollbar-thin">
+          <table className="w-full min-w-[640px] text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-100 text-[11px] font-semibold text-slate-400 bg-white">
                 <th className="py-3 px-6 w-10">
