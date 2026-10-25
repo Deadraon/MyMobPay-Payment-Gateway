@@ -3632,7 +3632,7 @@ echo "Order Created: " . $data['orderId'];
 
             {/* Header section with active tab label and sandbox toggle */}
 
-            {activeTab !== 'overview' && activeTab !== 'payment-links' && activeTab !== 'transactions' && activeTab !== 'subscription' && activeTab !== 'settings' && activeTab !== 'verification' && activeTab !== 'reports' && activeTab !== 'developer' && activeTab !== 'support' && (
+            {activeTab !== 'overview' && activeTab !== 'payment-links' && activeTab !== 'transactions' && activeTab !== 'subscription' && activeTab !== 'settings' && activeTab !== 'verification' && activeTab !== 'reports' && activeTab !== 'developer' && activeTab !== 'support' && activeTab !== 'saas-subscriptions' && (
             <div className="mb-6 pt-2 md:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
               <div>

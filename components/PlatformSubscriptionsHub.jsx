@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Crown,
   Search,
@@ -18,8 +18,10 @@ import {
   Phone,
   Shield,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  Users
 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 import { parseSubscriptionPlan } from '@/lib/subscriptionOrders';
 
 const IST_TZ = 'Asia/Kolkata';
@@ -51,6 +53,32 @@ export default function PlatformSubscriptionsHub({
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'verified' | 'pending'
   const [planFilter, setPlanFilter] = useState('all'); // 'all' | '1month' | '2months' | '3months'
   const [copiedId, setCopiedId] = useState(null);
+  const [dbMerchants, setDbMerchants] = useState(null);
+
+  // Fetch live merchant accounts to compute accurate platform subscriber statistics
+  useEffect(() => {
+    let isMounted = true;
+    async function loadMerchants() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          const res = await fetch('/api/admin/merchants', {
+            headers: { Authorization: `Bearer ${session.access_token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (isMounted && Array.isArray(data.merchants)) {
+              setDbMerchants(data.merchants);
+            }
+          }
+        }
+      } catch (err) {
+        // Fallback to subscription orders
+      }
+    }
+    loadMerchants();
+    return () => { isMounted = false; };
+  }, []);
 
   const handleCopy = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -58,10 +86,11 @@ export default function PlatformSubscriptionsHub({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Metrics
+  // Metrics: Total Subs, Active Subs, Inactive Subs, Revenue, Today Inflow, Avg Value
   const metrics = useMemo(() => {
     const verified = subscriptionOrders.filter(o => o.status === 'verified' || o.status === 'paid');
     const pending = subscriptionOrders.filter(o => o.status === 'pending');
+    const inactiveOrders = subscriptionOrders.filter(o => o.status !== 'verified' && o.status !== 'paid');
     const totalRevenue = verified.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
 
     const todayStart = new Date();
@@ -69,23 +98,40 @@ export default function PlatformSubscriptionsHub({
     const todayVerified = verified.filter(o => new Date(o.created_at) >= todayStart);
     const todayRevenue = todayVerified.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
 
+    // Calculate subscriber counts based on database merchants if available, or subscription orders
+    const totalSubs = dbMerchants && dbMerchants.length > 0 
+      ? dbMerchants.length 
+      : subscriptionOrders.length;
+
+    const activeSubs = dbMerchants && dbMerchants.length > 0
+      ? dbMerchants.filter(m => m.subscription_status === 'active' && (!m.subscription_expires_at || new Date(m.subscription_expires_at) > new Date())).length
+      : verified.length;
+
+    const inactiveSubs = dbMerchants && dbMerchants.length > 0
+      ? dbMerchants.filter(m => m.subscription_status !== 'active' || (m.subscription_expires_at && new Date(m.subscription_expires_at) <= new Date())).length
+      : inactiveOrders.length;
+
     return {
       totalRevenue,
       verifiedCount: verified.length,
       pendingCount: pending.length,
+      inactiveOrdersCount: inactiveOrders.length,
       totalCount: subscriptionOrders.length,
+      totalSubs,
+      activeSubs,
+      inactiveSubs,
       todayRevenue,
       todayCount: todayVerified.length,
       avgOrderValue: verified.length > 0 ? Math.round(totalRevenue / verified.length) : 499
     };
-  }, [subscriptionOrders]);
+  }, [subscriptionOrders, dbMerchants]);
 
   // Filtered orders
   const filteredOrders = useMemo(() => {
     return subscriptionOrders.filter(o => {
       // Status
       if (statusFilter === 'verified' && o.status !== 'verified' && o.status !== 'paid') return false;
-      if (statusFilter === 'pending' && o.status !== 'pending') return false;
+      if (statusFilter === 'pending' && (o.status === 'verified' || o.status === 'paid')) return false;
 
       // Plan
       const note = (o.note || '').toLowerCase();
@@ -133,78 +179,116 @@ export default function PlatformSubscriptionsHub({
         )}
       </div>
 
-      {/* ── KPI METRICS CARDS ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-        {/* Total Inflow */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+      {/* ── KPI METRICS CARDS (Total Subs, Active, Inactive, Revenue, Today, Avg Value) ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
+        {/* 1. Total Subs */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Total SaaS Revenue</span>
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Total Subs</span>
+              <span className="text-lg sm:text-2xl font-black text-slate-900 block mt-0.5 sm:mt-1 truncate">
+                {metrics.totalSubs}
+              </span>
+            </div>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-50 border border-indigo-200/60 text-indigo-600 flex items-center justify-center shrink-0">
+              <Layers className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
+            </div>
+          </div>
+          <p className="text-[10px] sm:text-[11px] text-indigo-700 font-semibold mt-2 sm:mt-2.5 truncate flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+            <span className="truncate">Subscriber Base</span>
+          </p>
+        </div>
+
+        {/* 2. Active Subs */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5">
+            <div className="min-w-0">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Active Subs</span>
+              <span className="text-lg sm:text-2xl font-black text-emerald-600 block mt-0.5 sm:mt-1 truncate">
+                {metrics.activeSubs}
+              </span>
+            </div>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 border border-emerald-200/60 text-emerald-600 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
+            </div>
+          </div>
+          <p className="text-[10px] sm:text-[11px] text-emerald-700 font-semibold mt-2 sm:mt-2.5 truncate flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="truncate">Live &amp; Verified</span>
+          </p>
+        </div>
+
+        {/* 3. Inactive Subs */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5">
+            <div className="min-w-0">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Inactive Subs</span>
+              <span className="text-lg sm:text-2xl font-black text-amber-600 block mt-0.5 sm:mt-1 truncate">
+                {metrics.inactiveSubs}
+              </span>
+            </div>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 border border-amber-200/60 text-amber-600 flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
+            </div>
+          </div>
+          <p className="text-[10px] sm:text-[11px] text-amber-700 font-semibold mt-2 sm:mt-2.5 truncate flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span className="truncate">Pending / Expired</span>
+          </p>
+        </div>
+
+        {/* 4. Total SaaS Revenue */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5">
+            <div className="min-w-0">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Total Revenue</span>
               <span className="text-lg sm:text-2xl font-black text-slate-900 block mt-0.5 sm:mt-1 truncate">
                 {formatINR(metrics.totalRevenue)}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 border border-emerald-200/60 text-emerald-600 flex items-center justify-center shrink-0">
-              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-teal-50 border border-teal-200/60 text-teal-600 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-emerald-700 font-semibold mt-2 sm:mt-3 flex items-center gap-1 truncate">
-            <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-            <span className="truncate">{metrics.verifiedCount} verified plans</span>
+          <p className="text-[10px] sm:text-[11px] text-teal-700 font-semibold mt-2 sm:mt-2.5 truncate">
+            {metrics.verifiedCount} verified orders
           </p>
         </div>
 
-        {/* Today's Inflow */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+        {/* 5. Today's SaaS Inflow */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Today&apos;s SaaS Inflow</span>
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Today&apos;s Inflow</span>
               <span className="text-lg sm:text-2xl font-black text-slate-900 block mt-0.5 sm:mt-1 truncate">
                 {formatINR(metrics.todayRevenue)}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 border border-blue-200/60 text-blue-600 flex items-center justify-center shrink-0">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 border border-blue-200/60 text-blue-600 flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-2 sm:mt-3 truncate">
-            {metrics.todayCount} renewals/activations today
+          <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-2 sm:mt-2.5 truncate">
+            {metrics.todayCount} renewals today
           </p>
         </div>
 
-        {/* Pending Orders */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+        {/* 6. Avg License Value */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Pending Verification</span>
-              <span className="text-lg sm:text-2xl font-black text-amber-600 block mt-0.5 sm:mt-1 truncate">
-                {metrics.pendingCount}
-              </span>
-            </div>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 border border-amber-200/60 text-amber-600 flex items-center justify-center shrink-0">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
-            </div>
-          </div>
-          <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-2 sm:mt-3 truncate">
-            Awaiting bank webhook match
-          </p>
-        </div>
-
-        {/* Avg Plan Price */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
-          <div className="flex items-start justify-between gap-1.5">
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Avg License Value</span>
-              <span className="text-lg sm:text-2xl font-black text-indigo-900 block mt-0.5 sm:mt-1 truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block truncate">Avg Plan Value</span>
+              <span className="text-lg sm:text-2xl font-black text-purple-900 block mt-0.5 sm:mt-1 truncate">
                 {formatINR(metrics.avgOrderValue)}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-indigo-50 border border-indigo-200/60 text-indigo-600 flex items-center justify-center shrink-0">
-              <Receipt className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-50 border border-purple-200/60 text-purple-600 flex items-center justify-center shrink-0">
+              <Receipt className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-indigo-700 font-semibold mt-2 sm:mt-3 truncate">
-            Across active tiers (₹499/₹998)
+          <p className="text-[10px] sm:text-[11px] text-purple-700 font-semibold mt-2 sm:mt-2.5 truncate">
+            Across active tiers
           </p>
         </div>
       </div>
@@ -241,7 +325,7 @@ export default function PlatformSubscriptionsHub({
                 statusFilter === 'verified' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              Paid ({metrics.verifiedCount})
+              Active ({metrics.verifiedCount})
             </button>
             <button
               onClick={() => setStatusFilter('pending')}
@@ -249,7 +333,7 @@ export default function PlatformSubscriptionsHub({
                 statusFilter === 'pending' ? 'bg-white text-amber-700 shadow-xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              Pending ({metrics.pendingCount})
+              Inactive / Pending ({metrics.inactiveOrdersCount})
             </button>
           </div>
 
