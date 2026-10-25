@@ -2747,13 +2747,11 @@ echo "Order Created: " . $data['orderId'];
           {/* Navigation Links with Original Categories */}
           <nav className="flex-1 px-4 py-1 space-y-1 overflow-y-auto">
             {/* Pinned: Premium Subscription Status Badge */}
-            <div className="mb-1">
-              <PremiumTierBadge
-                profile={profile}
-                activeTab={activeTab}
-                onClick={handleScrollToSubscription}
-              />
-            </div>
+            <PremiumTierBadge
+              profile={profile}
+              activeTab={activeTab}
+              onClick={handleScrollToSubscription}
+            />
 
             {/* Pinned: Admin Console (Super Admin) */}
             {isAdminUser && (
@@ -3349,16 +3347,15 @@ echo "Order Created: " . $data['orderId'];
                 {/* Navigation Links */}
                 <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto overscroll-contain touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
                   {/* Pinned: Premium Subscription Status Badge */}
-                  <div className="mb-1">
-                    <PremiumTierBadge
-                      profile={profile}
-                      activeTab={activeTab}
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        handleScrollToSubscription();
-                      }}
-                    />
-                  </div>
+                  <PremiumTierBadge
+                    profile={profile}
+                    activeTab={activeTab}
+                    className="py-2.5"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleScrollToSubscription();
+                    }}
+                  />
 
                   {/* Pinned: Super Admin Console (if Super Admin) */}
                   {isAdminUser && (
