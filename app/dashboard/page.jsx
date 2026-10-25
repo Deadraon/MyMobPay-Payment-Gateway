@@ -20,7 +20,7 @@ import {
 
   Menu, TrendingUp, AlertCircle, Star, Crown, Shield, ShieldCheck, BarChart3, Calendar, Zap, ChevronDown,
   QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell, LifeBuoy, HelpCircle,
-  Receipt
+  Receipt, Layers
 } from 'lucide-react';
 
 import QRCode from 'react-qr-code';
@@ -2879,11 +2879,11 @@ echo "Order Created: " . $data['orderId'];
                 >
                   <span className="t-sidebar-indicator" />
                   <div className="flex items-center gap-3 min-w-0">
-                    <Receipt className="w-4 h-4 shrink-0 t-sidebar-icon text-amber-400" />
+                    <Layers className="w-4 h-4 shrink-0 t-sidebar-icon" />
                     <span className="truncate">SaaS Subscriptions</span>
                   </div>
                   {subscriptionOrders.length > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-500/20 text-blue-300 border border-blue-500/40 shrink-0">
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
                       {subscriptionOrders.length}
                     </span>
                   )}
@@ -3517,11 +3517,11 @@ echo "Order Created: " . $data['orderId'];
                       >
                         <span className="t-sidebar-indicator" />
                         <div className="flex items-center gap-3 min-w-0">
-                          <Receipt className="w-4 h-4 shrink-0 t-sidebar-icon text-amber-400" />
+                          <Layers className="w-4 h-4 shrink-0 t-sidebar-icon" />
                           <span className="truncate">SaaS Subscriptions</span>
                         </div>
                         {subscriptionOrders.length > 0 && (
-                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-500/20 text-blue-300 border border-blue-500/40 shrink-0">
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
                             {subscriptionOrders.length}
                           </span>
                         )}
