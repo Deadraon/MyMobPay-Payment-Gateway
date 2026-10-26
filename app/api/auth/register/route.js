@@ -182,11 +182,14 @@ export async function POST(req) {
 
     // ── 7. Insert / Upsert merchant profile in public.merchants ──────
     const existingProgress = existingMerchant?.setup_progress || {};
+    const alreadyNotified = Boolean(existingProgress.admin_signup_notified);
     const updatedProgress = {
       ...(typeof existingProgress === 'object' && existingProgress !== null ? existingProgress : {}),
       website_url: finalWebsiteUrl || '',
       business_website: finalWebsiteUrl || '',
       onboarding_completed_at: new Date().toISOString(),
+      admin_signup_notified: true,
+      admin_signup_notified_at: existingProgress.admin_signup_notified_at || new Date().toISOString(),
     };
 
     const { error: merchantError } = await supabaseAdmin
@@ -223,20 +226,22 @@ export async function POST(req) {
       console.warn('[REGISTER API] Welcome email send notice:', welcomeErr?.message);
     }
 
-    // ── 9. Dispatch Instant Admin Notification Email ─────────────────
-    try {
-      await sendAdminNewSignupNotification({
-        userEmail: cleanEmail,
-        userName: finalBusinessName,
-        businessName: finalBusinessName,
-        upiId: finalUpiId,
-        phone: cleanPhone ? `+91 ${cleanPhone}` : '',
-        provider: 'Email & WhatsApp OTP',
-        userId,
-        createdAt: new Date().toISOString(),
-      });
-    } catch (adminNotifyErr) {
-      console.warn('[REGISTER API] Admin new signup notification notice:', adminNotifyErr?.message);
+    // ── 9. Dispatch Instant Admin Notification Email (Deduplicated) ──
+    if (!alreadyNotified) {
+      try {
+        await sendAdminNewSignupNotification({
+          userEmail: cleanEmail,
+          userName: finalBusinessName,
+          businessName: finalBusinessName,
+          upiId: finalUpiId,
+          phone: cleanPhone ? `+91 ${cleanPhone}` : '',
+          provider: 'Email & WhatsApp OTP',
+          userId,
+          createdAt: new Date().toISOString(),
+        });
+      } catch (adminNotifyErr) {
+        console.warn('[REGISTER API] Admin new signup notification notice:', adminNotifyErr?.message);
+      }
     }
 
     // ── 10. Generate Supabase magiclink token for immediate authenticated session ──

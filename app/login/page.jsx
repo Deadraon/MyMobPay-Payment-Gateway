@@ -1172,6 +1172,10 @@ export default function LoginPage() {
 
   // Main Form Submit Handler
   const handleAuth = async (action) => {
+    if (loading || isRedirectingRef.current || (action === 'signup' && isRegistrationSubmittedRef.current)) {
+      return;
+    }
+
     if (!email.trim() || !password.trim()) {
       setError('Please enter your email and password.');
       return;

@@ -37,47 +37,56 @@ function buildAdminBrandedEmailHtml({
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="x-apple-disable-message-reformatting" />
   <title>${subject}</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #334155;">
   <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #f8fafc;">
     <tr>
       <td align="center" style="padding: 40px 16px 48px 16px;">
         <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="max-width: 580px; margin: 0 auto;">
           
-          <!-- Logo & Header -->
+          <!-- BRAND TOP BAR -->
           <tr>
-            <td align="center" style="padding-bottom: 24px;">
-              <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+            <td style="padding-bottom: 20px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
                 <tr>
-                  <td style="vertical-align: middle; padding-right: 12px;">
-                    <img src="https://mymob.tech/icon.png" width="42" height="42" alt="MyMobPay" style="width: 42px; height: 42px; border-radius: 12px; display: block;" />
-                  </td>
                   <td style="vertical-align: middle;">
-                    <span style="font-size: 22px; font-weight: 800; color: #0c2340; letter-spacing: -0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">MyMobPay</span>
-                    <div style="font-size: 10.5px; font-weight: 700; color: #64748b; letter-spacing: 0.8px; text-transform: uppercase;">Direct Bank UPI Payment Rails</div>
+                    <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+                      <tr>
+                        <td style="vertical-align: middle; padding-right: 12px;">
+                          <img src="https://mymob.tech/icon.png" width="38" height="38" alt="MyMobPay" style="width: 38px; height: 38px; border-radius: 10px; display: block; border: 0;" />
+                        </td>
+                        <td style="vertical-align: middle;">
+                          <div style="font-size: 17px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px; line-height: 1.2;">MyMobPay</div>
+                          <div style="font-size: 11px; font-weight: 500; color: #64748b; letter-spacing: 0.2px;">Direct UPI Settlement Rails</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="right" style="vertical-align: middle;">
+                    <span style="display: inline-block; background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; padding: 4px 10px; border-radius: 9999px;">
+                      <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #0284c7; margin-right: 5px; vertical-align: middle;"></span>Official Notice
+                    </span>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
 
-          <!-- Main Card -->
+          <!-- MAIN CARD -->
           <tr>
-            <td style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 36px 32px; box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);">
+            <td style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 36px 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px -4px rgba(15,23,42,0.06);">
               
               <!-- Subject Header -->
-              <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 18px; margin-bottom: 22px;">
-                <span style="display: inline-block; background-color: #eff6ff; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
-                  Official Communication
-                </span>
-                <h1 style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.35;">
+              <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 24px;">
+                <h1 style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.35; letter-spacing: -0.3px;">
                   ${subject}
                 </h1>
               </div>
 
               <!-- Greeting -->
-              <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 700; color: #1e293b;">
+              <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 600; color: #1e293b;">
                 Hello ${recipientName},
               </p>
 
@@ -90,8 +99,8 @@ function buildAdminBrandedEmailHtml({
               ${callToActionText && callToActionUrl ? `
                 <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin: 28px 0 20px 0;">
                   <tr>
-                    <td align="center">
-                      <a href="${callToActionUrl}" style="display: inline-block; background-color: #2563eb; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none; padding: 13px 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);">
+                    <td>
+                      <a href="${callToActionUrl}" style="display: inline-block; background-color: #0f172a; color: #ffffff; font-size: 13.5px; font-weight: 600; text-decoration: none; padding: 12px 28px; border-radius: 8px; letter-spacing: 0.2px;">
                         ${callToActionText} &rarr;
                       </a>
                     </td>
@@ -100,19 +109,19 @@ function buildAdminBrandedEmailHtml({
               ` : ''}
 
               <!-- Security / Operational Notice -->
-              <div style="background-color: #f8fafc; border-left: 3.5px solid #2563eb; padding: 12px 16px; border-radius: 0 10px 10px 0; margin-top: 26px;">
+              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-top: 26px;">
                 <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #64748b;">
-                  <strong>Zero-Commission Rails:</strong> MyMobPay delivers customer UPI payments directly to your linked bank account with 0% transaction fees.
+                  <strong style="color: #0f172a;">Zero-Commission Rails:</strong> MyMobPay delivers customer UPI payments directly to your linked bank account with 0% transaction fees.
                 </p>
               </div>
 
-              <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 28px 0 20px 0;" />
+              <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 28px 0 20px 0;" />
 
               <!-- Sign-off -->
               <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #64748b;">
                 Warm regards,<br />
                 <strong style="color: #0f172a;">MyMobPay Merchant Operations Team</strong><br />
-                <span style="font-size: 12px; color: #94a3b8;">Direct UPI Rails &bull; mymob.tech</span>
+                <span style="font-size: 12px; color: #94a3b8;">Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></span>
               </p>
 
             </td>
@@ -122,10 +131,10 @@ function buildAdminBrandedEmailHtml({
           <tr>
             <td align="center" style="padding-top: 24px;">
               <p style="margin: 0 0 6px 0; font-size: 11.5px; color: #94a3b8;">
-                This direct email was sent by an authorized administrator of MyMobPay Payments Private Limited.
+                This official dispatch was sent by an authorized administrator of MyMobPay Payments.
               </p>
               <p style="margin: 0; font-size: 11px; color: #cbd5e1;">
-                &copy; ${currentYear} MyMobPay (mymob.tech). All rights reserved.
+                &copy; ${currentYear} MyMobPay (mymob.tech). All rights reserved. &bull; NPCI Compliant Direct UPI Infrastructure
               </p>
             </td>
           </tr>
