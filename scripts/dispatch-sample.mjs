@@ -35,29 +35,40 @@ console.log('================================================================\n'
 async function main() {
   const mailer = await import('../lib/mailer.js');
 
-  console.log('Dispatching sample "Admin New Signup Alert" (Redesigned Fintech layout)...');
+  console.log('1. Dispatching sample "Admin New Signup Alert" (Minimal light layout)...');
   const result = await mailer.sendAdminNewSignupNotification({
-    userEmail: 'merchant.partner@pixelcraft.in',
+    userEmail: 'kunal@pixelcraft.in',
     userName: 'Kunal Chauhan',
-    businessName: 'Pixelcraft Studio LLP',
-    upiId: 'pixelcraft@okhdfcbank',
+    businessName: 'Pixelcraft Studio',
+    upiId: 'pixelcraft@hdfcbank',
     phone: '+91 98765 43210',
-    provider: 'Google Auth & WhatsApp Verified',
+    provider: 'Google Auth',
     userId: `usr_${Date.now().toString().slice(-6)}`,
     createdAt: new Date().toISOString(),
     bankDetails: {
-      bank_name: 'HDFC Bank Ltd',
-      bank_account_number: '•••• •••• 8819',
-      bank_ifsc: 'HDFC0001234'
+      bank_name: 'HDFC Bank',
+      account_number: '8819',
+      ifsc: 'HDFC0001234'
     }
   });
 
   console.log('\n[SIGNUP ALERT RESULT]:', JSON.stringify(result, null, 2));
 
-  console.log('\nDispatching sample "Subscription Tax Invoice & Receipt" (SendPulse)...');
+  console.log('\n2. Dispatching sample "Verification Code OTP" (Fluid mobile code box)...');
+  const otpResult = await mailer.sendOtpEmail({
+    to: targetEmail,
+    otp: '508228',
+    recipientName: 'Kunal Chauhan',
+    businessName: 'Pixelcraft Studio',
+    purpose: 'login'
+  });
+
+  console.log('\n[OTP RESULT]:', JSON.stringify(otpResult, null, 2));
+
+  console.log('\n3. Dispatching sample "Subscription Tax Invoice" (Minimal light receipt)...');
   const invoiceResult = await mailer.sendSubscriptionInvoiceEmail({
     to: targetEmail,
-    businessName: 'Pixelcraft Studio LLP',
+    businessName: 'Pixelcraft Studio',
     mid: 'MMP-772910',
     planName: 'Annual Pro Merchant License',
     amount: 4999,

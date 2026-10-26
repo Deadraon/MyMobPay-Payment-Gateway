@@ -39,34 +39,48 @@ function buildAdminBrandedEmailHtml({
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="x-apple-disable-message-reformatting" />
   <title>${subject}</title>
+  <style type="text/css">
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+    @media only screen and (max-width: 480px) {
+      .outer-cell { padding: 16px 10px !important; }
+      .card-pad { padding: 20px 16px !important; }
+      .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #334155;">
+<body style="margin: 0; padding: 0; background-color: #f8fafc; -webkit-font-smoothing: antialiased;">
+  <div style="display: none; font-size: 1px; color: #f8fafc; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
+    ${subject} &bull; MyMobPay official update.
+  </div>
+
   <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #f8fafc;">
     <tr>
-      <td align="center" style="padding: 40px 16px 48px 16px;">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="max-width: 580px; margin: 0 auto;">
+      <td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="max-width: 540px; margin: 0 auto;">
           
           <!-- BRAND TOP BAR -->
           <tr>
-            <td style="padding-bottom: 20px;">
+            <td style="padding-bottom: 16px;">
               <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
                 <tr>
-                  <td style="vertical-align: middle;">
+                  <td align="left" style="vertical-align: middle;">
                     <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
-                        <td style="vertical-align: middle; padding-right: 12px;">
-                          <img src="https://mymob.tech/icon.png" width="38" height="38" alt="MyMobPay" style="width: 38px; height: 38px; border-radius: 10px; display: block; border: 0;" />
+                        <td style="vertical-align: middle; padding-right: 10px;">
+                          <img src="https://mymob.tech/icon.png" width="32" height="32" alt="MyMobPay" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;" />
                         </td>
                         <td style="vertical-align: middle;">
-                          <div style="font-size: 17px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px; line-height: 1.2;">MyMobPay</div>
-                          <div style="font-size: 11px; font-weight: 500; color: #64748b; letter-spacing: 0.2px;">Direct UPI Settlement Rails</div>
+                          <span style="font-size: 16px; font-weight: 700; color: #0f172a; display: block; line-height: 1.2;">MyMobPay</span>
                         </td>
                       </tr>
                     </table>
                   </td>
                   <td align="right" style="vertical-align: middle;">
-                    <span style="display: inline-block; background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; padding: 4px 10px; border-radius: 9999px;">
-                      <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #0284c7; margin-right: 5px; vertical-align: middle;"></span>Official Notice
+                    <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0;">
+                      Notice
                     </span>
                   </td>
                 </tr>
@@ -76,65 +90,52 @@ function buildAdminBrandedEmailHtml({
 
           <!-- MAIN CARD -->
           <tr>
-            <td style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 36px 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px -4px rgba(15,23,42,0.06);">
-              
-              <!-- Subject Header -->
-              <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 24px;">
-                <h1 style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.35; letter-spacing: -0.3px;">
-                  ${subject}
-                </h1>
-              </div>
+            <td>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);">
+                <tr>
+                  <td class="card-pad" style="padding: 24px 20px;">
+                    <h1 style="margin: 0 0 16px 0; font-size: 19px; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                      ${subject}
+                    </h1>
 
-              <!-- Greeting -->
-              <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 600; color: #1e293b;">
-                Hello ${recipientName},
-              </p>
+                    <p style="margin: 0 0 14px 0; font-size: 14px; font-weight: 600; color: #1e293b;">
+                      Hello ${recipientName},
+                    </p>
 
-              <!-- Body Message -->
-              <div style="color: #334155; font-size: 14.5px; line-height: 1.65;">
-                ${formattedBody}
-              </div>
+                    <div style="color: #334155; font-size: 14px; line-height: 1.6;">
+                      ${formattedBody}
+                    </div>
 
-              <!-- Call to Action Button (if provided) -->
-              ${callToActionText && callToActionUrl ? `
-                <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin: 28px 0 20px 0;">
-                  <tr>
-                    <td>
-                      <a href="${callToActionUrl}" style="display: inline-block; background-color: #0f172a; color: #ffffff; font-size: 13.5px; font-weight: 600; text-decoration: none; padding: 12px 28px; border-radius: 8px; letter-spacing: 0.2px;">
-                        ${callToActionText} &rarr;
-                      </a>
-                    </td>
-                  </tr>
-                </table>
-              ` : ''}
+                    ${callToActionText && callToActionUrl ? `
+                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin: 22px 0 16px 0;">
+                        <tr>
+                          <td align="center">
+                            <a href="${callToActionUrl}" target="_blank" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">
+                              ${callToActionText} &rarr;
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                    ` : ''}
 
-              <!-- Security / Operational Notice -->
-              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-top: 26px;">
-                <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #64748b;">
-                  <strong style="color: #0f172a;">Zero-Commission Rails:</strong> MyMobPay delivers customer UPI payments directly to your linked bank account with 0% transaction fees.
-                </p>
-              </div>
+                    <div style="border-top: 1px solid #f1f5f9; padding-top: 16px; margin-top: 20px;">
+                      <p style="margin: 0; font-size: 12.5px; line-height: 1.5; color: #64748b;">
+                        Warm regards,<br />
+                        <strong style="color: #0f172a;">MyMobPay Operations Team</strong>
+                      </p>
+                    </div>
 
-              <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 28px 0 20px 0;" />
-
-              <!-- Sign-off -->
-              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #64748b;">
-                Warm regards,<br />
-                <strong style="color: #0f172a;">MyMobPay Merchant Operations Team</strong><br />
-                <span style="font-size: 12px; color: #94a3b8;">Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></span>
-              </p>
-
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- FOOTER -->
           <tr>
-            <td align="center" style="padding-top: 24px;">
-              <p style="margin: 0 0 6px 0; font-size: 11.5px; color: #94a3b8;">
-                This official dispatch was sent by an authorized administrator of MyMobPay Payments.
-              </p>
-              <p style="margin: 0; font-size: 11px; color: #cbd5e1;">
-                &copy; ${currentYear} MyMobPay (mymob.tech). All rights reserved. &bull; NPCI Compliant Direct UPI Infrastructure
+            <td align="center" style="padding-top: 20px; text-align: center;">
+              <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">
+                MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a>
               </p>
             </td>
           </tr>

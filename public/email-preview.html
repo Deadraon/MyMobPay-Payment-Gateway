@@ -3,75 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MyMobPay Email Template Design Studio</title>
+  <title>MyMobPay Email Design System</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
+      background: #f8fafc;
+      color: #0f172a;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
     header {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 12px 24px;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 20px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
     }
     .brand-col {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .brand-col img {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 8px;
+      border: 1px solid #e2e8f0;
     }
     .brand-title {
       font-size: 15px;
       font-weight: 700;
-      color: #ffffff;
-      letter-spacing: -0.3px;
+      color: #0f172a;
+      line-height: 1.2;
     }
     .brand-sub {
       font-size: 11px;
-      color: #94a3b8;
+      color: #64748b;
     }
     .controls-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
     .template-select {
-      background: #0f172a;
-      color: #f1f5f9;
-      border: 1px solid #475569;
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
-      padding: 8px 14px;
+      padding: 7px 12px;
       font-size: 13px;
       font-weight: 600;
       outline: none;
       cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+    .template-select:focus {
+      border-color: #0f172a;
     }
     .view-toggles {
       display: inline-flex;
-      background: #0f172a;
-      border: 1px solid #475569;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
       border-radius: 8px;
       padding: 3px;
     }
     .view-btn {
       background: transparent;
       border: none;
-      color: #94a3b8;
+      color: #64748b;
       padding: 5px 12px;
       font-size: 12px;
       font-weight: 600;
@@ -80,37 +86,71 @@
       transition: all 0.15s ease;
     }
     .view-btn.active {
-      background: #3b82f6;
-      color: #ffffff;
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
     }
     .workspace {
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 32px 16px;
-      background: #090d16;
+      padding: 24px 14px;
+      background: #f1f5f9;
       overflow-y: auto;
     }
     .preview-frame-wrapper {
-      background: #f8fafc;
-      border-radius: 16px;
-      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
-      border: 1px solid #1e293b;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 12px 24px -6px rgba(0,0,0,0.04);
+      border: 1px solid #e2e8f0;
       overflow: hidden;
-      transition: max-width 0.25s ease;
+      transition: max-width 0.2s ease;
       width: 100%;
-      max-width: 720px;
+      max-width: 600px;
     }
     .preview-frame-wrapper.mobile {
-      max-width: 390px;
+      max-width: 375px;
     }
     iframe {
       width: 100%;
-      min-height: 850px;
+      min-height: 820px;
       border: none;
       display: block;
       background: #f8fafc;
+    }
+
+    @media (max-width: 640px) {
+      header {
+        padding: 10px 12px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .controls-row {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 8px;
+      }
+      .template-select {
+        width: 100%;
+      }
+      .view-toggles {
+        display: flex;
+        width: 100%;
+      }
+      .view-btn {
+        flex: 1;
+        text-align: center;
+      }
+      .workspace {
+        padding: 12px 8px;
+      }
+      .preview-frame-wrapper {
+        border-radius: 8px;
+        max-width: 100% !important;
+      }
     }
   </style>
 </head>
@@ -120,25 +160,27 @@
     <div class="brand-col">
       <img src="https://mymob.tech/icon.png" alt="MyMobPay" />
       <div>
-        <div class="brand-title">MyMobPay Email Design System</div>
-        <div class="brand-sub">Modern Executive &bull; Stripe/Linear Aesthetic</div>
+        <div class="brand-title">MyMobPay Email System</div>
+        <div class="brand-sub">Minimal &bull; Light Theme &bull; Mobile Synced</div>
       </div>
     </div>
 
     <div class="controls-row">
       <select id="templateSelector" class="template-select" onchange="renderSelectedTemplate()">
-        <option value="admin_signup">1. Admin New Signup Alert (Redesigned)</option>
-        <option value="merchant_welcome">2. Merchant Welcome & Onboarding</option>
-        <option value="otp_login">3. 6-Digit Security OTP (Auth)</option>
-        <option value="magic_link">4. One-Click Magic Link</option>
-        <option value="subscription_invoice">5. Tax Invoice & Settlement Receipt</option>
-        <option value="dispute_update">6. Operations Dispute / Inquiry Alert</option>
-        <option value="official_dispatch">7. Administrator Official Dispatch</option>
+        <option value="otp_login">1. Verification Code (Auth OTP)</option>
+        <option value="magic_link">2. One-Click Sign-In Link</option>
+        <option value="merchant_welcome">3. Merchant Welcome &amp; Active</option>
+        <option value="admin_signup">4. Admin New Signup Alert</option>
+        <option value="subscription_invoice">5. Tax Invoice Receipt</option>
+        <option value="monthly_statement">6. Monthly Settlement Statement</option>
+        <option value="onboarding_outreach">7. Onboarding Number Outreach</option>
+        <option value="dispute_update">8. Operations Dispute / Inquiry</option>
+        <option value="official_dispatch">9. Administrator Notice</option>
       </select>
 
       <div class="view-toggles">
-        <button id="btnDesktop" class="view-btn active" onclick="setViewMode('desktop')">Desktop (720px)</button>
-        <button id="btnMobile" class="view-btn" onclick="setViewMode('mobile')">Mobile (390px)</button>
+        <button id="btnDesktop" class="view-btn active" onclick="setViewMode('desktop')">Desktop (600px)</button>
+        <button id="btnMobile" class="view-btn" onclick="setViewMode('mobile')">Mobile (375px)</button>
       </div>
     </div>
   </header>
@@ -151,417 +193,615 @@
 
   <script>
     const templates = {
-      admin_signup: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;color:#334155;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;">
-    <tr><td align="center" style="padding:40px 16px 48px 16px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;margin:0 auto;">
-        <tr><td style="padding-bottom:20px;">
+      otp_login: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 16px !important; }
+    .otp-code { font-size: 28px !important; letter-spacing: 6px !important; text-indent: 6px !important; padding: 12px 16px !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td style="vertical-align:middle;">
+              <td align="left" style="vertical-align: middle;">
                 <table border="0" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-right:12px;vertical-align:middle;"><img src="https://mymob.tech/icon.png" width="38" height="38" style="width:38px;height:38px;border-radius:10px;display:block;border:0;"/></td>
-                    <td style="vertical-align:middle;">
-                      <div style="font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;line-height:1.2;">MyMobPay</div>
-                      <div style="font-size:11px;font-weight:500;color:#64748b;letter-spacing:0.2px;">Direct UPI Settlement Rails</div>
-                    </td>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
                   </tr>
                 </table>
               </td>
-              <td align="right" style="vertical-align:middle;">
-                <span style="display:inline-block;background-color:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;font-size:10.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;padding:4px 10px;border-radius:9999px;">
-                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background-color:#10b981;margin-right:5px;vertical-align:middle;"></span>New Signup
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0;">Security</span>
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 28px 24px; text-align: center;">
+              <h1 style="margin: 0 0 6px 0; font-size: 20px; font-weight: 700; color: #0f172a; line-height: 1.3;">Verification code</h1>
+              <p style="margin: 0 0 20px 0; font-size: 14px; color: #64748b; line-height: 1.5;">Hi Kunal, enter this code to complete sign-in. Valid for 10 minutes.</p>
+              <table border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto 20px auto; width: 100%; max-width: 260px;">
+                <tr><td align="center">
+                  <div class="otp-code" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #0f172a; text-indent: 8px; padding: 14px 20px; background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; text-align: center; box-sizing: border-box; line-height: 1.1;">508228</div>
+                </td></tr>
+              </table>
+              <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #94a3b8;">Never share this code. If you didn't request this, ignore this email.</p>
+            </td></tr>
+          </table>
+        </td></tr>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`,
+
+      magic_link: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 16px !important; }
+    .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td align="left" style="vertical-align: middle;">
+                <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
+                  </tr>
+                </table>
+              </td>
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0;">Sign In</span>
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 28px 24px; text-align: center;">
+              <h1 style="margin: 0 0 6px 0; font-size: 20px; font-weight: 700; color: #0f172a; line-height: 1.3;">Sign in to MyMobPay</h1>
+              <p style="margin: 0 0 22px 0; font-size: 14px; color: #64748b; line-height: 1.5;">Click the button below to access your merchant console. Valid for 15 minutes.</p>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 0 0 20px 0;">
+                <tr><td align="center">
+                  <a href="https://mymob.tech/dashboard" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 13px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">Sign In to Console &rarr;</a>
+                </td></tr>
+              </table>
+              <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #94a3b8;">If you didn't request this sign-in link, ignore this email.</p>
+            </td></tr>
+          </table>
+        </td></tr>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`,
+
+      merchant_welcome: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 16px !important; }
+    .k-col { width: 38% !important; font-size: 12px !important; }
+    .v-col { font-size: 12px !important; }
+    .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td align="left" style="vertical-align: middle;">
+                <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
+                  </tr>
+                </table>
+              </td>
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #ecfdf5; color: #065f46; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #a7f3d0;">
+                  <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10b981; margin-right: 4px; vertical-align: middle;"></span>Active
                 </span>
               </td>
             </tr>
           </table>
         </td></tr>
-        <tr><td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:36px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px -4px rgba(15,23,42,0.06);">
-          <h1 style="margin:0 0 12px 0;font-size:20px;font-weight:800;color:#0f172a;line-height:1.35;letter-spacing:-0.3px;">New Merchant Onboarded</h1>
-          <p style="margin:0 0 24px 0;font-size:14px;line-height:1.6;color:#64748b;">A new business has successfully signed up for direct UPI payment settlement.</p>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:24px;">
-            <tr><td style="padding:16px;">
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 28px 24px;">
+              <h1 style="margin: 0 0 6px 0; font-size: 20px; font-weight: 700; color: #0f172a; line-height: 1.3;">Welcome to MyMobPay</h1>
+              <p style="margin: 0 0 20px 0; font-size: 14px; color: #64748b; line-height: 1.5;">Hi Pixelcraft Studio, your account is active and ready to accept zero-fee UPI payments directly into your bank account.</p>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; border-collapse: separate;">
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0; width: 36%;">Account ID</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0;">mer_92bfa031</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Business</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Pixelcraft Studio</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Registered Email</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #0f172a; border-bottom: 1px solid #e2e8f0; word-break: break-all;">kunal@pixelcraft.in</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Settlement UPI</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; border-bottom: 1px solid #e2e8f0;">pixelcraft@upi</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500;">Gateway Fee</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #059669; font-weight: 600;">0.00% (Direct to bank)</td></tr>
+              </table>
+              <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;">
+                <div style="font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">Next steps:</div>
+                <div style="font-size: 13px; line-height: 1.6; color: #475569;">
+                  1. Add bank account &amp; UPI ID in Settings<br/>
+                  2. Copy API credentials for checkout integration<br/>
+                  3. Create a payment link to test live settlement
+                </div>
+              </div>
               <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tr>
-                  <td width="48" style="vertical-align:middle;">
-                    <div style="width:44px;height:44px;background-color:#0f172a;border-radius:10px;text-align:center;line-height:44px;font-size:17px;font-weight:700;color:#ffffff;">P</div>
-                  </td>
-                  <td style="vertical-align:middle;padding-left:14px;">
-                    <div style="font-size:15px;font-weight:700;color:#0f172a;line-height:1.2;">Pixelcraft Studio</div>
-                    <div style="font-size:12.5px;color:#64748b;margin-top:2px;">kunal@pixelcraft.in</div>
-                  </td>
-                </tr>
+                <tr><td align="center">
+                  <a href="https://mymob.tech/dashboard" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">Open Dashboard &rarr;</a>
+                </td></tr>
               </table>
             </td></tr>
           </table>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:24px;border-collapse:separate;">
-            <tr>
-              <td style="padding:12px 16px;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;width:35%;">Selected Plan</td>
-              <td style="padding:12px 16px;font-size:12.5px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;">Annual Pro Plan</td>
-            </tr>
-            <tr>
-              <td style="padding:12px 16px;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Billing Cycle</td>
-              <td style="padding:12px 16px;font-size:12.5px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;">Yearly (₹4,999/yr)</td>
-            </tr>
-            <tr>
-              <td style="padding:12px 16px;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Merchant ID</td>
-              <td style="padding:12px 16px;font-size:12px;font-weight:700;color:#0f172a;font-family:ui-monospace,Menlo,monospace;border-bottom:1px solid #e2e8f0;">mer_92bfa031</td>
-            </tr>
-            <tr>
-              <td style="padding:12px 16px;font-size:12px;font-weight:600;color:#64748b;">Registration Time</td>
-              <td style="padding:12px 16px;font-size:12.5px;font-weight:600;color:#0f172a;">26 Oct 2026, 05:02 PM IST</td>
-            </tr>
-          </table>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
-            <tr><td>
-              <a href="https://mymob.tech/admin/merchants" style="display:inline-block;background-color:#0f172a;color:#ffffff;font-size:13.5px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;letter-spacing:0.2px;">Open Admin Console &rarr;</a>
-            </td></tr>
-          </table>
-          <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;">
-            <span style="font-size:11.5px;font-weight:600;color:#64748b;">Direct Operations:</span>
-            <a href="mailto:kunal@pixelcraft.in" style="font-size:11.5px;font-weight:600;color:#0f172a;text-decoration:none;margin-left:12px;">Email Merchant</a>
-            <span style="color:#cbd5e1;margin:0 6px;">&bull;</span>
-            <a href="https://wa.me/919876543210" style="font-size:11.5px;font-weight:600;color:#0f172a;text-decoration:none;">WhatsApp</a>
-          </div>
         </td></tr>
-        <tr><td align="center" style="padding-top:24px;">
-          <p style="margin:0 0 6px 0;font-size:11.5px;color:#94a3b8;">Automated System Dispatch &bull; MyMobPay Gateway Engine</p>
-          <p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; 2026 MyMobPay (mymob.tech). All rights reserved.</p>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
         </td></tr>
       </table>
     </td></tr>
   </table>
 </body></html>`,
 
-      otp_login: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;color:#334155;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;">
-    <tr><td align="center" style="padding:40px 16px 48px 16px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;margin:0 auto;">
-        <tr><td style="padding-bottom:20px;">
+      admin_signup: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 16px !important; }
+    .k-col { width: 36% !important; font-size: 12px !important; }
+    .v-col { font-size: 12px !important; }
+    .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td style="vertical-align:middle;">
+              <td align="left" style="vertical-align: middle;">
                 <table border="0" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-right:12px;vertical-align:middle;"><img src="https://mymob.tech/icon.png" width="38" height="38" style="width:38px;height:38px;border-radius:10px;display:block;border:0;"/></td>
-                    <td style="vertical-align:middle;">
-                      <div style="font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;line-height:1.2;">MyMobPay</div>
-                      <div style="font-size:11px;font-weight:500;color:#64748b;letter-spacing:0.2px;">Direct UPI Settlement Rails</div>
-                    </td>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
                   </tr>
                 </table>
               </td>
-              <td align="right" style="vertical-align:middle;">
-                <span style="display:inline-block;background-color:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;font-size:10.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;padding:4px 10px;border-radius:9999px;">
-                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background-color:#3b82f6;margin-right:5px;vertical-align:middle;"></span>Security OTP
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #ecfdf5; color: #065f46; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #a7f3d0;">
+                  <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10b981; margin-right: 4px; vertical-align: middle;"></span>New signup
                 </span>
               </td>
             </tr>
           </table>
         </td></tr>
-        <tr><td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:36px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px -4px rgba(15,23,42,0.06);">
-          <h1 style="margin:0 0 10px 0;font-size:20px;font-weight:800;color:#0f172a;line-height:1.3;letter-spacing:-0.3px;">Verify your identity</h1>
-          <p style="margin:0 0 24px 0;font-size:14.5px;line-height:1.6;color:#475569;">Enter this 6-digit code to complete authentication for your MyMobPay account:</p>
-          
-          <table border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 24px auto;">
-            <tr>
-              <td style="padding:0 5px;"><div style="width:48px;height:56px;background-color:#f8fafc;border:1.5px solid #cbd5e1;border-radius:10px;line-height:56px;text-align:center;font-size:28px;font-weight:800;color:#0f172a;font-family:ui-monospace,Menlo,monospace;">5</div></td>
-              <td style="padding:0 5px;"><div style="width:48px;height:56px;background-color:#f8fafc;border:1.5px solid #cbd5e1;border-radius:10px;line-height:56px;text-align:center;font-size:28px;font-weight:800;color:#0f172a;font-family:ui-monospace,Menlo,monospace;">0</div></td>
-              <td style="padding:0 5px;"><div style="width:48px;height:56px;background-color:#f8fafc;border:1.5px solid #cbd5e1;border-radius:10px;line-height:56px;text-align:center;font-size:28px;font-weight:800;color:#0f172a;font-family:ui-monospace,Menlo,monospace;">8</div></td>
-              <td style="padding:0 5px;"><div style="width:48px;height:56px;background-color:#f8fafc;border:1.5px solid #cbd5e1;border-radius:10px;line-height:56px;text-align:center;font-size:28px;font-weight:800;color:#0f172a;font-family:ui-monospace,Menlo,monospace;">2</div></td>
-              <td style="padding:0 5px;"><div style="width:48px;height:56px;background-color:#f8fafc;border:1.5px solid #cbd5e1;border-radius:10px;line-height:56px;text-align:center;font-size:28px;font-weight:800;color:#0f172a;font-family:ui-monospace,Menlo,monospace;">2</div></td>
-              <td style="padding:0 5px;"><div style="width:48px;height:56px;background-color:#f8fafc;border:1.5px solid #cbd5e1;border-radius:10px;line-height:56px;text-align:center;font-size:28px;font-weight:800;color:#0f172a;font-family:ui-monospace,Menlo,monospace;">8</div></td>
-            </tr>
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 24px 20px;">
+              <h1 style="margin: 0 0 4px 0; font-size: 19px; font-weight: 700; color: #0f172a; line-height: 1.3;">New merchant registered</h1>
+              <p style="margin: 0 0 20px 0; font-size: 13.5px; color: #64748b; line-height: 1.5;">Pixelcraft Studio registered an account on MyMobPay.</p>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; border-collapse: separate;">
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0; width: 34%;">Business</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Pixelcraft Studio</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Email</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #0f172a; border-bottom: 1px solid #e2e8f0; word-break: break-all;"><a href="mailto:kunal@pixelcraft.in" style="color: #0f172a; text-decoration: none; font-weight: 600;">kunal@pixelcraft.in</a></td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Phone</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #0f172a; border-bottom: 1px solid #e2e8f0;"><a href="https://wa.me/919876543210" target="_blank" style="color: #047857; text-decoration: none; font-weight: 600;">+91 98765 43210 (WhatsApp)</a></td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">UPI VPA</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; border-bottom: 1px solid #e2e8f0; word-break: break-all;">pixelcraft@hdfcbank</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Bank KYC</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; color: #0f172a; border-bottom: 1px solid #e2e8f0;">HDFC Bank &bull; ****4821</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Time</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; color: #475569; border-bottom: 1px solid #e2e8f0;">26 Oct 2026, 05:45 PM IST</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500;">User ID</td><td class="v-col" style="padding: 9px 12px; font-size: 11.5px; font-family: ui-monospace, Menlo, monospace; color: #64748b; word-break: break-all;">usr_39bfa102</td></tr>
+              </table>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 16px;">
+                <tr><td align="center">
+                  <a href="https://mymob.tech/dashboard" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">Open Admin Console &rarr;</a>
+                </td></tr>
+              </table>
+              <p style="margin: 0; font-size: 12px; text-align: center; color: #94a3b8;">
+                <a href="mailto:kunal@pixelcraft.in" style="color: #64748b; text-decoration: none; font-weight: 600;">Email merchant</a>
+                &nbsp;&bull;&nbsp;<a href="https://wa.me/919876543210" target="_blank" style="color: #047857; text-decoration: none; font-weight: 600;">WhatsApp</a>
+              </p>
+            </td></tr>
           </table>
-
-          <div style="text-align:center;margin-bottom:24px;">
-            <span style="font-size:12px;font-weight:600;color:#64748b;">Expires in 10 minutes &bull; Single-use only</span>
-          </div>
-
-          <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;">
-            <p style="margin:0;font-size:12px;line-height:1.5;color:#64748b;">
-              <strong style="color:#0f172a;">Anti-Phishing Advisory:</strong> MyMobPay personnel will never call or message to ask for your OTP or UPI PIN.
-            </p>
-          </div>
         </td></tr>
-        <tr><td align="center" style="padding-top:24px;">
-          <p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; 2026 MyMobPay (mymob.tech). Direct UPI Infrastructure.</p>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Automated admin alert &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
         </td></tr>
       </table>
     </td></tr>
   </table>
 </body></html>`,
 
-      merchant_welcome: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;color:#334155;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;">
-    <tr><td align="center" style="padding:40px 16px 48px 16px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;margin:0 auto;">
-        <tr><td style="padding-bottom:20px;">
+      subscription_invoice: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 16px !important; }
+    .k-col { width: 38% !important; font-size: 12px !important; }
+    .v-col { font-size: 12px !important; }
+    .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td style="vertical-align:middle;">
+              <td align="left" style="vertical-align: middle;">
                 <table border="0" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-right:12px;vertical-align:middle;"><img src="https://mymob.tech/icon.png" width="38" height="38" style="width:38px;height:38px;border-radius:10px;display:block;border:0;"/></td>
-                    <td style="vertical-align:middle;">
-                      <div style="font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;line-height:1.2;">MyMobPay</div>
-                      <div style="font-size:11px;font-weight:500;color:#64748b;letter-spacing:0.2px;">Direct UPI Settlement Rails</div>
-                    </td>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
                   </tr>
                 </table>
               </td>
-              <td align="right" style="vertical-align:middle;">
-                <span style="display:inline-block;background-color:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;font-size:10.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;padding:4px 10px;border-radius:9999px;">
-                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background-color:#10b981;margin-right:5px;vertical-align:middle;"></span>Account Active
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #ecfdf5; color: #065f46; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #a7f3d0;">
+                  <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10b981; margin-right: 4px; vertical-align: middle;"></span>Paid
                 </span>
               </td>
             </tr>
           </table>
         </td></tr>
-        <tr><td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:36px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px -4px rgba(15,23,42,0.06);">
-          <h1 style="margin:0 0 10px 0;font-size:22px;font-weight:800;color:#0f172a;line-height:1.3;letter-spacing:-0.3px;">Welcome to MyMobPay</h1>
-          <p style="margin:0 0 24px 0;font-size:14.5px;line-height:1.6;color:#475569;">Hello Kunal Chauhan, your direct UPI settlement gateway is now configured and ready for live transactions.</p>
-          
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:24px;">
-            <tr><td style="padding:16px 20px;">
-              <div style="font-size:12px;font-weight:600;color:#64748b;">Assigned Merchant Account</div>
-              <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:2px;">Pixelcraft Studio</div>
-              <div style="font-size:11.5px;color:#64748b;margin-top:6px;">0.00% Platform Fee &bull; Direct-to-Bank Instant UPI Settlements</div>
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 24px 20px;">
+              <div style="margin-bottom: 16px;">
+                <span style="font-size: 12px; font-weight: 600; color: #64748b;">Tax invoice #INV-881920</span>
+                <div style="font-size: 26px; font-weight: 800; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; line-height: 1.2;">&#8377;499.00</div>
+                <div style="font-size: 12.5px; color: #64748b; margin-top: 4px;">Paid on 26 Oct 2026 &bull; Valid until 25 Nov 2026</div>
+              </div>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; border-collapse: separate;">
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0; width: 36%;">Plan</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Standard Plan License (30 days)</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Billed To</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0; word-break: break-all;">Pixelcraft Studio (kunal@pixelcraft.in)</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Merchant ID</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0;">MMP-68192</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Payment Rail</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #0f172a; border-bottom: 1px solid #e2e8f0;">Direct UPI Settlement (NPCI)</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Bank UTR</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0;">629104881920</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500;">Gateway Fee</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; color: #059669; font-weight: 600;">0.00% (Direct to bank)</td></tr>
+              </table>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 16px;">
+                <tr><td align="center">
+                  <a href="https://mymob.tech/dashboard" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">Open Dashboard &rarr;</a>
+                </td></tr>
+              </table>
+              <p style="margin: 0; font-size: 11.5px; color: #94a3b8; text-align: center;">Computer-generated invoice. No physical signature required.</p>
             </td></tr>
           </table>
-
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
-            <tr><td>
-              <a href="https://mymob.tech/dashboard" style="display:inline-block;background-color:#0f172a;color:#ffffff;font-size:13.5px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;letter-spacing:0.2px;">Launch Merchant Console &rarr;</a>
-            </td></tr>
-          </table>
-
-          <div style="border-top:1px solid #f1f5f9;padding-top:20px;">
-            <div style="font-size:12.5px;font-weight:700;color:#0f172a;margin-bottom:8px;">Quick Launch Checklist:</div>
-            <div style="font-size:13px;line-height:1.6;color:#475569;">
-              1. Add your business UPI VPA / QR in Bank Settings.<br/>
-              2. Generate your secure API key for checkout integration.<br/>
-              3. Run a ₹1 test payment to verify immediate settlement.
-            </div>
-          </div>
         </td></tr>
-        <tr><td align="center" style="padding-top:24px;">
-          <p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; 2026 MyMobPay (mymob.tech). All rights reserved.</p>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
         </td></tr>
       </table>
     </td></tr>
   </table>
 </body></html>`,
 
-      subscription_invoice: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;color:#334155;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;">
-    <tr><td align="center" style="padding:40px 16px 48px 16px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;margin:0 auto;">
-        <tr><td style="padding-bottom:20px;">
+      monthly_statement: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 14px !important; }
+    .kpi-col { display: block !important; width: 100% !important; padding: 0 0 8px 0 !important; box-sizing: border-box !important; }
+    .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td style="vertical-align:middle;">
+              <td align="left" style="vertical-align: middle;">
                 <table border="0" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-right:12px;vertical-align:middle;"><img src="https://mymob.tech/icon.png" width="38" height="38" style="width:38px;height:38px;border-radius:10px;display:block;border:0;"/></td>
-                    <td style="vertical-align:middle;">
-                      <div style="font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;line-height:1.2;">MyMobPay</div>
-                      <div style="font-size:11px;font-weight:500;color:#64748b;letter-spacing:0.2px;">Subscription Tax Invoice</div>
-                    </td>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
                   </tr>
                 </table>
               </td>
-              <td align="right" style="vertical-align:middle;">
-                <span style="display:inline-block;background-color:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;font-size:10.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;padding:4px 10px;border-radius:9999px;">
-                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background-color:#10b981;margin-right:5px;vertical-align:middle;"></span>Paid &amp; Settled
-                </span>
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0;">Statement</span>
               </td>
             </tr>
           </table>
         </td></tr>
-        <tr><td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:36px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px -4px rgba(15,23,42,0.06);">
-          <div style="font-size:12px;font-weight:600;color:#64748b;">Tax Receipt #INV-2026-8819</div>
-          <div style="font-size:28px;font-weight:800;color:#0f172a;margin:6px 0 16px 0;">₹499.00</div>
-          
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:24px;border-collapse:separate;">
-            <tr>
-              <td style="padding:12px 16px;font-size:12.5px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Merchant Pro Plan (Monthly)</td>
-              <td align="right" style="padding:12px 16px;font-size:12.5px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;">₹499.00</td>
-            </tr>
-            <tr>
-              <td style="padding:12px 16px;font-size:12.5px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">UPI Processing MDR (0.00%)</td>
-              <td align="right" style="padding:12px 16px;font-size:12.5px;font-weight:700;color:#10b981;border-bottom:1px solid #e2e8f0;">₹0.00</td>
-            </tr>
-            <tr>
-              <td style="padding:12px 16px;font-size:13px;font-weight:700;color:#0f172a;">Total Settled</td>
-              <td align="right" style="padding:12px 16px;font-size:14px;font-weight:800;color:#0f172a;">₹499.00</td>
-            </tr>
-          </table>
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 24px 20px;">
+              <h1 style="margin: 0 0 4px 0; font-size: 19px; font-weight: 700; color: #0f172a; line-height: 1.3;">Statement &bull; October 2026</h1>
+              <p style="margin: 0 0 18px 0; font-size: 13.5px; color: #64748b; line-height: 1.5;">Reconciled UPI settlements for Pixelcraft Studio.</p>
+              
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 16px;">
+                <tr>
+                  <td width="50%" class="kpi-col" style="padding-right: 5px; padding-bottom: 10px; vertical-align: top;">
+                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                      <div style="font-size: 11px; font-weight: 600; color: #64748b;">Settled Volume</div>
+                      <div style="font-size: 18px; font-weight: 800; color: #0f172a; font-family: ui-monospace, Menlo, monospace; margin-top: 2px;">&#8377;1,48,290.00</div>
+                      <div style="font-size: 10.5px; color: #059669; font-weight: 600; margin-top: 2px;">100% Direct Passthrough</div>
+                    </div>
+                  </td>
+                  <td width="50%" class="kpi-col" style="padding-left: 5px; padding-bottom: 10px; vertical-align: top;">
+                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                      <div style="font-size: 11px; font-weight: 600; color: #64748b;">Total Orders</div>
+                      <div style="font-size: 18px; font-weight: 800; color: #0f172a; font-family: ui-monospace, Menlo, monospace; margin-top: 2px;">342</div>
+                      <div style="font-size: 10.5px; color: #64748b; margin-top: 2px;">338 Settled &bull; 4 Failed</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50%" class="kpi-col" style="padding-right: 5px; vertical-align: top;">
+                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                      <div style="font-size: 11px; font-weight: 600; color: #64748b;">Success Rate</div>
+                      <div style="font-size: 18px; font-weight: 800; color: #059669; font-family: ui-monospace, Menlo, monospace; margin-top: 2px;">98.8%</div>
+                      <div style="font-size: 10.5px; color: #059669; font-weight: 600; margin-top: 2px;">Automated Bank UTR</div>
+                    </div>
+                  </td>
+                  <td width="50%" class="kpi-col" style="padding-left: 5px; vertical-align: top;">
+                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                      <div style="font-size: 11px; font-weight: 600; color: #64748b;">Gateway Fee</div>
+                      <div style="font-size: 18px; font-weight: 800; color: #059669; font-family: ui-monospace, Menlo, monospace; margin-top: 2px;">&#8377;0.00</div>
+                      <div style="font-size: 10.5px; color: #059669; font-weight: 600; margin-top: 2px;">0% MDR (Direct to bank)</div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
 
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;">
-            <tr><td>
-              <a href="https://mymob.tech/dashboard/invoices" style="display:inline-block;background-color:#0f172a;color:#ffffff;font-size:13.5px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;letter-spacing:0.2px;">View &amp; Print Receipt &rarr;</a>
+              <div style="font-size: 11.5px; font-weight: 700; color: #64748b; margin-bottom: 6px;">Recent Transactions (3)</div>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; border-collapse: separate;">
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 8px 10px; font-size: 12px; color: #0f172a;">
+                    <div style="font-weight: 600;">ord_918231</div>
+                    <div style="font-size: 10.5px; color: #64748b; font-family: ui-monospace, Menlo, monospace;">26 Oct &bull; 629104881920</div>
+                  </td>
+                  <td align="right" style="padding: 8px 10px; font-size: 12px; font-weight: 700; color: #0f172a; font-family: ui-monospace, Menlo, monospace;">&#8377;2,499.00</td>
+                  <td align="right" style="padding: 8px 10px;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; font-size: 10px; font-weight: 600; background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">Settled</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 8px 10px; font-size: 12px; color: #0f172a;">
+                    <div style="font-weight: 600;">ord_918230</div>
+                    <div style="font-size: 10.5px; color: #64748b; font-family: ui-monospace, Menlo, monospace;">26 Oct &bull; 629104881919</div>
+                  </td>
+                  <td align="right" style="padding: 8px 10px; font-size: 12px; font-weight: 700; color: #0f172a; font-family: ui-monospace, Menlo, monospace;">&#8377;999.00</td>
+                  <td align="right" style="padding: 8px 10px;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; font-size: 10px; font-weight: 600; background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">Settled</span></td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 10px; font-size: 12px; color: #0f172a;">
+                    <div style="font-weight: 600;">ord_918229</div>
+                    <div style="font-size: 10.5px; color: #64748b; font-family: ui-monospace, Menlo, monospace;">25 Oct &bull; 629104881880</div>
+                  </td>
+                  <td align="right" style="padding: 8px 10px; font-size: 12px; font-weight: 700; color: #0f172a; font-family: ui-monospace, Menlo, monospace;">&#8377;4,999.00</td>
+                  <td align="right" style="padding: 8px 10px;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; font-size: 10px; font-weight: 600; background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">Settled</span></td>
+                </tr>
+              </table>
+
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr><td align="center">
+                  <a href="https://mymob.tech/dashboard" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">Open Full Ledger &rarr;</a>
+                </td></tr>
+              </table>
             </td></tr>
           </table>
         </td></tr>
-        <tr><td align="center" style="padding-top:24px;">
-          <p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; 2026 MyMobPay (mymob.tech). GST Compliant Invoicing.</p>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
         </td></tr>
       </table>
     </td></tr>
   </table>
 </body></html>`,
 
-      magic_link: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;color:#334155;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;">
-    <tr><td align="center" style="padding:40px 16px 48px 16px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;margin:0 auto;">
-        <tr><td style="padding-bottom:20px;">
+      onboarding_outreach: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 16px !important; }
+    .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td style="vertical-align:middle;">
+              <td align="left" style="vertical-align: middle;">
                 <table border="0" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-right:12px;vertical-align:middle;"><img src="https://mymob.tech/icon.png" width="38" height="38" style="width:38px;height:38px;border-radius:10px;display:block;border:0;"/></td>
-                    <td style="vertical-align:middle;">
-                      <div style="font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;line-height:1.2;">MyMobPay</div>
-                      <div style="font-size:11px;font-weight:500;color:#64748b;letter-spacing:0.2px;">Direct UPI Settlement Rails</div>
-                    </td>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
                   </tr>
                 </table>
               </td>
-              <td align="right" style="vertical-align:middle;">
-                <span style="display:inline-block;background-color:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;font-size:10.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;padding:4px 10px;border-radius:9999px;">
-                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background-color:#3b82f6;margin-right:5px;vertical-align:middle;"></span>Instant Access
-                </span>
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0;">Onboarding</span>
               </td>
             </tr>
           </table>
         </td></tr>
-        <tr><td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:36px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px -4px rgba(15,23,42,0.06);">
-          <h1 style="margin:0 0 10px 0;font-size:20px;font-weight:800;color:#0f172a;line-height:1.3;letter-spacing:-0.3px;">Sign in with one click</h1>
-          <p style="margin:0 0 24px 0;font-size:14.5px;line-height:1.6;color:#475569;">Click the button below to authenticate into your MyMobPay merchant dashboard securely:</p>
-          
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
-            <tr><td>
-              <a href="https://mymob.tech/dashboard" style="display:block;background-color:#0f172a;color:#ffffff;text-align:center;font-size:14px;font-weight:600;text-decoration:none;padding:13px 24px;border-radius:8px;letter-spacing:0.2px;">Sign In to Merchant Console &rarr;</a>
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 24px 20px;">
+              <h1 style="margin: 0 0 6px 0; font-size: 19px; font-weight: 700; color: #0f172a; line-height: 1.3;">Complete your onboarding</h1>
+              <p style="margin: 0 0 18px 0; font-size: 14px; color: #64748b; line-height: 1.5;">Hi Kunal Chauhan, activate 0% fee direct bank &amp; UPI settlements on your account.</p>
+              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;">
+                <div style="font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">Please reply to this email with:</div>
+                <div style="font-size: 13px; line-height: 1.6; color: #475569;">
+                  1. Your active WhatsApp / phone number<br/>
+                  2. Preferred time for a quick call or message
+                </div>
+              </div>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 16px;">
+                <tr><td align="center">
+                  <a href="mailto:support@mymob.tech" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">Reply with Contact Number &rarr;</a>
+                </td></tr>
+              </table>
+              <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #94a3b8; text-align: center;">Our team will verify your settlement UPI and help you launch.</p>
             </td></tr>
           </table>
-
-          <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;">
-            <p style="margin:0;font-size:12px;line-height:1.5;color:#64748b;">
-              <strong style="color:#0f172a;">Single-use link:</strong> This access URL expires in 15 minutes and can only be used once. If you did not request this link, you can ignore this email.
-            </p>
-          </div>
         </td></tr>
-        <tr><td align="center" style="padding-top:24px;">
-          <p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; 2026 MyMobPay (mymob.tech). Direct UPI Infrastructure.</p>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
         </td></tr>
       </table>
     </td></tr>
   </table>
 </body></html>`,
 
-      dispute_update: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;color:#334155;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;">
-    <tr><td align="center" style="padding:40px 16px 48px 16px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;margin:0 auto;">
-        <tr><td style="padding-bottom:20px;">
+      dispute_update: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 16px !important; }
+    .k-col { width: 36% !important; font-size: 12px !important; }
+    .v-col { font-size: 12px !important; }
+    .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td style="vertical-align:middle;">
+              <td align="left" style="vertical-align: middle;">
                 <table border="0" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-right:12px;vertical-align:middle;"><img src="https://mymob.tech/icon.png" width="38" height="38" style="width:38px;height:38px;border-radius:10px;display:block;border:0;"/></td>
-                    <td style="vertical-align:middle;">
-                      <div style="font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;line-height:1.2;">MyMobPay</div>
-                      <div style="font-size:11px;font-weight:500;color:#64748b;letter-spacing:0.2px;">Merchant Operations &bull; Dispute Desk</div>
-                    </td>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
                   </tr>
                 </table>
               </td>
-              <td align="right" style="vertical-align:middle;">
-                <span style="display:inline-block;background-color:#fef3c7;color:#92400e;border:1px solid #fde68a;font-size:10.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;padding:4px 10px;border-radius:9999px;">
-                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background-color:#d97706;margin-right:5px;vertical-align:middle;"></span>Under Review
-                </span>
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #fde68a;">Under Review</span>
               </td>
             </tr>
           </table>
         </td></tr>
-        <tr><td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:36px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px -4px rgba(15,23,42,0.06);">
-          <h1 style="margin:0 0 12px 0;font-size:20px;font-weight:800;color:#0f172a;line-height:1.35;letter-spacing:-0.3px;">Payment Inquiry / Dispute Update</h1>
-          <p style="margin:0 0 24px 0;font-size:14.5px;line-height:1.6;color:#475569;">Hello Pixelcraft Studio, platform operations has updated the status of inquiry ticket <strong>#disp_17290192</strong>.</p>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:24px;border-collapse:separate;">
-            <tr><td style="padding:12px 16px;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Order ID</td><td style="padding:12px 16px;font-size:12.5px;font-weight:700;color:#0f172a;font-family:ui-monospace,Menlo,monospace;border-bottom:1px solid #e2e8f0;">ord_918231</td></tr>
-            <tr><td style="padding:12px 16px;font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;">Bank UTR</td><td style="padding:12px 16px;font-size:12.5px;font-weight:700;color:#0f172a;font-family:ui-monospace,Menlo,monospace;border-bottom:1px solid #e2e8f0;">629104881920</td></tr>
-            <tr><td style="padding:12px 16px;font-size:12px;font-weight:600;color:#64748b;">Amount</td><td style="padding:12px 16px;font-size:14px;font-weight:800;color:#0f172a;">₹2,499.00</td></tr>
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 24px 20px;">
+              <h1 style="margin: 0 0 4px 0; font-size: 19px; font-weight: 700; color: #0f172a; line-height: 1.3;">Payment inquiry update</h1>
+              <p style="margin: 0 0 18px 0; font-size: 13.5px; color: #64748b; line-height: 1.5;">Ticket #disp_17290192 &bull; Pixelcraft Studio</p>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; border-collapse: separate;">
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0; width: 36%;">Order ID</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0; word-break: break-all;">ord_918231</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Bank UTR</td><td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0; word-break: break-all;">629104881920</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Amount</td><td class="v-col" style="padding: 9px 12px; font-size: 13px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0;">&#8377;2,499.00</td></tr>
+                <tr><td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500;">Status</td><td class="v-col" style="padding: 9px 12px; font-size: 12.5px; font-weight: 600; color: #0f172a;">UNDER REVIEW</td></tr>
+              </table>
+              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 20px;">
+                <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Operations Note</div>
+                <div style="font-size: 13px; line-height: 1.5; color: #1e293b;">Customer shared bank statement screenshot verifying debit. Please check linked HDFC account.</div>
+              </div>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr><td align="center">
+                  <a href="https://mymob.tech/dashboard" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">Open Merchant Console &rarr;</a>
+                </td></tr>
+              </table>
+            </td></tr>
           </table>
-          <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-left:3.5px solid #0f172a;border-radius:8px;padding:16px;margin-bottom:24px;">
-            <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Operations Note</div>
-            <div style="font-size:13.5px;line-height:1.6;color:#1e293b;">Customer shared bank statement screenshot verifying debit. Please check linked HDFC account.</div>
-          </div>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td>
-            <a href="https://mymob.tech/dashboard" style="display:inline-block;background-color:#0f172a;color:#ffffff;font-size:13.5px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;">Open Merchant Console &rarr;</a>
-          </td></tr></table>
         </td></tr>
-        <tr><td align="center" style="padding-top:24px;"><p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; 2026 MyMobPay (mymob.tech). Direct UPI Infrastructure.</p></td></tr>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
+        </td></tr>
       </table>
     </td></tr>
   </table>
 </body></html>`,
 
-      official_dispatch: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
-<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;color:#334155;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;">
-    <tr><td align="center" style="padding:40px 16px 48px 16px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;margin:0 auto;">
-        <tr><td style="padding-bottom:20px;">
+      official_dispatch: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<style type="text/css">
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  body { margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+  @media only screen and (max-width: 480px) {
+    .outer-cell { padding: 16px 10px !important; }
+    .card-pad { padding: 20px 16px !important; }
+    .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+  }
+</style></head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr><td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; margin: 0 auto;">
+        <tr><td style="padding-bottom: 16px;">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td style="vertical-align:middle;">
+              <td align="left" style="vertical-align: middle;">
                 <table border="0" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-right:12px;vertical-align:middle;"><img src="https://mymob.tech/icon.png" width="38" height="38" style="width:38px;height:38px;border-radius:10px;display:block;border:0;"/></td>
-                    <td style="vertical-align:middle;">
-                      <div style="font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;line-height:1.2;">MyMobPay</div>
-                      <div style="font-size:11px;font-weight:500;color:#64748b;letter-spacing:0.2px;">Direct UPI Settlement Rails</div>
-                    </td>
+                    <td style="vertical-align: middle; padding-right: 10px;"><img src="https://mymob.tech/icon.png" width="32" height="32" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;"/></td>
+                    <td style="vertical-align: middle;"><span style="font-size: 16px; font-weight: 700; color: #0f172a;">MyMobPay</span></td>
                   </tr>
                 </table>
               </td>
-              <td align="right" style="vertical-align:middle;">
-                <span style="display:inline-block;background-color:#f1f5f9;color:#475569;border:1px solid #e2e8f0;font-size:10.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;padding:4px 10px;border-radius:9999px;">
-                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background-color:#0284c7;margin-right:5px;vertical-align:middle;"></span>Official Notice
-                </span>
+              <td align="right" style="vertical-align: middle;">
+                <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0;">Notice</span>
               </td>
             </tr>
           </table>
         </td></tr>
-        <tr><td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:36px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px -4px rgba(15,23,42,0.06);">
-          <h1 style="margin:0 0 16px 0;font-size:20px;font-weight:800;color:#0f172a;line-height:1.35;letter-spacing:-0.3px;">Scheduled Maintenance Window</h1>
-          <p style="margin:0 0 16px 0;font-size:15px;font-weight:600;color:#1e293b;">Hello Merchant Partner,</p>
-          <div style="color:#334155;font-size:14.5px;line-height:1.65;">
-            <p style="margin:0 0 16px 0;">Our core NPCI routing switch will undergo scheduled infrastructure maintenance on Sunday between 02:00 AM and 03:00 AM IST.</p>
-            <p style="margin:0 0 16px 0;">During this 60-minute window, webhook callbacks may be queued for up to 3 minutes. Direct bank account settlements remain active without interruption.</p>
-          </div>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:24px 0;">
-            <tr><td>
-              <a href="https://status.mymob.tech" style="display:inline-block;background-color:#0f172a;color:#ffffff;font-size:13.5px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;">View Realtime Status &rarr;</a>
+        <tr><td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <tr><td class="card-pad" style="padding: 24px 20px;">
+              <h1 style="margin: 0 0 16px 0; font-size: 19px; font-weight: 700; color: #0f172a; line-height: 1.3;">Scheduled NPCI Switch Upgrade</h1>
+              <p style="margin: 0 0 14px 0; font-size: 14px; font-weight: 600; color: #1e293b;">Hello Merchant Partner,</p>
+              <div style="color: #334155; font-size: 14px; line-height: 1.6;">
+                <p style="margin: 0 0 12px 0;">Our core NPCI routing switch will undergo scheduled infrastructure maintenance on Sunday between 02:00 AM and 03:00 AM IST.</p>
+                <p style="margin: 0 0 16px 0;">Direct bank account settlements remain active without interruption. Webhook callbacks will be processed with minimal delay.</p>
+              </div>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0 16px 0;">
+                <tr><td align="center">
+                  <a href="https://status.mymob.tech" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">View System Status &rarr;</a>
+                </td></tr>
+              </table>
+              <div style="border-top: 1px solid #f1f5f9; padding-top: 16px; margin-top: 20px;">
+                <p style="margin: 0; font-size: 12.5px; line-height: 1.5; color: #64748b;">Warm regards,<br/><strong style="color: #0f172a;">MyMobPay Operations Team</strong></p>
+              </div>
             </td></tr>
           </table>
-          <hr style="border:0;border-top:1px solid #f1f5f9;margin:24px 0 16px 0;"/>
-          <p style="margin:0;font-size:13px;line-height:1.6;color:#64748b;">
-            Warm regards,<br/><strong style="color:#0f172a;">MyMobPay Operations Team</strong>
-          </p>
         </td></tr>
-        <tr><td align="center" style="padding-top:24px;"><p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; 2026 MyMobPay (mymob.tech). Direct UPI Infrastructure.</p></td></tr>
+        <tr><td align="center" style="padding-top: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a></p>
+        </td></tr>
       </table>
     </td></tr>
   </table>

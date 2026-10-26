@@ -1,7 +1,30 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getAdminSettings, DEFAULT_ADMIN_EMAILS } from '../lib/adminSettings.js';
-import { sendAdminNewSignupNotification } from '../lib/mailer.js';
+import { readFileSync, existsSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const envLocalPath = resolve(__dirname, '../.env.local');
+
+if (existsSync(envLocalPath)) {
+  const content = readFileSync(envLocalPath, 'utf8');
+  content.split('\n').forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    const idx = trimmed.indexOf('=');
+    if (idx !== -1) {
+      const key = trimmed.slice(0, idx).trim();
+      const val = trimmed.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
+      if (!process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+  });
+}
+
+const { getAdminSettings, DEFAULT_ADMIN_EMAILS } = await import('../lib/adminSettings.js');
+const { sendAdminNewSignupNotification } = await import('../lib/mailer.js');
 
 test('--- Admin Signup Notification Deduplication & Single Recipient Suite ---', async (t) => {
 
