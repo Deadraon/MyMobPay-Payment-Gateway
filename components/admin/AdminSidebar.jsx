@@ -17,7 +17,6 @@ import {
   LogIn,
   Mail,
   Layers,
-  Crown,
   Shield,
   LogOut,
   X,
@@ -233,51 +232,29 @@ export default function AdminSidebar({
 
         {/* Navigation Links with Identical Styling */}
         <nav className="flex-1 px-4 py-1 space-y-1 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#334155_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-700/60 [&::-webkit-scrollbar-thumb]:rounded-full">
-          {/* Pinned 1: Premium Active Status Badge (Matching Screenshot) */}
-          <div className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-950/40 text-emerald-200 shadow-xs">
-            <Crown className="w-3.5 h-3.5 text-emerald-400 shrink-0" strokeWidth={2.2} />
-            <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
-              Premium Active
-            </span>
-            <span className="text-[8px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded font-black uppercase tracking-wider shrink-0 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              PRO
-            </span>
-          </div>
-
-          {/* Pinned 2: Admin Console Root Badge (Matching Screenshot) */}
-          <div className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-blue-500 text-white bg-blue-600 shadow-md ring-2 ring-blue-400/40 mt-1">
-            <Shield className="w-3.5 h-3.5 text-blue-200 shrink-0" />
-            <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
-              Admin Console
-            </span>
-            <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-black uppercase tracking-wider shrink-0">
-              ROOT
-            </span>
-          </div>
-
           {/* Quick Return to Merchant Dashboard Switcher */}
           {onBackToMerchant && (
-            <button
-              onClick={() => {
-                onBackToMerchant();
-                if (setIsMobileMenuOpen) setIsMobileMenuOpen(false);
-              }}
-              type="button"
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 bg-gradient-to-r from-slate-800 to-slate-850 hover:from-slate-750 hover:to-slate-800 text-slate-200 hover:text-white border-slate-700/80 hover:border-blue-500/50 shadow-xs group"
-              title="Switch back to Merchant Dashboard"
-            >
-              <Store className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-300 transition-colors shrink-0" />
-              <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
-                Merchant Dashboard
-              </span>
-              <span className="text-[8px] bg-white/10 group-hover:bg-blue-500/30 text-slate-300 group-hover:text-blue-200 px-1.5 py-0.5 rounded font-black uppercase tracking-wider shrink-0 transition-colors">
-                Switch
-              </span>
-            </button>
+            <>
+              <button
+                onClick={() => {
+                  onBackToMerchant();
+                  if (setIsMobileMenuOpen) setIsMobileMenuOpen(false);
+                }}
+                type="button"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent group mb-2"
+                title="Switch back to Merchant Dashboard"
+              >
+                <Store className="w-3.5 h-3.5 text-blue-200 shrink-0" />
+                <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
+                  Merchant Dashboard
+                </span>
+                <span className="text-[8px] bg-white/20 text-white px-1.5 py-0.5 rounded font-black uppercase tracking-wider shrink-0 transition-colors">
+                  Switch
+                </span>
+              </button>
+              <div className="h-px bg-slate-800 my-2" />
+            </>
           )}
-
-          <div className="h-px bg-slate-800 my-1.5" />
 
           {/* Dynamic Navigation Sections */}
           {navSections.map((section, sIdx) => (
