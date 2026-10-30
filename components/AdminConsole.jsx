@@ -113,6 +113,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
   const [accountToDelete, setAccountToDelete] = useState(null);
   const [manualUtrInput, setManualUtrInput] = useState('');
   const [globalSearch, setGlobalSearch] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Toast Notification System
   const [toast, setToast] = useState(null); // { message, type }
@@ -741,7 +742,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
 
   // ── Render Master Console ─────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 antialiased selection:bg-blue-600/15 selection:text-blue-600 font-sans">
+    <div className="min-h-screen flex flex-col md:flex-row transition-colors duration-300 bg-[#F8FAFC] text-slate-800 antialiased selection:bg-blue-600/15 selection:text-blue-600 font-sans">
       
       {/* Toast Notification */}
       {toast && (
@@ -753,33 +754,39 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
         </div>
       )}
 
-      {/* Top Header */}
-      <AdminHeader
-        user={user}
-        profile={profile}
+      {/* Navigation Sidebar (Identical Fixed Left Dark Menubar Panel) */}
+      <AdminSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        pendingOrdersCount={platformMetrics.pendingCount}
+        unonboardedSignupsCount={allSignups.filter(s => !s.phone_number || s.phone_number.trim() === '').length}
+        activeMerchantsCount={platformMetrics.activeMerchants}
         onBackToMerchant={onBackToMerchant}
         onLogout={handleLogout}
-        onRefresh={refreshAllData}
-        loading={loading}
-        globalSearch={globalSearch}
-        setGlobalSearch={setGlobalSearch}
-        totalPendingOrders={platformMetrics.pendingCount}
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
 
-      {/* Main Container */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col md:flex-row items-start gap-6">
+      {/* Main Content View with md:pl-64 offset and fixed top header */}
+      <main className="md:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-[#F8FAFC] pt-14 sm:pt-16 md:pt-20">
         
-        {/* Navigation Sidebar */}
-        <AdminSidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          pendingOrdersCount={platformMetrics.pendingCount}
-          unonboardedSignupsCount={allSignups.filter(s => !s.phone_number || s.phone_number.trim() === '').length}
-          activeMerchantsCount={platformMetrics.activeMerchants}
+        {/* Top Header */}
+        <AdminHeader
+          user={user}
+          profile={profile}
+          onBackToMerchant={onBackToMerchant}
+          onLogout={handleLogout}
+          onRefresh={refreshAllData}
+          loading={loading}
+          globalSearch={globalSearch}
+          setGlobalSearch={setGlobalSearch}
+          totalPendingOrders={platformMetrics.pendingCount}
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
 
         {/* Tab Content Display Area */}
-        <main className="flex-1 min-w-0">
+        <div className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto w-full">
           
           {activeTab === 'overview' && (
             <OverviewTab
@@ -933,9 +940,9 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
             />
           )}
 
-        </main>
+        </div>
 
-      </div>
+      </main>
 
       {/* Transaction Slide-Over Drawer */}
       {selectedOrderForDrawer && (

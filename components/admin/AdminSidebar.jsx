@@ -3,10 +3,9 @@
 import React from 'react';
 import { 
   LayoutDashboard, 
-  ReceiptText, 
+  CreditCard, 
   Store, 
   UserCheck, 
-  Zap, 
   ShieldCheck,
   History,
   Users,
@@ -14,222 +13,365 @@ import {
   FileCheck2,
   ShieldAlert,
   Terminal,
-  DownloadCloud,
+  BarChart3,
   LogIn,
-  Mail
+  Mail,
+  Layers,
+  Crown,
+  Shield,
+  LogOut,
+  X,
+  Menu
 } from 'lucide-react';
+
+const MyMobPayLogo = ({ className = 'w-44 lg:w-48 h-auto', textColor = '#FFFFFF' }) => (
+  <svg 
+    viewBox="0 0 220 40" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    className={`${className} transition-transform duration-300 hover:scale-[1.02]`}
+  >
+    {/* 3D Ribbon M Mark */}
+    <image
+      href="/logos/mymobpay_mark.png"
+      x="2"
+      y="2"
+      width="38"
+      height="36"
+      preserveAspectRatio="xMidYMid meet"
+    />
+    <text
+      x="44"
+      y="27"
+      fontFamily="'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+      fontWeight="800"
+      fontSize="26"
+      fill={textColor}
+      letterSpacing="-0.5"
+    >
+      MyMobPay
+    </text>
+  </svg>
+);
 
 export default function AdminSidebar({ 
   activeTab, 
   setActiveTab, 
   pendingOrdersCount = 0,
   unonboardedSignupsCount = 0,
-  activeMerchantsCount = 0
+  activeMerchantsCount = 0,
+  onBackToMerchant,
+  onLogout,
+  isMobileMenuOpen = false,
+  setIsMobileMenuOpen
 }) {
   const navSections = [
     {
-      title: 'Platform Operations',
+      title: 'Main',
       items: [
         {
           id: 'overview',
-          label: 'Pulse & Overview',
+          label: 'Dashboard',
           icon: LayoutDashboard,
-          badge: null,
-          desc: 'Platform Volume & Metrics'
+          badge: null
         },
         {
           id: 'transactions',
-          label: 'Transaction Ledger',
-          icon: ReceiptText,
-          badge: pendingOrdersCount > 0 ? { text: pendingOrdersCount, color: 'bg-amber-100 text-amber-800 border-amber-200' } : null,
-          desc: 'Global UPI Checkouts & UTRs'
+          label: 'Transactions',
+          icon: CreditCard,
+          badge: pendingOrdersCount > 0 ? { 
+            text: pendingOrdersCount, 
+            color: 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
+          } : null
         },
         {
           id: 'merchants',
-          label: 'Merchant Central',
+          label: 'Merchants',
           icon: Store,
-          badge: activeMerchantsCount > 0 ? { text: activeMerchantsCount, color: 'bg-blue-100 text-blue-800 border-blue-200' } : null,
-          desc: 'SaaS Directory & Risk States'
-        },
+          badge: activeMerchantsCount > 0 ? { 
+            text: activeMerchantsCount, 
+            color: 'bg-blue-500/20 text-blue-300 border-blue-500/40' 
+          } : null
+        }
+      ]
+    },
+    {
+      title: 'Operations',
+      items: [
         {
           id: 'signups',
-          label: 'Onboarding Pipeline',
+          label: 'Onboarding',
           icon: UserCheck,
-          badge: unonboardedSignupsCount > 0 ? { text: unonboardedSignupsCount, color: 'bg-rose-100 text-rose-800 border-rose-200' } : null,
-          desc: 'Leads & Phone Verification'
+          badge: unonboardedSignupsCount > 0 ? { 
+            text: unonboardedSignupsCount, 
+            color: 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
+          } : null
+        },
+        {
+          id: 'verification',
+          label: 'Verification',
+          icon: ShieldCheck,
+          badge: null
         },
         {
           id: 'logins',
-          label: 'Live Login Activity',
+          label: 'Live Logins',
           icon: LogIn,
-          badge: { text: 'Live', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-          desc: 'Sessions & Activity Stream'
+          badge: { 
+            text: 'Live', 
+            color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' 
+          }
         },
         {
           id: 'emails',
-          label: 'Direct Email & Outreach',
+          label: 'Outreach & Email',
           icon: Mail,
-          badge: { text: 'New', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-          desc: 'Custom & Broadcast Outreach'
-        },
+          badge: { 
+            text: 'New', 
+            color: 'bg-blue-500/20 text-blue-300 border-blue-500/40' 
+          }
+        }
       ]
     },
     {
-      title: 'Infrastructure & Rails',
+      title: 'Reports & Analytics',
       items: [
         {
-          id: 'verification',
-          label: 'Verification Center',
-          icon: Radio,
-          badge: null,
-          desc: 'Telemetry & Ingest Queues'
-        },
-        {
-          id: 'developer',
-          label: 'Developer & Webhooks',
-          icon: Terminal,
-          badge: null,
-          desc: 'Signed HMAC Webhook Logs'
-        },
-      ]
-    },
-    {
-      title: 'Risk & Claims',
-      items: [
-        {
-          id: 'risk',
-          label: 'Risk & Fraud Rules',
-          icon: ShieldAlert,
-          badge: null,
-          desc: 'Velocity & Blocklist Registry'
-        },
-        {
-          id: 'disputes',
-          label: 'Customer Claims Desk',
-          icon: FileCheck2,
-          badge: null,
-          desc: 'Non-Custodial Evidence Tracker'
+          id: 'reports',
+          label: 'Reports & GST',
+          icon: BarChart3,
+          badge: null
         },
         {
           id: 'audit',
           label: 'Audit Trail',
           icon: History,
-          badge: null,
-          desc: 'Tamper-Evident Ops Ledger'
-        },
+          badge: null
+        }
       ]
     },
     {
-      title: 'Monetization & Reports',
+      title: 'Platform SaaS',
+      adminBadge: 'Admin',
       items: [
         {
           id: 'subscriptions',
-          label: 'Plans & Monetization',
-          icon: Zap,
-          badge: null,
-          desc: 'Subscriptions & Gift Codes'
+          label: 'SaaS Subscriptions',
+          icon: Layers,
+          badge: null
         },
         {
-          id: 'reports',
-          label: 'Reports & Exports',
-          icon: DownloadCloud,
-          badge: null,
-          desc: 'CSV Exports & GST Tax GSTR-1'
+          id: 'disputes',
+          label: 'Claims & Disputes',
+          icon: FileCheck2,
+          badge: null
         },
+        {
+          id: 'risk',
+          label: 'Risk & Rules',
+          icon: ShieldAlert,
+          badge: null
+        }
       ]
     },
     {
-      title: 'Security & Governance',
+      title: 'Others',
       items: [
+        {
+          id: 'developer',
+          label: 'Developer Hub',
+          icon: Terminal,
+          badge: null
+        },
         {
           id: 'team',
           label: 'Admin Team & RBAC',
           icon: Users,
-          badge: null,
-          desc: 'Roles & Staff Permissions'
+          badge: null
         },
         {
           id: 'system',
           label: 'System & Security',
-          icon: ShieldCheck,
-          badge: null,
-          desc: 'Platform UPI, 2FA & Health'
-        },
+          icon: Shield,
+          badge: null
+        }
       ]
     }
   ];
 
-  return (
-    <aside className="w-full md:w-64 lg:w-72 md:min-w-[260px] lg:min-w-[288px] shrink-0 bg-white border border-slate-200/80 rounded-3xl p-3.5 shadow-xs flex flex-col gap-3.5 self-start sticky top-6">
-      {navSections.map((section, sIdx) => (
-        <div key={sIdx} className="space-y-1">
-          <div className="px-3 py-1">
-            <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
-              {section.title}
-            </p>
+  const handleNavClick = (tabId) => {
+    setActiveTab(tabId);
+    if (typeof window !== 'undefined') {
+      window.location.hash = tabId;
+      sessionStorage.setItem('admin_active_tab', tabId);
+    }
+    if (setIsMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  };
+
+  const renderNavContent = () => (
+    <>
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Logo & Brand */}
+        <div className="px-6 pt-6 pb-4 flex items-center justify-between">
+          <MyMobPayLogo 
+            className="w-44 lg:w-48 h-auto transition-transform hover:scale-[1.02]" 
+            textColor="#FFFFFF" 
+          />
+          {setIsMobileMenuOpen && (
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              type="button"
+              title="Close Menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Navigation Links with Identical Styling */}
+        <nav className="flex-1 px-4 py-1 space-y-1 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#334155_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-700/60 [&::-webkit-scrollbar-thumb]:rounded-full">
+          {/* Pinned 1: Premium Active Status Badge (Matching Screenshot) */}
+          <div className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-950/40 text-emerald-200 shadow-xs">
+            <Crown className="w-3.5 h-3.5 text-emerald-400 shrink-0" strokeWidth={2.2} />
+            <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
+              Premium Active
+            </span>
+            <span className="text-[8px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded font-black uppercase tracking-wider shrink-0 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              PRO
+            </span>
           </div>
 
-          <nav className="flex flex-col gap-1">
-            {section.items.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
+          {/* Pinned 2: Admin Console Root Badge (Matching Screenshot) */}
+          <div className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-blue-500 text-white bg-blue-600 shadow-md ring-2 ring-blue-400/40 mt-1">
+            <Shield className="w-3.5 h-3.5 text-blue-200 shrink-0" />
+            <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
+              Admin Console
+            </span>
+            <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-black uppercase tracking-wider shrink-0">
+              ROOT
+            </span>
+          </div>
 
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveTab(item.id);
-                    if (typeof window !== 'undefined') {
-                      window.location.hash = item.id;
-                      sessionStorage.setItem('admin_active_tab', item.id);
-                    }
-                  }}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-2xl text-left transition-all group cursor-pointer ${
-                    isActive
-                      ? 'bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/20'
-                      : 'hover:bg-slate-50 text-slate-650 hover:text-slate-900 font-semibold'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className={`p-1.5 rounded-xl transition-colors ${
-                      isActive 
-                        ? 'bg-white/20 text-white' 
-                        : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'
-                    }`}>
-                      <Icon className="w-4 h-4 shrink-0" />
-                    </span>
-                    <div className="truncate">
-                      <p className="text-xs leading-none truncate">{item.label}</p>
-                      <p className={`text-[10px] mt-0.5 truncate ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>
-                        {item.desc}
-                      </p>
+          {/* Quick Return to Merchant Dashboard Switcher */}
+          {onBackToMerchant && (
+            <button
+              onClick={() => {
+                onBackToMerchant();
+                if (setIsMobileMenuOpen) setIsMobileMenuOpen(false);
+              }}
+              type="button"
+              className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 bg-gradient-to-r from-slate-800 to-slate-850 hover:from-slate-750 hover:to-slate-800 text-slate-200 hover:text-white border-slate-700/80 hover:border-blue-500/50 shadow-xs group"
+              title="Switch back to Merchant Dashboard"
+            >
+              <Store className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-300 transition-colors shrink-0" />
+              <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
+                Merchant Dashboard
+              </span>
+              <span className="text-[8px] bg-white/10 group-hover:bg-blue-500/30 text-slate-300 group-hover:text-blue-200 px-1.5 py-0.5 rounded font-black uppercase tracking-wider shrink-0 transition-colors">
+                Switch
+              </span>
+            </button>
+          )}
+
+          <div className="h-px bg-slate-800 my-1.5" />
+
+          {/* Dynamic Navigation Sections */}
+          {navSections.map((section, sIdx) => (
+            <div key={sIdx} className="space-y-1">
+              <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                <span className={section.adminBadge ? 'text-indigo-400' : ''}>{section.title}</span>
+                {section.adminBadge && (
+                  <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">
+                    {section.adminBadge}
+                  </span>
+                )}
+              </p>
+
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavClick(item.id)}
+                    type="button"
+                    className={`t-sidebar-nav-item ${isActive ? 'is-active' : ''} justify-between`}
+                  >
+                    <span className="t-sidebar-indicator" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Icon className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">{item.label}</span>
                     </div>
-                  </div>
 
-                  {item.badge && (
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black border ml-1.5 shrink-0 ${
-                      isActive ? 'bg-white text-blue-700 border-white' : item.badge.color
-                    }`}>
-                      {item.badge.text}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      ))}
-
-      {/* Quick Platform Security Footnote */}
-      <div className="mt-2 pt-3 border-t border-slate-100 px-3">
-        <div className="flex items-center gap-2 text-slate-500 text-[11px] font-medium">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>NPCI Direct Rails v2.4</span>
-        </div>
-        <p className="text-[10px] text-slate-400 mt-0.5 leading-tight">
-          Non-custodial 0% fee verification engine
-        </p>
+                    {item.badge && (
+                      <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-extrabold shrink-0 border ${item.badge.color}`}>
+                        {item.badge.text}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
       </div>
-    </aside>
+
+      {/* Sidebar Footer (Identical to Merchant Dashboard Sidebar) */}
+      <div className="px-6 pb-6 pt-3 border-t border-slate-800 flex flex-col gap-3">
+        <div className="flex items-center justify-between text-xs font-medium">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-white font-medium" style={{ color: '#ffffff' }}>API Live Rails</span>
+          </div>
+          <span className="text-[11px] font-mono text-slate-200 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">
+            v2.1
+          </span>
+        </div>
+        <button
+          onClick={() => {
+            if (setIsMobileMenuOpen) setIsMobileMenuOpen(false);
+            if (onLogout) onLogout();
+          }}
+          type="button"
+          className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-rose-300 hover:bg-rose-500/10 hover:text-rose-200 rounded-xl transition-colors cursor-pointer"
+        >
+          <LogOut className="w-3.5 h-3.5" /> Sign Out
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* ═══════════════════════════════════════════════════════════
+          DESKTOP SIDEBAR (Identical Fixed Navy Menubar Panel)
+          ═══════════════════════════════════════════════════════════ */}
+      <aside className="fixed left-0 top-0 h-full w-64 bg-[#0F172A] border-r border-slate-800 z-50 hidden md:flex flex-col justify-between shadow-[4px_0_24px_0_rgba(0,0,0,0.25)] select-none text-slate-100">
+        {renderNavContent()}
+      </aside>
+
+      {/* ═══════════════════════════════════════════════════════════
+          MOBILE NAVIGATION DRAWER (Slide-Out Responsive Menubar)
+          ═══════════════════════════════════════════════════════════ */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop Blur Overlay */}
+          <div 
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200"
+            onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+          />
+
+          {/* Drawer Content */}
+          <aside className="relative w-72 max-w-[85vw] bg-[#0F172A] border-r border-slate-800 z-50 flex flex-col justify-between shadow-2xl select-none text-slate-100 transition-transform duration-200 ease-out">
+            {renderNavContent()}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }
