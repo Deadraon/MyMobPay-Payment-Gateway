@@ -1574,7 +1574,7 @@ export default function LoginPage() {
               </div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#e3e8ee] text-[#273951] text-[11px] font-medium shadow-2xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#009d6d] animate-pulse"></span>
-                <span>mymob.tech • Unified Fintech Gateway &amp; Settlement Suite</span>
+                <span>mymobpay.tech • Unified Fintech Gateway &amp; Settlement Suite</span>
               </div>
             </div>
 
@@ -3017,10 +3017,10 @@ export default function LoginPage() {
                 <span>Need assistance? Contact support:</span>
                 <a 
                   className="font-semibold text-[#533afd] hover:underline inline-flex items-center gap-1" 
-                  href="mailto:support@mymob.tech"
+                  href="mailto:support@mymobpay.tech"
                 >
                   <Mail className="w-3.5 h-3.5" />
-                  support@mymob.tech
+                  support@mymobpay.tech
                 </a>
               </p>
             </div>

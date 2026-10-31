@@ -139,8 +139,18 @@ export default function SupportHelpRedesign({
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
+            }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-blue-200" />
+            <span>Ask AI Copilot</span>
+          </button>
           <a
-            href="https://status.mymob.tech"
+            href="https://status.mymobpay.tech"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"

@@ -34,6 +34,7 @@ import VerificationCenterRedesign from '@/components/VerificationCenterRedesign'
 import ReportsRedesign from '@/components/ReportsRedesign';
 import DeveloperConsoleRedesign from '@/components/DeveloperConsoleRedesign';
 import SupportHelpRedesign from '@/components/SupportHelpRedesign';
+import MerchantAiCopilot from '@/components/MerchantAiCopilot';
 import AdminConsole from '@/components/AdminConsole';
 import PlatformSubscriptionsHub from '@/components/PlatformSubscriptionsHub';
 import PremiumTierBadge from '@/components/PremiumTierBadge';
@@ -2774,32 +2775,36 @@ echo "Order Created: " . $data['orderId'];
             <div className="h-px bg-slate-800 my-1.5" />
 
             {/* Category: MAIN */}
-            <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="px-3.5 pt-1.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
               Main
             </p>
 
             <button
               onClick={() => setActiveTab('overview')}
               type="button"
-              className={`t-sidebar-nav-item ${activeTab === 'overview' ? 'is-active' : ''}`}
+              className={`t-sidebar-nav-item justify-between ${activeTab === 'overview' ? 'is-active' : ''}`}
             >
               <span className="t-sidebar-indicator" />
-              <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-              <span className="truncate">Dashboard</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                <span className="truncate">Dashboard</span>
+              </div>
             </button>
 
             <button
               onClick={() => setActiveTab('payment-links')}
               type="button"
-              className={`t-sidebar-nav-item ${activeTab === 'payment-links' ? 'is-active' : ''}`}
+              className={`t-sidebar-nav-item justify-between ${activeTab === 'payment-links' ? 'is-active' : ''}`}
             >
               <span className="t-sidebar-indicator" />
-              <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-              <span className="truncate">Payment Links</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                <span className="truncate">Payment Links</span>
+              </div>
             </button>
 
             {/* Category: OPERATIONS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
               Operations
             </p>
 
@@ -2821,34 +2826,38 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             {/* Category: REPORTS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
               Reports &amp; Analytics
             </p>
 
             <button
               onClick={() => setActiveTab('transactions')}
               type="button"
-              className={`t-sidebar-nav-item ${activeTab === 'transactions' ? 'is-active' : ''}`}
+              className={`t-sidebar-nav-item justify-between ${activeTab === 'transactions' ? 'is-active' : ''}`}
             >
               <span className="t-sidebar-indicator" />
-              <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-              <span className="truncate">Transactions</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                <span className="truncate">Transactions</span>
+              </div>
             </button>
 
             <button
               onClick={() => setActiveTab('reports')}
               type="button"
-              className={`t-sidebar-nav-item ${activeTab === 'reports' ? 'is-active' : ''}`}
+              className={`t-sidebar-nav-item justify-between ${activeTab === 'reports' ? 'is-active' : ''}`}
             >
               <span className="t-sidebar-indicator" />
-              <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-              <span className="truncate">Reports &amp; GST</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                <span className="truncate">Reports &amp; GST</span>
+              </div>
             </button>
 
             {/* Category: PLATFORM SAAS REVENUE (ADMIN ONLY) */}
             {isAdminUser && (
               <>
-                <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center justify-between">
                   <span>Platform SaaS</span>
                   <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">Admin</span>
                 </p>
@@ -2873,18 +2882,20 @@ echo "Order Created: " . $data['orderId'];
             )}
 
             {/* Category: DEVELOPER & SETTINGS */}
-            <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
               Others
             </p>
 
             <button
               onClick={() => setActiveTab('developer')}
               type="button"
-              className={`t-sidebar-nav-item ${activeTab === 'developer' ? 'is-active' : ''}`}
+              className={`t-sidebar-nav-item justify-between ${activeTab === 'developer' ? 'is-active' : ''}`}
             >
               <span className="t-sidebar-indicator" />
-              <Code className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-              <span className="truncate">Developer Hub</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <Code className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                <span className="truncate">Developer Hub</span>
+              </div>
             </button>
 
             <button
@@ -2893,21 +2904,25 @@ echo "Order Created: " . $data['orderId'];
                 setActiveTab('settings');
               }}
               type="button"
-              className={`t-sidebar-nav-item ${activeTab === 'settings' ? 'is-active' : ''}`}
+              className={`t-sidebar-nav-item justify-between ${activeTab === 'settings' ? 'is-active' : ''}`}
             >
               <span className="t-sidebar-indicator" />
-              <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-              <span className="truncate">Settings</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                <span className="truncate">Settings</span>
+              </div>
             </button>
 
             <button
               onClick={() => setActiveTab('support')}
               type="button"
-              className={`t-sidebar-nav-item ${activeTab === 'support' ? 'is-active' : ''}`}
+              className={`t-sidebar-nav-item justify-between ${activeTab === 'support' ? 'is-active' : ''}`}
             >
               <span className="t-sidebar-indicator" />
-              <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-              <span className="truncate">Support &amp; Help</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                <span className="truncate">Support &amp; Help</span>
+              </div>
             </button>
           </nav>
         </div>
@@ -2943,20 +2958,20 @@ echo "Order Created: " . $data['orderId'];
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+              className="md:hidden w-9 h-9 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0 flex items-center justify-center border border-slate-200/80 cursor-pointer"
               type="button"
               title="Toggle Menu"
               aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             >
               <span className="t-icon-swap" data-state={isMobileMenuOpen ? 'b' : 'a'}>
-                <Menu className="t-icon t-icon--a w-5 h-5" aria-hidden={isMobileMenuOpen} />
-                <X className="t-icon t-icon--b w-5 h-5" aria-hidden={!isMobileMenuOpen} />
+                <Menu className="t-icon t-icon--a w-4 h-4" aria-hidden={isMobileMenuOpen} />
+                <X className="t-icon t-icon--b w-4 h-4" aria-hidden={!isMobileMenuOpen} />
               </span>
             </button>
 
             {/* Mobile Brand Logo */}
             <div className="md:hidden flex items-center shrink-0">
-              <MyMobPayLogo className="w-28 sm:w-32 h-auto" textColor="#0c2340" />
+              <MyMobPayLogo markSize={26} textSize="text-lg" textColor="#0c2340" />
             </div>
 
             {/* Live Mode / Test Mode Switcher (Desktop) */}
@@ -3055,7 +3070,7 @@ echo "Order Created: " . $data['orderId'];
             {/* Mobile Mode Switcher Pill */}
             <button
               onClick={toggleSandboxMode}
-              className={`sm:hidden flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all shrink-0 ${
+              className={`sm:hidden h-9 px-2.5 rounded-xl text-[11px] font-bold border transition-all flex items-center gap-1.5 shrink-0 ${
                 profile?.sandbox_mode === false
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80 shadow-2xs'
                   : 'bg-amber-50 text-amber-700 border-amber-200/80 shadow-2xs'
@@ -3075,7 +3090,7 @@ echo "Order Created: " . $data['orderId'];
                     setIsNotificationOpen(!isNotificationOpen);
                     setIsProfileDropdownOpen(false);
                   }}
-                  className={`relative p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
                     isNotificationOpen
                       ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-xs'
                       : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 border-slate-200/80 bg-white'
@@ -3083,9 +3098,9 @@ echo "Order Created: " . $data['orderId'];
                   title="Notifications & Activity"
                   type="button"
                 >
-                  <Bell className="w-5 h-5 text-current" />
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-current" />
                   {merchantOrders.filter(o => o.status === 'verified').length > 0 && (
-                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white animate-pulse"></span>
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white animate-pulse"></span>
                   )}
                 </button>
 
@@ -3099,7 +3114,7 @@ echo "Order Created: " . $data['orderId'];
                       onTouchMove={(e) => e.preventDefault()}
                     />
                     <div 
-                      className={`fixed left-2.5 right-2.5 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] text-slate-900 ${notificationDropdownClass}`}
+                      className={`fixed left-2.5 right-2.5 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] text-slate-900 ${notificationDropdownClass}`}
                       data-origin="top-right"
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -3196,9 +3211,9 @@ echo "Order Created: " . $data['orderId'];
                   setIsProfileDropdownOpen(!isProfileDropdownOpen);
                   setIsNotificationOpen(false);
                 }}
-                className="flex items-center gap-2.5 sm:gap-3 pl-1 cursor-pointer group"
+                className="flex items-center gap-2 sm:gap-3 pl-1 cursor-pointer group"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0c2340] to-slate-800 text-white flex items-center justify-center font-bold text-xs shadow-sm shadow-slate-900/10 border border-slate-700/30">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#0c2340] to-slate-800 text-white flex items-center justify-center font-bold text-xs shadow-sm shadow-slate-900/10 border border-slate-700/30 shrink-0">
                   {merchantInitials}
                 </div>
                 <div className="hidden md:flex flex-col text-left">
@@ -3224,7 +3239,7 @@ echo "Order Created: " . $data['orderId'];
                     onTouchMove={(e) => e.preventDefault()}
                   />
                   <div 
-                    className={`fixed right-2.5 top-[62px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 overflow-hidden ${profileDropdownClass}`}
+                    className={`fixed right-2.5 top-[60px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 overflow-hidden ${profileDropdownClass}`}
                     data-origin="top-right"
                     onClick={(e) => e.stopPropagation()}
                   >
@@ -3233,7 +3248,7 @@ echo "Order Created: " . $data['orderId'];
                         {profile?.business_name || profile?.owner_name || 'Merchant'}
                       </p>
                       <p className="text-[11px] font-mono text-slate-400 truncate">
-                        {user?.email || 'merchant@mymob.tech'}
+                        {user?.email || 'merchant@mymobpay.tech'}
                       </p>
                     </div>
                     <button
@@ -3302,16 +3317,16 @@ echo "Order Created: " . $data['orderId'];
             onTouchMove={(e) => { if (e.target === e.currentTarget) e.preventDefault(); }}
           >
             <div 
-              className="w-80 max-w-[85vw] bg-[#0F172A] text-white h-full shadow-2xl flex flex-col justify-between p-5 sm:p-6 select-none overflow-hidden animate-slide-right border-r border-slate-800"
+              className="w-80 max-w-[85vw] bg-[#0F172A] text-white h-full max-h-[100dvh] shadow-2xl flex flex-col justify-between p-4 sm:p-6 select-none overflow-hidden animate-slide-right border-r border-slate-800"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex flex-col gap-4 min-h-0 flex-1">
+              <div className="flex flex-col gap-3 sm:gap-4 min-h-0 flex-1">
                 {/* Drawer Header: Logo + Close */}
                 <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                  <MyMobPayLogo className="w-36 h-auto" textColor="#FFFFFF" />
+                  <MyMobPayLogo markSize={28} textSize="text-xl" textColor="#FFFFFF" />
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+                    className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
                     type="button"
                     aria-label="Close menu"
                   >
@@ -3325,12 +3340,12 @@ echo "Order Created: " . $data['orderId'];
                     setIsMobileMenuOpen(false);
                     setIsBusinessInfoModalOpen(true);
                   }}
-                  className="w-full flex items-center gap-3 p-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] rounded-2xl transition-all text-left cursor-pointer group shrink-0"
+                  className="w-full flex items-center gap-3 p-2.5 sm:p-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] rounded-2xl transition-all text-left cursor-pointer group shrink-0"
                   title="View Profile and Settings"
                   type="button"
                 >
                   <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0"
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-xs shrink-0"
                     style={{ backgroundColor: profile?.theme_color || '#0D9488' }}
                   >
                     {merchantInitials || 'M'}
@@ -3339,13 +3354,13 @@ echo "Order Created: " . $data['orderId'];
                     <p className="text-xs font-bold text-white truncate group-hover:text-teal-400 transition-colors">
                       {profile?.business_name || profile?.owner_name || 'My Business'}
                     </p>
-                    <p className="text-[11px] font-mono text-slate-400 truncate">{user?.email || 'merchant@mymob.tech'}</p>
+                    <p className="text-[11px] font-mono text-slate-400 truncate">{user?.email || 'merchant@mymobpay.tech'}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                 </button>
 
                 {/* Navigation Links */}
-                <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto overscroll-contain touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
+                <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto overflow-x-hidden overscroll-contain touch-pan-y [scrollbar-width:thin] [scrollbar-color:#334155_transparent]" style={{ WebkitOverflowScrolling: 'touch' }}>
                   {/* Pinned: Premium Subscription Status Badge */}
                   <PremiumTierBadge
                     profile={profile}
@@ -3381,7 +3396,7 @@ echo "Order Created: " . $data['orderId'];
                   <div className="h-px bg-slate-800 my-2" />
 
                   {/* Category: General */}
-                  <p className="px-3 pt-1 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3.5 pt-1.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     Main
                   </p>
                   <button
@@ -3390,11 +3405,13 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`t-sidebar-nav-item ${activeTab === 'overview' ? 'is-active' : ''}`}
+                    className={`t-sidebar-nav-item justify-between ${activeTab === 'overview' ? 'is-active' : ''}`}
                   >
                     <span className="t-sidebar-indicator" />
-                    <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-                    <span className="truncate">Dashboard</span>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">Dashboard</span>
+                    </div>
                   </button>
                   <button
                     onClick={() => {
@@ -3402,15 +3419,17 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`t-sidebar-nav-item ${activeTab === 'payment-links' ? 'is-active' : ''}`}
+                    className={`t-sidebar-nav-item justify-between ${activeTab === 'payment-links' ? 'is-active' : ''}`}
                   >
                     <span className="t-sidebar-indicator" />
-                    <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-                    <span className="truncate">Payment Links</span>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">Payment Links</span>
+                    </div>
                   </button>
 
                   {/* Category: Operations */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     Operations
                   </p>
                   <button
@@ -3434,7 +3453,7 @@ echo "Order Created: " . $data['orderId'];
                   </button>
 
                   {/* Category: Reports & Analytics */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     Reports &amp; Analytics
                   </p>
                   <button
@@ -3443,11 +3462,13 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`t-sidebar-nav-item ${activeTab === 'transactions' ? 'is-active' : ''}`}
+                    className={`t-sidebar-nav-item justify-between ${activeTab === 'transactions' ? 'is-active' : ''}`}
                   >
                     <span className="t-sidebar-indicator" />
-                    <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-                    <span className="truncate">Transactions</span>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">Transactions</span>
+                    </div>
                   </button>
                   <button
                     onClick={() => {
@@ -3455,17 +3476,19 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`t-sidebar-nav-item ${activeTab === 'reports' ? 'is-active' : ''}`}
+                    className={`t-sidebar-nav-item justify-between ${activeTab === 'reports' ? 'is-active' : ''}`}
                   >
                     <span className="t-sidebar-indicator" />
-                    <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-                    <span className="truncate">Reports &amp; GST</span>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">Reports &amp; GST</span>
+                    </div>
                   </button>
 
                   {/* Category: Platform SaaS (Admin Only) */}
                   {isAdminUser && (
                     <>
-                      <p className="px-3 pt-3 pb-1 text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                      <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center justify-between">
                         <span>Platform SaaS</span>
                         <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">Admin</span>
                       </p>
@@ -3492,7 +3515,7 @@ echo "Order Created: " . $data['orderId'];
                   )}
 
                   {/* Category: Developer & Settings */}
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     Others
                   </p>
                   <button
@@ -3501,11 +3524,13 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`t-sidebar-nav-item ${activeTab === 'developer' ? 'is-active' : ''}`}
+                    className={`t-sidebar-nav-item justify-between ${activeTab === 'developer' ? 'is-active' : ''}`}
                   >
                     <span className="t-sidebar-indicator" />
-                    <Code className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-                    <span className="truncate">Developer Hub</span>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Code className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">Developer Hub</span>
+                    </div>
                   </button>
                   <button
                     onClick={() => {
@@ -3514,11 +3539,13 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`t-sidebar-nav-item ${activeTab === 'settings' ? 'is-active' : ''}`}
+                    className={`t-sidebar-nav-item justify-between ${activeTab === 'settings' ? 'is-active' : ''}`}
                   >
                     <span className="t-sidebar-indicator" />
-                    <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-                    <span className="truncate">Settings</span>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">Settings</span>
+                    </div>
                   </button>
 
                   <button
@@ -3527,17 +3554,19 @@ echo "Order Created: " . $data['orderId'];
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className={`t-sidebar-nav-item ${activeTab === 'support' ? 'is-active' : ''}`}
+                    className={`t-sidebar-nav-item justify-between ${activeTab === 'support' ? 'is-active' : ''}`}
                   >
                     <span className="t-sidebar-indicator" />
-                    <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon mr-3" />
-                    <span className="truncate">Support &amp; Help Desk</span>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon" />
+                      <span className="truncate">Support &amp; Help Desk</span>
+                    </div>
                   </button>
                 </nav>
               </div>
 
               {/* Drawer Footer */}
-              <div className="pt-3.5 pb-8 sm:pb-3.5 border-t border-slate-800 flex flex-col gap-2.5">
+              <div className="pt-3 pb-6 sm:pb-3.5 border-t border-slate-800 flex flex-col gap-2.5">
                 <div className="flex items-center justify-between text-xs font-medium">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -5037,6 +5066,9 @@ echo "Order Created: " . $data['orderId'];
         </div>
 
       )}
+
+      {/* ── MyMobPay Merchant AI Copilot (Powered by Backboard AI) ── */}
+      <MerchantAiCopilot profile={profile} user={user} />
 
     </div>
 

@@ -138,6 +138,18 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Mobile navigation drawer scroll lock
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   // Interactive Live Invoice demo states
   const [demoAmount, setDemoAmount] = useState('500');
   const [demoNote, setDemoNote] = useState('Payment_Note');
@@ -220,7 +232,7 @@ export default function HomePage() {
             </nav>
           </div>
 
-          {/* Right Cluster: Premium Login Button */}
+          {/* Right Cluster: Premium Login Button (Desktop) */}
           <div className="hidden sm:flex items-center">
             <Link 
               href="/login" 
@@ -232,22 +244,33 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Mobile hamburger button with transitions-dev icon swap (09-icon-swap.md) */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors shadow-2xs border border-slate-200/70 flex items-center justify-center"
-            title="Toggle Menu"
-            aria-label="Toggle Navigation Menu"
-          >
-            <span className="t-icon-swap" data-state={isMobileMenuOpen ? 'b' : 'a'}>
-              <span className="t-icon" data-icon="a" aria-hidden={isMobileMenuOpen}>
-                <Menu className="w-5 h-5" />
+          {/* Mobile Right Cluster (sm:hidden) + Mobile hamburger toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <Link 
+              href="/login" 
+              className="sm:hidden px-3.5 py-1.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-xs font-semibold flex items-center gap-1 transition-all shadow-2xs cursor-pointer"
+            >
+              <Lock className="w-3 h-3 opacity-90" />
+              <span>Login</span>
+            </Link>
+
+            {/* Mobile hamburger button with transitions-dev icon swap (09-icon-swap.md) */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="w-9 h-9 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors shadow-2xs border border-slate-200/70 flex items-center justify-center cursor-pointer"
+              title="Toggle Menu"
+              aria-label="Toggle Navigation Menu"
+            >
+              <span className="t-icon-swap" data-state={isMobileMenuOpen ? 'b' : 'a'}>
+                <span className="t-icon" data-icon="a" aria-hidden={isMobileMenuOpen}>
+                  <Menu className="w-4 h-4" />
+                </span>
+                <span className="t-icon" data-icon="b" aria-hidden={!isMobileMenuOpen}>
+                  <X className="w-4 h-4" />
+                </span>
               </span>
-              <span className="t-icon" data-icon="b" aria-hidden={!isMobileMenuOpen}>
-                <X className="w-5 h-5" />
-              </span>
-            </span>
-          </button>
+            </button>
+          </div>
 
         </div>
       </header>
@@ -255,33 +278,63 @@ export default function HomePage() {
       {/* Mobile Drawer Navigation (transitions-dev: 05-menu-dropdown.md) */}
       {isMobileMenuMounted && (
         <div 
-          className={`lg:hidden fixed inset-x-0 bottom-0 ${scrolled ? 'top-16 sm:top-20' : 'top-[96px] sm:top-[116px]'} z-40 bg-white flex flex-col pt-6 px-6 pb-8 border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto ${mobileMenuDropdownClass}`}
+          className={`lg:hidden fixed inset-x-0 bottom-0 top-[96px] sm:top-[116px] max-h-[calc(100dvh-96px)] sm:max-h-[calc(100dvh-116px)] z-40 bg-white flex flex-col pt-5 px-5 sm:px-6 pb-8 border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto ${mobileMenuDropdownClass}`}
           data-origin="top-center"
         >
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-2.5">
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('developer-section')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
-              <span>Developers &amp; API</span> <ChevronRight className="w-4 h-4 text-slate-400" />
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#533afd] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Code className="w-4 h-4" />
+                </div>
+                <span>Developers &amp; API</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </button>
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
-              <span>Subscription Pricing</span> <ChevronRight className="w-4 h-4 text-slate-400" />
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <span>Subscription Pricing</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </button>
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
-              <span>Platform Features</span> <ChevronRight className="w-4 h-4 text-slate-400" />
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <span>Platform Features</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </button>
-            <Link href="/terms" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
-              <span>Terms of Service</span> <ChevronRight className="w-4 h-4 text-slate-400" />
+            <Link href="/terms" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <span>Terms of Service</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </Link>
-            <Link href="/privacy" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]">
-              <span>Privacy Policy</span> <ChevronRight className="w-4 h-4 text-slate-400" />
+            <Link href="/privacy" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <span>Privacy Policy</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </Link>
           </div>
 

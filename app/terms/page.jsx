@@ -76,7 +76,7 @@ export default function TermsPage() {
           </div>
 
           <p className="mt-6 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-            Welcome to <strong>MyMobPay</strong> (accessible via <code>mymob.tech</code> and authorized application subdomains). 
+            Welcome to <strong>MyMobPay</strong> (accessible via <code>mymobpay.tech</code> and authorized application subdomains). 
             Please review these Terms of Service carefully before creating a merchant profile, generating payment links, or utilizing our direct settlement verification APIs. 
             By registering, connecting your UPI VPA, or deploying our webhook endpoints, you contractually agree to these terms in full.
           </p>
@@ -256,9 +256,9 @@ export default function TermsPage() {
               These Terms of Service are governed by and construed in accordance with the laws of the Republic of India. Any disputes arising under or in connection with these Terms shall be subject to the exclusive jurisdiction of the competent courts in India.
             </p>
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-1 text-slate-700">
-              <p><strong>Merchant Legal Inquiries:</strong> legal@mymob.tech</p>
-              <p><strong>Technical Support:</strong> support@mymob.tech</p>
-              <p><strong>Platform Domain:</strong> https://mymob.tech</p>
+              <p><strong>Merchant Legal Inquiries:</strong> legal@mymobpay.tech</p>
+              <p><strong>Technical Support:</strong> support@mymobpay.tech</p>
+              <p><strong>Platform Domain:</strong> https://mymobpay.tech</p>
             </div>
           </section>
 

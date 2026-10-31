@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: 'Log in or sign up — MyMobPay Merchant Portal',
     description: 'Access your MyMobPay merchant account to accept direct UPI payments with 0% transaction fees.',
-    url: 'https://mymob.tech/login',
+    url: 'https://mymobpay.tech/login',
   },
 };
 

@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: 'Download Logo & Brand Assets — MyMobPay',
     description: 'Official brand assets and logos for MyMobPay.',
-    url: 'https://mymob.tech/download-logo',
+    url: 'https://mymobpay.tech/download-logo',
   },
 };
 

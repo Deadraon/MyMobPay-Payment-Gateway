@@ -76,7 +76,7 @@ export default function PrivacyPage() {
           </div>
 
           <p className="mt-6 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-            At <strong>MyMobPay</strong> (<code>mymob.tech</code>), we treat data confidentiality and merchant isolation as core engineering principles. 
+            At <strong>MyMobPay</strong> (<code>mymobpay.tech</code>), we treat data confidentiality and merchant isolation as core engineering principles. 
             This Privacy Policy details how we collect, process, isolate, and safeguard data in accordance with the 
             <strong> Digital Personal Data Protection Act, 2023 (DPDP Act)</strong> and the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011.
           </p>
@@ -270,7 +270,7 @@ export default function PrivacyPage() {
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-1 text-slate-700">
               <p><strong>Grievance Officer:</strong> Legal &amp; Compliance Cell</p>
               <p><strong>Entity:</strong> MyMobPay Technology</p>
-              <p><strong>Email:</strong> privacy@mymob.tech / grievance@mymob.tech</p>
+              <p><strong>Email:</strong> privacy@mymobpay.tech / grievance@mymobpay.tech</p>
               <p><strong>Response Turnaround:</strong> Within 48 hours on business days</p>
             </div>
           </section>

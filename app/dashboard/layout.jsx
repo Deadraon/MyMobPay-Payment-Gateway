@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: 'Merchant Dashboard — MyMobPay',
     description: 'Monitor real-time payments and bank settlements with 0% gateway fees.',
-    url: 'https://mymob.tech/dashboard',
+    url: 'https://mymobpay.tech/dashboard',
   },
 };
 

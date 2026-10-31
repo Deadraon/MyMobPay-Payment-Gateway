@@ -38,17 +38,17 @@ export default function AdminHeader({
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+          className="md:hidden w-9 h-9 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0 flex items-center justify-center border border-slate-200/80 cursor-pointer"
           type="button"
           title="Toggle Navigation Menu"
           aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
         >
-          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
         </button>
 
         {/* Mobile Brand Logo */}
         <div className="md:hidden flex items-center shrink-0">
-          <MyMobPayLogo className="w-28 sm:w-32 h-auto" textColor="#0c2340" />
+          <MyMobPayLogo markSize={26} textSize="text-lg" textColor="#0c2340" />
         </div>
 
         {/* Desktop Super Admin Console Badge */}
@@ -132,7 +132,7 @@ export default function AdminHeader({
                 onClick={() => setIsNotifOpen(false)} 
               />
               <div 
-                className="absolute right-0 top-[calc(100%+8px)] w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[460px] animate-fadeIn"
+                className="fixed left-2.5 right-2.5 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[460px] animate-fadeIn"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/90">

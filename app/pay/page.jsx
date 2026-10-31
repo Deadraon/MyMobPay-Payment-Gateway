@@ -2604,7 +2604,7 @@ function PayPageContent() {
                 {/* Floating Trust Pill */}
                 <div className="animate-cascade-1" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#ecfdf5', color: '#065f46', borderRadius: 9999, padding: '6px 14px', marginBottom: 16, border: '1px solid #a7f3d0', fontSize: 11, fontWeight: 700 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-                  <span>Payment Verified • mymob.tech</span>
+                  <span>Payment Verified • mymobpay.tech</span>
                 </div>
 
                 {/* Animated Green Tick Icon (Razorpay / Top Fintech Style) */}

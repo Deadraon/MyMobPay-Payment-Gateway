@@ -213,15 +213,16 @@ export default function AdminSidebar({
     <>
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Logo & Brand */}
-        <div className="px-6 pt-6 pb-4 flex items-center justify-between">
+        <div className="px-5 pt-5 pb-3 flex items-center justify-between">
           <MyMobPayLogo 
-            className="w-44 lg:w-48 h-auto transition-transform hover:scale-[1.02]" 
+            markSize={28}
+            textSize="text-xl"
             textColor="#FFFFFF" 
           />
           {setIsMobileMenuOpen && (
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="md:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
               type="button"
               title="Close Menu"
             >
@@ -344,7 +345,7 @@ export default function AdminSidebar({
           />
 
           {/* Drawer Content */}
-          <aside className="relative w-72 max-w-[85vw] bg-[#0F172A] border-r border-slate-800 z-50 flex flex-col justify-between shadow-2xl select-none text-slate-100 transition-transform duration-200 ease-out">
+          <aside className="relative w-72 max-w-[85vw] h-full max-h-[100dvh] bg-[#0F172A] border-r border-slate-800 z-50 flex flex-col justify-between shadow-2xl select-none text-slate-100 transition-transform duration-200 ease-out">
             {renderNavContent()}
           </aside>
         </div>
