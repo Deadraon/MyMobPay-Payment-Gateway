@@ -34,7 +34,6 @@ import VerificationCenterRedesign from '@/components/VerificationCenterRedesign'
 import ReportsRedesign from '@/components/ReportsRedesign';
 import DeveloperConsoleRedesign from '@/components/DeveloperConsoleRedesign';
 import SupportHelpRedesign from '@/components/SupportHelpRedesign';
-import MerchantAiCopilot from '@/components/MerchantAiCopilot';
 import AdminConsole from '@/components/AdminConsole';
 import PlatformSubscriptionsHub from '@/components/PlatformSubscriptionsHub';
 import PremiumTierBadge from '@/components/PremiumTierBadge';
@@ -2784,7 +2783,7 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`t-sidebar-nav-item justify-between ${activeTab === 'overview' ? 'is-active' : ''}`}
             >
-              <span className="t-sidebar-indicator" />
+              {activeTab === 'overview' && <span className="t-sidebar-indicator" />}
               <div className="flex items-center gap-3 min-w-0">
                 <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon" />
                 <span className="truncate">Dashboard</span>
@@ -2796,7 +2795,7 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`t-sidebar-nav-item justify-between ${activeTab === 'payment-links' ? 'is-active' : ''}`}
             >
-              <span className="t-sidebar-indicator" />
+              {activeTab === 'payment-links' && <span className="t-sidebar-indicator" />}
               <div className="flex items-center gap-3 min-w-0">
                 <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon" />
                 <span className="truncate">Payment Links</span>
@@ -2813,7 +2812,7 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`t-sidebar-nav-item justify-between ${activeTab === 'verification' ? 'is-active' : ''}`}
             >
-              <span className="t-sidebar-indicator" />
+              {activeTab === 'verification' && <span className="t-sidebar-indicator" />}
               <div className="flex items-center gap-3 min-w-0">
                 <ShieldCheck className="w-4 h-4 shrink-0 t-sidebar-icon" />
                 <span className="truncate">Verification</span>
@@ -2835,7 +2834,7 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`t-sidebar-nav-item justify-between ${activeTab === 'transactions' ? 'is-active' : ''}`}
             >
-              <span className="t-sidebar-indicator" />
+              {activeTab === 'transactions' && <span className="t-sidebar-indicator" />}
               <div className="flex items-center gap-3 min-w-0">
                 <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon" />
                 <span className="truncate">Transactions</span>
@@ -2847,7 +2846,7 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`t-sidebar-nav-item justify-between ${activeTab === 'reports' ? 'is-active' : ''}`}
             >
-              <span className="t-sidebar-indicator" />
+              {activeTab === 'reports' && <span className="t-sidebar-indicator" />}
               <div className="flex items-center gap-3 min-w-0">
                 <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon" />
                 <span className="truncate">Reports &amp; GST</span>
@@ -2867,7 +2866,7 @@ echo "Order Created: " . $data['orderId'];
                   type="button"
                   className={`t-sidebar-nav-item justify-between ${activeTab === 'saas-subscriptions' ? 'is-active' : ''}`}
                 >
-                  <span className="t-sidebar-indicator" />
+                  {activeTab === 'saas-subscriptions' && <span className="t-sidebar-indicator" />}
                   <div className="flex items-center gap-3 min-w-0">
                     <Layers className="w-4 h-4 shrink-0 t-sidebar-icon" />
                     <span className="truncate">SaaS Subscriptions</span>
@@ -2891,7 +2890,7 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`t-sidebar-nav-item justify-between ${activeTab === 'developer' ? 'is-active' : ''}`}
             >
-              <span className="t-sidebar-indicator" />
+              {activeTab === 'developer' && <span className="t-sidebar-indicator" />}
               <div className="flex items-center gap-3 min-w-0">
                 <Code className="w-4 h-4 shrink-0 t-sidebar-icon" />
                 <span className="truncate">Developer Hub</span>
@@ -2906,7 +2905,7 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`t-sidebar-nav-item justify-between ${activeTab === 'settings' ? 'is-active' : ''}`}
             >
-              <span className="t-sidebar-indicator" />
+              {activeTab === 'settings' && <span className="t-sidebar-indicator" />}
               <div className="flex items-center gap-3 min-w-0">
                 <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon" />
                 <span className="truncate">Settings</span>
@@ -2918,7 +2917,7 @@ echo "Order Created: " . $data['orderId'];
               type="button"
               className={`t-sidebar-nav-item justify-between ${activeTab === 'support' ? 'is-active' : ''}`}
             >
-              <span className="t-sidebar-indicator" />
+              {activeTab === 'support' && <span className="t-sidebar-indicator" />}
               <div className="flex items-center gap-3 min-w-0">
                 <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon" />
                 <span className="truncate">Support &amp; Help</span>
@@ -3047,16 +3046,6 @@ echo "Order Created: " . $data['orderId'];
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink-0">
-            {/* AI Assistant Button (Inspired by Reference) */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('support')}
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/90 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-              <span>AI Assistant</span>
-            </button>
-
             {/* Help Button (Single Clean Icon) */}
             <button
               type="button"
@@ -3407,7 +3396,7 @@ echo "Order Created: " . $data['orderId'];
                     type="button"
                     className={`t-sidebar-nav-item justify-between ${activeTab === 'overview' ? 'is-active' : ''}`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {activeTab === 'overview' && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">Dashboard</span>
@@ -3421,7 +3410,7 @@ echo "Order Created: " . $data['orderId'];
                     type="button"
                     className={`t-sidebar-nav-item justify-between ${activeTab === 'payment-links' ? 'is-active' : ''}`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {activeTab === 'payment-links' && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">Payment Links</span>
@@ -3440,7 +3429,7 @@ echo "Order Created: " . $data['orderId'];
                     type="button"
                     className={`t-sidebar-nav-item justify-between ${activeTab === 'verification' ? 'is-active' : ''}`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {activeTab === 'verification' && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <ShieldCheck className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">Verification</span>
@@ -3464,7 +3453,7 @@ echo "Order Created: " . $data['orderId'];
                     type="button"
                     className={`t-sidebar-nav-item justify-between ${activeTab === 'transactions' ? 'is-active' : ''}`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {activeTab === 'transactions' && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">Transactions</span>
@@ -3478,7 +3467,7 @@ echo "Order Created: " . $data['orderId'];
                     type="button"
                     className={`t-sidebar-nav-item justify-between ${activeTab === 'reports' ? 'is-active' : ''}`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {activeTab === 'reports' && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">Reports &amp; GST</span>
@@ -3500,7 +3489,7 @@ echo "Order Created: " . $data['orderId'];
                         type="button"
                         className={`t-sidebar-nav-item justify-between ${activeTab === 'saas-subscriptions' ? 'is-active' : ''}`}
                       >
-                        <span className="t-sidebar-indicator" />
+                        {activeTab === 'saas-subscriptions' && <span className="t-sidebar-indicator" />}
                         <div className="flex items-center gap-3 min-w-0">
                           <Layers className="w-4 h-4 shrink-0 t-sidebar-icon" />
                           <span className="truncate">SaaS Subscriptions</span>
@@ -3526,7 +3515,7 @@ echo "Order Created: " . $data['orderId'];
                     type="button"
                     className={`t-sidebar-nav-item justify-between ${activeTab === 'developer' ? 'is-active' : ''}`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {activeTab === 'developer' && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <Code className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">Developer Hub</span>
@@ -3541,7 +3530,7 @@ echo "Order Created: " . $data['orderId'];
                     type="button"
                     className={`t-sidebar-nav-item justify-between ${activeTab === 'settings' ? 'is-active' : ''}`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {activeTab === 'settings' && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">Settings</span>
@@ -3556,7 +3545,7 @@ echo "Order Created: " . $data['orderId'];
                     type="button"
                     className={`t-sidebar-nav-item justify-between ${activeTab === 'support' ? 'is-active' : ''}`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {activeTab === 'support' && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">Support &amp; Help Desk</span>
@@ -5066,9 +5055,6 @@ echo "Order Created: " . $data['orderId'];
         </div>
 
       )}
-
-      {/* ── MyMobPay Merchant AI Copilot (Powered by Backboard AI) ── */}
-      <MerchantAiCopilot profile={profile} user={user} />
 
     </div>
 

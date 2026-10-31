@@ -280,7 +280,7 @@ export default function AdminSidebar({
                     type="button"
                     className={`t-sidebar-nav-item ${isActive ? 'is-active' : ''} justify-between`}
                   >
-                    <span className="t-sidebar-indicator" />
+                    {isActive && <span className="t-sidebar-indicator" />}
                     <div className="flex items-center gap-3 min-w-0">
                       <Icon className="w-4 h-4 shrink-0 t-sidebar-icon" />
                       <span className="truncate">{item.label}</span>

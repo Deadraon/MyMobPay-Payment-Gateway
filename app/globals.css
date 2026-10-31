@@ -1219,12 +1219,13 @@ input[type=number] {
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
+  overflow: hidden;
   transition:
     background var(--t-sidebar-dur) var(--t-sidebar-ease),
     border-color var(--t-sidebar-dur) var(--t-sidebar-ease),
     color var(--t-sidebar-dur) var(--t-sidebar-ease),
     box-shadow var(--t-sidebar-dur) var(--t-sidebar-ease),
-    transform 160ms var(--t-sidebar-ease);
+    transform 160ms var(--t-sidebar-dur);
   will-change: transform, background, border-color;
 }
 
@@ -1254,18 +1255,31 @@ input[type=number] {
   position: absolute;
   left: 0;
   top: 50%;
-  transform: translateY(-50%) scaleY(0);
+  margin-top: -10px;
   width: 3.5px;
   height: 20px;
   border-top-right-radius: 999px;
   border-bottom-right-radius: 999px;
   background: linear-gradient(180deg, #38bdf8 0%, #3b82f6 100%);
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.9);
-  transition: transform var(--t-sidebar-dur) var(--t-sidebar-ease);
+  opacity: 0;
+  pointer-events: none;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform var(--t-sidebar-dur) var(--t-sidebar-ease), opacity var(--t-sidebar-dur) ease;
+}
+
+.t-sidebar-nav-item:not(.is-active) .t-sidebar-indicator {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
 .t-sidebar-nav-item.is-active .t-sidebar-indicator {
-  transform: translateY(-50%) scaleY(1);
+  display: block !important;
+  transform: scaleY(1);
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .t-sidebar-nav-item .t-sidebar-icon {
@@ -1286,10 +1300,17 @@ input[type=number] {
 
 @media (prefers-reduced-motion: reduce) {
   .t-sidebar-nav-item,
-  .t-sidebar-nav-item .t-sidebar-indicator,
   .t-sidebar-nav-item .t-sidebar-icon {
     transition: none !important;
     transform: none !important;
+  }
+  .t-sidebar-nav-item .t-sidebar-indicator {
+    transition: none !important;
+  }
+  .t-sidebar-nav-item:not(.is-active) .t-sidebar-indicator {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
   }
 }
 
