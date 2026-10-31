@@ -935,14 +935,18 @@ input[type=number] {
     transform var(--icon-swap-dur) var(--icon-swap-ease);
 }
 .t-icon-swap[data-state="a"] .t-icon[data-icon="a"],
-.t-icon-swap[data-state="b"] .t-icon[data-icon="b"] {
+.t-icon-swap[data-state="b"] .t-icon[data-icon="b"],
+.t-icon-swap[data-state="a"] .t-icon--a,
+.t-icon-swap[data-state="b"] .t-icon--b {
   opacity: 1;
   filter: blur(0);
   transform: scale(1);
   pointer-events: auto;
 }
 .t-icon-swap[data-state="a"] .t-icon[data-icon="b"],
-.t-icon-swap[data-state="b"] .t-icon[data-icon="a"] {
+.t-icon-swap[data-state="b"] .t-icon[data-icon="a"],
+.t-icon-swap[data-state="a"] .t-icon--b,
+.t-icon-swap[data-state="b"] .t-icon--a {
   opacity: 0;
   filter: blur(var(--icon-swap-blur));
   transform: scale(var(--icon-swap-start-scale));

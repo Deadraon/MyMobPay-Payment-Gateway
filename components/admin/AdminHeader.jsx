@@ -31,24 +31,28 @@ export default function AdminHeader({
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 md:left-64 right-0 z-40 bg-white border-b border-slate-200 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] h-14 sm:h-16 md:h-20 flex items-center justify-between px-3 sm:px-6 lg:px-8">
+    <header className="fixed top-0 left-0 md:left-64 right-0 z-40 bg-white border-b border-slate-200/90 shadow-xs h-14 sm:h-16 flex items-center justify-between px-3.5 sm:px-6 lg:px-8">
       
       {/* Left: Mobile Toggle & Mobile Logo / Desktop Admin Badge */}
-      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden w-9 h-9 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0 flex items-center justify-center border border-slate-200/80 cursor-pointer"
+          className="md:hidden w-10 h-10 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200/70 transition-all shrink-0 flex items-center justify-center border border-slate-200/90 bg-white shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           type="button"
-          title="Toggle Navigation Menu"
+          title={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isMobileMenuOpen}
         >
-          {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          <div className="relative w-5 h-5 flex items-center justify-center">
+            <Menu className={`w-5 h-5 absolute inset-0 transition-all duration-200 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-75 pointer-events-none' : 'opacity-100 rotate-0 scale-100'}`} />
+            <X className={`w-5 h-5 absolute inset-0 transition-all duration-200 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75 pointer-events-none'}`} />
+          </div>
         </button>
 
         {/* Mobile Brand Logo */}
         <div className="md:hidden flex items-center shrink-0">
-          <MyMobPayLogo markSize={26} textSize="text-lg" textColor="#0c2340" />
+          <MyMobPayLogo markSize={24} textSize="text-base sm:text-lg" textColor="#0c2340" />
         </div>
 
         {/* Desktop Super Admin Console Badge */}

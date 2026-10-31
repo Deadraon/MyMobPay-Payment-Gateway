@@ -768,7 +768,7 @@ export default function AdminConsole({ user, profile, onBackToMerchant }) {
       />
 
       {/* Main Content View with md:pl-64 offset and fixed top header */}
-      <main className="md:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-[#F8FAFC] pt-14 sm:pt-16 md:pt-20">
+      <main className="md:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-[#F8FAFC] pt-14 sm:pt-16">
         
         {/* Top Header */}
         <AdminHeader

@@ -337,15 +337,15 @@ export default function AdminSidebar({
           MOBILE NAVIGATION DRAWER (Slide-Out Responsive Menubar)
           ═══════════════════════════════════════════════════════════ */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex">
+        <div className="fixed inset-0 z-[100] md:hidden flex">
           {/* Backdrop Blur Overlay */}
           <div 
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200"
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity duration-200"
             onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
           />
 
           {/* Drawer Content */}
-          <aside className="relative w-72 max-w-[85vw] h-full max-h-[100dvh] bg-[#0F172A] border-r border-slate-800 z-50 flex flex-col justify-between shadow-2xl select-none text-slate-100 transition-transform duration-200 ease-out">
+          <aside className="relative w-[88vw] max-w-[340px] sm:w-80 h-[100dvh] max-h-[100dvh] bg-[#0F172A] border-r border-slate-800 z-50 flex flex-col justify-between shadow-2xl select-none text-slate-100 transition-transform duration-200 ease-out pb-[max(1rem,env(safe-area-inset-bottom))]">
             {renderNavContent()}
           </aside>
         </div>

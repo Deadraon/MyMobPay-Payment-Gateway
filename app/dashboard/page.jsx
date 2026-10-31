@@ -2947,39 +2947,40 @@ echo "Order Created: " . $data['orderId'];
 
       {/* Main Content View */}
 
-      <main className="md:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] pt-14 sm:pt-16 md:pt-20">
+      <main className="md:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] pt-14 sm:pt-16">
 
                         {/* ═══════════════════════════════════════════════════════════
            HEADER (Unified Single Top Bar with Notifications Flyout)
            ═══════════════════════════════════════════════════════════ */}
-        <header className="fixed top-0 left-0 md:left-64 right-0 bg-white border-b border-slate-200 z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] h-14 sm:h-16 md:h-20">
-          <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0">
-            {/* Mobile Hamburger Toggle */}
+        <header className="fixed top-0 left-0 md:left-64 right-0 bg-white border-b border-slate-200/90 z-40 flex items-center justify-between px-3.5 sm:px-6 lg:px-8 shadow-xs h-14 sm:h-16">
+          <div className="flex items-center gap-2.5 sm:gap-4 lg:gap-6 min-w-0">
+            {/* Mobile Hamburger Toggle (Glitch-Free Responsive Transition) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden w-9 h-9 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0 flex items-center justify-center border border-slate-200/80 cursor-pointer"
+              className="md:hidden w-10 h-10 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200/70 transition-all shrink-0 flex items-center justify-center border border-slate-200/90 bg-white shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               type="button"
-              title="Toggle Menu"
+              title={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isMobileMenuOpen}
             >
-              <span className="t-icon-swap" data-state={isMobileMenuOpen ? 'b' : 'a'}>
-                <Menu className="t-icon t-icon--a w-4 h-4" aria-hidden={isMobileMenuOpen} />
-                <X className="t-icon t-icon--b w-4 h-4" aria-hidden={!isMobileMenuOpen} />
-              </span>
+              <div className="relative w-5 h-5 flex items-center justify-center">
+                <Menu className={`w-5 h-5 absolute inset-0 transition-all duration-200 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-75 pointer-events-none' : 'opacity-100 rotate-0 scale-100'}`} />
+                <X className={`w-5 h-5 absolute inset-0 transition-all duration-200 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75 pointer-events-none'}`} />
+              </div>
             </button>
 
             {/* Mobile Brand Logo */}
             <div className="md:hidden flex items-center shrink-0">
-              <MyMobPayLogo markSize={26} textSize="text-lg" textColor="#0c2340" />
+              <MyMobPayLogo markSize={24} textSize="text-base sm:text-lg" textColor="#0c2340" />
             </div>
 
             {/* Live Mode / Test Mode Switcher (Desktop) */}
-            <div className="hidden sm:flex items-center bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/70 shadow-inner">
+            <div className="hidden sm:flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/70 shadow-inner">
               <button
                 onClick={() => {
                   if (profile?.sandbox_mode !== false) toggleSandboxMode();
                 }}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
                   profile?.sandbox_mode === false
                     ? 'bg-white text-blue-600 shadow-sm border border-slate-200/60'
                     : 'text-slate-500 hover:text-slate-900'
@@ -3003,7 +3004,7 @@ echo "Order Created: " . $data['orderId'];
                 onClick={() => {
                   if (profile?.sandbox_mode === false) toggleSandboxMode();
                 }}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
                   profile?.sandbox_mode !== false
                     ? 'bg-white text-amber-600 shadow-sm border border-slate-200/60 font-semibold'
                     : 'text-slate-500 hover:text-slate-900'
@@ -3045,27 +3046,28 @@ echo "Order Created: " . $data['orderId'];
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink-0">
-            {/* Help Button (Single Clean Icon) */}
+          <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-4 shrink-0">
+            {/* Help Button (Single Clean Icon - Desktop) */}
             <button
               type="button"
               onClick={() => setActiveTab('support')}
-              className="hidden sm:inline-flex p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="hidden sm:inline-flex p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
               title="Help & Documentation"
             >
               <HelpCircle className="w-4 h-4" />
             </button>
 
-            {/* Mobile Mode Switcher Pill */}
+            {/* Mobile Mode Switcher Pill (Compact & Uncluttered) */}
             <button
               onClick={toggleSandboxMode}
-              className={`sm:hidden h-9 px-2.5 rounded-xl text-[11px] font-bold border transition-all flex items-center gap-1.5 shrink-0 ${
+              className={`sm:hidden h-8 px-2.5 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1.5 shrink-0 ${
                 profile?.sandbox_mode === false
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80 shadow-2xs'
                   : 'bg-amber-50 text-amber-700 border-amber-200/80 shadow-2xs'
               }`}
               type="button"
-              title={profile?.sandbox_mode === false ? 'Live Mode Active' : 'Test Sandbox Mode Active'}
+              title={profile?.sandbox_mode === false ? 'Live Production Mode Active (Tap to toggle)' : 'Sandbox Test Mode Active (Tap to toggle)'}
+              aria-label={profile?.sandbox_mode === false ? 'Live Mode' : 'Test Mode'}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${profile?.sandbox_mode === false ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
               <span>{profile?.sandbox_mode === false ? 'Live' : 'Test'}</span>
@@ -3082,10 +3084,11 @@ echo "Order Created: " . $data['orderId'];
                   className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
                     isNotificationOpen
                       ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 border-slate-200/80 bg-white'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border-slate-200/80 bg-white'
                   }`}
                   title="Notifications & Activity"
                   type="button"
+                  aria-label="Notifications"
                 >
                   <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-current" />
                   {merchantOrders.filter(o => o.status === 'verified').length > 0 && (
@@ -3191,7 +3194,8 @@ echo "Order Created: " . $data['orderId'];
               </div>
             </div>
 
-            <div className="h-8 w-[1px] bg-slate-200 mx-0.5 sm:mx-1"></div>
+            {/* Desktop Vertical Divider (Hidden on mobile for clean breathing room) */}
+            <div className="hidden sm:block h-6 w-px bg-slate-200 mx-0.5 sm:mx-1"></div>
 
             {/* Profile Dropdown */}
             <div className="relative select-none">
@@ -3210,7 +3214,7 @@ echo "Order Created: " . $data['orderId'];
                     <span className="text-xs text-slate-900 font-bold leading-tight group-hover:text-blue-600 transition-colors truncate max-w-[120px]">
                       {profile?.business_name || profile?.owner_name || 'MyMobPay'}
                     </span>
-                    <span className="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-transform" />
                   </div>
                   <span className="text-[11px] font-mono text-slate-400 font-medium">
                     {formatMerchantId(profile?.id)}
@@ -3301,23 +3305,23 @@ echo "Order Created: " . $data['orderId'];
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
           <div 
-            className="md:hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex transition-opacity animate-fade-in"
+            className="md:hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex transition-opacity animate-fade-in"
             onClick={() => setIsMobileMenuOpen(false)}
             onTouchMove={(e) => { if (e.target === e.currentTarget) e.preventDefault(); }}
           >
             <div 
-              className="w-80 max-w-[85vw] bg-[#0F172A] text-white h-full max-h-[100dvh] shadow-2xl flex flex-col justify-between p-4 sm:p-6 select-none overflow-hidden animate-slide-right border-r border-slate-800"
+              className="w-[88vw] max-w-[340px] sm:w-80 bg-[#0F172A] text-white h-[100dvh] max-h-[100dvh] shadow-2xl flex flex-col justify-between p-4 sm:p-5 select-none overflow-hidden animate-slide-right border-r border-slate-800 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex flex-col gap-3 sm:gap-4 min-h-0 flex-1">
+              <div className="flex flex-col gap-3 min-h-0 flex-1">
                 {/* Drawer Header: Logo + Close */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0">
                   <MyMobPayLogo markSize={28} textSize="text-xl" textColor="#FFFFFF" />
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+                    className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 active:bg-slate-700 transition-colors cursor-pointer"
                     type="button"
-                    aria-label="Close menu"
+                    aria-label="Close navigation menu"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -3329,12 +3333,12 @@ echo "Order Created: " . $data['orderId'];
                     setIsMobileMenuOpen(false);
                     setIsBusinessInfoModalOpen(true);
                   }}
-                  className="w-full flex items-center gap-3 p-2.5 sm:p-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] rounded-2xl transition-all text-left cursor-pointer group shrink-0"
+                  className="w-full flex items-center gap-3 p-3 bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.12] border border-white/[0.08] rounded-2xl transition-all text-left cursor-pointer group shrink-0"
                   title="View Profile and Settings"
                   type="button"
                 >
                   <div 
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-xs shrink-0"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0"
                     style={{ backgroundColor: profile?.theme_color || '#0D9488' }}
                   >
                     {merchantInitials || 'M'}
@@ -3347,6 +3351,25 @@ echo "Order Created: " . $data['orderId'];
                   </div>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                 </button>
+
+                {/* Mobile Mode Switcher inside Drawer */}
+                <div className="flex items-center justify-between p-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${profile?.sandbox_mode === false ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                    <span className="text-[11px] font-bold text-slate-200">
+                      {profile?.sandbox_mode === false ? 'Live Production Mode' : 'Sandbox Test Mode'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      toggleSandboxMode();
+                    }}
+                    type="button"
+                    className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-colors cursor-pointer border border-white/10"
+                  >
+                    Switch
+                  </button>
+                </div>
 
                 {/* Navigation Links */}
                 <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto overflow-x-hidden overscroll-contain touch-pan-y [scrollbar-width:thin] [scrollbar-color:#334155_transparent]" style={{ WebkitOverflowScrolling: 'touch' }}>
@@ -3555,7 +3578,7 @@ echo "Order Created: " . $data['orderId'];
               </div>
 
               {/* Drawer Footer */}
-              <div className="pt-3 pb-6 sm:pb-3.5 border-t border-slate-800 flex flex-col gap-2.5">
+              <div className="shrink-0 pt-3 pb-2 border-t border-slate-800 flex flex-col gap-2.5">
                 <div className="flex items-center justify-between text-xs font-medium">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -3569,7 +3592,7 @@ echo "Order Created: " . $data['orderId'];
                     handleSignOut();
                   }}
                   type="button"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/10 hover:text-rose-200 rounded-xl transition-colors border border-rose-500/20 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/10 active:bg-rose-500/20 hover:text-rose-200 rounded-xl transition-colors border border-rose-500/20 cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" /> Sign Out
                 </button>
