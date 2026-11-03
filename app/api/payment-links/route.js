@@ -118,7 +118,7 @@ export async function POST(request) {
     // 5. Derive base public payment domain
     const hostHeader = request.headers.get('x-forwarded-host') || request.headers.get('host');
     const proto = request.headers.get('x-forwarded-proto') || 'https';
-    const domain = process.env.NEXT_PUBLIC_APP_URL || (hostHeader ? `${proto}://${hostHeader}` : 'https://mymob.tech');
+    const domain = process.env.NEXT_PUBLIC_APP_URL || (hostHeader ? `${proto}://${hostHeader}` : 'https://mymobpay.tech');
     const paymentUrl = `${domain.replace(/\/+$/, '')}/pay/${token}`;
 
     // 6. Insert new payment link record
@@ -269,7 +269,7 @@ export async function GET(request) {
 
     const hostHeader = request.headers.get('x-forwarded-host') || request.headers.get('host');
     const proto = request.headers.get('x-forwarded-proto') || 'https';
-    const domain = process.env.NEXT_PUBLIC_APP_URL || (hostHeader ? `${proto}://${hostHeader}` : 'https://mymob.tech');
+    const domain = process.env.NEXT_PUBLIC_APP_URL || (hostHeader ? `${proto}://${hostHeader}` : 'https://mymobpay.tech');
     const now = Date.now();
 
     const formattedLinks = (links || []).map((l) => {

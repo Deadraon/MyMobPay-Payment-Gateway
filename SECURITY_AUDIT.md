@@ -61,7 +61,7 @@ The initial codebase, developed via rapid AI-assisted development, contains foun
     (authHeader && (authHeader.startsWith('Bearer adm_') || authHeader.startsWith('Bearer ey'))) ||
     secFetchSite === 'same-origin';
   ```
-  The condition `secFetchSite === 'same-origin'` unconditionally authorizes any browser request originating from `mymob.tech`. If an attacker registers as a regular merchant and executes `fetch('/api/admin/...')` in the browser dev tools, the edge middleware lets the request pass into backend route handlers. Defense-in-depth is lost at the edge.
+  The condition `secFetchSite === 'same-origin'` unconditionally authorizes any browser request originating from `mymobpay.tech`. If an attacker registers as a regular merchant and executes `fetch('/api/admin/...')` in the browser dev tools, the edge middleware lets the request pass into backend route handlers. Defense-in-depth is lost at the edge.
 - **Remediation:** Remove `secFetchSite === 'same-origin'` from the authorization condition. Edge middleware must verify either a valid signed `x-admin-token` or valid session cookie.
 
 ---

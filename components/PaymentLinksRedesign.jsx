@@ -415,7 +415,7 @@ export default function PaymentLinksRedesign({
         (item) => item.id === linkId || item.orderId === o.id || item.ref === o.external_ref
       );
       if (!exists) {
-        const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
+        const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymobpay.tech';
         const apiKey = profile?.api_key ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key : '';
         combined.push({
           id: linkId,
@@ -507,7 +507,7 @@ export default function PaymentLinksRedesign({
 
     window.generateMockLink = () => {
       const mockOrderId = generateOrderId();
-      const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
+      const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymobpay.tech';
       const mockAmt = amount ? parseFloat(amount) : 100;
       const mockPur = purpose.trim() || 'Payment for Services';
       const mockRef = refCode.trim() || mockOrderId;
@@ -1337,7 +1337,7 @@ export default function PaymentLinksRedesign({
   const previewRefFormatted = refCode.trim() || 'REF-GEN';
 
   const previewUrlDynamic = useMemo(() => {
-    const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
+    const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymobpay.tech';
     const cleanRef = refCode.trim() || '84920';
     return `${host}/pay/pl_${cleanRef.toLowerCase().replace(/[^a-z0-9]/g, '') || '84920'}`;
   }, [refCode]);
@@ -2144,7 +2144,7 @@ export default function PaymentLinksRedesign({
                     <span className="text-[11px] font-mono text-slate-500">
                       {linkValidity === '24h' ? 'Auto-expires in 24 hours' : linkValidity === '3d' ? 'Auto-expires in 3 days' : linkValidity === '7d' ? 'Auto-expires in 7 days' : linkValidity === '30d' ? 'Auto-expires in 30 days' : 'No expiry'}
                     </span>
-                    <a href="mailto:support@mymob.tech" className="text-blue-600 font-medium text-[11px] hover:underline cursor-pointer">Support</a>
+                    <a href="mailto:support@mymobpay.tech" className="text-blue-600 font-medium text-[11px] hover:underline cursor-pointer">Support</a>
                   </div>
                 </div>
 
@@ -2211,7 +2211,7 @@ export default function PaymentLinksRedesign({
 
                 {/* Security footnote */}
                 <p className="text-[10px] font-mono text-center text-slate-400 mt-3 relative z-10">
-                  © 2025 mymobpay (mymob.tech) • Direct Bank Settlement • 256-Bit SSL Encrypted Passthrough
+                  © 2025 mymobpay (mymobpay.tech) • Direct Bank Settlement • 256-Bit SSL Encrypted Passthrough
                 </p>
               </section>
             </div>

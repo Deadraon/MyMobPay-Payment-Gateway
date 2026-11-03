@@ -34,14 +34,14 @@ const EMAIL_TEMPLATES = [
     subject: '',
     message: '',
     ctaText: 'Open Merchant Portal',
-    ctaUrl: 'https://mymob.tech/dashboard'
+    ctaUrl: 'https://mymobpay.tech/dashboard'
   },
   {
     id: 'onboarding_phone',
     name: 'Onboarding: Request Contact Number',
     badge: 'Onboarding',
     subject: 'Complete your MyMobPay merchant registration - Contact details required',
-    message: `Thank you for signing up on MyMobPay (mymob.tech)!
+    message: `Thank you for signing up on MyMobPay (mymobpay.tech)!
 
 We noticed you recently registered your account with us. To help you finalize your onboarding and activate 0% fee direct bank & UPI settlements on your account, our onboarding team would like to assist you directly.
 
@@ -51,7 +51,7 @@ Please reply to this email with:
 
 Once we have your contact details, our team will get in touch to verify your UPI VPA, guide you through testing dynamic QR and intent checkouts, and ensure your merchant portal is active.`,
     ctaText: 'Reply via Portal',
-    ctaUrl: 'https://mymob.tech/dashboard'
+    ctaUrl: 'https://mymobpay.tech/dashboard'
   },
   {
     id: 'vpa_setup',
@@ -63,13 +63,13 @@ Once we have your contact details, our team will get in touch to verify your UPI
 To ensure customer payments land directly in your bank account in real-time with ZERO intermediary escrow or rolling reserves, please connect your primary business UPI VPA.
 
 Steps to complete setup:
-1. Log in to your merchant console at mymob.tech/dashboard.
+1. Log in to your merchant console at mymobpay.tech/dashboard.
 2. Navigate to Settings &gt; Banking &amp; Settlement VPA.
 3. Enter your verified bank UPI ID (e.g. yourname@okaxis or store@okhdfcbank).
 
 Customer payments will credit directly to your account immediately with zero commission.`,
     ctaText: 'Configure Settlement VPA',
-    ctaUrl: 'https://mymob.tech/dashboard#settings'
+    ctaUrl: 'https://mymobpay.tech/dashboard#settings'
   },
   {
     id: 'payment_verification',
@@ -82,7 +82,7 @@ Our operations desk has cross-verified the customer UTR bank confirmation agains
 
 Remember: MyMobPay never holds, pools, or delays merchant funds. All successful customer checkouts settle directly to your registered bank account.`,
     ctaText: 'View Transaction Ledger',
-    ctaUrl: 'https://mymob.tech/dashboard#transactions'
+    ctaUrl: 'https://mymobpay.tech/dashboard#transactions'
   },
   {
     id: 'platform_update',
@@ -98,7 +98,7 @@ What's new in this release:
 
 Thank you for partnering with MyMobPay as your primary payments infrastructure.`,
     ctaText: 'Explore Merchant Dashboard',
-    ctaUrl: 'https://mymob.tech/dashboard'
+    ctaUrl: 'https://mymobpay.tech/dashboard'
   },
   {
     id: 'subscription_notice',
@@ -114,7 +114,7 @@ With your active plan:
 
 Log in anytime to generate payment links, integrate dynamic checkout APIs, or review your settlement statement.`,
     ctaText: 'Access Control Center',
-    ctaUrl: 'https://mymob.tech/dashboard'
+    ctaUrl: 'https://mymobpay.tech/dashboard'
   }
 ];
 
@@ -133,7 +133,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const [message, setMessage] = useState('');
   const [includeCta, setIncludeCta] = useState(true);
   const [ctaText, setCtaText] = useState('Open Merchant Portal');
-  const [ctaUrl, setCtaUrl] = useState('https://mymob.tech/dashboard');
+  const [ctaUrl, setCtaUrl] = useState('https://mymobpay.tech/dashboard');
 
   // Loading & States
   const [sending, setSending] = useState(false);
@@ -391,7 +391,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Sender Identity</span>
             <ShieldCheck className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-xs font-bold font-mono text-slate-800 truncate">noreply@mymob.tech</div>
+          <div className="text-xs font-bold font-mono text-slate-800 truncate">noreply@mymobpay.tech</div>
           <div className="text-[11px] text-slate-400 font-medium mt-0.5">Reply-To: Kunal Chauhan</div>
         </div>
       </div>
@@ -637,7 +637,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                     <span className="text-[10px] font-bold text-slate-500 block mb-0.5">Button Target URL</span>
                     <input
                       type="url"
-                      placeholder="https://mymob.tech/dashboard"
+                      placeholder="https://mymobpay.tech/dashboard"
                       value={ctaUrl}
                       onChange={(e) => setCtaUrl(e.target.value)}
                       className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 font-mono"
@@ -738,7 +738,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             {/* Footer */}
             <div className="pt-3 border-t border-slate-100 text-[10px] text-slate-400 text-center space-y-1">
               <p className="font-bold text-slate-700">MyMobPay Merchant Operations Team</p>
-              <p>&copy; 2026 MyMobPay Payments Private Limited &bull; mymob.tech</p>
+              <p>&copy; 2026 MyMobPay Payments Private Limited &bull; mymobpay.tech</p>
             </div>
           </div>
         </div>

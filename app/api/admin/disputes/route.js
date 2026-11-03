@@ -96,7 +96,7 @@ export async function POST(request) {
             const currentYear = new Date().getFullYear();
             const statusLabel = status.toUpperCase().replace('_', ' ');
             await transporter.sendMail({
-              from: '"MyMobPay Operations" <support@mymob.tech>',
+              from: '"MyMobPay Operations" <support@mymobpay.tech>',
               to: target.merchant_email,
               subject: `Action Required: Payment Inquiry #${target.id} Update`,
               html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -139,7 +139,7 @@ export async function POST(request) {
                     <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
                         <td style="vertical-align: middle; padding-right: 10px;">
-                          <img src="https://mymob.tech/icon.png" width="32" height="32" alt="MyMobPay" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;" />
+                          <img src="https://mymobpay.tech/icon.png" width="32" height="32" alt="MyMobPay" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;" />
                         </td>
                         <td style="vertical-align: middle;">
                           <span style="font-size: 16px; font-weight: 700; color: #0f172a; display: block; line-height: 1.2;">MyMobPay</span>
@@ -202,7 +202,7 @@ export async function POST(request) {
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
                       <tr>
                         <td align="center">
-                          <a href="https://mymob.tech/dashboard" target="_blank" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">
+                          <a href="https://mymobpay.tech/dashboard" target="_blank" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">
                             Open Merchant Console &rarr;
                           </a>
                         </td>
@@ -219,7 +219,7 @@ export async function POST(request) {
           <tr>
             <td align="center" style="padding-top: 20px; text-align: center;">
               <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">
-                MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymob.tech" style="color: #64748b; text-decoration: none;">mymob.tech</a>
+                MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymobpay.tech" style="color: #64748b; text-decoration: none;">mymobpay.tech</a>
               </p>
             </td>
           </tr>

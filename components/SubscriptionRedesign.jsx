@@ -271,7 +271,7 @@ export default function SubscriptionRedesign({
 
     const platformKey = CONFIG.platformApiKey || '677d9312-a53f-4b96-815f-53e0eee1b292';
     const merchantId = profile?.id || '';
-    const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech';
+    const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://mymobpay.tech';
     const callbackUrl = `${currentOrigin}/dashboard#subscription`;
     const newOrderId = generateOrderId('order');
 
@@ -1010,11 +1010,11 @@ export default function SubscriptionRedesign({
               </p>
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 flex flex-col gap-2">
                 <span className="font-bold text-blue-900">Direct Enterprise Desk</span>
-                <span className="text-blue-700">support@mymob.tech</span>
+                <span className="text-blue-700">support@mymobpay.tech</span>
                 <span className="text-slate-500">SLA: &lt; 2-hour response guarantee</span>
               </div>
               <a
-                href={`mailto:support@mymob.tech?subject=Enterprise%20Plan%20Inquiry%20-%20MID%20${merchantMid}`}
+                href={`mailto:support@mymobpay.tech?subject=Enterprise%20Plan%20Inquiry%20-%20MID%20${merchantMid}`}
                 className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-center transition-colors shadow-xs"
               >
                 Open Email Client

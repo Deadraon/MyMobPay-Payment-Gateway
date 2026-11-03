@@ -204,7 +204,7 @@ export default function HomeHeroRedesign({ showFooterCTA = false } = {}) {
 
   const codeSnippets = {
     html: `<!-- 1. Drop into your HTML <head> or <body> -->
-<script src="https://mymob.tech/sdk/checkout.js" async></script>
+<script src="https://mymobpay.tech/sdk/checkout.js" async></script>
 
 <!-- 2. Trigger instant zero-fee UPI modal -->
 <button onclick="MyMobPay.open({

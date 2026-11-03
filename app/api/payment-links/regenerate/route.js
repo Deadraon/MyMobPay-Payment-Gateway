@@ -35,7 +35,7 @@ export async function POST(request) {
 
     const hostHeader = request.headers.get('x-forwarded-host') || request.headers.get('host');
     const proto = request.headers.get('x-forwarded-proto') || 'https';
-    const domain = process.env.NEXT_PUBLIC_APP_URL || (hostHeader ? `${proto}://${hostHeader}` : 'https://mymob.tech');
+    const domain = process.env.NEXT_PUBLIC_APP_URL || (hostHeader ? `${proto}://${hostHeader}` : 'https://mymobpay.tech');
     const paymentUrl = `${domain.replace(/\/+$/, '')}/pay/${result.newLink.token}`;
 
     return NextResponse.json({

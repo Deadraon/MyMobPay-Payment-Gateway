@@ -418,7 +418,7 @@ def generate_synopsis_docx(output_path, page_map=None):
     add_callout_box("Project Synopsis Details", [
         "• Page Limit: Exactly 12 Pages (1 Topic per Page / Strict Academic Structure)",
         "• Typography: Tahoma, 12 pt Body Text, 13 pt Bold Headings, 10 pt References",
-        "• Project: MyMobPay — Direct P2P UPI Payment Gateway (mymob.tech)"
+        "• Project: MyMobPay — Direct P2P UPI Payment Gateway (mymobpay.tech)"
     ])
 
     # End of Page 2 -> Page 3
@@ -430,7 +430,7 @@ def generate_synopsis_docx(output_path, page_map=None):
     add_h1("1. Abstract")
     
     add_p(
-        "MyMobPay (hosted at mymob.tech) is a B2B SaaS UPI Payment Gateway and real-time verification system "
+        "MyMobPay (hosted at mymobpay.tech) is a B2B SaaS UPI Payment Gateway and real-time verification system "
         "built for Indian websites, indie software developers, creators, and merchants. Traditional payment aggregators (such as Razorpay, "
         "Cashfree, and PayU) deduct 2.0% to 3.0% commission on every order and hold merchant payouts for 24 to 48 hours. MyMobPay completely "
         "eliminates gateway fees (0% MDR) by facilitating direct peer-to-peer (P2P) bank transfers over the NPCI UPI network.",
@@ -622,7 +622,7 @@ def generate_synopsis_docx(output_path, page_map=None):
     
     add_h2("Experimental Verification & Latency Benchmarks")
     add_p(
-        "MyMobPay was tested in live deployment at mymob.tech. Over 150 test transactions were conducted across 4G/5G "
+        "MyMobPay was tested in live deployment at mymobpay.tech. Over 150 test transactions were conducted across 4G/5G "
         "and Wi-Fi connections. Table 3 shows the latency breakdown across each stage of the verification loop:"
     )
 
@@ -658,7 +658,7 @@ def generate_synopsis_docx(output_path, page_map=None):
     # 6. RESULT - PART 2 (PAGE 10)
     # =============================================================
     add_h2("User Interface & Checkout Experience")
-    add_p("The frontend payment flow at mymob.tech/pay was verified on desktop and mobile browsers:", bold_prefix="Checkout Features: ")
+    add_p("The frontend payment flow at mymobpay.tech/pay was verified on desktop and mobile browsers:", bold_prefix="Checkout Features: ")
     add_bullet("Desktop Checkout: Renders high-definition SVG QR code with animated laser scanning beam and 10-minute auto-expiry timer.")
     add_bullet("Mobile Checkout: Automatically offers 1-click deep-link buttons for Google Pay, PhonePe, Paytm, and BHIM.")
     add_bullet("Status Page (/status/[orderId]): Shows polling spinner and transitions to green success receipt upon verification.")

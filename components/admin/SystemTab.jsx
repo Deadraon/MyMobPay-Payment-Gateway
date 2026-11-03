@@ -308,7 +308,7 @@ export default function SystemTab({
               <span className="font-bold text-slate-900">Cloudflare Email Routing</span>
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
             </div>
-            <p className="text-slate-500 text-[11px]">mymob.tech MX forwarders</p>
+            <p className="text-slate-500 text-[11px]">mymobpay.tech MX forwarders</p>
             <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 mt-1">
               route.mx.cloudflare.net
             </span>

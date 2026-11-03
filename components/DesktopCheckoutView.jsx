@@ -435,7 +435,7 @@ export default function DesktopCheckoutView({
         {/* Floating Trust Pill */}
         <div className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-800 rounded-full px-4 py-1.5 mb-5 border border-emerald-200 text-xs font-semibold animate-cascade-1">
           <IconVerifiedUser className="w-4 h-4 text-emerald-600" />
-          <span>Payment Verified • <strong>mymob.tech</strong></span>
+          <span>Payment Verified • <strong>mymobpay.tech</strong></span>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span className="text-[10px] text-emerald-600 uppercase tracking-wider font-bold">Success</span>
         </div>
@@ -1675,7 +1675,7 @@ export default function DesktopCheckoutView({
               <footer className="bg-surface-container-high/60 py-3 px-6 flex flex-wrap items-center justify-between gap-3 text-on-surface-variant">
                 <div className="flex items-center gap-2 text-label-sm">
                   <IconVerified className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span>Protected by <strong>mymob.tech</strong> 256-bit encryption</span>
+                  <span>Protected by <strong>mymobpay.tech</strong> 256-bit encryption</span>
                 </div>
                 <div className="flex items-center gap-3 text-label-sm text-on-surface-variant">
                   <span className="font-bold text-on-surface">UPI</span><span>·</span>
@@ -1690,7 +1690,7 @@ export default function DesktopCheckoutView({
               <button
                 className="focus-ring text-label-sm hover:text-on-surface flex items-center gap-1 transition-colors cursor-pointer"
                 type="button"
-                onClick={() => announce('Need help? Contact support@mymob.tech')}
+                onClick={() => announce('Need help? Contact support@mymobpay.tech')}
               >
                 <IconHelp className="w-[15px] h-[15px] flex-shrink-0" />
                 <span>Need help with payment?</span>

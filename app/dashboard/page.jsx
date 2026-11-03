@@ -502,7 +502,7 @@ export default function DashboardPage() {
 
       const n = site.name.toLowerCase();
 
-      return !d.includes('mymob.tech') && 
+      return !d.includes('mymobpay.tech') && 
 
              !d.includes('mymobpay') && 
 

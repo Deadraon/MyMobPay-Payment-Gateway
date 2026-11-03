@@ -172,7 +172,7 @@ export default function DeveloperConsoleRedesign({
 
         <div className="flex items-center gap-2">
           <a
-            href="https://mymob.tech/docs"
+            href="https://mymobpay.tech/docs"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
@@ -638,12 +638,12 @@ export default function DeveloperConsoleRedesign({
                 type="button"
                 onClick={() => handleCopy(
                   snippetLang === 'curl'
-                    ? `curl -X POST https://mymob.tech/api/payment/create \\\n  -H "Content-Type: application/json" \\\n  -H "x-api-key: ${liveKeyStr}" \\\n  -d '{"amount": 499.00, "note": "Order_101", "callback_url": "https://yourapp.com/success"}'`
+                    ? `curl -X POST https://mymobpay.tech/api/payment/create \\\n  -H "Content-Type: application/json" \\\n  -H "x-api-key: ${liveKeyStr}" \\\n  -d '{"amount": 499.00, "note": "Order_101", "callback_url": "https://yourapp.com/success"}'`
                     : snippetLang === 'node'
-                    ? `const res = await fetch('https://mymob.tech/api/payment/create', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-api-key': '${liveKeyStr}' },\n  body: JSON.stringify({ amount: 499.00, note: 'Order_101' })\n});\nconst data = await res.json();\nconsole.log(data.payment_url);`
+                    ? `const res = await fetch('https://mymobpay.tech/api/payment/create', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-api-key': '${liveKeyStr}' },\n  body: JSON.stringify({ amount: 499.00, note: 'Order_101' })\n});\nconst data = await res.json();\nconsole.log(data.payment_url);`
                     : snippetLang === 'python'
-                    ? `import requests\n\nr = requests.post('https://mymob.tech/api/payment/create',\n  headers={'x-api-key': '${liveKeyStr}'},\n  json={'amount': 499.00, 'note': 'Order_101'})\nprint(r.json()['payment_url'])`
-                    : `<?php\n$ch = curl_init('https://mymob.tech/api/payment/create');\ncurl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'x-api-key: ${liveKeyStr}']);\ncurl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['amount' => 499.00, 'note' => 'Order_101']));\n$res = curl_exec($ch);`,
+                    ? `import requests\n\nr = requests.post('https://mymobpay.tech/api/payment/create',\n  headers={'x-api-key': '${liveKeyStr}'},\n  json={'amount': 499.00, 'note': 'Order_101'})\nprint(r.json()['payment_url'])`
+                    : `<?php\n$ch = curl_init('https://mymobpay.tech/api/payment/create');\ncurl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'x-api-key: ${liveKeyStr}']);\ncurl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['amount' => 499.00, 'note' => 'Order_101']));\n$res = curl_exec($ch);`,
                   'snippet'
                 )}
                 className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold inline-flex items-center gap-1.5 cursor-pointer"
@@ -661,7 +661,7 @@ export default function DeveloperConsoleRedesign({
             </div>
 
             <pre className="font-mono text-xs overflow-x-auto text-emerald-300 leading-relaxed py-1">
-              {snippetLang === 'curl' && `curl -X POST https://mymob.tech/api/payment/create \\
+              {snippetLang === 'curl' && `curl -X POST https://mymobpay.tech/api/payment/create \\
   -H "Content-Type: application/json" \\
   -H "x-api-key: ${liveKeyStr}" \\
   -d '{
@@ -670,7 +670,7 @@ export default function DeveloperConsoleRedesign({
     "callback_url": "https://yourapp.com/payment-complete"
   }'`}
 
-              {snippetLang === 'node' && `const res = await fetch('https://mymob.tech/api/payment/create', {
+              {snippetLang === 'node' && `const res = await fetch('https://mymobpay.tech/api/payment/create', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -689,7 +689,7 @@ console.log('Direct UPI Checkout URL:', data.payment_url);`}
               {snippetLang === 'python' && `import requests
 
 response = requests.post(
-    'https://mymob.tech/api/payment/create',
+    'https://mymobpay.tech/api/payment/create',
     headers={'x-api-key': '${liveKeyStr}'},
     json={
         'amount': 499.00,
@@ -708,7 +708,7 @@ $data = [
     'callback_url' => 'https://yourapp.com/payment-complete'
 ];
 
-$ch = curl_init('https://mymob.tech/api/payment/create');
+$ch = curl_init('https://mymobpay.tech/api/payment/create');
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'x-api-key: ${liveKeyStr}'

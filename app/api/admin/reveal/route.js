@@ -25,7 +25,7 @@ export async function POST(request) {
     }
 
     // Identify actor details from auth header
-    let actorEmail = 'admin@mymob.tech';
+    let actorEmail = 'admin@mymobpay.tech';
     let actorRole = 'super_admin';
 
     const authHeader = request.headers.get('authorization');

@@ -555,7 +555,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
                 <input
                   type="email"
                   required
-                  placeholder="name@mymob.tech"
+                  placeholder="name@mymobpay.tech"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-mono font-bold text-slate-800"

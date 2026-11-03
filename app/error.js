@@ -62,7 +62,7 @@ export default function Error({ error, reset }) {
         {/* Footer help */}
         <div className="pt-4 border-t border-slate-800/80 w-full flex items-center justify-center gap-2 text-xs text-slate-400">
           <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-          <span>Need assistance? Contact support at support@mymob.tech</span>
+          <span>Need assistance? Contact support at support@mymobpay.tech</span>
         </div>
       </div>
     </div>

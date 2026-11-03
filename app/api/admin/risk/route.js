@@ -7,8 +7,8 @@ import { PERMISSIONS } from '@/lib/adminRbac';
 export const dynamic = 'force-dynamic';
 
 const DEFAULT_BLOCKLIST = [
-  { id: 'blk_1', type: 'phone', value: '+919999999999', reason: 'Known fraudulent UTR replay bot', added_by: 'security@mymob.tech', created_at: '2026-02-01T10:00:00Z' },
-  { id: 'blk_2', type: 'vpa', value: 'spammer@fakeupi', reason: 'Fake VPA phishing spoof', added_by: 'risk@mymob.tech', created_at: '2026-02-10T14:30:00Z' },
+  { id: 'blk_1', type: 'phone', value: '+919999999999', reason: 'Known fraudulent UTR replay bot', added_by: 'security@mymobpay.tech', created_at: '2026-02-01T10:00:00Z' },
+  { id: 'blk_2', type: 'vpa', value: 'spammer@fakeupi', reason: 'Fake VPA phishing spoof', added_by: 'risk@mymobpay.tech', created_at: '2026-02-10T14:30:00Z' },
   { id: 'blk_3', type: 'ip', value: '198.51.100.24', reason: 'Automated rapid scanner IP', added_by: 'system', created_at: '2026-03-01T08:15:00Z' }
 ];
 

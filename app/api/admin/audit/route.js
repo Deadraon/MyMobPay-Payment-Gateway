@@ -47,7 +47,7 @@ export async function POST(request) {
     const { action, targetType, targetId, details } = body;
 
     const entry = await logAdminAction({
-      actor: { email: 'admin@mymob.tech', role: 'super_admin' },
+      actor: { email: 'admin@mymobpay.tech', role: 'super_admin' },
       action: action || 'note.created',
       targetType: targetType || 'system',
       targetId: targetId || null,

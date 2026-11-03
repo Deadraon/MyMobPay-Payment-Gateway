@@ -1220,6 +1220,8 @@ export default function HomePage() {
                     src="/images/using_mymobpay_scan.jpg" 
                     alt="Customer scanning MyMobPay QR code on tablet" 
                     fill 
+                    priority
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
@@ -1249,7 +1251,8 @@ export default function HomePage() {
                   <Image 
                     src="/images/using_mymobpay_merchant.jpg" 
                     alt="Founder using MyMobPay merchant dashboard on laptop" 
-                    fill 
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
@@ -1278,8 +1281,8 @@ export default function HomePage() {
                 <div className="relative h-60 w-full overflow-hidden bg-slate-100">
                   <Image 
                     src="/images/merchant_customer.jpg" 
-                    alt="Happy customer and business owner completing payment" 
-                    fill 
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">

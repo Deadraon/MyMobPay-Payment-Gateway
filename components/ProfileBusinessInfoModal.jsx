@@ -106,7 +106,7 @@ export default function ProfileBusinessInfoModal({
 
   // Merchant ID formatting - single unified display format
   const shortMid = formatMerchantId(profile?.id || user?.id);
-  const displayEmail = user?.email || profile?.email || 'merchant@mymob.tech';
+  const displayEmail = user?.email || profile?.email || 'merchant@mymobpay.tech';
   const merchantInitials = (businessName || ownerName || 'M').slice(0, 2).toUpperCase();
 
   const copyToClipboard = (text, key) => {

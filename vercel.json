@@ -4,5 +4,29 @@
       "path": "/api/cron/expire-links",
       "schedule": "0 0 * * *"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "mymob.tech"
+        }
+      ],
+      "destination": "https://mymobpay.tech/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.mymob.tech"
+        }
+      ],
+      "destination": "https://mymobpay.tech/:path*",
+      "permanent": true
+    }
   ]
 }

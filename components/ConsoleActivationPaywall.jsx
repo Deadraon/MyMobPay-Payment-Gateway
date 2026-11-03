@@ -111,7 +111,7 @@ export default function ConsoleActivationPaywall({
   };
 
   const merchantVpa = CONFIG.upiId || '9410181307@okbizaxis';
-  const callbackUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'https://www.mymob.tech/dashboard';
+  const callbackUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'https://www.mymobpay.tech/dashboard';
   const merchantId = formatMerchantId(profile?.id);
 
   // Plans config
@@ -330,7 +330,7 @@ export default function ConsoleActivationPaywall({
         <div className="flex items-center space-x-2 bg-white shadow-sm rounded-full px-4 py-1.5 mb-4 border border-emerald-200">
           <ShieldCheck className="w-4.5 h-4.5 text-emerald-600" />
           <span className="text-xs font-semibold text-slate-700">
-            Payment Verified • <strong>mymob.tech</strong>
+            Payment Verified • <strong>mymobpay.tech</strong>
           </span>
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span className="text-[10px] text-emerald-600 uppercase tracking-wider font-bold">Active</span>
@@ -475,7 +475,7 @@ export default function ConsoleActivationPaywall({
           <footer className="bg-slate-50 py-3 px-6 flex items-center justify-center text-slate-500 text-xs border-t border-slate-200">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Protected by <strong>mymob.tech</strong> 256-bit encryption • Instant Activation
+              Protected by <strong>mymobpay.tech</strong> 256-bit encryption • Instant Activation
             </span>
           </footer>
 
@@ -491,7 +491,7 @@ export default function ConsoleActivationPaywall({
       <div className="flex items-center space-x-2 bg-white shadow-sm rounded-full px-4 py-1.5 mb-4 border border-slate-200/60">
         <ShieldCheck className="w-4.5 h-4.5 text-[#0284c7]" />
         <span className="text-xs font-semibold text-slate-700">
-          Official 256-Bit Encrypted Gateway • <strong>mymob.tech</strong>
+          Official 256-Bit Encrypted Gateway • <strong>mymobpay.tech</strong>
         </span>
         <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#00ba9d]"></span>
         <span className="text-[10px] text-[#00ba9d] uppercase tracking-wider font-bold">Live</span>
@@ -906,7 +906,7 @@ export default function ConsoleActivationPaywall({
               </div>
               <div className="flex items-center space-x-1.5 text-slate-500 text-xs">
                 <span>Powered by</span>
-                <span className="font-bold text-[#0284c7] tracking-tight">mymob.tech</span>
+                <span className="font-bold text-[#0284c7] tracking-tight">mymobpay.tech</span>
               </div>
             </div>
 
@@ -918,7 +918,7 @@ export default function ConsoleActivationPaywall({
         <footer className="bg-slate-100 py-3 px-6 flex flex-wrap items-center justify-between gap-3 text-slate-600 text-xs border-t border-slate-200">
           <div className="flex items-center space-x-2 font-medium">
             <ShieldCheck className="w-4 h-4 text-[#0284c7]" />
-            <span>Protected by <strong>mymob.tech</strong> military-grade 256-bit encryption</span>
+            <span>Protected by <strong>mymobpay.tech</strong> military-grade 256-bit encryption</span>
           </div>
           <div className="flex items-center space-x-3 text-slate-500">
             <span className="font-bold text-slate-800">UPI</span>
@@ -973,7 +973,7 @@ export default function ConsoleActivationPaywall({
               Once you pay the ₹1.00 setup fee or subscription fee using any UPI app (GPay, PhonePe, Paytm), your merchant console automatically activates within 5 seconds.
             </p>
             <div className="p-3 bg-slate-50 rounded-xl text-xs space-y-1 text-slate-700">
-              <p><strong>Merchant Support:</strong> <a href="mailto:support@mymob.tech" className="text-blue-600 hover:underline">support@mymob.tech</a></p>
+              <p><strong>Merchant Support:</strong> <a href="mailto:support@mymobpay.tech" className="text-blue-600 hover:underline">support@mymobpay.tech</a></p>
             </div>
             <button
               onClick={() => setShowHelpModal(false)}
@@ -1010,12 +1010,12 @@ export default function ConsoleActivationPaywall({
               Processing high volumes? Get custom negotiated flat-rate pricing, dedicated account managers, 99.99% SLA, and custom bank routing.
             </p>
             <div className="p-3.5 bg-sky-50/70 border border-sky-100 rounded-xl text-xs space-y-1.5 text-slate-800">
-              <p><strong>Email:</strong> <a href="mailto:enterprise@mymob.tech" className="text-sky-700 hover:underline">enterprise@mymob.tech</a></p>
+              <p><strong>Email:</strong> <a href="mailto:enterprise@mymobpay.tech" className="text-sky-700 hover:underline">enterprise@mymobpay.tech</a></p>
               <p className="text-[11px] text-sky-700">Response within 2 hours guaranteed.</p>
             </div>
             <div className="flex gap-2">
               <a
-                href="mailto:enterprise@mymob.tech?subject=Enterprise%20Plan%20Inquiry"
+                href="mailto:enterprise@mymobpay.tech?subject=Enterprise%20Plan%20Inquiry"
                 className="flex-1 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] text-white text-center rounded-xl text-xs font-bold transition-all"
               >
                 Send Email

@@ -142,7 +142,7 @@ async function testResend() {
 
   try {
     console.log('   Connecting to https://api.resend.com/emails...');
-    const from = process.env.AUTH_FROM || 'MyMobPay Security <auth@mymob.tech>';
+    const from = process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>';
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {

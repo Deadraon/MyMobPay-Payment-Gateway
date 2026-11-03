@@ -80,7 +80,7 @@ async function handleDiagnostic(req) {
 
       await transporter.verify();
       const info = await transporter.sendMail({
-        from: process.env.AUTH_FROM || 'MyMobPay Security <auth@mymob.tech>',
+        from: process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>',
         to: targetEmail,
         subject: `✅ MyMobPay Vercel Server Test: Brevo [${new Date().toLocaleTimeString('en-IN')}]`,
         html: `<p>This email verifies that Brevo is working on the live Vercel cloud server.</p>`,
@@ -120,7 +120,7 @@ async function handleDiagnostic(req) {
 
       await transporter.verify();
       const info = await transporter.sendMail({
-        from: process.env.SENDPULSE_FROM || 'MyMobPay Billing <trx@mymob.tech>',
+        from: process.env.SENDPULSE_FROM || 'MyMobPay Billing <trx@mymobpay.tech>',
         to: targetEmail,
         subject: `🧾 MyMobPay Vercel Server Test: SendPulse [${new Date().toLocaleTimeString('en-IN')}]`,
         html: `<p>This email verifies that SendPulse SMTP is working on the live Vercel cloud server.</p>`,
@@ -147,7 +147,7 @@ async function handleDiagnostic(req) {
   const resendApiKey = process.env.RESEND_API_KEY || (process.env.SMTP_PASS?.startsWith('re_') ? process.env.SMTP_PASS : null);
   if (resendApiKey) {
     try {
-      const from = process.env.AUTH_FROM || 'MyMobPay Security <auth@mymob.tech>';
+      const from = process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>';
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {

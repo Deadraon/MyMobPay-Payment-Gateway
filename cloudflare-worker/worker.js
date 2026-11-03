@@ -9,7 +9,7 @@ export default {
   async email(message, env, ctx) {
     try {
       // 1. Extract the Merchant API Key from the "To" address
-      // e.g., "123e4567-e89b-12d3@mymob.tech" -> "123e4567-e89b-12d3"
+      // e.g., "123e4567-e89b-12d3@mymobpay.tech" -> "123e4567-e89b-12d3"
       const toAddress = message.to;
       let apiKey = toAddress.split('@')[0];
 
@@ -80,8 +80,8 @@ export default {
       cleanBody = cleanBody.replace(/\s+/g, ' ').trim(); // Normalize whitespace
 
       // 4. Forward to the Next.js Backend
-      // Configure NEXTJS_API_URL in your Cloudflare Worker Settings (e.g., https://mymob.tech/api/webhook/email)
-      const apiUrl = env.NEXTJS_API_URL || 'https://mymob.tech/api/webhook/email';
+      // Configure NEXTJS_API_URL in your Cloudflare Worker Settings (e.g., https://mymobpay.tech/api/webhook/email)
+      const apiUrl = env.NEXTJS_API_URL || 'https://mymobpay.tech/api/webhook/email';
 
       console.log(`🚀 Forwarding email for API Key [${apiKey}] to ${apiUrl}`);
 

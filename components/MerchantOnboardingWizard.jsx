@@ -122,7 +122,7 @@ export default function MerchantOnboardingWizard({
 
   if (!isOpen) return null;
 
-  const forwardingEmail = `${profile?.api_key || 'your-key'}@mymob.tech`;
+  const forwardingEmail = `${profile?.api_key || 'your-key'}@mymobpay.tech`;
 
   const copyToClipboard = (text, setDone) => {
     try {

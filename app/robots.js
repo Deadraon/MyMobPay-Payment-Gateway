@@ -4,6 +4,6 @@ export default function robots() {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://mymob.tech/sitemap.xml",
+    sitemap: "https://mymobpay.tech/sitemap.xml",
   };
 }

@@ -27,7 +27,7 @@ export async function POST(req) {
       cleanEmail = resolved;
     }
 
-    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymob.tech';
+    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymobpay.tech';
     const redirectUrl = `${origin}/dashboard`;
 
     // 1. Generate the official Supabase one-click Magic Link for this email

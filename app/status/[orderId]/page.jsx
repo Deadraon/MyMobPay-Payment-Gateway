@@ -179,7 +179,7 @@ export default function StatusPage() {
       if (!/^https?:\/\//i.test(resolvedUrl) && !resolvedUrl.startsWith('/')) {
         resolvedUrl = `https://${resolvedUrl}`;
       }
-      const url = new URL(resolvedUrl, typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech');
+      const url = new URL(resolvedUrl, typeof window !== 'undefined' ? window.location.origin : 'https://mymobpay.tech');
       url.searchParams.set('status', 'verified');
       url.searchParams.set('order_id', orderId);
       url.searchParams.set('gateway_id', orderId);
@@ -436,7 +436,7 @@ export default function StatusPage() {
                     if (!/^https?:\/\//i.test(resolvedUrl) && !resolvedUrl.startsWith('/')) {
                       resolvedUrl = `https://${resolvedUrl}`;
                     }
-                    const url = new URL(resolvedUrl, typeof window !== 'undefined' ? window.location.origin : 'https://mymob.tech');
+                    const url = new URL(resolvedUrl, typeof window !== 'undefined' ? window.location.origin : 'https://mymobpay.tech');
                     url.searchParams.set('status', 'failed');
                     url.searchParams.set('gateway_id', orderId);
                     url.searchParams.set('orderId', orderId);

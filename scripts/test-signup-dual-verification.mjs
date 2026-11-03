@@ -9,7 +9,7 @@ async function testDualVerification() {
   console.log('--- STARTING SIGNUP DUAL-VERIFICATION TEST SUITE ---');
 
   const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-  const testEmail = `dual_test_${randomSuffix}@mymob.tech`;
+  const testEmail = `dual_test_${randomSuffix}@mymobpay.tech`;
   const testPhone = `9876${randomSuffix}`.slice(0, 10);
   const dbPhone = `+91${testPhone}`;
 

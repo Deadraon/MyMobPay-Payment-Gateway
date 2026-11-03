@@ -34,7 +34,7 @@ const results = {
   brevo: { name: 'Brevo SMTP', status: 'UNKNOWN', details: '' },
   sendpulse: { name: 'SendPulse SMTP', status: 'UNKNOWN', details: '' },
   resend: { name: 'Resend API', status: 'UNKNOWN', details: '' },
-  liveServerApi: { name: 'Live Server Endpoint (https://www.mymob.tech)', status: 'UNKNOWN', details: '' }
+  liveServerApi: { name: 'Live Server Endpoint (https://www.mymobpay.tech)', status: 'UNKNOWN', details: '' }
 };
 
 // 1. TEST BREVO
@@ -64,7 +64,7 @@ async function testBrevo() {
 
     console.log(`   Dispatching live verification email to ${targetEmail}...`);
     const info = await transporter.sendMail({
-      from: process.env.AUTH_FROM || 'MyMobPay Security <auth@mymob.tech>',
+      from: process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>',
       to: targetEmail,
       subject: `✅ MyMobPay Server Verification • Brevo Live Test [${new Date().toLocaleTimeString('en-IN')}]`,
       html: `
@@ -117,7 +117,7 @@ async function testSendPulse() {
 
     console.log(`   Dispatching live invoice email to ${targetEmail}...`);
     const info = await transporter.sendMail({
-      from: process.env.SENDPULSE_FROM || 'MyMobPay Billing <trx@mymob.tech>',
+      from: process.env.SENDPULSE_FROM || 'MyMobPay Billing <trx@mymobpay.tech>',
       to: targetEmail,
       subject: `🧾 MyMobPay Server Verification • SendPulse Live Test [${new Date().toLocaleTimeString('en-IN')}]`,
       html: `
@@ -161,7 +161,7 @@ async function testResend() {
         'Authorization': `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: process.env.AUTH_FROM || 'MyMobPay Security <auth@mymob.tech>',
+        from: process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>',
         to: [targetEmail],
         subject: `⚡ MyMobPay Server Verification • Resend API Test [${new Date().toLocaleTimeString('en-IN')}]`,
         html: `
@@ -191,9 +191,9 @@ async function testResend() {
 
 // 4. TEST LIVE DEPLOYED WEB SERVER ENDPOINT
 async function testLiveServerEndpoint() {
-  console.log('--- [4] TESTING LIVE CLOUD PRODUCTION SERVER (https://www.mymob.tech) ---');
+  console.log('--- [4] TESTING LIVE CLOUD PRODUCTION SERVER (https://www.mymobpay.tech) ---');
   try {
-    const res = await fetch('https://www.mymob.tech/api/auth/email-otp/send', {
+    const res = await fetch('https://www.mymobpay.tech/api/auth/email-otp/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

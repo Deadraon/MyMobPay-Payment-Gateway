@@ -1,0 +1,49 @@
+# MyMobPay — UPI Payment Gateway for SaaS Founders
+
+Direct-to-bank UPI payment gateway with 0% transaction fees. Accept instant UPI payments with real-time automated verification, signed HMAC webhooks, and direct bank settlement.
+
+## Key Pages
+
+- [Home](https://mymobpay.tech/) — Product overview, features, pricing calculator
+- [Login / Sign Up](https://mymobpay.tech/login) — Merchant dashboard access
+- [Developer Documentation](https://mymobpay.tech/#developer-section) — SDKs, REST API, webhooks
+- [Pricing](https://mymobpay.tech/#pricing-section) — Flat ₹499/month, 0% transaction fees
+- [Terms of Service](https://mymobpay.tech/terms)
+- [Privacy Policy](https://mymobpay.tech/privacy)
+
+## Product Summary
+
+MyMobPay eliminates the 2% + GST aggregator cut by routing UPI payments directly to your bank account via IMPS/UPI rails. Built for SaaS founders, indie hackers, and developers who want full control over their payment infrastructure.
+
+### Core Features
+- **0% Gateway Fees** — Flat ₹499/month subscription, no per-transaction charges
+- **Direct Bank Settlement** — T+0 instant credit via IMPS/UPI, no escrow hold
+- **Auto-Verification** — Bank email notifications parsed via Cloudflare Workers for real-time payment confirmation
+- **HMAC-SHA256 Webhooks** — Cryptographically signed event notifications with automated retries
+- **Developer-First** — Typed SDKs for Next.js, Node.js, Python, PHP, Flutter, React Native
+- **Sandbox Environment** — Free isolated testing with live checkout simulation
+
+### Supported UPI Applications
+All standard UPI apps: Google Pay, PhonePe, Paytm, BHIM, Amazon Pay, WhatsApp Pay, and any UPI-compatible application via QR code or direct payment intent.
+
+## API Endpoints
+
+- `POST /api/orders` — Create payment order with dynamic QR
+- `GET /api/orders/:orderId` — Check order status
+- `POST /api/webhooks/settlement` — Receive HMAC-signed payment events
+- `GET /api/merchant/dashboard` — Real-time analytics (authenticated)
+- `POST /api/auth/email-link/send` — Magic link authentication
+
+## Schema.org Types Implemented
+
+- `WebSite` — Site identity and name
+- `Organization` — Company details, logo, contact point
+- `SoftwareApplication` — Product details, pricing, features
+- `FAQPage` — Common questions (note: Google retired FAQ rich results May 2026)
+- `SiteNavigationElement` — Key navigation for sitelinks
+
+## Contact
+
+- Website: https://mymobpay.tech
+- Instagram: https://www.instagram.com/mymobpay
+- Support: Available via dashboard (authenticated)

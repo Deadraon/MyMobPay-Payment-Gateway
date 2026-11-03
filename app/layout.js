@@ -9,7 +9,7 @@ export const viewport = {
   colorScheme: "dark",
 };
 
-const BASE_URL = "https://mymob.tech";
+const BASE_URL = "https://mymobpay.tech";
 
 export const metadata = {
   // ── Core ─────────────────────────────────────────────────────
@@ -37,7 +37,7 @@ export const metadata = {
     "mymobpay",
     "MyMobPay",
     "mymob pay",
-    "mymob.tech",
+    "mymobpay.tech",
   ],
   authors: [{ name: "MyMobPay", url: BASE_URL }],
   creator: "MyMobPay",
@@ -47,6 +47,9 @@ export const metadata = {
   // ── Canonical & Robots ────────────────────────────────────────
   alternates: {
     canonical: BASE_URL,
+    types: {
+      'text/markdown': `${BASE_URL}/.md`,
+    },
   },
   robots: {
     index: true,
@@ -108,11 +111,14 @@ export const metadata = {
   },
 
   // ── Verification ──────────────────────────────────────────────
-  // Add your Google Search Console & Bing verification codes here when ready:
-  // verification: {
-  //   google: "YOUR_GOOGLE_VERIFICATION_CODE",
-  //   bing: "YOUR_BING_VERIFICATION_CODE",
-  // },
+  // Add your Google Search Console & Bing verification codes here:
+  // Get codes from:
+  // - GSC: https://search.google.com/search-console → Settings → Verification → HTML tag
+  // - Bing: https://www.bing.com/webmasters → Configure My Site → Ownership → Meta tag
+  verification: {
+    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION || "REPLACE_WITH_GSC_CODE",
+    bing: process.env.NEXT_PUBLIC_BING_VERIFICATION || "REPLACE_WITH_BING_CODE",
+  },
 };
 
 /**
@@ -138,6 +144,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        {/* Markdown alternates for AI agent content negotiation */}
+        <link rel="alternate" type="text/markdown" title="Home (Markdown)" href="/.md" />
+        <link rel="alternate" type="text/markdown" title="Login (Markdown)" href="/login.md" />
+        <link rel="alternate" type="text/markdown" title="Developer Docs (Markdown)" href="/#developer-section.md" />
+        <link rel="alternate" type="text/markdown" title="Pricing (Markdown)" href="/#pricing-section.md" />
+        <link rel="alternate" type="text/markdown" title="Terms (Markdown)" href="/terms.md" />
+        <link rel="alternate" type="text/markdown" title="Privacy (Markdown)" href="/privacy.md" />
+
         {/* Theme detection script running inline before rendering */}
         <script
           dangerouslySetInnerHTML={{
@@ -158,10 +172,10 @@ export default function RootLayout({ children }) {
         {/* Preload OG banner so it's cached fast */}
         <link rel="preload" as="image" href="/og-banner.png" />
 
-        {/* Universal Google Fonts: Inter, Outfit, DM Sans */}
+        {/* Universal Google Fonts: Inter, Outfit, DM Sans, Bricolage Grotesque, Hanken Grotesk, JetBrains Mono */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet" />
         {/* JSON-LD Structured Data — WebSite (Signals official site name to Google) */}
         <script
           type="application/ld+json"
@@ -170,7 +184,7 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "MyMobPay",
-              alternateName: ["mymobpay", "mymob.tech", "MyMob Pay"],
+              alternateName: ["mymobpay", "mymobpay.tech", "MyMob Pay"],
               url: BASE_URL,
             }),
           }}
@@ -186,7 +200,7 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "MyMobPay",
-              alternateName: ["mymobpay", "mymob.tech", "MyMob Pay"],
+              alternateName: ["mymobpay", "mymobpay.tech", "MyMob Pay"],
               url: BASE_URL,
               logo: `${BASE_URL}/og-banner.png`,
               description:
@@ -242,47 +256,43 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* JSON-LD Structured Data — FAQPage */}
+        {/* JSON-LD Structured Data — QAPage (genuine Q&A, not deprecated FAQ rich results) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: safeJsonLd({
               "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: [
-                {
-                  "@type": "Question",
-                  name: "What is MyMobPay?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "MyMobPay is a direct P2P UPI payment gateway that allows websites and apps to accept UPI payments with 0% transaction fees, sending money directly to your bank account.",
-                  },
+              "@type": "QAPage",
+              mainEntity: {
+                "@type": "Question",
+                name: "What is MyMobPay?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "MyMobPay is a direct P2P UPI payment gateway that allows websites and apps to accept UPI payments with 0% transaction fees, sending money directly to your bank account.",
+                  dateCreated: "2026-11-03",
+                  author: { "@type": "Organization", "name": "MyMobPay" },
                 },
-                {
-                  "@type": "Question",
-                  name: "How much does MyMobPay cost?",
-                  acceptedAnswer: {
+                suggestedAnswer: [
+                  {
                     "@type": "Answer",
                     text: "MyMobPay charges a flat subscription fee of ₹499 per month with absolutely 0% transaction fees, unlike traditional gateways that charge 2% per transaction.",
+                    dateCreated: "2026-11-03",
+                    author: { "@type": "Organization", "name": "MyMobPay" },
                   },
-                },
-                {
-                  "@type": "Question",
-                  name: "Which UPI apps does MyMobPay support?",
-                  acceptedAnswer: {
+                  {
                     "@type": "Answer",
                     text: "MyMobPay supports all standard UPI apps and any UPI-compatible application via QR code or direct payment intent.",
+                    dateCreated: "2026-11-03",
+                    author: { "@type": "Organization", "name": "MyMobPay" },
                   },
-                },
-                {
-                  "@type": "Question",
-                  name: "How does payment verification work?",
-                  acceptedAnswer: {
+                  {
                     "@type": "Answer",
                     text: "MyMobPay uses your bank transaction notification emails, forwarded via a Cloudflare email worker, to automatically detect and verify payments in real-time without any manual intervention.",
+                    dateCreated: "2026-11-03",
+                    author: { "@type": "Organization", "name": "MyMobPay" },
                   },
-                },
-              ],
+                ],
+              },
             }),
           }}
         />

@@ -159,7 +159,7 @@ export async function POST(request) {
     // Action 1: Test Admin Notification Email
     if (action === 'sendTestSignupNotification') {
       const testResult = await sendAdminNewSignupNotification({
-        userEmail: 'new_merchant_demo@mymob.tech',
+        userEmail: 'new_merchant_demo@mymobpay.tech',
         userName: 'Demo Merchant (Test)',
         businessName: 'MyMobPay Store Demo',
         upiId: 'demo@upi',

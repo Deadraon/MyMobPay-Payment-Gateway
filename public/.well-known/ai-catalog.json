@@ -1,0 +1,98 @@
+{
+  "version": "1.0",
+  "name": "MyMobPay",
+  "description": "Direct-to-bank UPI payment gateway with 0% transaction fees. API and MCP resources for AI agents.",
+  "url": "https://mymobpay.tech",
+  "contact": {
+    "email": "support@mymobpay.tech",
+    "url": "https://mymobpay.tech/login"
+  },
+  "resources": [
+    {
+      "type": "mcp",
+      "name": "MyMobPay Payment API",
+      "description": "RESTful API for creating orders, generating dynamic QR codes, and receiving HMAC-signed webhook notifications for UPI payments.",
+      "url": "https://api.mymobpay.tech/v1",
+      "authentication": "bearer",
+      "documentation": "https://mymobpay.tech/#developer-section",
+      "capabilities": [
+        "create_order",
+        "get_order_status",
+        "verify_webhook_signature",
+        "generate_qr_code",
+        "get_merchant_analytics"
+      ],
+      "schemas": {
+        "order_request": "https://api.mymobpay.tech/v1/schemas/order.json",
+        "webhook_event": "https://api.mymobpay.tech/v1/schemas/webhook.json"
+      }
+    },
+    {
+      "type": "a2a",
+      "name": "MyMobPay Settlement Agent",
+      "description": "A2A agent for real-time UPI payment settlement notifications and reconciliation.",
+      "url": "https://agent.mymobpay.tech",
+      "skills": [
+        "payment_verification",
+        "settlement_tracking",
+        "webhook_replay",
+        "dispute_resolution"
+      ]
+    }
+  ],
+  "endpoints": {
+    "orders": {
+      "create": "POST https://api.mymobpay.tech/v1/orders",
+      "get": "GET https://api.mymobpay.tech/v1/orders/{orderId}",
+      "list": "GET https://api.mymobpay.tech/v1/orders"
+    },
+    "webhooks": {
+      "settlement": "POST https://api.mymobpay.tech/v1/webhooks/settlement"
+    },
+    "merchant": {
+      "dashboard": "GET https://api.mymobpay.tech/v1/merchant/dashboard",
+      "analytics": "GET https://api.mymobpay.tech/v1/merchant/analytics",
+      "settlements": "GET https://api.mymobpay.tech/v1/merchant/settlements"
+    },
+    "auth": {
+      "magic_link": "POST https://api.mymobpay.tech/v1/auth/email-link/send",
+      "verify": "GET https://api.mymobpay.tech/v1/auth/verify"
+    }
+  },
+  "schemas": {
+    "order": {
+      "type": "object",
+      "required": ["amount", "currency", "orderId", "customerVpa", "settlementRoute"],
+      "properties": {
+        "amount": { "type": "integer", "description": "Amount in paise (e.g., 149900 = ₹1,499)" },
+        "currency": { "type": "string", "enum": ["INR"] },
+        "orderId": { "type": "string", "pattern": "^ORD_[0-9]{4}_[0-9]+" },
+        "customerVpa": { "type": "string", "format": "upi", "description": "Customer UPI ID (e.g., customer@okhdfcbank)" },
+        "settlementRoute": { "type": "string", "enum": ["direct_bank"] },
+        "metadata": { "type": "object" }
+      }
+    },
+    "webhook": {
+      "type": "object",
+      "required": ["event", "utr", "net", "fee", "route"],
+      "properties": {
+        "event": { "type": "string", "enum": ["payment.settled", "payment.failed", "payment.pending"] },
+        "utr": { "type": "string", "description": "Unique Transaction Reference from bank" },
+        "net": { "type": "number", "description": "Net amount settled (fee is always 0)" },
+        "fee": { "type": "number", "const": 0 },
+        "route": { "type": "string", "enum": ["direct_bank"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "webhooks": {
+    "signature_header": "x-mymobpay-signature",
+    "algorithm": "HMAC-SHA256",
+    "format": "sha256={hex_signature}",
+    "retry_policy": "exponential_backoff_3x"
+  },
+  "sandbox": {
+    "base_url": "https://sandbox.mymobpay.tech/v1",
+    "description": "Isolated testing environment with simulated payments and webhook delivery"
+  }
+}

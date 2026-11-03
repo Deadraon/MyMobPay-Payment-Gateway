@@ -151,7 +151,7 @@ def create_presentation():
     pm1.font.bold = True
     pm1.font.color.rgb = TEXT_WHITE
     pm2 = tf_m.add_paragraph()
-    pm2.text = "Live Production URL: https://mymob.tech  |  Tech: Next.js 14, Supabase (PostgreSQL), RESTful Webhooks"
+    pm2.text = "Live Production URL: https://mymobpay.tech  |  Tech: Next.js 14, Supabase (PostgreSQL), RESTful Webhooks"
     pm2.font.name = "Arial"
     pm2.font.size = Pt(10)
     pm2.font.color.rgb = ACCENT_CYAN
@@ -605,7 +605,7 @@ def create_presentation():
         "MyMobPay demonstrates that modern full-stack cloud computing (Next.js 14 + Supabase) combined with mobile daemon webhooks can completely bypass traditional payment aggregator monopolies.",
         "Delivers 100% genuine 0% MDR transaction routing with real-time automated bank reconciliation in under 2 seconds.",
         "Eliminates custodial risk, chargeback delays, and high fees for thousands of small businesses, creators, and developers.",
-        "Fully deployed, production-tested, and live at: https://mymob.tech"
+        "Fully deployed, production-tested, and live at: https://mymobpay.tech"
     ]
     
     for b in bullets_c:
