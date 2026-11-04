@@ -1280,7 +1280,8 @@ export default function HomePage() {
               <div>
                 <div className="relative h-60 w-full overflow-hidden bg-slate-100">
                   <Image 
-                    src="/images/merchant_customer.jpg" 
+                    src="/images/merchant_customer.jpg"
+                    alt="Happy customer and business owner completing payment"
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"

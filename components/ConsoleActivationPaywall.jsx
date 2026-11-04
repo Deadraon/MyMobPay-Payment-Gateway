@@ -254,7 +254,7 @@ export default function ConsoleActivationPaywall({
       }
     };
     createPendingOrder();
-  }, [profile?.id, user?.id, currentPlan.amount, currentPlan.note]);
+  }, [profile?.id, user?.id, currentPlan.amount, currentPlan.note, callbackUrl]);
 
   // Handle manual 12-digit UTR verification
   const handleVerifyManualUtr = async (e) => {

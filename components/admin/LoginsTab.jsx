@@ -92,7 +92,7 @@ export default function LoginsTab({ showToast, getAuthHeaders, onSelectMerchant 
     return `${Math.floor(diffSec / 604800)}w ago`;
   };
 
-  const logins = data?.logins || [];
+  const logins = useMemo(() => data?.logins || [], [data?.logins]);
   const summary = data?.summary || { totalUsers: 0, loginsToday: 0, loginsThisWeek: 0, googleOAuthUsers: 0 };
 
   // Filtered logins list

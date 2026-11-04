@@ -52,7 +52,7 @@ export default function AuditTab({ showToast, getAuthHeaders }) {
 
   useEffect(() => {
     fetchLogs();
-  }, []);
+  }, [fetchLogs]);
 
   const filteredLogs = useMemo(() => {
     return logs.filter(log => {

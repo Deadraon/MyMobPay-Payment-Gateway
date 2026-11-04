@@ -526,7 +526,7 @@ export default function DashboardPage() {
 
     return allShortcuts.filter(s => s.name.toLowerCase().includes(query));
 
-  }, [paletteSearchQuery]);
+  }, [paletteSearchQuery, allShortcuts]);
 
   const matchedOrders = useMemo(() => {
 
@@ -822,7 +822,7 @@ export default function DashboardPage() {
 
     fetchSession();
 
-  }, [router]);
+  }, [router, fetchProfile]);
 
   // Real-time Order updates and subscription updates
   useEffect(() => {
@@ -898,7 +898,7 @@ export default function DashboardPage() {
       window.removeEventListener('focus', handleWakeup);
       document.removeEventListener('visibilitychange', handleWakeup);
     };
-  }, [user]);
+  }, [user, fetchProfile]);
   // Mobile menu scroll lock handled by unified isAnyModalOrDrawerOpen effect
 
   // Command Palette Keyboard Listener

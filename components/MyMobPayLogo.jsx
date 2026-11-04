@@ -1,17 +1,20 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 /**
  * MyMobPayMark — Standalone vector dual-color M logo
  * Left stroke: Electric / Azure Blue (#0284C7)
  * Right stroke: Vibrant Warm Orange (#FF7800)
  */
-export function MyMobPayMark({ className = 'w-6 h-6', ...props }) {
+export function MyMobPayMark({ className = 'w-6 h-6', width = 24, height = 24, ...props }) {
   return (
-    <img
+    <Image
       src="/logos/mymobpay_mark.png"
       alt="MyMobPay Mark"
+      width={width}
+      height={height}
       className={`object-contain select-none ${className}`}
       {...props}
     />
@@ -34,13 +37,12 @@ export function MyMobPayLogo({
       className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-200 ${className}`}
       {...props}
     >
-      <img
+      <Image
         src="/logos/mymobpay_mark.png"
         alt="MyMobPay Mark"
         width={markSize}
         height={markSize}
         className="object-contain shrink-0"
-        style={{ width: `${markSize}px`, height: `${markSize}px` }}
       />
       {/* Wordmark: MyMobPay */}
       <span
@@ -71,15 +73,12 @@ export function MyMobPayQrBadge({ size = 32, markSize = 22, className = '' }) {
         padding: '3px',
       }}
     >
-      <img
+      <Image
         src="/logos/mymobpay_mark.png"
         alt="MyMobPay"
-        style={{
-          width: `${markSize}px`,
-          height: `${markSize}px`,
-          objectFit: 'contain',
-          display: 'block',
-        }}
+        width={markSize}
+        height={markSize}
+        className="object-contain"
       />
     </div>
   );
