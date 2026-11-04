@@ -16,6 +16,7 @@ import {
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 import { useDropdownTransition } from '@/components/useDropdownTransition';
+import { supabase } from '@/lib/supabase';
 
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32, textSize = 'text-xl sm:text-2xl' }) => {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
@@ -76,6 +77,15 @@ export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [heroTab, setHeroTab] = useState('checkout'); // 'checkout' | 'console'
   const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
+
+  // Seamless OAuth Callback Forwarder: If Google OAuth redirect lands on home page, forward immediately to login handler
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hasAuthCallback = window.location.hash.includes('access_token') || window.location.search.includes('code=');
+    if (hasAuthCallback) {
+      router.replace(`/login?googleAuth=true${window.location.hash || window.location.search}`);
+    }
+  }, [router]);
 
   // Dynamic animated rotating text lines in Hero section
   const heroLines = useMemo(() => [
