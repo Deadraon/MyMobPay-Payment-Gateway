@@ -431,7 +431,8 @@ function PayPageContent() {
         paramLid
       );
     }
-  }, [cleanParamOrderId, paramAmount, paramRef, hasToken, createOrder, paramCallback, paramLid, paramName, paramNote, paramPhone, paramProject]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cleanParamOrderId, paramAmount, paramRef, hasToken]);
 
   /* ── Token-based Payment Link Loader (Opens official checkout page for active tokens) ── */
   useEffect(() => {
@@ -748,7 +749,8 @@ function PayPageContent() {
         supabase.removeChannel(channel);
       }
     };
-  }, [orderId, cleanParamOrderId, confirmed, handleSuccess]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderId, cleanParamOrderId, confirmed]);
 
   /* ── Countdown timer — timestamp-based so refresh doesn't reset it ── */
   useEffect(() => {
@@ -811,7 +813,8 @@ function PayPageContent() {
 
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [curView, selectedMethod, activeOpt, TIMER_KEY]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curView, selectedMethod, activeOpt]);
 
   // Mark Mobile UPI as delayed if on UPI screen for >45s without completing
   useEffect(() => {

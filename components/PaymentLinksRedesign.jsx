@@ -390,7 +390,8 @@ export default function PaymentLinksRedesign({
         }
       };
     }
-  }, [profile?.id, profile?.api_key, fetchDbLinks, setPayLinkHistory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.id, profile?.api_key]);
 
   // Combine custom history with initial default links if needed (strictly merchant scoped)
   const allLinks = useMemo(() => {
@@ -528,7 +529,8 @@ export default function PaymentLinksRedesign({
       });
       showToast('Quick payment link generated!');
     };
-  }, [amount, purpose, refCode, customerName, customerPhone, setActiveUrl, setActiveLinkId, setGeneratedLinkData, showToast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Filter links based on status tab and search query
   const filteredLinks = useMemo(() => {

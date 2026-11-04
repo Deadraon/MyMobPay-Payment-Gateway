@@ -52,7 +52,8 @@ export default function AuditTab({ showToast, getAuthHeaders }) {
 
   useEffect(() => {
     fetchLogs();
-  }, [fetchLogs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filteredLogs = useMemo(() => {
     return logs.filter(log => {

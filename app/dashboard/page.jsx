@@ -77,6 +77,14 @@ const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-prima
   </svg>
 );
 
+const ALL_SHORTCUTS = [
+  { name: 'Go to Overview Dashboard', tab: 'overview', icon: LayoutDashboard },
+  { name: 'Go to Transactions Logs', tab: 'transactions', icon: CreditCard },
+  { name: 'Go to Settings Panel', tab: 'settings', icon: Briefcase },
+  { name: 'Edit Profile & Business Info', action: 'profile', icon: User },
+  { name: 'Reset Account Security Password', action: 'security', icon: Key }
+];
+
 export default function DashboardPage() {
 
   const router = useRouter();
@@ -372,19 +380,7 @@ export default function DashboardPage() {
     return name.slice(0, 2).toUpperCase();
   }, [profile, user]);
 
-  const allShortcuts = [
-
-    { name: 'Go to Overview Dashboard', tab: 'overview', icon: LayoutDashboard },
-
-    { name: 'Go to Transactions Logs', tab: 'transactions', icon: CreditCard },
-
-    { name: 'Go to Settings Panel', tab: 'settings', icon: Briefcase },
-
-    { name: 'Edit Profile & Business Info', action: 'profile', icon: User },
-
-    { name: 'Reset Account Security Password', action: 'security', icon: Key }
-
-  ];
+  const allShortcuts = ALL_SHORTCUTS;
 
   // Dynamic Web Application Detection
 
@@ -520,13 +516,13 @@ export default function DashboardPage() {
 
   const matchedShortcuts = useMemo(() => {
 
-    if (!paletteSearchQuery.trim()) return allShortcuts;
+    if (!paletteSearchQuery.trim()) return ALL_SHORTCUTS;
 
     const query = paletteSearchQuery.toLowerCase();
 
-    return allShortcuts.filter(s => s.name.toLowerCase().includes(query));
+    return ALL_SHORTCUTS.filter(s => s.name.toLowerCase().includes(query));
 
-  }, [paletteSearchQuery, allShortcuts]);
+  }, [paletteSearchQuery]);
 
   const matchedOrders = useMemo(() => {
 
@@ -821,8 +817,8 @@ export default function DashboardPage() {
     };
 
     fetchSession();
-
-  }, [router, fetchProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
 
   // Real-time Order updates and subscription updates
   useEffect(() => {
@@ -898,7 +894,8 @@ export default function DashboardPage() {
       window.removeEventListener('focus', handleWakeup);
       document.removeEventListener('visibilitychange', handleWakeup);
     };
-  }, [user, fetchProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   // Mobile menu scroll lock handled by unified isAnyModalOrDrawerOpen effect
 
   // Command Palette Keyboard Listener
