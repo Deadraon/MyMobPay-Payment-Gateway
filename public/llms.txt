@@ -1,6 +1,6 @@
 # MyMobPay — UPI Payment Gateway for SaaS Founders
 
-Direct-to-bank UPI payment gateway with 0% transaction fees. Accept instant UPI payments with real-time automated verification, signed HMAC webhooks, and direct bank settlement.
+> Direct-to-bank UPI payment gateway with 0% transaction fees. Accept instant UPI payments with real-time automated verification, signed HMAC webhooks, and direct bank settlement. Built for SaaS founders, indie hackers, and developers who want full control over their payment infrastructure.
 
 ## Key Pages
 

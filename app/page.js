@@ -1529,6 +1529,13 @@ export default function HomePage() {
               <li><Link href="#developer-section" className="hover:text-[#533afd] transition-colors">Documentation</Link></li>
               <li><Link href="/terms" className="hover:text-[#533afd] transition-colors">Terms of service</Link></li>
               <li><Link href="/privacy" className="hover:text-[#533afd] transition-colors">Privacy policy</Link></li>
+              <li className="pt-2 border-t border-slate-200/60 mt-2">
+                <span className="text-[11px] font-semibold text-[#64748d] uppercase tracking-wider mb-2 block">Resources</span>
+              </li>
+              <li><Link href="/compare/razorpay" className="hover:text-[#533afd] transition-colors text-xs">MyMobPay vs Razorpay</Link></li>
+              <li><Link href="/compare/cashfree" className="hover:text-[#533afd] transition-colors text-xs">MyMobPay vs Cashfree</Link></li>
+              <li><Link href="/blog/direct-bank-settlement-vs-aggregator" className="hover:text-[#533afd] transition-colors text-xs">Direct Bank Settlement Guide</Link></li>
+              <li><Link href="/blog/uapi-integration-guide" className="hover:text-[#533afd] transition-colors text-xs">UPI Integration Guide</Link></li>
               <li>
                 <a 
                   href="https://instagram.com/mymobpay" 

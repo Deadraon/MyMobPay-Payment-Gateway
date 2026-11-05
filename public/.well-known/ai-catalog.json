@@ -1,4 +1,5 @@
 {
+  "specVersion": "1.0",
   "version": "1.0",
   "name": "MyMobPay",
   "description": "Direct-to-bank UPI payment gateway with 0% transaction fees. API and MCP resources for AI agents.",
@@ -7,6 +8,39 @@
     "email": "support@mymobpay.tech",
     "url": "https://mymobpay.tech/login"
   },
+  "entries": [
+    {
+      "type": "mcp",
+      "name": "MyMobPay Payment API",
+      "description": "RESTful API for creating orders, generating dynamic QR codes, and receiving HMAC-signed webhook notifications for UPI payments.",
+      "url": "https://api.mymobpay.tech/v1",
+      "authentication": "bearer",
+      "documentation": "https://mymobpay.tech/#developer-section",
+      "capabilities": [
+        "create_order",
+        "get_order_status",
+        "verify_webhook_signature",
+        "generate_qr_code",
+        "get_merchant_analytics"
+      ],
+      "schemas": {
+        "order_request": "https://api.mymobpay.tech/v1/schemas/order.json",
+        "webhook_event": "https://api.mymobpay.tech/v1/schemas/webhook.json"
+      }
+    },
+    {
+      "type": "a2a",
+      "name": "MyMobPay Settlement Agent",
+      "description": "A2A agent for real-time UPI payment settlement notifications and reconciliation.",
+      "url": "https://agent.mymobpay.tech",
+      "skills": [
+        "payment_verification",
+        "settlement_tracking",
+        "webhook_replay",
+        "dispute_resolution"
+      ]
+    }
+  ],
   "resources": [
     {
       "type": "mcp",
