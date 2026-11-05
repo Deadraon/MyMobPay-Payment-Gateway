@@ -42,9 +42,9 @@ export default function UapiIntegrationGuidePage() {
           </h1>
           <div className="mt-4 flex items-center gap-4 text-sm text-slate-500">
             <span>By <span className="font-semibold text-slate-700">Kunal Chauhan</span></span>
-            <span>·</span>
+            <span className="text-slate-300">·</span>
             <span>Nov 2026</span>
-            <span>·</span>
+            <span className="text-slate-300">·</span>
             <span>10 min read</span>
           </div>
           <p className="mt-6 text-base text-slate-600 leading-relaxed">
@@ -67,110 +67,118 @@ export default function UapiIntegrationGuidePage() {
           <p className="text-slate-600 leading-relaxed">
             MyMobPay provides official SDKs for multiple languages. For Next.js projects, we recommend the Node.js SDK:
           </p>
-          <div className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto">
-            <span className="text-slate-500"># Using npm</span><br />
-            npm install @mymobpay/node<br /><br />
-            <span className="text-slate-500"># Or yarn</span><br />
-            yarn add @mymobpay/node
-          </div>
+          <pre className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto whitespace-pre">
+{`# Using npm
+npm install @mymobpay/node
+
+# Or yarn
+yarn add @mymobpay/node`}
+          </pre>
 
           <h2 className="text-2xl font-bold text-slate-900 mt-12">Step 2: Initialize the Client</h2>
           <p className="text-slate-600 leading-relaxed">
             Create a singleton client instance in a dedicated module file:
           </p>
-          <div className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto">
-            <span className="text-sky-300">{'// lib/mymobpay.js'}</span><br />
-            <span className="text-blue-400">import</span> {`{ MyMobPay }`} <span className="text-blue-400">from</span> <span className="text-cyan-300">'@mymobpay/node'</span>;<br /><br />
-            <span className="text-blue-400">export const</span> mymobpay = <span className="text-blue-400">new</span> <span className="text-sky-300">MyMobPay</span>({`{`}<br />
-            {"  "}apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span>,<br />
-            {"  "}webhookSecret: process.env.<span className="text-amber-300">MYMOBPAY_WEBHOOK_SECRET</span>,<br />
-            {`}`});
-          </div>
+          <pre className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto whitespace-pre">
+{`// lib/mymobpay.js
+import { MyMobPay } from '@mymobpay/node';
+
+export const mymobpay = new MyMobPay({
+  apiKey: process.env.MYMOBPAY_SECRET_KEY,
+  webhookSecret: process.env.MYMOBPAY_WEBHOOK_SECRET,
+});`}
+          </pre>
 
           <h2 className="text-2xl font-bold text-slate-900 mt-12">Step 3: Create a Payment Order</h2>
           <p className="text-slate-600 leading-relaxed">
             In your Next.js API route, create a payment order when the user checks out:
           </p>
-          <div className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto">
-            <span className="text-slate-500">{'// app/api/create-order/route.ts'}</span><br /><br />
-            <span className="text-blue-400">import</span> {`{ `}<span className="text-sky-300">NextResponse</span>{` } `}<span className="text-blue-400">from</span> <span className="text-cyan-300">'next/server'</span>;<br />
-            <span className="text-blue-400">import</span> {`{ mymobpay }`} <span className="text-blue-400">from</span> <span className="text-cyan-300">'@/lib/mymobpay'</span>;<br /><br />
-            <span className="text-blue-400">export async function</span> <span className="text-sky-300">POST</span>(req: <span className="text-sky-300">Request</span>) {<br />
-            {"  "}const {`{`} amount, orderId, customerEmail {`} } = <span className="text-blue-400">await</span> req.<span className="text-sky-300">json</span>();<br /><br />
-            {"  "}const order = <span className="text-blue-400">await</span> mymobpay.orders.<span className="text-sky-300">create</span>({`{`}<br />
-            {"    "}amount,       <span className="text-slate-500">// in paise (e.g., 149900 = ₹1,499)</span><br />
-            {"    "}orderId,<br />
-            {"    "}customerEmail,<br />
-            {"    "}description: <span className="text-cyan-300">'Premium Plan Subscription'</span>,<br />
-            {"  "}});<br /><br />
-            {"  "}return <span className="text-sky-300">NextResponse</span>.<span className="text-sky-300">json</span>({ qrString: order.qrString, intentUrl: order.intentUrl });<br />
-            {`}
-          </div>
+          <pre className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto whitespace-pre">
+{`// app/api/create-order/route.ts
+
+import { NextResponse } from 'next/server';
+import { mymobpay } from '@/lib/mymobpay';
+
+export async function POST(req: Request) {
+  const { amount, orderId, customerEmail } = await req.json();
+
+  const order = await mymobpay.orders.create({
+    amount,       // in paise (e.g., 149900 = ₹1,499)
+    orderId,
+    customerEmail,
+    description: 'Premium Plan Subscription',
+  });
+
+  return NextResponse.json({ qrString: order.qrString, intentUrl: order.intentUrl });
+}`}
+          </pre>
 
           <h2 className="text-2xl font-bold text-slate-900 mt-12">Step 4: Display the Payment QR / Link</h2>
           <p className="text-slate-600 leading-relaxed">
             The response includes a <code className="bg-slate-100 px-1.5 py-0.5 rounded text-sm font-mono">qrString</code> and <code className="bg-slate-100 px-1.5 py-0.5 rounded text-sm font-mono">intentUrl</code>.
             Display the QR code using any QR library, or redirect the customer to the intent URL for an in-app UPI payment experience.
           </p>
-          <div className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto">
-            <span className="text-slate-500">// Example: render QR in React</span><br />
-            <span className="text-blue-400">import</span> QRCode from <span className="text-cyan-300">'react-qr-code'</span>;<br /><br />
-            <span className="text-blue-400">export default function</span> <span className="text-sky-300">PaymentQR</span>({`{ qrString }`}) {<br />
-            {"  "}return (<br />
-            {"    "}&lt;<span className="text-sky-300">QRCode</span><br />
-            {"      "}<span className="text-sky-300">value</span>={qrString}<br />
-            {"      "}<span className="text-sky-300">size</span>={256}<br />
-            {"      "}<span className="text-sky-300">bgColor</span>=<span className="text-cyan-300">"#FFFFFF"</span><br />
-            {"      "}<span className="text-sky-300">fgColor</span>=<span className="text-cyan-300">"#0B192C"</span><br />
-            {"    "}/&gt;<br />
-            {"  "});<br />
-            {`}
-          </div>
+          <pre className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto whitespace-pre">
+{`// Example: render QR in React
+import QRCode from 'react-qr-code';
+
+export default function PaymentQR({ qrString }) {
+  return (
+    <QRCode
+      value={qrString}
+      size={256}
+      bgColor="#FFFFFF"
+      fgColor="#0B192C"
+    />
+  );
+}`}
+          </pre>
 
           <h2 className="text-2xl font-bold text-slate-900 mt-12">Step 5: Handle Webhooks for Auto-Verification</h2>
           <p className="text-slate-600 leading-relaxed">
             Set up a webhook endpoint to receive automatic payment notifications. MyMobPay sends HMAC-SHA256 signed events that you should verify before processing.
           </p>
-          <div className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto">
-            <span className="text-slate-500">{'// app/api/webhook/route.ts'}</span><br /><br />
-            <span className="text-blue-400">import</span> {`{ `}<span className="text-sky-300">NextResponse</span>{` } `}<span className="text-blue-400">from</span> <span className="text-cyan-300">'next/server'</span>;<br />
-            <span className="text-blue-400">import</span> {`{ mymobpay }`} <span className="text-blue-400">from</span> <span className="text-cyan-300">'@/lib/mymobpay'</span>;<br /><br />
-            <span className="text-blue-400">export async function</span> <span className="text-sky-300">POST</span>(req: <span className="text-sky-300">Request</span>) {<br />
-            {"  "}const signature = req.<span className="text-sky-300">headers</span>.<span className="text-sky-300">get</span>(<span className="text-cyan-300">'x-mymobpay-signature'</span>);<br />
-            {"  "}const body = <span className="text-blue-400">await</span> req.<span className="text-sky-300">text</span>();<br /><br />
-            {"  "}const event = mymobpay.webhooks.<span className="text-sky-300">constructEvent</span>(body, signature);<br /><br />
-            {"  "}switch (event.type) {<br />
-            {"    "}case <span className="text-cyan-300">'payment.settled'</span>:<br />
-            {"      "}console.<span className="text-sky-300">log</span>(<span className="text-cyan-300">`Payment ${event.data.orderId} settled: ₹${event.data.amount}`</span>);<br />
-            {"      "}break;<br />
-            {"  "}}<br /><br />
-            {"  "}return <span className="text-sky-300">NextResponse</span>.<span className="text-sky-300">json</span>({ ok: <span className="text-blue-400">true</span> });<br />
-            {`}
-          </div>
+          <pre className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto whitespace-pre">
+{`// app/api/webhook/route.ts
+
+import { NextResponse } from 'next/server';
+import { mymobpay } from '@/lib/mymobpay';
+
+export async function POST(req: Request) {
+  const signature = req.headers.get('x-mymobpay-signature');
+  const body = await req.text();
+
+  const event = mymobpay.webhooks.constructEvent(body, signature);
+
+  switch (event.type) {
+    case 'payment.settled':
+      console.log(\`Payment \${event.data.orderId} settled: ₹\${event.data.amount}\`);
+      break;
+  }
+
+  return NextResponse.json({ ok: true });
+}`}
+          </pre>
 
           <h2 className="text-2xl font-bold text-slate-900 mt-12">Environment Variables</h2>
           <p className="text-slate-600 leading-relaxed">
             Add these to your <code className="bg-slate-100 px-1.5 py-0.5 rounded text-sm font-mono">.env.local</code> file:
           </p>
-          <div className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto">
-            MYMOBPAY_SECRET_KEY=sec_live_your_api_key_here<br />
-            MYMOBPAY_WEBHOOK_SECRET=whsec_your_webhook_secret_here
-          </div>
+          <pre className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto whitespace-pre">
+{`MYMOBPAY_SECRET_KEY=sec_live_your_api_key_here
+MYMOBPAY_WEBHOOK_SECRET=whsec_your_webhook_secret_here`}
+          </pre>
 
           <h2 className="text-2xl font-bold text-slate-900 mt-12">cURL Alternative</h2>
           <p className="text-slate-600 leading-relaxed">
             If you prefer not to use the SDK, you can call the REST API directly:
           </p>
-          <div className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto">
-            curl -X POST https://api.mymobpay.tech/v1/orders \<br />
-            {"  "}-H <span className="text-cyan-300">"Authorization: Bearer sec_live_..."</span> \<br />
-            {"  "}-H <span className="text-cyan-300">"Content-Type: application/json"</span> \<br />
-            {"  "}-d <span className="text-slate-400">'{`{"`}</span><br />
-            {"    "}<span className="text-sky-300">"amount"</span>: <span className="text-amber-300">149900</span>,<br />
-            {"    "}<span className="text-sky-300">"orderId"</span>: <span className="text-cyan-300">"ORD_2026_001"</span>,<br />
-            {"    "}<span className="text-sky-300">"customerEmail"</span>: <span className="text-cyan-300">"user@example.com"</span><br />
-            {"  "}<span className="text-slate-400">'}</span>
-          </div>
+          <pre className="bg-slate-900 rounded-xl p-5 font-mono text-sm text-slate-200 overflow-x-auto whitespace-pre">
+{`curl -X POST https://api.mymobpay.tech/v1/orders \\
+  -H "Authorization: Bearer sec_live_..." \\
+  -H "Content-Type: application/json" \\
+  -d '{"amount": 149900, "orderId": "ORD_2026_001", "customerEmail": "user@example.com"}'`}
+          </pre>
 
           <h2 className="text-2xl font-bold text-slate-900 mt-12">That&apos;s It</h2>
           <p className="text-slate-600 leading-relaxed">
