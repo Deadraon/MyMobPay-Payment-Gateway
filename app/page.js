@@ -1534,8 +1534,10 @@ export default function HomePage() {
               </li>
               <li><Link href="/compare/razorpay" className="hover:text-[#533afd] transition-colors text-xs">MyMobPay vs Razorpay</Link></li>
               <li><Link href="/compare/cashfree" className="hover:text-[#533afd] transition-colors text-xs">MyMobPay vs Cashfree</Link></li>
+              <li><Link href="/compare/uapi-gateway" className="hover:text-[#533afd] transition-colors text-xs">Best UPI Payment Gateway 2026</Link></li>
               <li><Link href="/blog/direct-bank-settlement-vs-aggregator" className="hover:text-[#533afd] transition-colors text-xs">Direct Bank Settlement Guide</Link></li>
               <li><Link href="/blog/uapi-integration-guide" className="hover:text-[#533afd] transition-colors text-xs">UPI Integration Guide</Link></li>
+              <li><Link href="/blog/payment-gateway-for-saas" className="hover:text-[#533afd] transition-colors text-xs">Choosing a Payment Gateway for Your SaaS</Link></li>
               <li>
                 <a 
                   href="https://instagram.com/mymobpay" 
