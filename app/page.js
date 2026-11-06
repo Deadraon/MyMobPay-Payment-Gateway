@@ -1103,37 +1103,31 @@ export default function HomePage() {
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         INTERACTIVE SAVINGS SLIDER CALCULATOR (Elevated Fintech Craft)
+         INTERACTIVE SAVINGS SLIDER CALCULATOR
          ──────────────────────────────────────────────────────── */}
-      <section id="pricing-section" className="py-24 bg-gradient-to-b from-[#f6f9fc] to-white border-b border-[#e3e8ee] font-sohne relative">
+      <section id="pricing-section" className="py-24 bg-[#f5e9d4]/60 border-b border-[#e3e8ee] font-sohne">
         <div className="max-w-7xl mx-auto px-6">
 
-          <div className="rounded-3xl bg-white border border-slate-200 p-6 sm:p-10 md:p-14 shadow-[0_20px_50px_rgba(15,23,42,0.06)] relative overflow-hidden">
-
-            {/* Subtle brand glow accent in background */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#3395FF]/10 via-[#533AFD]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center relative z-10">
+          <div className="rounded-2xl bg-[#f5e9d4] border border-[#ebd8bc] p-5 sm:p-8 md:p-12 shadow-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
               {/* Left Column: Heading & Slider */}
-              <div className="lg:col-span-6 space-y-6">
-                <div>
-                  <span className="text-xs uppercase tracking-wider font-bold text-[#533afd] bg-blue-50 border border-blue-200/60 px-3 py-1 rounded-full inline-block mb-3">
-                    Interactive Fee Calculator
-                  </span>
-                  <h2 className="text-3xl sm:text-4xl md:text-[40px] font-bold text-slate-900 tracking-tight leading-tight">
-                    See how much revenue you retain every month.
-                  </h2>
-                  <p className="text-sm sm:text-base text-slate-600 font-normal leading-relaxed mt-3">
-                    Adjust your monthly transaction volume to see the compounding difference between standard 2% + GST gateway deductions versus MyMobPay flat direct bank settlement.
-                  </p>
-                </div>
+              <div className="lg:col-span-6">
+                <span className="text-xs uppercase tracking-wider font-semibold text-[#9b6829] mb-2 sm:mb-3 block">
+                  Interactive Fee Calculator
+                </span>
+                <h2 className="text-2xl sm:text-3xl md:text-[38px] font-light text-[#0d253d] tracking-tight leading-tight mb-3 sm:mb-4">
+                  See how much revenue you retain every month.
+                </h2>
+                <p className="text-xs sm:text-sm font-light text-[#273951] leading-relaxed mb-6 sm:mb-8">
+                  Adjust your monthly transaction volume to see the compounding difference between standard 2% + GST gateway deductions versus MyMobPay direct passthrough.
+                </p>
 
                 {/* Range Slider */}
-                <div className="space-y-4 bg-slate-50/80 border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-600 font-medium">Monthly Collection Volume:</span>
-                    <strong className="text-base sm:text-lg font-bold font-mono tabular-nums text-[#0d253d] bg-white px-3 py-1 rounded-lg border border-slate-200/80 shadow-xs">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center text-xs sm:text-sm">
+                    <span className="text-[#64748d] font-light">Monthly Collection Volume:</span>
+                    <strong className="text-base sm:text-lg font-mono tabular-nums text-[#0d253d]">
                       ₹{(monthlyVolume / 100000).toFixed(1)} Lakhs
                     </strong>
                   </div>
@@ -1144,9 +1138,9 @@ export default function HomePage() {
                     step="50000"
                     value={monthlyVolume}
                     onChange={(e) => setMonthlyVolume(Number(e.target.value))}
-                    className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#533afd]"
+                    className="w-full h-2 bg-[#ebd8bc] rounded-lg appearance-none cursor-pointer accent-[#533afd]"
                   />
-                  <div className="flex justify-between text-xs text-slate-500 font-mono font-medium">
+                  <div className="flex justify-between text-[11px] text-[#64748d] font-mono">
                     <span>₹1 Lakh</span>
                     <span>₹25 Lakhs</span>
                     <span>₹50 Lakhs+</span>
@@ -1156,33 +1150,33 @@ export default function HomePage() {
 
               {/* Right Column: Comparison Card */}
               <div className="lg:col-span-6">
-                <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-[#0B192C] text-white rounded-2xl border border-slate-800 p-6 sm:p-8 shadow-xl space-y-6">
+                <div className="bg-white rounded-xl border border-[#ebd8bc] p-5 sm:p-8 shadow-sm">
 
-                  <div className="space-y-4 pb-6 border-b border-white/10">
-                    <div className="flex justify-between items-center text-xs sm:text-sm">
-                      <span className="text-slate-300">Traditional Gateways (2% + 18% GST)</span>
-                      <span className="font-mono text-rose-400 tabular-nums font-bold shrink-0 ml-2">
+                  <div className="space-y-3.5 sm:space-y-4 pb-5 sm:pb-6 border-b border-[#e3e8ee]">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-[#64748d]">Traditional Gateways (2% + 18% GST)</span>
+                      <span className="text-xs sm:text-sm font-mono text-[#ea2261] tabular-nums font-semibold shrink-0 ml-2">
                         -₹{savings.traditionalTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-xs sm:text-sm">
-                      <span className="text-slate-300">MyMobPay Flat License</span>
-                      <span className="font-mono text-emerald-400 tabular-nums font-bold shrink-0 ml-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-[#64748d]">MyMobPay Flat License</span>
+                      <span className="text-xs sm:text-sm font-mono text-[#059669] tabular-nums font-semibold shrink-0 ml-2">
                         ₹499.00/mo (Fixed)
                       </span>
                     </div>
                   </div>
 
-                  <div>
-                    <div className="text-[11px] sm:text-xs uppercase tracking-wider font-bold text-slate-400 mb-1">
+                  <div className="pt-5 sm:pt-6">
+                    <div className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-[#64748d] mb-1">
                       Net Monthly Savings
                     </div>
-                    <div className="text-3xl sm:text-4xl md:text-5xl font-black text-emerald-400 tracking-tight font-mono tabular-nums flex items-baseline flex-wrap gap-2">
+                    <div className="text-3xl sm:text-4xl font-light text-[#059669] tracking-tight font-mono tabular-nums flex items-baseline flex-wrap gap-1">
                       <span>₹{savings.netSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
-                      <span className="text-xs sm:text-sm font-sans text-slate-300 font-semibold">retained / mo</span>
+                      <span className="text-xs sm:text-sm font-sans text-[#273951] font-light">retained</span>
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-300 mt-3 leading-relaxed">
-                      That is <strong className="text-white font-bold">{savings.pctSaved}% savings</strong> directly redirected to your product development and growth.
+                    <p className="text-xs text-[#64748d] mt-2">
+                      That is <strong className="text-[#0d253d]">{savings.pctSaved}% savings</strong> directly redirected to your product development and growth.
                     </p>
                   </div>
 
