@@ -179,9 +179,9 @@ export default function AnimatedPhoneMockup({ demoAmount = '500' }) {
 
                 {/* QR Code Container with Active Laser Sweep */}
                 <div className="bg-white border border-slate-200 rounded-2xl p-3 shadow-md flex flex-col items-center justify-center space-y-2 relative overflow-hidden group">
-                  {/* Glowing Laser Beam scanning vertically */}
+                  {/* Laser Beam scanning vertically */}
                   <div
-                    className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#3395FF] to-transparent shadow-[0_0_12px_2px_rgba(51,149,255,0.9)] z-20 pointer-events-none"
+                    className="absolute inset-x-3 h-0.5 bg-[#3395FF] shadow-[0_0_8px_#3395FF] z-20 pointer-events-none"
                     style={{
                       animation: 'laserSweep 2.2s ease-in-out infinite'
                     }}
@@ -265,7 +265,7 @@ export default function AnimatedPhoneMockup({ demoAmount = '500' }) {
 
                 {/* Merchant & Amount Box */}
                 <div className="text-center bg-[#0F1E36] border border-[#1D2D44] rounded-2xl p-4 shadow-sm space-y-1">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#533afd] to-[#3395FF] flex items-center justify-center mx-auto text-white font-bold text-base shadow-sm">
+                  <div className="w-10 h-10 rounded-full bg-[#533afd] flex items-center justify-center mx-auto text-white font-bold text-base shadow-sm">
                     M
                   </div>
                   <p className="text-xs font-semibold text-slate-200 pt-1">Merchant Store</p>
@@ -349,7 +349,7 @@ export default function AnimatedPhoneMockup({ demoAmount = '500' }) {
                   <div className="relative">
                     {/* Concentric Glow Ripples */}
                     <div className="absolute inset-0 rounded-full bg-emerald-500/30 animate-ping opacity-60" />
-                    <div className="relative w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.6)]">
+                    <div className="relative w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
                       <Check className="w-9 h-9 text-white stroke-[3.5]" />
                     </div>
                   </div>
@@ -490,7 +490,7 @@ export default function AnimatedPhoneMockup({ demoAmount = '500' }) {
             {/* Smooth Progress Bar */}
             <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
               <div
-                className="bg-gradient-to-r from-[#533afd] via-[#3395FF] to-emerald-400 h-full rounded-full transition-all duration-75"
+                className="bg-[#3395FF] h-full rounded-full transition-all duration-75"
                 style={{ width: `${progress}%` }}
               />
             </div>

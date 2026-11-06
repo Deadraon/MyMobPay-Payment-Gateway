@@ -401,11 +401,11 @@ export default function HomePage() {
               <span className="block animate-fade-up delay-200 mt-1">
                 direct UPI payments.
               </span>
-              <span className="block font-bold animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight">
-                <span className="inline-block bg-gradient-to-r from-[#533afd] via-[#3395FF] to-[#0EA5E9] bg-clip-text text-transparent">
+              <span className="block font-bold animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight text-[#533afd]">
+                <span className="inline-block">
                   {typedLine}
                 </span>
-                <span className="inline-block w-[3px] h-[0.8em] bg-[#3395FF] ml-1.5 align-middle animate-pulse" aria-hidden="true" />
+                <span className="inline-block w-[3px] h-[0.8em] bg-[#533afd] ml-1.5 align-middle animate-pulse" aria-hidden="true" />
               </span>
             </h1>
 
@@ -418,7 +418,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 animate-fade-up delay-200 w-full sm:w-auto">
               <Link
                 href="/login?mode=signup"
-                className="w-full sm:w-auto px-7 py-3.5 sm:py-3 bg-gradient-to-r from-[#533afd] to-[#3395FF] hover:from-[#4330d4] hover:to-[#2b80dc] active:scale-[0.98] text-white font-semibold rounded-full transition-all shadow-[0_8px_24px_rgba(83,58,253,0.3)] text-center text-[15px] flex items-center justify-center gap-2 group cursor-pointer"
+                className="w-full sm:w-auto px-7 py-3.5 sm:py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] active:scale-[0.98] text-white font-semibold rounded-full transition-all shadow-[0_4px_16px_rgba(83,58,253,0.25)] text-center text-[15px] flex items-center justify-center gap-2 group cursor-pointer"
               >
                 <span>Start now</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
