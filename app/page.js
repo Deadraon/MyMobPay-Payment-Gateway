@@ -5,31 +5,39 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { CONFIG } from '@/lib/config';
-import {
-  ArrowRight, CheckCircle2, ChevronRight, Menu, X,
-  ShieldCheck, Zap, Layers, RefreshCw, Landmark, Code,
-  Sparkles, QrCode, Copy, Check, Terminal, CreditCard,
-  FileText, ArrowUpRight, Lock
+import { 
+  ArrowRight, CheckCircle2, ChevronRight, Menu, X, 
+  ArrowUpRight, ShieldCheck, Zap, Layers, RefreshCw, 
+  Key, Landmark, Code, Play, Star, Plus, Minus, Info, Lock, Sparkles, QrCode,
+  Copy, Check, Smartphone, Building2, Bell, Terminal, Globe,
+  Pause, RotateCcw, CheckCircle, ExternalLink, Activity,
+  Volume2, Share2, FileText, CreditCard, Send
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
-const MyMobPayLogo = ({ className = '', textColor = '#0B192C', markSize = 28, textSize = 'text-lg sm:text-xl' }) => {
+import { useDropdownTransition } from '@/components/useDropdownTransition';
+import { supabase } from '@/lib/supabase';
+
+const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32, textSize = 'text-xl sm:text-2xl' }) => {
+  const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
   return (
-    <div className={`inline-flex items-center gap-2 select-none shrink-0 ${className}`}>
-      <Image
+    <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 ${className}`}>
+      {/* 3D Ribbon M Mark */}
+      <img
         src="/logos/mymobpay_mark.png"
-        alt="MyMobPay"
+        alt="MyMobPay Mark"
         width={markSize}
         height={markSize}
         className="object-contain shrink-0"
         style={{ width: `${markSize}px`, height: `${markSize}px` }}
       />
+      {/* Brand Wordmark */}
       <span
         className={`font-semibold tracking-tight leading-none whitespace-nowrap ${textSize}`}
         style={{
           fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          color: textColor,
-          letterSpacing: '-0.3px'
+          color: resolvedColor,
+          letterSpacing: '-0.5px'
         }}
       >
         MyMobPay
@@ -59,11 +67,18 @@ const InstagramIcon = ({ className = 'w-4 h-4' }) => (
 export default function HomePage() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [monthlyVolume, setMonthlyVolume] = useState(500000); // 5 Lakhs
-  const [productDevLang, setProductDevLang] = useState('curl');
-  const [copiedDevSnippet, setCopiedDevSnippet] = useState(false);
+  const { isMounted: isMobileMenuMounted, dropdownClass: mobileMenuDropdownClass } = useDropdownTransition(isMobileMenuOpen);
+  const [monthlyVolume, setMonthlyVolume] = useState(500000); // 5 Lakhs default
+  const [productCategory, setProductCategory] = useState('gateway');
+  const [productSubFilter, setProductSubFilter] = useState('top');
+  const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [showPaymentsMenu, setShowPaymentsMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [heroTab, setHeroTab] = useState('checkout'); // 'checkout' | 'console'
+  const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
 
-  // Google OAuth Callback Forwarder
+  // Seamless OAuth Callback Forwarder: If Google OAuth redirect lands on home page, forward immediately to login handler
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const hasAuthCallback = window.location.hash.includes('access_token') || window.location.search.includes('code=');
@@ -72,7 +87,68 @@ export default function HomePage() {
     }
   }, [router]);
 
-  // Mobile menu lock
+  // Dynamic animated rotating text lines in Hero section
+  const heroLines = useMemo(() => [
+    'Zero gateway fees.',
+    'Instant bank credit.',
+    '0% transaction charges.',
+    'Real-time T+0 settlement.',
+    'Direct UPI to your account.'
+  ], []);
+
+  const [typedLine, setTypedLine] = useState(heroLines[0]);
+  const [lineIndex, setLineIndex] = useState(0);
+  const [isDeletingLine, setIsDeletingLine] = useState(false);
+  const [charIndex, setCharIndex] = useState(heroLines[0].length);
+  const [typingSpeed, setTypingSpeed] = useState(100);
+
+  useEffect(() => {
+    const handleType = () => {
+      const current = heroLines[lineIndex];
+      if (isDeletingLine) {
+        setTypedLine(current.substring(0, charIndex - 1));
+        setCharIndex(prev => prev - 1);
+        setTypingSpeed(45);
+      } else {
+        setTypedLine(current.substring(0, charIndex + 1));
+        setCharIndex(prev => prev + 1);
+        setTypingSpeed(95);
+      }
+
+      if (!isDeletingLine && charIndex === current.length) {
+        setTypingSpeed(2200); // Pause on completed line
+        setIsDeletingLine(true);
+      } else if (isDeletingLine && charIndex === 0) {
+        setIsDeletingLine(false);
+        setLineIndex(prev => (prev + 1) % heroLines.length);
+        setTypingSpeed(320); // Pause before next line
+      }
+    };
+
+    const timer = setTimeout(handleType, typingSpeed);
+    return () => clearTimeout(timer);
+  }, [charIndex, isDeletingLine, lineIndex, typingSpeed, heroLines]);
+
+  // Senior Developer Product Suite Showcase states
+  const [productDevLang, setProductDevLang] = useState('curl'); // 'curl' | 'node' | 'python'
+  const [productGatewaySimulated, setProductGatewaySimulated] = useState(false);
+  const [copiedVanNumber, setCopiedVanNumber] = useState(false);
+  const [copiedDevSnippet, setCopiedDevSnippet] = useState(false);
+
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 12) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Mobile navigation drawer scroll lock
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -84,135 +160,208 @@ export default function HomePage() {
     };
   }, [isMobileMenuOpen]);
 
+  // Interactive Live Invoice demo states
+  const [demoAmount, setDemoAmount] = useState('500');
+  const [demoNote, setDemoNote] = useState('Payment_Note');
+
   const subscriptionFee = CONFIG.subscriptionFee || 499;
 
-  // Real fee calculations
+  // Pricing Savings Calculator (Stripe-accurate with 18% GST)
   const savings = useMemo(() => {
     const traditionalMdr = monthlyVolume * 0.02; // 2% typical fee
     const traditionalGst = traditionalMdr * 0.18; // 18% GST
     const traditionalTotal = traditionalMdr + traditionalGst;
-    const netSaved = Math.max(0, traditionalTotal - subscriptionFee);
+    const myMobPayCost = subscriptionFee;
+    const netSaved = Math.max(0, traditionalTotal - myMobPayCost);
     const pctSaved = traditionalTotal > 0 ? Math.round((netSaved / traditionalTotal) * 100) : 0;
+    const annualSavings = netSaved * 12;
+
     return {
+      traditionalFee: traditionalMdr,
       traditionalTotal,
+      mymobpayFee: myMobPayCost,
+      myMobPayCost,
+      monthly: netSaved,
       netSaved,
       pctSaved,
+      annual: annualSavings
     };
   }, [monthlyVolume, subscriptionFee]);
 
+  const copyPaymentLink = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden selection:bg-sky-500/10 selection:text-[#0284C7]">
+    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden selection:bg-blue-500/10 selection:text-[#0284C7] relative">
 
-      {/* ── TOP ANNOUNCEMENT BANNER ── */}
-      <div className="w-full bg-slate-900 text-white text-xs py-2 px-4 flex items-center justify-between sm:justify-center gap-3 select-none border-b border-slate-800">
-        <div className="flex items-center gap-2 truncate">
-          <span className="inline-flex items-center gap-1.5 bg-sky-500/20 text-sky-400 font-medium px-2 py-0.5 rounded text-[11px] shrink-0 border border-sky-500/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            Direct UPI 2.0
-          </span>
-          <span className="text-slate-300 text-xs truncate hidden sm:inline">
-            Direct bank settlement via IMPS/UPI with 0% gateway fees.
-          </span>
-          <span className="text-slate-300 text-xs truncate sm:hidden">
-            0% Gateway Fees · Direct Bank Settlement
-          </span>
+      
+      {/* ────────────────────────────────────────────────────────
+         ORIGINAL FULL-WIDTH STATIC HEADER WITH MULTI-LAYERED SHADOWS
+         ──────────────────────────────────────────────────────── */}
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-[#e3e8ee] shadow-xs transition-colors font-sohne">
+        {/* ── TOP ANNOUNCEMENT BANNER ── */}
+        <div className="w-full bg-[#0F172A] text-white text-[11px] sm:text-xs font-normal py-2 px-3 sm:px-4 flex items-center justify-between sm:justify-center gap-2 sm:gap-3 select-none border-b border-white/10">
+          <div className="flex items-center gap-2 truncate">
+            <span className="inline-flex items-center gap-1.5 bg-[#0EA5E9] text-white font-semibold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Direct UPI 2.0
+            </span>
+            <span className="text-slate-200 text-[11px] truncate hidden sm:inline">
+              Direct bank settlement (IMPS / UPI) with <strong className="text-white font-medium underline underline-offset-2">0% gateway fees</strong>.
+            </span>
+            <span className="text-slate-200 text-[11px] truncate sm:hidden">
+              0% Gateway Fees • Direct Bank Settlement
+            </span>
+          </div>
+          <a
+            href="#pricing-section"
+            className="inline-flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white font-medium text-[11px] px-2.5 py-0.5 rounded-full transition-colors shrink-0 border border-white/20"
+          >
+            <span>Savings</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
         </div>
-        <a
-          href="#pricing-section"
-          className="text-xs text-sky-400 hover:text-sky-300 font-medium inline-flex items-center gap-1 shrink-0"
-        >
-          <span>Calculate savings</span>
-          <span aria-hidden="true">&rarr;</span>
-        </a>
-      </div>
 
-      {/* ── STICKY HEADER ── */}
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center select-none" aria-label="MyMobPay Home">
-              <MyMobPayLogo />
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+          
+          {/* Left Cluster: Brand Logo + Primary Nav */}
+          <div className="flex items-center gap-8 lg:gap-12 shrink-0">
+            <Link href="/" className="flex items-center select-none group py-1 shrink-0" aria-label="MyMobPay Home">
+              <MyMobPayLogo textColor="#0d253d" markSize={32} />
             </Link>
-            <nav className="hidden md:flex items-center gap-6 text-sm text-slate-600 font-medium">
-              <Link href="#developer-section" className="hover:text-slate-900 transition-colors">Developers</Link>
-              <Link href="#pricing-section" className="hover:text-slate-900 transition-colors">Pricing</Link>
-              <Link href="/terms" className="hover:text-slate-900 transition-colors">Terms</Link>
-              <Link href="/privacy" className="hover:text-slate-900 transition-colors">Privacy</Link>
+
+            {/* Desktop Nav Links */}
+            <nav className="hidden lg:flex items-center gap-7 text-[15px] text-[#273951] font-normal">
+              <Link href="#developer-section" className="hover:text-[#0284C7] transition-colors py-1">Developers</Link>
+              <Link href="#pricing-section" className="hover:text-[#0284C7] transition-colors py-1">Pricing</Link>
+              <Link href="/terms" className="hover:text-[#0284C7] transition-colors py-1">Terms</Link>
+              <Link href="/privacy" className="hover:text-[#0284C7] transition-colors py-1">Privacy</Link>
             </nav>
           </div>
 
-          <div className="hidden sm:flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-1.5 transition-colors"
+          {/* Right Cluster: Premium Login Button (Desktop) */}
+          <div className="hidden sm:flex items-center">
+            <Link 
+              href="/login" 
+              className="px-5 py-2.5 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-[14px] font-semibold flex items-center gap-1.5 transition-colors shadow-sm hover:shadow-md group cursor-pointer"
             >
-              Sign In
-            </Link>
-            <Link
-              href="/login?mode=signup"
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-medium inline-flex items-center gap-1.5 transition-colors"
-            >
-              <span>Get started</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <Lock className="w-3.5 h-3.5 opacity-90" />
+              <span>Login</span>
+              <ArrowRight className="w-3.5 h-3.5 opacity-80 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
 
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-            aria-label="Toggle Navigation Menu"
-          >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          {/* Mobile Right Cluster (sm:hidden) + Mobile hamburger toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <Link 
+              href="/login" 
+              className="sm:hidden px-3.5 py-1.5 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-xs font-semibold flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
+            >
+              <Lock className="w-3 h-3 opacity-90" />
+              <span>Login</span>
+            </Link>
+
+            {/* Mobile hamburger button with transitions-dev icon swap (09-icon-swap.md) */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="w-9 h-9 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors shadow-2xs border border-slate-200/70 flex items-center justify-center cursor-pointer"
+              title="Toggle Menu"
+              aria-label="Toggle Navigation Menu"
+            >
+              <span className="t-icon-swap" data-state={isMobileMenuOpen ? 'b' : 'a'}>
+                <span className="t-icon" data-icon="a" aria-hidden={isMobileMenuOpen}>
+                  <Menu className="w-4 h-4" />
+                </span>
+                <span className="t-icon" data-icon="b" aria-hidden={!isMobileMenuOpen}>
+                  <X className="w-4 h-4" />
+                </span>
+              </span>
+            </button>
+          </div>
+
         </div>
       </header>
 
-      {/* ── MOBILE MENU ── */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-[96px] bottom-0 z-40 bg-white p-6 border-t border-slate-200 flex flex-col justify-between overflow-y-auto">
-          <div className="space-y-4">
-            <Link
-              href="#developer-section"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block text-base font-medium text-slate-900 py-2 border-b border-slate-100"
-            >
-              Developers &amp; API
+      {/* Mobile Drawer Navigation (transitions-dev: 05-menu-dropdown.md) */}
+      {isMobileMenuMounted && (
+        <div 
+          className={`lg:hidden fixed inset-x-0 bottom-0 top-[96px] sm:top-[116px] max-h-[calc(100dvh-96px)] sm:max-h-[calc(100dvh-116px)] z-40 bg-white flex flex-col pt-5 px-5 sm:px-6 pb-8 border-t border-slate-100 shadow-[0_12px_32px_rgba(0,0,0,0.08),0_24px_64px_rgba(0,0,0,0.12)] overflow-y-auto ${mobileMenuDropdownClass}`}
+          data-origin="top-center"
+        >
+          <div className="flex flex-col space-y-2.5">
+            <button onClick={() => {
+              setIsMobileMenuOpen(false);
+              document.getElementById('developer-section')?.scrollIntoView({ behavior: 'smooth' });
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#0284C7] flex items-center justify-center shrink-0 group- transition-transform">
+                  <Code className="w-4 h-4" />
+                </div>
+                <span>Developers &amp; API</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
+            </button>
+            <button onClick={() => {
+              setIsMobileMenuOpen(false);
+              document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' });
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group- transition-transform">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <span>Subscription Pricing</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
+            </button>
+            <button onClick={() => {
+              setIsMobileMenuOpen(false);
+              document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' });
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group- transition-transform">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <span>Platform Features</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
+            </button>
+            <Link href="/terms" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group- transition-transform">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <span>Terms of Service</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
             </Link>
-            <Link
-              href="#pricing-section"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block text-base font-medium text-slate-900 py-2 border-b border-slate-100"
-            >
-              Pricing Calculator
-            </Link>
-            <Link
-              href="/terms"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block text-base font-medium text-slate-900 py-2 border-b border-slate-100"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="/privacy"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block text-base font-medium text-slate-900 py-2"
-            >
-              Privacy Policy
+            <Link href="/privacy" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group- transition-transform">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <span>Privacy Policy</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
             </Link>
           </div>
 
-          <div className="space-y-3 pt-6 border-t border-slate-200">
-            <Link
-              href="/login"
+          <div className="flex-1"></div>
+
+          <div className="flex flex-col gap-3 pt-6 border-t border-slate-100">
+            <Link 
+              href="/login" 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="block w-full py-2.5 text-center text-sm font-medium text-slate-700 border border-slate-200 rounded-lg"
+              className="w-full py-3.5 border border-slate-200 text-center font-bold text-slate-700 hover:text-slate-900 rounded-2xl transition-colors text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]"
             >
-              Sign In
+              Sign In to Console
             </Link>
-            <Link
-              href="/login?mode=signup"
+            <Link 
+              href="/login" 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="block w-full py-2.5 text-center text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-lg"
+              className="w-full py-3.5 bg-[#0EA5E9] hover:bg-[#0284C7] text-white text-center font-bold rounded-2xl transition-colors text-sm shadow-[0_4px_14px_rgba(15, 23, 42,0.25)]"
             >
               Create Account
             </Link>
@@ -221,409 +370,705 @@ export default function HomePage() {
       )}
 
       {/* ────────────────────────────────────────────────────────
-         HERO SECTION: ASYMMETRIC SPLIT WITH REAL CHECKOUT RECEIPT
+         HERO SECTION WITH PREMIUM CUSTOM GRAPHICS
          ──────────────────────────────────────────────────────── */}
-      <section className="pt-16 pb-20 sm:pt-24 sm:pb-28 border-b border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      {/* ────────────────────────────────────────────────────────
+         FLAGSHIP HERO SECTION (Razorpay-Grade Clean Light Fintech)
+         ──────────────────────────────────────────────────────── */}
+      <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-20 md:pt-40 md:pb-28 overflow-hidden stripe-gradient-mesh font-sohne">
+        
+        <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_20%,#000_70%,transparent_100%)] opacity-50 -z-20" />
 
-            {/* Left: Clear, Specific Headline & Value Proposition */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full text-xs font-medium text-slate-700">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>Direct UPI 2.0 Rails</span>
-                <span className="text-slate-300">·</span>
-                <span className="text-[#0284C7] font-semibold">0% Gateway Fee</span>
-              </div>
-
-              <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-semibold text-slate-900 tracking-tight leading-[1.12]">
-                Direct UPI payments straight to your bank account.
-              </h1>
-
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl font-normal">
-                Collect UPI and IMPS transfers without the 2% aggregator deduction. Real-time automated verification, signed HMAC webhooks, and zero escrow holds.
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                <Link
-                  href="/login?mode=signup"
-                  className="px-6 py-3 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-medium rounded-lg text-center text-sm transition-colors flex items-center justify-center gap-2"
-                >
-                  <span>Start free sandbox</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <a
-                  href="#developer-section"
-                  className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium rounded-lg text-center text-sm transition-colors flex items-center justify-center gap-2"
-                >
-                  <span>Read documentation</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
-                </a>
-              </div>
-
-              {/* Verified Metrics Row */}
-              <div className="pt-6 grid grid-cols-3 gap-6 border-t border-slate-100 max-w-md">
-                <div>
-                  <p className="text-2xl sm:text-3xl font-semibold text-slate-900 tabular-nums">0%</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Per-transaction fee</p>
-                </div>
-                <div>
-                  <p className="text-2xl sm:text-3xl font-semibold text-slate-900 tabular-nums">T+0</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Instant settlement</p>
-                </div>
-                <div>
-                  <p className="text-2xl sm:text-3xl font-semibold text-slate-900 tabular-nums">99.98%</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Verified success rate</p>
-                </div>
-              </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          {/* Left Column: Authoritative Fintech Headline & Reassuring Copy */}
+          <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
+            
+            {/* Direct P2P Status Badge (Clean, without duplicate logo) */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 backdrop-blur-md border border-[#e3e8ee] rounded-full text-xs font-medium text-[#273951] shadow-xs animate-fade-up">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span className="font-semibold text-[#0d253d]">Direct-to-bank UPI 2.0 Rails</span>
+              <span className="text-slate-300">•</span>
+              <span className="font-medium text-[#0284C7]">0% Gateway Fees</span>
             </div>
 
-            {/* Right: Real Checkout Moment (Clean card, exact QR, no fake phone chassis) */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="w-full max-w-[380px] bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-5">
+            {/* Authoritative Headline with separate animated lines */}
+            <h1 className="font-sohne text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-semibold text-[#0d253d] tracking-tight leading-[1.14] sm:leading-[1.08]">
+              <span className="block animate-fade-up delay-100 font-semibold">
+                Financial infrastructure for
+              </span>
+              <span className="block animate-fade-up delay-200 mt-1 font-semibold">
+                direct UPI payments.
+              </span>
 
-                {/* Header with live status */}
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <span className="text-xs font-semibold text-slate-900">Direct Bank Settlement</span>
-                  </div>
-                  <span className="text-[11px] font-mono text-slate-400">ORD_9821</span>
-                </div>
+            </h1>
 
-                {/* Amount display */}
-                <div className="text-center py-2 space-y-1">
-                  <span className="text-xs text-slate-500 font-medium">Amount to pay</span>
-                  <div className="text-3xl sm:text-4xl font-semibold text-slate-900 tracking-tight font-mono tabular-nums">
-                    ₹1,499.00
-                  </div>
-                  <p className="text-xs text-emerald-600 font-medium">0% fee deducted · 100% credited</p>
-                </div>
+            {/* Calm, Reassuring Subhead */}
+            <p className="font-sans text-sm sm:text-base md:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150">
+              Collect direct UPI and IMPS bank transfers with automated real-time reconciliation, signed HMAC webhooks, and 0% intermediary deductions.
+            </p>
 
-                {/* Authentic QR Code with clear quiet zone */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 flex flex-col items-center justify-center space-y-3">
-                  <div className="bg-white p-3 rounded-lg border border-slate-200">
-                    <QRCode
-                      value="upi://pay?pa=9410181307@okbizaxis&pn=MyMobPay&am=1499.00&cu=INR&tn=ORD_9821"
-                      size={168}
-                      bgColor="#FFFFFF"
-                      fgColor="#0B192C"
-                      level="M"
-                    />
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span>Auto-verified via UTR reference</span>
-                  </div>
-                </div>
+            {/* Razorpay-Grade Dual CTAs */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 animate-fade-up delay-200 w-full sm:w-auto">
+              <Link 
+                href="/login?mode=signup" 
+                className="w-full sm:w-auto px-7 py-3.5 sm:py-3 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white font-normal rounded-full transition-colors shadow-sm text-center text-[15px] flex items-center justify-center gap-2 group cursor-pointer"
+              >
+                <span>Start now</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <a 
+                href="#developer-section"
+                className="w-full sm:w-auto px-6 py-3.5 sm:py-3 bg-white hover:bg-[#f6f9fc] border border-[#e3e8ee] text-[#273951] hover:text-[#0d253d] font-normal rounded-full transition-colors text-center flex items-center justify-center gap-2 text-[15px] shadow-xs"
+              >
+                <span>Explore developer docs</span>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+              </a>
+            </div>
 
-                {/* UPI app tags */}
-                <div className="space-y-2 pt-1">
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <span>Pay with any UPI app</span>
-                    <span className="font-mono text-[11px] text-slate-400">IMPS Rail</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs font-medium text-slate-700">
-                    <span className="py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-md">Google Pay</span>
-                    <span className="py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-md">PhonePe</span>
-                    <span className="py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-md">Paytm</span>
-                  </div>
-                </div>
-
-                {/* Webhook trigger indicator */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-                    HMAC-SHA256 active
-                  </span>
-                  <span>Instant T+0</span>
-                </div>
-
+            {/* Proof Stats Row */}
+            <div className="pt-4 grid grid-cols-3 gap-2 sm:gap-6 max-w-md mx-auto lg:mx-0 border-t border-slate-200/80 text-slate-500 font-medium text-xs animate-fade-up delay-300">
+              <div className="text-center sm:text-left">
+                <p className="text-slate-900 text-2xl sm:text-3xl font-bold tracking-tight">0%</p>
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Transaction fees</p>
+              </div>
+              <div className="text-center sm:text-left">
+                <p className="text-slate-900 text-2xl sm:text-3xl font-bold tracking-tight">T+0</p>
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Instant bank credit</p>
+              </div>
+              <div className="text-center sm:text-left">
+                <p className="text-slate-900 text-2xl sm:text-3xl font-bold tracking-tight">99.98%</p>
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Success rate</p>
               </div>
             </div>
 
           </div>
+
+          {/* Right Column Custom Render Mockup Graphic (Old Style Phone Scanner) */}
+          <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end animate-scale-up">
+            
+            {/* Premium Interactive Phone Glow Container */}
+            <div className="phone-glow-container w-full max-w-[340px]">
+
+              {/* Premium Phone Frame displaying Actual MyMobPay checkout screen */}
+              <div className="relative w-full bg-slate-900 border-8 border-slate-800 rounded-[44px] premium-phone-shadow overflow-hidden aspect-[9/18.5] flex flex-col">
+              
+              {/* Speaker / Camera Notch (Dynamic Island) */}
+              <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
+                <div className="bg-slate-800 w-28 h-4 rounded-b-2xl" />
+              </div>
+
+              {/* Internal Screen Content */}
+              <div className="flex-1 bg-[#0B192C] pt-8 px-5 pb-5 flex flex-col justify-between font-sans select-none text-white">
+                
+                {/* Header Info */}
+                <div className="space-y-4">
+                  
+                  {/* Status Bar */}
+                  <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 px-1">
+                    <span>10:42 AM</span>
+                    <div className="flex items-center gap-1">
+                      <span>LTE</span>
+                      <div className="w-4 h-2 border border-slate-350 rounded-sm p-0.5 flex items-center">
+                        <div className="bg-slate-400 w-full h-full rounded-xs" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Logo */}
+                  <div className="flex flex-col items-center justify-center pt-2">
+                    <MyMobPayLogo className="w-36 h-auto" textColor="#FFFFFF" />
+                    <p className="text-xs text-slate-300 font-medium tracking-wide mt-1">Direct bank checkout</p>
+                  </div>
+
+                  {/* Due amount card */}
+                  <div className="bg-[#0F1E36] border border-[#1D2D44] rounded-2xl p-4 shadow-sm space-y-2">
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold">
+                      <span>Total due</span>
+                      <span className="text-[#0EA5E9] font-semibold bg-[#0B2447] px-2 py-0.5 rounded text-[9px]">Direct bank rail</span>
+                    </div>
+                    <div className="flex items-baseline">
+                      <span className="text-sm font-bold text-slate-400 mr-0.5">₹</span>
+                      <span className="text-3xl font-bold text-white tracking-tight leading-none">
+                        {parseFloat(demoAmount || '500').toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                    <div className="pt-2 border-t border-[#1D2D44] flex justify-between text-[10px] font-medium text-slate-400">
+                      <span>Paying to:</span>
+                      <span className="font-semibold text-slate-200">Merchant Store</span>
+                    </div>
+                  </div>
+
+                  {/* QR Code Container */}
+                  <div className="bg-white-pure border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col items-center justify-center space-y-3 relative overflow-hidden group">
+                    
+
+
+                    {/* Subtle Top Indicator line */}
+                    <div className="absolute inset-x-0 h-0.5 bg-slate-300 top-0" />
+
+                    {/* Highly stylized SVG vector QR Code */}
+                    <svg viewBox="0 0 100 100" className="w-32 h-32 text-slate-800" fill="currentColor">
+                      {/* Quiet Zone borders */}
+                      <path d="M0,0 h28 v8 h-20 v20 h-8 z M72,0 h28 v28 h-8 v-20 h-20 z M0,72 h8 v20 h-20 v-28 h8 z M72,100 h28 v-28 h-8 v20 h-20 z" fill="#00529B" opacity="0.15" />
+                      
+                      {/* Dynamic Modules - Grid mock points */}
+                      <rect x="10" y="10" width="20" height="20" fill="#0F172A" rx="2" />
+                      <rect x="14" y="14" width="12" height="12" fill="#FFFFFF" rx="1.5" />
+                      <rect x="17" y="17" width="6" height="6" fill="#3B82F6" />
+
+                      <rect x="70" y="10" width="20" height="20" fill="#0F172A" rx="2" />
+                      <rect x="74" y="14" width="12" height="12" fill="#FFFFFF" rx="1.5" />
+                      <rect x="77" y="17" width="6" height="6" fill="#3B82F6" />
+
+                      <rect x="10" y="70" width="20" height="20" fill="#0F172A" rx="2" />
+                      <rect x="14" y="74" width="12" height="12" fill="#FFFFFF" rx="1.5" />
+                      <rect x="17" y="77" width="6" height="6" fill="#3B82F6" />
+
+                      {/* Random mock QR dots */}
+                      <path d="M40,10 h6 v6 h-6 z M50,15 h8 v4 h-8 z M45,25 h10 v4 h-10 z M35,35 h8 v8 h-8 z M55,35 h12 v4 h-12 z M35,50 h12 v4 h-12 z M50,50 h6 v6 h-6 z M10,40 h8 v8 h-8 z M25,45 h10 v4 h-10 z M70,40 h8 v6 h-8 z M82,45 h8 v4 h-8 z M70,55 h12 v4 h-12 z M10,55 h6 v6 h-6 z M80,70 h10 v8 h-10 z M80,85 h8 v8 h-8 z M40,70 h6 v10 h-6 z M52,75 h8 v4 h-8 z M45,85 h12 v4 h-12 z" fill="#0F172A" />
+                      
+                      {/* Custom Center Logo */}
+                      <rect x="40" y="40" width="20" height="20" fill="#3B82F6" rx="4" />
+                      <text x="50" y="54" fontFamily="'Orbitron', sans-serif" fontWeight="950" fontSize="14" fill="#FFFFFF" textAnchor="middle">M</text>
+                    </svg>
+
+                    <span className="text-[9px] text-slate-400 font-semibold flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Auto-verify active
+                    </span>
+
+                  </div>
+
+                </div>
+
+                {/* Footer Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-200">
+                  
+                  {/* Universal UPI Indicators */}
+                  <div className="space-y-2">
+                    <p className="text-xs text-slate-300 font-medium text-center">Scan with any UPI app</p>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-blue-400 text-[10px] font-semibold py-1 px-1 rounded-md text-center">UPI QR</span>
+                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-emerald-400 text-[10px] font-semibold py-1 px-1 rounded-md text-center">Direct pay</span>
+                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-indigo-400 text-[10px] font-semibold py-1 px-1 rounded-md text-center">Instant rail</span>
+                      <span className="bg-[#0F1E36] border border-[#1D2D44] text-sky-400 text-[10px] font-semibold py-1 px-1 rounded-md text-center">Auto-match</span>
+                    </div>
+                  </div>
+
+                  {/* Security copy */}
+                  <div className="flex items-center justify-center gap-1.5 text-xs font-medium text-slate-300 text-center">
+                    <Lock className="w-3.5 h-3.5 text-slate-400" /> Secure checkout by MyMobPay
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            </div> {/* closes phone-glow-container */}
+
+            {/* Metric float chips (visible on tablets/desktop, tucked on mobile to eliminate x-overflow) */}
+            <div className="hidden sm:flex absolute -left-6 top-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 -rotate-6">
+              <span className="text-[10px] font-semibold text-[#0284C7] leading-none">Platform average</span>
+              <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">Success rate</span>
+              <span className="text-xl font-bold text-slate-900 leading-none mt-1">99.98%</span>
+            </div>
+
+            <div className="hidden sm:flex absolute -right-6 bottom-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 rotate-6 delay-500">
+              <span className="text-[10px] font-semibold text-[#0284C7] leading-none">Real-time routing</span>
+              <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">Settlement</span>
+              <span className="text-xl font-bold text-emerald-600 leading-none mt-1">0 seconds</span>
+            </div>
+
+          </div>
+
         </div>
       </section>
 
-      {/* ── LOGO RAIL: WORKS WITH ALL UPI APPS ── */}
-      <section className="py-10 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 text-center space-y-3">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-            Works natively with every UPI application
+      {/* ────────────────────────────────────────────────────────
+         TRUSTED BY FOUNDERS & STARTUPS TICKER (Razorpay-Style)
+         ──────────────────────────────────────────────────────── */}
+            <section className="relative z-10 py-12 bg-slate-50 border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-6 text-center space-y-4">
+          <p className="text-sm font-medium text-slate-500">
+            Works with every UPI app
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-semibold text-slate-700">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-semibold text-slate-600">
             <span>Google Pay</span>
             <span>PhonePe</span>
             <span>Paytm</span>
-            <span>BHIM UPI</span>
+            <span>BHIM</span>
             <span>Amazon Pay</span>
             <span>WhatsApp Pay</span>
-            <span>Cred UPI</span>
           </div>
         </div>
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         CONSOLE WALKTHROUGH: CLEAN DASHBOARD PREVIEW
+         CODED DASHBOARD SHOWCASE (Clean Light Theme)
          ──────────────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-24 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 space-y-12">
+      <section className="relative z-10 py-24 bg-[#f6f9fc] border-y border-[#e3e8ee] overflow-hidden font-sohne">
 
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <span className="text-xs font-semibold text-[#0284C7] bg-sky-50 border border-sky-200 px-3 py-1 rounded-full inline-block">
-              Merchant Console
+        <div className="max-w-7xl mx-auto px-6 space-y-14">
+          <div className="text-center space-y-3">
+            <span className="text-xs font-semibold text-[#0284C7] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
+              Merchant console
             </span>
-            <h2 className="text-3xl sm:text-4xl font-semibold text-slate-900 tracking-tight">
-              Real-time settlement visibility
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+              Full visibility into payments and settlements
             </h2>
-            <p className="text-base text-slate-600 font-normal leading-relaxed">
-              Monitor incoming transactions, inspect webhook delivery status, and review reconciliations from one quiet interface.
+            <p className="text-base text-slate-600 font-normal leading-relaxed max-w-lg mx-auto">
+              Monitor real-time payments, webhook delivery logs, and bank reconciliations from a single console.
             </p>
           </div>
 
-          {/* Browser frame preview */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+          {/* === CODED DASHBOARD MOCKUP (LIGHT THEME) === */}
+          <div className="relative">
 
-            {/* Window chrome */}
-            <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200 text-xs">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-                <span className="font-mono text-slate-500 text-[11px] ml-2">console.mymobpay.tech</span>
-              </div>
-              <div className="flex items-center gap-2 text-emerald-700 font-medium text-xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>Production active</span>
-              </div>
-            </div>
+            {/* Browser frame */}
+            <div className="relative bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
 
-            {/* Dashboard content */}
-            <div className="p-6 space-y-6">
-
-              {/* Metric row */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <p className="text-xs text-slate-500">Gross volume (30d)</p>
-                  <p className="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tabular-nums">₹4,82,500</p>
-                  <p className="text-xs text-emerald-600 font-medium">+12.4% vs last month</p>
+              {/* Browser chrome */}
+              <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/90 border-b border-slate-200">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+                  <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28c840]" />
                 </div>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <p className="text-xs text-slate-500">Transactions</p>
-                  <p className="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tabular-nums">1,842</p>
-                  <p className="text-xs text-slate-500 font-medium">100% settled</p>
+                <div className="flex-1 mx-2">
+                  <div className="bg-white border border-slate-200 rounded-md px-3 py-1 flex items-center gap-2 max-w-xs mx-auto shadow-xs">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                    <span className="text-xs text-slate-700 font-mono">dashboard.mymobpay.com</span>
+                  </div>
                 </div>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <p className="text-xs text-slate-500">Aggregator fee avoided</p>
-                  <p className="text-xl sm:text-2xl font-semibold text-emerald-600 font-mono tabular-nums">₹11,387</p>
-                  <p className="text-xs text-slate-500 font-medium">At 2% + 18% GST</p>
-                </div>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <p className="text-xs text-slate-500">Avg. settlement time</p>
-                  <p className="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tabular-nums">0.0s</p>
-                  <p className="text-xs text-[#0284C7] font-medium">Direct IMPS credit</p>
+                <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-xs text-emerald-700 font-semibold">Live</span>
                 </div>
               </div>
 
-              {/* Transactions table */}
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
-                <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-semibold text-slate-700">
-                  <span>Recent settled payments</span>
-                  <span className="font-mono text-slate-500 font-normal text-[11px]">Real-time stream</span>
-                </div>
-                <div className="divide-y divide-slate-100 text-xs">
+              {/* Dashboard content */}
+              <div className="flex min-h-[480px]">
+
+                {/* Sidebar */}
+                <div className="hidden md:flex w-[200px] bg-slate-50 border-r border-slate-200 flex-col py-6 px-3 gap-1 flex-shrink-0">
+                  <div className="px-2 pb-4">
+                    <MyMobPayLogo markSize={24} textSize="text-base" textColor="#0F172A" />
+                  </div>
                   {[
-                    { id: 'ORD_9821', vpa: 'rajesh@okaxis', amount: '₹1,499.00', utr: '329184029182', time: '1 min ago' },
-                    { id: 'ORD_9820', vpa: 'priya@okhdfcbank', amount: '₹499.00', utr: '329184028910', time: '4 mins ago' },
-                    { id: 'ORD_9819', vpa: 'sneha@ybl', amount: '₹3,200.00', utr: '329184027415', time: '11 mins ago' },
-                    { id: 'ORD_9818', vpa: 'arun@paytm', amount: '₹750.00', utr: '329184026842', time: '18 mins ago' },
-                  ].map((tx) => (
-                    <div key={tx.id} className="px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-slate-900 font-medium">{tx.id}</span>
-                        <span className="text-slate-500 font-mono">{tx.vpa}</span>
-                      </div>
-                      <div className="flex items-center gap-4 text-right">
-                        <span className="font-mono text-slate-400 text-[11px]">UTR {tx.utr}</span>
-                        <span className="font-semibold text-slate-900 font-mono tabular-nums">{tx.amount}</span>
-                        <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[11px] font-medium">
-                          Settled
-                        </span>
-                      </div>
+                    { label: 'Dashboard', active: true, dot: 'bg-blue-500' },
+                    { label: 'Orders', active: false, dot: null },
+                    { label: 'Analytics', active: false, dot: null },
+                    { label: 'Settlements', active: false, dot: null },
+                    { label: 'Webhooks', active: false, dot: 'bg-amber-400' },
+                    { label: 'API Keys', active: false, dot: null },
+                    { label: 'Sandbox', active: false, dot: null },
+                  ].map(item => (
+                    <div key={item.label} className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
+                      item.active
+                        ? 'bg-blue-50 text-[#0284C7] border border-blue-200 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}>
+                      <span>{item.label}</span>
+                      {item.dot && <span className={`w-1.5 h-1.5 rounded-full ${item.dot}`} />}
                     </div>
                   ))}
                 </div>
-              </div>
 
+                {/* Main panel */}
+                <div className="flex-1 p-5 sm:p-6 space-y-5 bg-white overflow-hidden">
+
+                  {/* Top stat cards */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    {[
+                      { label: 'Total revenue', value: '₹4,82,500', change: '+12.4%', color: 'text-emerald-700', bg: 'bg-slate-50 border-slate-200' },
+                      { label: 'Transactions', value: '1,842', change: '+8.1%', color: 'text-[#0284C7]', bg: 'bg-slate-50 border-slate-200' },
+                      { label: 'Success rate', value: '99.98%', change: '+0.02%', color: 'text-emerald-700', bg: 'bg-slate-50 border-slate-200' },
+                      { label: 'Avg. settlement', value: '0.0s', change: 'Real-time', color: 'text-indigo-700', bg: 'bg-slate-50 border-slate-200' },
+                    ].map(stat => (
+                      <div key={stat.label} className={`${stat.bg} border rounded-xl p-3.5 space-y-1 shadow-xs hover:border-slate-300 transition-colors`}>
+                        <p className="text-[11px] font-medium text-slate-500">{stat.label}</p>
+                        <p className="text-base sm:text-lg font-bold text-slate-900">{stat.value}</p>
+                        <p className={`text-[10px] font-medium ${stat.color}`}>{stat.change}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Chart + Recent Transactions */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    {/* Chart */}
+                    <div className="lg:col-span-2 bg-slate-50/60 border border-slate-200 rounded-xl p-4 space-y-3 shadow-xs">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-semibold text-slate-900">Revenue (last 30 days)</p>
+                        <span className="text-[9px] bg-blue-50 text-[#0284C7] border border-blue-200 px-2 py-0.5 rounded font-semibold">Live</span>
+                      </div>
+                      {/* SVG Sparkline chart */}
+                      <svg viewBox="0 0 400 80" className="w-full h-20" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        {/* Area fill */}
+                        <path d="M0,65 C20,60 40,50 60,45 C80,40 100,55 120,48 C140,41 160,30 180,25 C200,20 220,35 240,28 C260,21 280,15 300,18 C320,21 340,10 360,8 C380,6 400,12 400,12 L400,80 L0,80 Z" fill="url(#chartGrad)" />
+                        {/* Line */}
+                        <path d="M0,65 C20,60 40,50 60,45 C80,40 100,55 120,48 C140,41 160,30 180,25 C200,20 220,35 240,28 C260,21 280,15 300,18 C320,21 340,10 360,8 C380,6 400,12 400,12" fill="none" stroke="#2563EB" strokeWidth="2.5" />
+                        {/* Grid lines */}
+                        {[20, 40, 60].map(y => (
+                          <line key={y} x1="0" y1={y} x2="400" y2={y} stroke="#E2E8F0" strokeWidth="0.75" strokeDasharray="4" />
+                        ))}
+                        {/* Dot on peak */}
+                        <circle cx="360" cy="8" r="4" fill="#2563EB" />
+                        <circle cx="360" cy="8" r="8" fill="#2563EB" opacity="0.25" />
+                      </svg>
+                      <div className="flex justify-between text-[8px] text-slate-400 font-medium">
+                        {['Aug 1','Aug 7','Aug 14','Aug 21','Aug 26'].map(d => <span key={d}>{d}</span>)}
+                      </div>
+                    </div>
+
+                    {/* Recent transactions */}
+                    <div className="bg-slate-50/60 border border-slate-200 rounded-xl p-4 space-y-3 shadow-xs">
+                      <p className="text-xs font-semibold text-slate-900">Recent payments</p>
+                      <div className="space-y-2">
+                        {[
+                          { id: '#MP0891', upi: 'raj@okaxis', amt: '₹4,500', status: 'Success' },
+                          { id: '#MP0890', upi: 'sara@ybl', amt: '₹1,200', status: 'Success' },
+                          { id: '#MP0889', upi: 'dev@paytm', amt: '₹800', status: 'Pending' },
+                          { id: '#MP0888', upi: 'mia@upi', amt: '₹12,000', status: 'Success' },
+                        ].map(tx => (
+                          <div key={tx.id} className="flex items-center justify-between py-1.5 border-b border-slate-200/60 last:border-0">
+                            <div>
+                              <p className="text-[10px] font-semibold text-[#0284C7]">{tx.id}</p>
+                              <p className="text-[9px] text-slate-400 font-mono">{tx.upi}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-[10px] font-semibold text-slate-900">{tx.amt}</p>
+                              <span className={`text-[8px] font-medium px-1.5 py-0.5 rounded ${
+                                tx.status === 'Success'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : 'bg-amber-50 text-amber-700 border border-amber-200'
+                              }`}>{tx.status}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Bottom metric chips */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { label: 'Uptime SLA', value: '99.99%', icon: <ShieldCheck className="w-4 h-4" />, iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
+              { label: 'Webhook latency', value: '<200ms', icon: <Zap className="w-4 h-4" />, iconBg: 'bg-blue-50 text-[#0284C7] border-blue-200' },
+              { label: 'Avg. settlement', value: '0 sec', icon: <RefreshCw className="w-4 h-4" />, iconBg: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
+            ].map(m => (
+              <div key={m.label} className="bg-white border border-slate-200 rounded-2xl px-5 py-4 flex items-center gap-3.5 shadow-xs hover:border-slate-300 hover:shadow-md transition-colors">
+                <div className={`w-9 h-9 rounded-xl border flex items-center justify-center flex-shrink-0 ${m.iconBg}`}>
+                  {m.icon}
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-normal">{m.label}</p>
+                  <p className="text-lg font-bold text-slate-900">{m.value}</p>
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>
       </section>
 
-      {/* ────────────────────────────────────────────────────────
-         DEVELOPER SECTION: RESTFUL API, SDKS, HMAC WEBHOOKS
-         ──────────────────────────────────────────────────────── */}
-      <section id="developer-section" className="py-20 sm:py-24 bg-slate-900 text-white border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 space-y-12">
+      
 
-          <div className="space-y-4 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-sky-400 text-xs font-mono font-medium">
-              <Terminal className="w-3.5 h-3.5" />
-              <span>Developer-first API</span>
+
+      {/* ────────────────────────────────────────────────────────
+         DEVELOPER SECTION (SENIOR DEV FINISH & BRAND BLUE THEME)
+         ──────────────────────────────────────────────────────── */}
+      <section id="developer-section" className="relative z-10 bg-[#0c2340] text-white border-y border-white/10 overflow-hidden py-16 font-sohne">
+        
+        <div className="w-full border-b border-white/10 py-4 select-none">
+          <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono text-slate-400">
+            {[
+              'Next.js', 'React', 'Node.js', 'TypeScript', 'REST API', 'Python', 'PHP', 'Flutter', 'React Native', 'JavaScript'
+            ].map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* MAIN DEVELOPER HERO CONTENT */}
+        <div className="max-w-6xl mx-auto px-6 py-20 sm:py-24 space-y-16">
+          
+          {/* Senior Developer Headline with Brand Blue Accents */}
+          <div className="space-y-5 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-400 text-xs font-mono font-bold tracking-wide">
+              <Terminal className="w-3.5 h-3.5 text-blue-400" />
+              <span>DEVELOPER-FIRST ARCHITECTURE</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-semibold text-white tracking-tight">
-              Integrate in under 15 minutes.
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-white tracking-tight leading-tight">
+              MyMobPay is built<br />
+              <span className="text-[#3B82F6] font-semibold">&lt;for developers by developers&gt;</span>
             </h2>
-            <p className="text-base text-slate-300 leading-relaxed font-normal">
-              Direct-to-bank settlement with typed client SDKs, standard REST endpoints, and HMAC-SHA256 signed event callbacks.
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal pt-1 max-w-2xl">
+              Integrate direct-to-bank settlements in under 15 minutes. Eliminate the 2% aggregator cut with typed SDKs, deterministic REST endpoints, and signed HMAC webhooks.
             </p>
           </div>
 
-          {/* 3 Developer Pillars */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl bg-slate-800/60 border border-slate-700/80 space-y-3">
-              <div className="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-                <Code className="w-5 h-5" />
+          {/* 3 Core Architecture Cards: SDKs, REST APIs, Webhooks */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            {/* Card 1: SDKs & Libraries */}
+            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-colors duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group- transition-transform">
+                <svg width="25" height="28" viewBox="0 0 25 28" fill="none" className="w-6 h-6 text-blue-400">
+                  <path d="M8.13325 15.3333L10.0666 13.4C10.3333 13.1333 10.4613 12.8222 10.4506 12.4666C10.4399 12.1111 10.3119 11.8 10.0666 11.5333C9.79992 11.2666 9.48303 11.1275 9.11592 11.116C8.74881 11.1044 8.43236 11.2324 8.16659 11.5L5.26659 14.4C4.99992 14.6666 4.86659 14.9777 4.86659 15.3333C4.86659 15.6888 4.99992 16 5.26659 16.2666L8.16659 19.1666C8.43325 19.4333 8.75014 19.5613 9.11725 19.5506C9.48436 19.54 9.80081 19.4008 10.0666 19.1333C10.311 18.8666 10.439 18.5555 10.4506 18.2C10.4621 17.8444 10.3341 17.5333 10.0666 17.2666L8.13325 15.3333ZM16.5332 15.3333L14.5999 17.2666C14.3332 17.5333 14.2052 17.8444 14.2159 18.2C14.2266 18.5555 14.3546 18.8666 14.5999 19.1333C14.8666 19.4 15.1835 19.5386 15.5506 19.5493C15.9177 19.56 16.2341 19.4324 16.4999 19.1666L19.3999 16.2666C19.6666 16 19.7999 15.6888 19.7999 15.3333C19.7999 14.9777 19.6666 14.6666 19.3999 14.4L16.4999 11.5C16.2332 11.2333 15.9164 11.1053 15.5492 11.116C15.1821 11.1266 14.8657 11.2657 14.5999 11.5333C14.3555 11.8 14.2279 12.1111 14.2173 12.4666C14.2066 12.8222 14.3341 13.1333 14.5999 13.4L16.5332 15.3333ZM2.99992 27.3333C2.26659 27.3333 1.63859 27.072 1.11592 26.5493C0.593254 26.0266 0.332365 25.3991 0.333254 24.6666V5.99996C0.333254 5.26663 0.594588 4.63863 1.11725 4.11596C1.63992 3.59329 2.26748 3.3324 2.99992 3.33329H8.59992C8.88881 2.53329 9.37236 1.88885 10.0506 1.39996C10.7288 0.91107 11.4897 0.666626 12.3333 0.666626C13.1777 0.666626 13.939 0.91107 14.6173 1.39996C15.2955 1.88885 15.7786 2.53329 16.0666 3.33329H21.6666C22.3999 3.33329 23.0279 3.59463 23.5506 4.11729C24.0732 4.63996 24.3341 5.26751 24.3332 5.99996V24.6666C24.3332 25.4 24.0719 26.028 23.5492 26.5506C23.0266 27.0733 22.399 27.3342 21.6666 27.3333H2.99992ZM2.99992 24.6666H21.6666V5.99996H2.99992V24.6666ZM12.3333 4.99996C12.6221 4.99996 12.8608 4.90529 13.0492 4.71596C13.2377 4.52663 13.3324 4.28796 13.3333 3.99996C13.3333 3.71107 13.2386 3.4724 13.0492 3.28396C12.8599 3.09551 12.6213 3.00085 12.3333 2.99996C12.0444 2.99996 11.8057 3.09463 11.6173 3.28396C11.4288 3.47329 11.3341 3.71196 11.3333 3.99996C11.3333 4.28885 11.4279 4.52751 11.6173 4.71596C11.8066 4.9044 12.0453 4.99907 12.3333 4.99996Z" fill="currentColor" />
+                </svg>
               </div>
-              <h3 className="text-lg font-semibold text-white">Typed SDKs</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Official libraries for Next.js, Node.js, Python, PHP, Flutter, and React Native with complete type definitions.
+              <h3 className="text-xl font-bold text-white tracking-tight">SDKs & Libraries</h3>
+              <p className="text-sm text-slate-400 leading-relaxed font-normal">
+                Official typed libraries for Next.js, Node.js, Python, PHP, Flutter, and React Native with end-to-end type safety.
               </p>
+              <Link 
+                href="/login" 
+                className="text-sm font-bold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1.5 pt-1 transition-colors"
+              >
+                <span>Explore SDKs</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-800/60 border border-slate-700/80 space-y-3">
-              <div className="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-                <Layers className="w-5 h-5" />
+            {/* Card 2: REST APIs */}
+            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-colors duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group- transition-transform">
+                <svg width="25" height="23" viewBox="0 0 25 23" fill="none" className="w-6 h-6 text-blue-400">
+                  <path d="M 2.835 13.147 C 2.048 13.639 1.404 14.329 0.966 15.147 C 0.527 15.965 0.31 16.883 0.335 17.811 C 0.36 18.738 0.627 19.643 1.109 20.436 C 1.591 21.229 2.272 21.883 3.084 22.332 C 3.895 22.782 4.811 23.011 5.739 22.999 C 6.666 22.986 7.575 22.732 8.374 22.261 C 9.174 21.79 9.837 21.118 10.297 20.312 C 10.757 19.507 11 18.595 11 17.667 L 19 17.667 M 16.421 22.336 C 17.134 22.729 17.927 22.954 18.739 22.994 C 19.552 23.033 20.363 22.886 21.11 22.564 C 21.857 22.242 22.521 21.753 23.05 21.135 C 23.579 20.517 23.96 19.786 24.163 18.998 C 24.366 18.21 24.386 17.386 24.222 16.589 C 24.057 15.792 23.713 15.044 23.215 14.4 C 22.716 13.757 22.078 13.237 21.347 12.878 C 20.616 12.52 19.814 12.334 19 12.333 C 18.059 12.333 17.101 12.572 16.333 13 L 12.333 5.667 M 17.667 5.667 C 17.667 4.252 17.105 2.896 16.104 1.895 C 15.104 0.895 13.748 0.333 12.333 0.333 C 10.919 0.333 9.562 0.895 8.562 1.895 C 7.562 2.896 7 4.252 7 5.667 C 7 7.675 8.027 9.424 9.667 10.333 L 5.667 17.667" fill="transparent" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
-              <h3 className="text-lg font-semibold text-white">Standard REST APIs</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Deterministic HTTP endpoints for order creation, dynamic UPI QR generation, and real-time status lookups.
+              <h3 className="text-xl font-bold text-white tracking-tight">RESTful Endpoints</h3>
+              <p className="text-sm text-slate-400 leading-relaxed font-normal">
+                Deterministic, idempotent HTTP APIs for order creation, dynamic QR generation, and real-time status verification.
               </p>
+              <Link 
+                href="/login" 
+                className="text-sm font-bold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1.5 pt-1 transition-colors"
+              >
+                <span>API Reference</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-800/60 border border-slate-700/80 space-y-3">
-              <div className="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-                <ShieldCheck className="w-5 h-5" />
+            {/* Card 3: Webhooks */}
+            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-colors duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group- transition-transform">
+                <svg width="29" height="30" viewBox="-1 -1 29 30" fill="none" className="w-6 h-6 text-blue-400">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M26.2761 1.05715C26.7968 1.57785 26.7968 2.42207 26.2761 2.94277L23.7906 5.42832C24.74 6.87844 24.8996 8.46316 24.6933 9.8247C24.447 11.4504 23.665 12.8873 22.9428 13.6094L20.9428 15.6094C20.4221 16.1301 19.5779 16.1301 19.0572 15.6094L11.7239 8.2761C11.2032 7.7554 11.2032 6.91118 11.7239 6.39048L13.7239 4.39048C14.446 3.66833 15.8829 2.88633 17.5086 2.64001C18.8701 2.43371 20.4549 2.5933 21.905 3.5427L24.3905 1.05715C24.9112 0.536451 25.7554 0.536451 26.2761 1.05715ZM17.9081 5.27658C16.7838 5.44692 15.8873 5.99826 15.6095 6.2761L14.5523 7.33329L20 12.781L21.0572 11.7238C21.335 11.446 21.8864 10.5495 22.0567 9.42522C22.2165 8.37083 22.027 7.24592 21.0572 6.2761C20.0874 5.30628 18.9625 5.11682 17.9081 5.27658ZM11.6095 11.0572C12.1302 11.5778 12.1302 12.4221 11.6095 12.9428L9.88562 14.6666L12.6667 17.4477L14.3905 15.7238C14.9112 15.2031 15.7554 15.2031 16.2761 15.7238C16.7968 16.2445 16.7968 17.0887 16.2761 17.6094L14.5523 19.3333L14.9428 19.7238C15.4635 20.2445 15.4635 21.0887 14.9428 21.6094L12.9428 23.6094C12.2207 24.3316 10.7838 25.1136 9.15807 25.3599C7.79654 25.5662 6.21182 25.4066 4.7617 24.4572L2.27614 26.9428C1.75544 27.4635 0.911223 27.4635 0.390524 26.9428C-0.130175 26.4221 -0.130175 25.5779 0.390524 25.0571L2.87608 22.5716C1.92667 21.1215 1.76709 19.5368 1.97338 18.1752C2.2197 16.5495 3.0017 15.1126 3.72386 14.3905L5.72386 12.3905C6.24456 11.8698 7.08878 11.8698 7.60948 12.3905L8 12.781L9.72386 11.0572C10.2446 10.5365 11.0888 10.5365 11.6095 11.0572ZM6.66667 15.2189L5.60948 16.2761C5.33163 16.5539 4.7803 17.4504 4.60995 18.5747C4.4502 19.6291 4.63965 20.754 5.60948 21.7238C6.5793 22.6936 7.70421 22.8831 8.75859 22.7233C9.88286 22.553 10.7793 22.0017 11.0572 21.7238L12.1144 20.6666L6.66667 15.2189Z" fill="currentColor" />
+                </svg>
               </div>
-              <h3 className="text-lg font-semibold text-white">HMAC-SHA256 Webhooks</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Cryptographically signed event payloads sent directly to your backend with automatic exponential backoff retries.
+              <h3 className="text-xl font-bold text-white tracking-tight">Real-time Webhooks</h3>
+              <p className="text-sm text-slate-400 leading-relaxed font-normal">
+                Cryptographically signed HMAC-SHA256 event notifications dispatched straight to your server with automated retries.
               </p>
+              <Link 
+                href="/login" 
+                className="text-sm font-bold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1.5 pt-1 transition-colors"
+              >
+                <span>Webhook Guide</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
+
           </div>
 
-          {/* Code sandbox */}
-          <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+          {/* Interactive Developer Code Sandbox ("Try it out for yourself") */}
+          <div className="space-y-4">
+            
+            {/* Header & Language Selectors */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Try it out for yourself</h3>
+                <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-400">
+                  Live API
+                </span>
+              </div>
 
-            {/* Language tabs & copy button */}
-            <div className="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-1">
+              {/* Language Switcher Tabs (Scrollable on mobile with smooth touch feel) */}
+              <div
+                role="tablist"
+                aria-label="Code sample programming languages"
+                className="flex items-center gap-1.5 bg-[#0a1424] p-1.5 rounded-xl border border-blue-900/50 text-xs font-mono overflow-x-auto max-w-full scrollbar-none"
+              >
                 {[
                   { id: 'curl', label: 'cURL' },
                   { id: 'node', label: 'Node.js' },
                   { id: 'nextjs', label: 'Next.js' },
-                  { id: 'python', label: 'Python' }
+                  { id: 'python', label: 'Python' },
+                  { id: 'php', label: 'PHP' }
                 ].map(lang => (
                   <button
                     key={lang.id}
+                    role="tab"
+                    id={`dev-tab-${lang.id}`}
+                    aria-selected={productDevLang === lang.id}
+                    aria-controls="dev-terminal-body"
                     onClick={() => setProductDevLang(lang.id)}
-                    className={`px-3 py-1 rounded text-xs font-mono transition-colors ${
-                      productDevLang === lang.id
-                        ? 'bg-slate-800 text-white font-medium'
-                        : 'text-slate-400 hover:text-slate-200'
+                    className={`px-3.5 py-1.5 rounded-lg transition-colors font-semibold shrink-0 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-blue-400 ${
+                      productDevLang === lang.id 
+                        ? 'bg-blue-600 text-white shadow-sm' 
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
                     }`}
                   >
                     {lang.label}
                   </button>
                 ))}
               </div>
-
-              <button
-                onClick={() => {
-                  setCopiedDevSnippet(true);
-                  setTimeout(() => setCopiedDevSnippet(false), 2000);
-                }}
-                className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 font-mono px-2 py-1 rounded hover:bg-slate-800 transition-colors"
-              >
-                {copiedDevSnippet ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedDevSnippet ? 'Copied' : 'Copy'}</span>
-              </button>
             </div>
 
-            {/* Code editor body */}
-            <div className="p-5 font-mono text-xs sm:text-sm text-slate-200 overflow-x-auto leading-relaxed">
-              {productDevLang === 'curl' && (
-                <pre>
-{`curl -X POST https://api.mymobpay.tech/v1/orders \\
-  -H "Authorization: Bearer sec_live_..." \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "amount": 149900,
-    "currency": "INR",
-    "orderId": "ORD_2026_9821",
-    "customerVpa": "customer@okhdfcbank",
-    "settlementRoute": "direct_bank"
-  }'`}
-                </pre>
-              )}
+            {/* Terminal Chassis */}
+            <div className="bg-[#060D1A] rounded-2xl overflow-hidden border border-blue-900/40 shadow-2xl">
+              
+              {/* Terminal Top Bar */}
+              <div className="bg-[#040812] px-5 py-3.5 flex items-center justify-between border-b border-blue-900/30">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+                    <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+                    <span className="w-3 h-3 rounded-full bg-blue-500/80 inline-block"></span>
+                  </div>
+                  <span className="text-xs font-mono text-slate-400 ml-2">
+                    {productDevLang === 'curl' && 'request.sh'}
+                    {productDevLang === 'node' && 'server.js'}
+                    {productDevLang === 'nextjs' && 'app/api/checkout/route.ts'}
+                    {productDevLang === 'python' && 'app.py'}
+                    {productDevLang === 'php' && 'checkout.php'}
+                  </span>
+                </div>
 
-              {productDevLang === 'node' && (
-                <pre>
-{`import { MyMobPay } from '@mymobpay/node';
+                {/* Copy button with transitions-dev icon swap (09-icon-swap.md) */}
+                <button 
+                  onClick={() => {
+                    setCopiedDevSnippet(true);
+                    setTimeout(() => setCopiedDevSnippet(false), 2000);
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-mono text-slate-300 hover:text-white px-3 py-1 rounded-lg bg-blue-950/40 border border-blue-800/40 transition-colors cursor-pointer"
+                  title={copiedDevSnippet ? "Copied" : "Copy snippet"}
+                  aria-label={copiedDevSnippet ? "Code snippet copied" : "Copy code snippet"}
+                >
+                  <span className="t-icon-swap" data-state={copiedDevSnippet ? 'b' : 'a'}>
+                    <span className="t-icon" data-icon="a" aria-hidden={copiedDevSnippet}>
+                      <Copy className="w-3.5 h-3.5" />
+                    </span>
+                    <span className="t-icon" data-icon="b" aria-hidden={!copiedDevSnippet}>
+                      <Check className="w-3.5 h-3.5 text-blue-400" />
+                    </span>
+                  </span>
+                  <span className={copiedDevSnippet ? 'text-blue-400 font-semibold' : ''}>
+                    {copiedDevSnippet ? 'Copied' : 'Copy'}
+                  </span>
+                </button>
+              </div>
 
-const client = new MyMobPay({ apiKey: process.env.MYMOBPAY_SECRET_KEY });
+              {/* Syntax-Highlighted Code Body */}
+              <div className="p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto bg-[#060D1A] text-slate-200 min-h-[230px]">
+                {productDevLang === 'curl' && (
+                  <pre className="text-slate-200">
+                    <span className="text-blue-400 font-bold">curl</span> -X POST https://api.mymobpay.tech/v1/orders \<br />
+                    {"  "}-H <span className="text-cyan-300">&quot;Authorization: Bearer sec_live_948a201...&quot;</span> \<br />
+                    {"  "}-H <span className="text-cyan-300">&quot;Content-Type: application/json&quot;</span> \<br />
+                    {"  "}-d <span className="text-slate-400">&#39;&#123;</span><br />
+                    {"    "}<span className="text-sky-300">&quot;amount&quot;</span>: <span className="text-amber-300">149900</span>,<br />
+                    {"    "}<span className="text-sky-300">&quot;currency&quot;</span>: <span className="text-cyan-300">&quot;INR&quot;</span>,<br />
+                    {"    "}<span className="text-sky-300">&quot;orderId&quot;</span>: <span className="text-cyan-300">&quot;ORD_2026_9821&quot;</span>,<br />
+                    {"    "}<span className="text-sky-300">&quot;customerVpa&quot;</span>: <span className="text-cyan-300">&quot;customer@okhdfcbank&quot;</span>,<br />
+                    {"    "}<span className="text-sky-300">&quot;settlementRoute&quot;</span>: <span className="text-cyan-300">&quot;direct_bank&quot;</span><br />
+                    {"  "}<span className="text-slate-400">&#125;&#39;</span>
+                  </pre>
+                )}
 
-// Create 0% fee direct bank payment order
-const order = await client.orders.create({
-  amount: 149900, // ₹1,499.00 in paise
-  orderId: 'ORD_2026_9821',
-  customerVpa: 'customer@okhdfcbank',
-  settlementRoute: 'direct_bank'
-});`}
-                </pre>
-              )}
+                {productDevLang === 'node' && (
+                  <pre className="text-slate-200">
+                    <span className="text-blue-400 font-bold">import</span> &#123; <span className="text-sky-300">MyMobPay</span> &#125; <span className="text-blue-400 font-bold">from</span> <span className="text-cyan-300">&#39;@mymobpay/node&#39;</span>;<br /><br />
+                    <span className="text-blue-400 font-bold">const</span> client = <span className="text-blue-400 font-bold">new</span> <span className="text-sky-300">MyMobPay</span>(&#123; apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span> &#125;);<br /><br />
+                    <span className="text-slate-500 italic">{"//"} Initialize 0% commission direct bank order</span><br />
+                    <span className="text-blue-400 font-bold">const</span> order = <span className="text-blue-400 font-bold">await</span> client.orders.<span className="text-sky-300">create</span>(&#123;<br />
+                    {"  "}amount: <span className="text-amber-300">149900</span>, <span className="text-slate-500 italic">{"//"} ₹1,499.00 in paise</span><br />
+                    {"  "}orderId: <span className="text-cyan-300">&#39;ORD_2026_9821&#39;</span>,<br />
+                    {"  "}customerVpa: <span className="text-cyan-300">&#39;customer@okhdfcbank&#39;</span>,<br />
+                    {"  "}settlementRoute: <span className="text-cyan-300">&#39;direct_bank&#39;</span><br />
+                    &#125;);
+                  </pre>
+                )}
 
-              {productDevLang === 'nextjs' && (
-                <pre>
-{`// app/api/checkout/route.ts
-import { NextResponse } from 'next/server';
-import { MyMobPay } from '@mymobpay/node';
+                {productDevLang === 'nextjs' && (
+                  <pre className="text-slate-200">
+                    <span className="text-slate-500 italic">{"//"} Next.js App Router API Route (app/api/checkout/route.ts)</span><br />
+                    <span className="text-blue-400 font-bold">import</span> &#123; <span className="text-sky-300">NextResponse</span> &#125; <span className="text-blue-400 font-bold">from</span> <span className="text-cyan-300">&#39;next/server&#39;</span>;<br />
+                    <span className="text-blue-400 font-bold">import</span> &#123; <span className="text-sky-300">MyMobPay</span> &#125; <span className="text-blue-400 font-bold">from</span> <span className="text-cyan-300">&#39;@mymobpay/node&#39;</span>;<br /><br />
+                    <span className="text-blue-400 font-bold">const</span> gateway = <span className="text-blue-400 font-bold">new</span> <span className="text-sky-300">MyMobPay</span>(&#123; apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span> &#125;);<br /><br />
+                    <span className="text-blue-400 font-bold">export async function</span> <span className="text-sky-300">POST</span>(req: <span className="text-sky-300">Request</span>) &#123;<br />
+                    {"  "}<span className="text-blue-400 font-bold">const</span> &#123; amount, orderId &#125; = <span className="text-blue-400 font-bold">await</span> req.<span className="text-sky-300">json</span>();<br />
+                    {"  "}<span className="text-blue-400 font-bold">const</span> session = <span className="text-blue-400 font-bold">await</span> gateway.orders.<span className="text-sky-300">create</span>(&#123; amount, orderId &#125;);<br />
+                    {"  "}<span className="text-blue-400 font-bold">return</span> <span className="text-sky-300">NextResponse</span>.<span className="text-sky-300">json</span>(&#123; qrString: session.qrString, intentUrl: session.intentUrl &#125;);<br />
+                    &#125;
+                  </pre>
+                )}
 
-const gateway = new MyMobPay({ apiKey: process.env.MYMOBPAY_SECRET_KEY });
+                {productDevLang === 'python' && (
+                  <pre className="text-slate-200">
+                    <span className="text-blue-400 font-bold">import</span> os<br />
+                    <span className="text-blue-400 font-bold">from</span> mymobpay <span className="text-blue-400 font-bold">import</span> <span className="text-sky-300">MyMobPay</span><br /><br />
+                    client = <span className="text-sky-300">MyMobPay</span>(api_key=os.environ[<span className="text-cyan-300">&quot;MYMOBPAY_SECRET_KEY&quot;</span>])<br /><br />
+                    <span className="text-slate-500 italic"># Create direct UPI intent order</span><br />
+                    order = client.orders.<span className="text-sky-300">create</span>(<br />
+                    {"  "}amount=<span className="text-amber-300">149900</span>,<br />
+                    {"  "}order_id=<span className="text-cyan-300">&quot;ORD_2026_9821&quot;</span>,<br />
+                    {"  "}customer_vpa=<span className="text-cyan-300">&quot;customer@okhdfcbank&quot;</span>,<br />
+                    {"  "}settlement_route=<span className="text-cyan-300">&quot;direct_bank&quot;</span><br />
+                    )
+                  </pre>
+                )}
 
-export async function POST(req: Request) {
-  const { amount, orderId } = await req.json();
-  const session = await gateway.orders.create({ amount, orderId });
-  return NextResponse.json({ qrString: session.qrString, intentUrl: session.intentUrl });
-}`}
-                </pre>
-              )}
+                {productDevLang === 'php' && (
+                  <pre className="text-slate-200">
+                    <span className="text-blue-400 font-bold">&lt;?php</span><br />
+                    <span className="text-blue-400 font-bold">use</span> MyMobPay\<span className="text-sky-300">Client</span>;<br /><br />
+                    $client = <span className="text-blue-400 font-bold">new</span> <span className="text-sky-300">Client</span>([<span className="text-cyan-300">&#39;api_key&#39;</span> =&gt; getenv(<span className="text-cyan-300">&#39;MYMOBPAY_SECRET_KEY&#39;</span>)]);<br /><br />
+                    <span className="text-slate-500 italic">{"//"} Create payment intent with zero fees</span><br />
+                    $order = $client-&gt;orders-&gt;<span className="text-sky-300">create</span>([<br />
+                    {"  "}<span className="text-cyan-300">&#39;amount&#39;</span> =&gt; <span className="text-amber-300">149900</span>,<br />
+                    {"  "}<span className="text-cyan-300">&#39;order_id&#39;</span> =&gt; <span className="text-cyan-300">&#39;ORD_2026_9821&#39;</span>,<br />
+                    {"  "}<span className="text-cyan-300">&#39;customer_vpa&#39;</span> =&gt; <span className="text-cyan-300">&#39;customer@okhdfcbank&#39;</span>,<br />
+                    {"  "}<span className="text-cyan-300">&#39;settlement_route&#39;</span> =&gt; <span className="text-cyan-300">&#39;direct_bank&#39;</span><br />
+                    ]);
+                  </pre>
+                )}
+              </div>
 
-              {productDevLang === 'python' && (
-                <pre>
-{`import os
-from mymobpay import MyMobPay
+              {/* Live Webhook Event Dispatch Panel */}
+              <div className="bg-[#040812] p-3.5 sm:p-5 border-t border-blue-900/30 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs font-mono">
+                  <span className="text-blue-400 flex items-center gap-2 font-bold truncate">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0"></span>
+                    <span className="truncate">POST /api/webhooks/settlement • 200 OK</span>
+                  </span>
+                  <span className="text-slate-400 font-medium text-[11px] shrink-0">42ms latency</span>
+                </div>
+                <div className="text-xs font-mono text-slate-300 bg-[#07101E] p-3 rounded-xl border border-blue-900/30">
+                  <div className="text-slate-400 text-[11px] pb-1.5 border-b border-blue-900/40 flex flex-wrap items-center justify-between gap-1">
+                    <span className="truncate">Header: x-mymobpay-signature: <strong className="text-blue-300">sha256=9f8a...</strong></span>
+                    <span className="text-blue-400 font-semibold shrink-0">HMAC Verified ✓</span>
+                  </div>
+                  <div className="text-slate-200 pt-2 break-all text-[11px] sm:text-xs">
+                    &#123; event: &quot;payment.settled&quot;, utr: &quot;329184029182&quot;, net: 1499.00, fee: 0.00, route: &quot;direct_bank&quot; &#125;
+                  </div>
+                </div>
+              </div>
 
-client = MyMobPay(api_key=os.environ["MYMOBPAY_SECRET_KEY"])
-
-order = client.orders.create(
-    amount=149900,
-    order_id="ORD_2026_9821",
-    customer_vpa="customer@okhdfcbank",
-    settlement_route="direct_bank"
-)`}
-                </pre>
-              )}
-            </div>
-
-            {/* Webhook preview footer */}
-            <div className="px-5 py-3.5 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-              <span className="text-slate-300">
-                Webhook Event: <strong className="text-emerald-400">payment.settled</strong>
-              </span>
-              <span className="text-slate-500 text-[11px]">HMAC verified (42ms)</span>
             </div>
 
           </div>
@@ -632,30 +1077,31 @@ order = client.orders.create(
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         INTERACTIVE SAVINGS CALCULATOR: CALM INK TONE
+         INTERACTIVE SAVINGS SLIDER CALCULATOR
          ──────────────────────────────────────────────────────── */}
-      <section id="pricing-section" className="py-20 sm:py-24 bg-slate-50 border-b border-slate-200">
+      <section id="pricing-section" className="py-24 bg-[#f5e9d4]/60 border-b border-[#e3e8ee] font-sohne">
         <div className="max-w-7xl mx-auto px-6">
-
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-sm">
+          
+          <div className="rounded-2xl bg-[#f5e9d4] border border-[#ebd8bc] p-5 sm:p-8 md:p-12 shadow-sm">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-
-              <div className="lg:col-span-6 space-y-4">
-                <span className="text-xs font-semibold text-[#0284C7] uppercase tracking-wider">
-                  Fee Comparison Calculator
+              
+              {/* Left Column: Heading & Slider */}
+              <div className="lg:col-span-6">
+                <span className="text-xs font-semibold text-[#9b6829] mb-2 sm:mb-3 block">
+                  Interactive Fee Calculator
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
-                  Calculate how much you save every month.
+                <h2 className="text-2xl sm:text-3xl md:text-[38px] font-light text-[#0d253d] tracking-tight leading-tight mb-3 sm:mb-4">
+                  See how much revenue you retain every month.
                 </h2>
-                <p className="text-sm text-slate-600 leading-relaxed font-normal">
-                  Standard gateways deduct 2% plus 18% GST on every transaction. With MyMobPay&apos;s flat ₹499 monthly license, 100% of payment revenue arrives directly in your bank account.
+                <p className="text-xs sm:text-sm font-light text-[#273951] leading-relaxed mb-6 sm:mb-8">
+                  Adjust your monthly transaction volume to see the compounding difference between standard 2% + GST gateway deductions versus MyMobPay direct passthrough.
                 </p>
 
                 {/* Range Slider */}
-                <div className="space-y-3 pt-3">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-600">Monthly UPI collection:</span>
-                    <strong className="text-lg font-mono tabular-nums text-slate-900">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center text-xs sm:text-sm">
+                    <span className="text-[#64748d] font-light">Monthly Collection Volume:</span>
+                    <strong className="text-base sm:text-lg font-mono tabular-nums text-[#0d253d]">
                       ₹{(monthlyVolume / 100000).toFixed(1)} Lakhs
                     </strong>
                   </div>
@@ -666,9 +1112,9 @@ order = client.orders.create(
                     step="50000"
                     value={monthlyVolume}
                     onChange={(e) => setMonthlyVolume(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0EA5E9]"
+                    className="w-full h-2 bg-[#ebd8bc] rounded-lg appearance-none cursor-pointer accent-[#0EA5E9]"
                   />
-                  <div className="flex justify-between text-[11px] text-slate-400 font-mono">
+                  <div className="flex justify-between text-[11px] text-[#64748d] font-mono">
                     <span>₹1 Lakh</span>
                     <span>₹25 Lakhs</span>
                     <span>₹50 Lakhs+</span>
@@ -676,33 +1122,38 @@ order = client.orders.create(
                 </div>
               </div>
 
-              {/* Comparison Result Card */}
+              {/* Right Column: Comparison Card */}
               <div className="lg:col-span-6">
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 space-y-5">
-                  <div className="space-y-3 pb-4 border-b border-slate-200 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-600">Traditional gateway cost (2% + GST)</span>
-                      <span className="font-mono text-rose-600 font-semibold tabular-nums">
+                <div className="bg-white rounded-xl border border-[#ebd8bc] p-5 sm:p-8 shadow-sm">
+                  
+                  <div className="space-y-3.5 sm:space-y-4 pb-5 sm:pb-6 border-b border-[#e3e8ee]">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-[#64748d]">Traditional Gateways (2% + 18% GST)</span>
+                      <span className="text-xs sm:text-sm font-mono text-[#ea2261] tabular-nums font-semibold shrink-0 ml-2">
                         -₹{savings.traditionalTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo
                       </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-600">MyMobPay flat license</span>
-                      <span className="font-mono text-emerald-700 font-semibold tabular-nums">
-                        ₹{subscriptionFee}/mo (Fixed)
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-[#64748d]">MyMobPay Flat License</span>
+                      <span className="text-xs sm:text-sm font-mono text-[#059669] tabular-nums font-semibold shrink-0 ml-2">
+                        ₹499.00/mo (Fixed)
                       </span>
                     </div>
                   </div>
 
-                  <div>
-                    <span className="text-xs font-medium text-slate-500">Net monthly savings retained</span>
-                    <div className="text-3xl sm:text-4xl font-semibold text-emerald-600 font-mono tabular-nums mt-1">
-                      ₹{savings.netSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  <div className="pt-5 sm:pt-6">
+                    <div className="text-[11px] sm:text-xs font-semibold text-[#64748d] mb-1">
+                      Net Monthly Savings
                     </div>
-                    <p className="text-xs text-slate-600 mt-2">
-                      You retain <strong className="text-slate-900">{savings.pctSaved}%</strong> of the revenue otherwise lost to payment intermediary fees.
+                    <div className="text-3xl sm:text-4xl font-light text-[#059669] tracking-tight font-mono tabular-nums flex items-baseline flex-wrap gap-1">
+                      <span>₹{savings.netSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                      <span className="text-xs sm:text-sm font-sans text-[#273951] font-light">retained</span>
+                    </div>
+                    <p className="text-xs text-[#64748d] mt-2">
+                      That is <strong className="text-[#0d253d]">{savings.pctSaved}% savings</strong> directly redirected to your product development and growth.
                     </p>
                   </div>
+
                 </div>
               </div>
 
@@ -712,99 +1163,296 @@ order = client.orders.create(
         </div>
       </section>
 
-      {/* ────────────────────────────────────────────────────────
-         PRICING CARDS
-         ──────────────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-24 bg-white border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-6 text-center space-y-12">
+      <section className="py-24 bg-transparent border-b border-slate-200/60 overflow-hidden relative">
 
-          <div className="space-y-3 max-w-xl mx-auto">
-            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full inline-block">
-              Transparent Pricing
+        <div className="max-w-7xl mx-auto px-6 space-y-16">
+          
+          {/* Header */}
+          <div className="text-center space-y-3">
+            <span className="text-xs font-semibold text-[#0284C7] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
+              Merchant stories
             </span>
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">
-              Simple flat plans for any volume
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+              See MyMobPay in action
             </h2>
-            <p className="text-base text-slate-600 leading-relaxed font-normal">
-              Zero percentage cuts. Choose the plan that fits your current operational scale.
+            <p className="text-base text-slate-600 font-normal max-w-xl mx-auto leading-relaxed">
+              Trusted by SaaS founders, indie developers, and growing businesses across India.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-
-            {/* Free Sandbox */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Developer Sandbox</h3>
-                  <p className="text-xs text-slate-500 mt-1">Prototype and test webhook integration free.</p>
+          {/* 3 Visual In-Action Showcase Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Card 1: Scanning MyMobPay QR */}
+            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-colors duration-300 group flex flex-col justify-between">
+              <div>
+                <div className="relative h-60 w-full overflow-hidden bg-slate-100">
+                  <Image 
+                    src="/images/using_mymobpay_scan.jpg" 
+                    alt="Customer scanning MyMobPay QR code on tablet" 
+                    fill 
+                    priority
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group- transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                    <QrCode className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Instant QR checkout</span>
+                  </div>
                 </div>
-                <div className="text-3xl font-semibold text-slate-900 font-mono">
-                  ₹0 <span className="text-xs font-normal text-slate-500">/ month</span>
+                <div className="p-6 space-y-2">
+                  <h3 className="text-lg font-semibold text-slate-900">Seamless scan and pay</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                    Customers scan dynamic QR codes using any UPI application with immediate payment confirmation.
+                  </p>
                 </div>
-                <ul className="space-y-2 text-xs text-slate-600">
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Isolated sandbox API keys</li>
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Dynamic test checkout QR</li>
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Webhook event delivery logger</li>
-                </ul>
               </div>
-              <Link
-                href="/login"
-                className="w-full py-2.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-medium rounded-lg text-xs text-center transition-colors"
+              <div className="px-6 pb-6 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+                <span>Payment rail: UPI</span>
+                <span className="text-emerald-600 font-medium flex items-center gap-1">
+                  Instant verification <CheckCircle2 className="w-3.5 h-3.5" />
+                </span>
+              </div>
+            </div>
+
+            {/* Card 2: Merchant using Dashboard */}
+            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-colors duration-300 group flex flex-col justify-between">
+              <div>
+                <div className="relative h-60 w-full overflow-hidden bg-slate-100">
+                  <Image 
+                    src="/images/using_mymobpay_merchant.jpg" 
+                    alt="Founder using MyMobPay merchant dashboard on laptop" 
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group- transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                    <Landmark className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Merchant console</span>
+                  </div>
+                </div>
+                <div className="p-6 space-y-2">
+                  <h3 className="text-lg font-semibold text-slate-900">Real-time revenue analytics</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                    Track incoming transfers, inspect webhook dispatches, and audit reconciliations in real time.
+                  </p>
+                </div>
+              </div>
+              <div className="px-6 pb-6 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+                <span>Escrow hold: 0 days</span>
+                <span className="text-[#0284C7] font-medium flex items-center gap-1">
+                  Direct account route <CheckCircle2 className="w-3.5 h-3.5" />
+                </span>
+              </div>
+            </div>
+
+            {/* Card 3: In-Person Customer Success */}
+            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-colors duration-300 group flex flex-col justify-between">
+              <div>
+                <div className="relative h-60 w-full overflow-hidden bg-slate-100">
+                  <Image 
+                    src="/images/merchant_customer.jpg"
+                    alt="Happy customer and business owner completing payment"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group- transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Customer experience</span>
+                  </div>
+                </div>
+                <div className="p-6 space-y-2">
+                  <h3 className="text-lg font-semibold text-slate-900">Frictionless checkout</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                    Deliver high checkout conversion rates with direct bank-to-bank settlement reliability.
+                  </p>
+                </div>
+              </div>
+              <div className="px-6 pb-6 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+                <span>Universal UPI support</span>
+                <span className="text-emerald-600 font-medium flex items-center gap-1">
+                  99.98% success rate <CheckCircle2 className="w-3.5 h-3.5" />
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ────────────────────────────────────────────────────────
+         CORE TECHNICAL FEATURE GRID
+         ──────────────────────────────────────────────────────── */}
+      <section id="features-section" className="py-24 bg-transparent border-b border-slate-200/60">
+        <div className="max-w-7xl mx-auto px-6 space-y-16">
+          
+          <div className="text-center space-y-3">
+            <span className="text-xs font-semibold text-[#0284C7] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
+              Platform features
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+              Direct infrastructure and secure verifications
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Feature 1 */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-colors hover:shadow-md duration-200 group">
+              <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center shadow-xs">
+                <Landmark className="w-5 h-5" />
+              </div>
+              <h3 className="font-semibold text-slate-900 text-base">Direct bank routing</h3>
+              <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                Customer payments transfer directly to your designated bank account without escrow holding.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-colors hover:shadow-md duration-200 group">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center shadow-xs">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h3 className="font-semibold text-slate-900 text-base">HMAC SHA-256 webhooks</h3>
+              <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                Every transaction event callback is cryptographically signed using standard HMAC SHA-256.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-colors hover:shadow-md duration-200 group">
+              <div className="w-10 h-10 rounded-xl bg-violet-500 text-white flex items-center justify-center shadow-xs">
+                <Layers className="w-5 h-5" />
+              </div>
+              <h3 className="font-semibold text-slate-900 text-base">Isolated developer sandbox</h3>
+              <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                Test checkout redirection flows and webhook dispatches in an isolated sandbox environment.
+              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-colors hover:shadow-md duration-200 group">
+              <div className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shadow-xs">
+                <Zap className="w-5 h-5" />
+              </div>
+              <h3 className="font-semibold text-slate-900 text-base">Instant settlements</h3>
+              <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                Maintain working capital liquidity with real-time settlement directly to your account.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ────────────────────────────────────────────────────────
+         PRICING SUBSCRIPTION CALLOUT
+         ──────────────────────────────────────────────────────── */}
+      <section className="py-24 bg-transparent relative overflow-hidden">
+
+        <div className="max-w-6xl mx-auto px-6 text-center space-y-12">
+          
+          <div className="space-y-3">
+            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full inline-block">
+              Subscription plans
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
+              Simple, flat pricing for any scale
+            </h2>
+            <p className="text-base text-slate-600 max-w-lg mx-auto leading-relaxed font-normal">
+              Start integration testing for free, scale to live payments with our standard subscription, or inquire about custom high-volume deployments.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch text-left">
+            
+            {/* Developer Sandbox Card */}
+            <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:border-slate-300 transition-colors">
+              <div className="space-y-6">
+                <div>
+                  <span className="text-xs font-semibold text-slate-500">Sandbox environment</span>
+                  <h3 className="text-xl font-bold text-slate-900 mt-1">Developer free</h3>
+                  <p className="text-xs text-slate-500 font-normal mt-1.5 leading-relaxed">Perfect for prototyping, testing API signatures, and staging your UI callback dispatches.</p>
+                </div>
+                <div className="flex items-baseline">
+                  <span className="text-2xl font-semibold text-slate-400 mr-0.5">₹</span>
+                  <span className="text-4xl font-bold text-slate-900">0</span>
+                  <span className="text-xs font-normal text-slate-400 ml-1">/ month</span>
+                </div>
+                <div className="border-t border-slate-100 pt-6 space-y-3.5 text-xs text-slate-600 font-medium">
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Isolated sandbox testing API key</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Interactive dynamic checkout screen</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Automated webhook event delivery stream</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Live order status verification logs</p>
+                </div>
+              </div>
+              <Link 
+                href="/login" 
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-colors text-center text-xs"
               >
-                Launch Sandbox
+                Launch sandbox console
               </Link>
             </div>
 
-            {/* Standard Pro */}
-            <div className="bg-slate-900 text-white rounded-xl p-6 flex flex-col justify-between space-y-6 shadow-md relative">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-white">Standard License</h3>
-                  <span className="text-[11px] font-medium bg-sky-500/20 text-sky-400 border border-sky-500/30 px-2 py-0.5 rounded">
-                    0% Gateway Fee
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300">For SaaS founders and live merchants.</p>
-                <div className="text-3xl font-semibold text-white font-mono tabular-nums">
-                  ₹{subscriptionFee} <span className="text-xs font-normal text-slate-400">/ month</span>
-                </div>
-                <ul className="space-y-2 text-xs text-slate-200">
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Direct bank account settlement</li>
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> 0% transaction deduction</li>
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> HMAC-SHA256 signed webhooks</li>
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400" /> Automated bank email reconciliation</li>
-                </ul>
+            {/* Standard Plan (Highlighted) */}
+            <div className="bg-[#0F172A] text-white border-none rounded-2xl sm:rounded-xl p-6 sm:p-8 flex flex-col justify-between stripe-elevated-shadow relative md:scale-[1.02] scale-100 overflow-hidden">
+              <div className="absolute top-4 right-4 bg-[#0EA5E9] text-white text-[10px] font-semibold px-3 py-1 rounded-full">
+                Most popular
               </div>
-              <Link
-                href="/login"
-                className="w-full py-2.5 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-medium rounded-lg text-xs text-center transition-colors"
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-semibold text-[#b9b9f9]">Production Pass</span>
+                  </div>
+                  <h3 className="text-2xl font-light text-white mt-1">Standard Pro Plan</h3>
+                  <p className="text-xs text-slate-300 font-light mt-1.5 leading-relaxed">For active SaaS founders and builders who want to stop giving away 2% on transaction cuts.</p>
+                </div>
+                <div className="flex items-baseline">
+                  <span className="text-2xl font-light text-slate-400 mr-0.5">₹</span>
+                  <span className="text-4xl font-light text-white tabular-nums">{subscriptionFee}</span>
+                  <span className="text-xs font-light text-slate-400 ml-1">/ month</span>
+                </div>
+                <div className="border-t border-white/10 pt-6 space-y-3.5 text-xs text-slate-200 font-light">
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> 100% direct-to-bank UPI transfers</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> 0% transaction gateway fees</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> HMAC SHA-256 signed webhooks</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> Automated bank email reconciliation</p>
+                </div>
+              </div>
+              <Link 
+                href="/login" 
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white font-normal rounded-full transition-colors text-center text-xs shadow-sm"
               >
-                Activate Standard License
+                Activate Pro License &rarr;
               </Link>
             </div>
 
-            {/* Enterprise */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
+            {/* Pro/Enterprise Card */}
+            <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
+              <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Custom High-Volume</h3>
-                  <p className="text-xs text-slate-500 mt-1">For high-throughput payment architectures.</p>
+                  <span className="text-xs font-semibold text-slate-500">Enterprise scale</span>
+                  <h3 className="text-xl font-bold text-slate-900 mt-1">Enterprise pro</h3>
+                  <p className="text-xs text-slate-500 font-normal mt-1.5 leading-relaxed">For high-throughput organizations needing custom webhook routing architectures.</p>
                 </div>
-                <div className="text-2xl font-semibold text-slate-900">
-                  Custom
+                <div className="flex items-baseline">
+                  <span className="text-xl font-bold text-slate-900">Custom volume</span>
                 </div>
-                <ul className="space-y-2 text-xs text-slate-600">
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400" /> Dedicated worker instances</li>
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400" /> Custom webhook retry schedules</li>
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400" /> Multi-account bank routing</li>
-                </ul>
+                <div className="border-t border-slate-200/80 pt-6 space-y-3.5 text-xs text-slate-600 font-medium">
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-400 shrink-0" /> Dedicated secure matching worker instances</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-400 shrink-0" /> Customized retry webhook schedules</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-400 shrink-0" /> Sub-merchant console access controls</p>
+                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-400 shrink-0" /> Dedicated SLA support with uptime assurances</p>
+                </div>
               </div>
               <Link
                 href="/login"
-                className="w-full py-2.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-medium rounded-lg text-xs text-center transition-colors"
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-colors text-center text-xs"
               >
-                Contact Team
+                Contact for enterprise
               </Link>
             </div>
 
@@ -814,68 +1462,84 @@ order = client.orders.create(
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         FOOTER
+         PREMIUM SYSTEM FOOTER
          ──────────────────────────────────────────────────────── */}
-      <footer className="bg-white text-slate-500 py-16 border-t border-slate-200 text-xs">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 pb-12 border-b border-slate-200">
-
-          <div className="md:col-span-4 space-y-3">
-            <Link href="/" className="flex items-center select-none">
-              <MyMobPayLogo />
+      <footer className="bg-white text-[#64748d] py-16 border-t border-[#e3e8ee] font-sohne text-xs font-light">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 pb-12 border-b border-[#e3e8ee]">
+          
+          <div className="md:col-span-4 space-y-4">
+            <Link href="/" className="flex items-center select-none group">
+              <MyMobPayLogo className="w-32 sm:w-36 h-auto" textColor="#0d253d" />
             </Link>
-            <p className="text-xs text-slate-500 leading-relaxed font-normal max-w-xs">
-              Direct-to-bank UPI payment gateway infrastructure built to eliminate intermediary cuts for developers and SaaS founders.
+            <p className="text-xs text-[#64748d] leading-relaxed font-normal max-w-xs">
+              Direct UPI and IMPS payment gateway designed to eliminate intermediary transaction fees for modern businesses and SaaS founders.
             </p>
           </div>
 
           <div className="md:col-span-2 space-y-3">
-            <p className="text-xs font-semibold text-slate-900">Product</p>
-            <ul className="space-y-2 text-xs text-slate-600">
-              <li><Link href="#pricing-section" className="hover:text-slate-900 transition-colors">Pricing plans</Link></li>
-              <li><Link href="#developer-section" className="hover:text-slate-900 transition-colors">Developers &amp; API</Link></li>
+            <p className="text-xs font-semibold text-[#0d253d]">Product</p>
+            <ul className="space-y-2 text-xs font-normal text-[#64748d]">
+              <li><Link href="#pricing-section" className="hover:text-[#0284C7] transition-colors">Pricing plans</Link></li>
+              <li><Link href="#features-section" className="hover:text-[#0284C7] transition-colors">Platform features</Link></li>
             </ul>
           </div>
 
-          <div className="md:col-span-3 space-y-3">
-            <p className="text-xs font-semibold text-slate-900">Comparisons &amp; Guides</p>
-            <ul className="space-y-2 text-xs text-slate-600">
-              <li><Link href="/compare/razorpay" className="hover:text-slate-900 transition-colors">MyMobPay vs Razorpay</Link></li>
-              <li><Link href="/compare/cashfree" className="hover:text-slate-900 transition-colors">MyMobPay vs Cashfree</Link></li>
-              <li><Link href="/compare/uapi-gateway" className="hover:text-slate-900 transition-colors">Best UPI Gateway 2026</Link></li>
-              <li><Link href="/blog/direct-bank-settlement-vs-aggregator" className="hover:text-slate-900 transition-colors">Direct Settlement Guide</Link></li>
-              <li><Link href="/blog/uapi-integration-guide" className="hover:text-slate-900 transition-colors">Next.js Integration Guide</Link></li>
-              <li><Link href="/blog/payment-gateway-for-saas" className="hover:text-slate-900 transition-colors">Payment Gateway for SaaS</Link></li>
-            </ul>
-          </div>
-
-          <div className="md:col-span-3 space-y-3">
-            <p className="text-xs font-semibold text-slate-900">Legal &amp; Social</p>
-            <ul className="space-y-2 text-xs text-slate-600">
-              <li><Link href="/terms" className="hover:text-slate-900 transition-colors">Terms of Service</Link></li>
-              <li><Link href="/privacy" className="hover:text-slate-900 transition-colors">Privacy Policy</Link></li>
+          <div className="md:col-span-2 space-y-3">
+            <p className="text-xs font-semibold text-[#0d253d]">Resources</p>
+            <ul className="space-y-2 text-xs font-normal text-[#64748d]">
+              <li><Link href="#developer-section" className="hover:text-[#0284C7] transition-colors">Documentation</Link></li>
+              <li><Link href="/terms" className="hover:text-[#0284C7] transition-colors">Terms of service</Link></li>
+              <li><Link href="/privacy" className="hover:text-[#0284C7] transition-colors">Privacy policy</Link></li>
+              <li className="pt-2 border-t border-slate-200/60 mt-2">
+                <span className="text-[11px] font-semibold text-[#64748d] mb-2 block">Resources</span>
+              </li>
+              <li><Link href="/compare/razorpay" className="hover:text-[#0284C7] transition-colors text-xs">MyMobPay vs Razorpay</Link></li>
+              <li><Link href="/compare/cashfree" className="hover:text-[#0284C7] transition-colors text-xs">MyMobPay vs Cashfree</Link></li>
+              <li><Link href="/compare/uapi-gateway" className="hover:text-[#0284C7] transition-colors text-xs">Best UPI Payment Gateway 2026</Link></li>
+              <li><Link href="/blog/direct-bank-settlement-vs-aggregator" className="hover:text-[#0284C7] transition-colors text-xs">Direct Bank Settlement Guide</Link></li>
+              <li><Link href="/blog/uapi-integration-guide" className="hover:text-[#0284C7] transition-colors text-xs">UPI Integration Guide</Link></li>
+              <li><Link href="/blog/payment-gateway-for-saas" className="hover:text-[#0284C7] transition-colors text-xs">Choosing a Payment Gateway for Your SaaS</Link></li>
               <li>
-                <a
-                  href="https://instagram.com/mymobpay"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-slate-900 transition-colors flex items-center gap-1.5"
+                <a 
+                  href="https://instagram.com/mymobpay" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-pink-600 transition-colors flex items-center gap-1.5 text-pink-600/90"
                 >
-                  <InstagramIcon className="w-3.5 h-3.5 text-slate-400" />
+                  <InstagramIcon className="w-3.5 h-3.5" />
                   Instagram (@mymobpay)
                 </a>
               </li>
             </ul>
           </div>
 
+          <div className="md:col-span-4 bg-[#f6f9fc] border border-[#e3e8ee] rounded-xl p-5 space-y-3 relative overflow-hidden">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#10b981]" />
+              <h4 className="text-xs font-semibold text-[#0d253d]">All Systems Operational</h4>
+              <span className="text-slate-400 text-[11px]">• NPCI UPI 2.0</span>
+            </div>
+            <p className="text-xs text-[#64748d] leading-relaxed font-normal">
+              Funds route directly into your bank account with zero escrow lockups, verified by automated HMAC SHA-256 signatures.
+            </p>
+          </div>
+
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto px-6 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-normal text-[#64748d]">
           <p>© {new Date().getFullYear()} MyMobPay Technologies. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-emerald-600 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              NPCI UPI 2.0 Rails Active
-            </span>
+          <div className="flex items-center gap-5">
+            <a 
+              href="https://instagram.com/mymobpay" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-pink-600 transition-colors flex items-center gap-1.5 text-[#64748d]"
+            >
+              <InstagramIcon className="w-3.5 h-3.5 text-pink-500" />
+              <span>@mymobpay</span>
+            </a>
+            <Link href="/terms" className="hover:text-[#0284C7] transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-[#0284C7] transition-colors">Privacy</Link>
           </div>
         </div>
       </footer>
