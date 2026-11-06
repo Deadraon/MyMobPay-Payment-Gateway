@@ -87,6 +87,48 @@ export default function HomePage() {
     }
   }, [router]);
 
+  // Dynamic animated rotating text lines in Hero section
+  const heroLines = useMemo(() => [
+    'Zero gateway fees.',
+    'Instant bank credit.',
+    '0% transaction charges.',
+    'Real-time T+0 settlement.',
+    'Direct UPI to your account.'
+  ], []);
+
+  const [typedLine, setTypedLine] = useState(heroLines[0]);
+  const [lineIndex, setLineIndex] = useState(0);
+  const [isDeletingLine, setIsDeletingLine] = useState(false);
+  const [charIndex, setCharIndex] = useState(heroLines[0].length);
+  const [typingSpeed, setTypingSpeed] = useState(100);
+
+  useEffect(() => {
+    const handleType = () => {
+      const current = heroLines[lineIndex];
+      if (isDeletingLine) {
+        setTypedLine(current.substring(0, charIndex - 1));
+        setCharIndex(prev => prev - 1);
+        setTypingSpeed(45);
+      } else {
+        setTypedLine(current.substring(0, charIndex + 1));
+        setCharIndex(prev => prev + 1);
+        setTypingSpeed(95);
+      }
+
+      if (!isDeletingLine && charIndex === current.length) {
+        setTypingSpeed(2200); // Pause on completed line
+        setIsDeletingLine(true);
+      } else if (isDeletingLine && charIndex === 0) {
+        setIsDeletingLine(false);
+        setLineIndex(prev => (prev + 1) % heroLines.length);
+        setTypingSpeed(320); // Pause before next line
+      }
+    };
+
+    const timer = setTimeout(handleType, typingSpeed);
+    return () => clearTimeout(timer);
+  }, [charIndex, isDeletingLine, lineIndex, typingSpeed, heroLines]);
+
   // Senior Developer Product Suite Showcase states
   const [productDevLang, setProductDevLang] = useState('curl'); // 'curl' | 'node' | 'python'
   const [productGatewaySimulated, setProductGatewaySimulated] = useState(false);
@@ -350,7 +392,7 @@ export default function HomePage() {
               <span className="font-medium text-[#533afd]">0% Gateway Fees</span>
             </div>
 
-            {/* Authoritative Headline with rock-solid fintech typography */}
+            {/* Authoritative Headline with typewriter rotating lines */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold text-[#0d253d] tracking-tight leading-[1.12] sm:leading-[1.06]">
               <span className="block animate-fade-up delay-100">
                 Financial infrastructure for
@@ -358,8 +400,11 @@ export default function HomePage() {
               <span className="block animate-fade-up delay-200 mt-1">
                 direct UPI payments.
               </span>
-              <span className="block font-bold animate-fade-up delay-300 mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight text-[#533afd]">
-                Zero gateway fees. Instant settlement.
+              <span className="block font-bold animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight">
+                <span className="inline-block bg-gradient-to-r from-[#533afd] via-[#3395FF] to-[#0EA5E9] bg-clip-text text-transparent">
+                  {typedLine}
+                </span>
+                <span className="inline-block w-[3px] h-[0.8em] bg-[#3395FF] ml-1.5 align-middle animate-pulse" aria-hidden="true" />
               </span>
             </h1>
 
