@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
+import AnimatedPhoneMockup from '@/components/AnimatedPhoneMockup';
 import { useDropdownTransition } from '@/components/useDropdownTransition';
 import { supabase } from '@/lib/supabase';
 
@@ -449,127 +450,9 @@ export default function HomePage() {
 
           </div>
 
-          {/* Right Column Custom Render Mockup Graphic (Phone Scanner with Real Dynamic QR) */}
+          {/* Right Column Custom Render Mockup Graphic (Interactive Animated Mobile Experience) */}
           <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end animate-scale-up">
-
-            {/* Premium Interactive Phone Frame */}
-            <div className="phone-glow-container w-full max-w-[340px] relative">
-
-              {/* Premium Phone Frame displaying Actual MyMobPay checkout screen */}
-              <div className="relative w-full bg-slate-900 border-8 border-slate-800 rounded-[44px] premium-phone-shadow overflow-hidden aspect-[9/18.5] flex flex-col">
-
-              {/* Speaker / Camera Notch (Dynamic Island) */}
-              <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
-                <div className="bg-slate-800 w-28 h-4 rounded-b-2xl" />
-              </div>
-
-              {/* Internal Screen Content */}
-              <div className="flex-1 bg-[#0B192C] pt-8 px-5 pb-5 flex flex-col justify-between font-sans select-none text-white">
-
-                {/* Header Info */}
-                <div className="space-y-4">
-
-                  {/* Status Bar */}
-                  <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 px-1">
-                    <span>10:42 AM</span>
-                    <div className="flex items-center gap-1">
-                      <span>LTE</span>
-                      <div className="w-4 h-2 border border-slate-350 rounded-sm p-0.5 flex items-center">
-                        <div className="bg-slate-400 w-full h-full rounded-xs" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Logo */}
-                  <div className="flex flex-col items-center justify-center pt-2">
-                    <MyMobPayLogo className="w-36 h-auto" textColor="#FFFFFF" />
-                    <p className="text-xs text-slate-300 font-medium tracking-wide mt-1">Direct bank checkout</p>
-                  </div>
-
-                  {/* Due amount card */}
-                  <div className="bg-[#0F1E36] border border-[#1D2D44] rounded-2xl p-4 shadow-sm space-y-2">
-                    <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold">
-                      <span>Total due</span>
-                      <span className="text-[#3395FF] font-semibold bg-[#0B2447] px-2 py-0.5 rounded text-[9px]">Direct bank rail</span>
-                    </div>
-                    <div className="flex items-baseline">
-                      <span className="text-sm font-bold text-slate-400 mr-0.5">₹</span>
-                      <span className="text-3xl font-bold text-white tracking-tight leading-none">
-                        {parseFloat(demoAmount || '500').toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                      </span>
-                    </div>
-                    <div className="pt-2 border-t border-[#1D2D44] flex justify-between text-[10px] font-medium text-slate-400">
-                      <span>Paying to:</span>
-                      <span className="font-semibold text-slate-200">Merchant Store</span>
-                    </div>
-                  </div>
-
-                  {/* QR Code Container */}
-                  <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-md flex flex-col items-center justify-center space-y-2.5 relative overflow-hidden group">
-
-                    {/* Subtle Top Indicator line */}
-                    <div className="absolute inset-x-0 h-0.5 bg-slate-200 top-0" />
-
-                    {/* Real Dynamic UPI QR Code (Scannable) */}
-                    <div className="p-2 bg-white rounded-xl border border-slate-100 flex items-center justify-center shadow-inner">
-                      <QRCode
-                        value={`upi://pay?pa=merchant@okaxis&pn=MyMobPay&am=${demoAmount || '500'}&cu=INR&tn=OrderDemo`}
-                        size={124}
-                        bgColor="#FFFFFF"
-                        fgColor="#0F172A"
-                        level="M"
-                      />
-                    </div>
-
-                    <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1.5 pt-0.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                      <span>Instant UTR auto-verification</span>
-                    </span>
-
-                  </div>
-
-                </div>
-
-                {/* Footer Section */}
-                <div className="space-y-3.5 pt-3.5 border-t border-[#1D2D44]">
-
-                  {/* Supported UPI Apps */}
-                  <div className="space-y-1.5">
-                    <p className="text-[11px] text-slate-300 font-medium text-center">Tap or scan with any UPI app</p>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      <span className="bg-[#0F1E36] hover:bg-[#152a4a] transition-colors border border-[#1D2D44] text-white text-[10px] font-bold py-1 px-1 rounded-lg text-center flex items-center justify-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4]"></span>
-                        GPay
-                      </span>
-                      <span className="bg-[#0F1E36] hover:bg-[#152a4a] transition-colors border border-[#1D2D44] text-white text-[10px] font-bold py-1 px-1 rounded-lg text-center flex items-center justify-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#5f259f]"></span>
-                        PhonePe
-                      </span>
-                      <span className="bg-[#0F1E36] hover:bg-[#152a4a] transition-colors border border-[#1D2D44] text-white text-[10px] font-bold py-1 px-1 rounded-lg text-center flex items-center justify-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#00baf2]"></span>
-                        Paytm
-                      </span>
-                      <span className="bg-[#0F1E36] hover:bg-[#152a4a] transition-colors border border-[#1D2D44] text-white text-[10px] font-bold py-1 px-1 rounded-lg text-center flex items-center justify-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                        BHIM
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Security copy */}
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-400 text-center">
-                    <Lock className="w-3.5 h-3.5 text-slate-400" />
-                    <span>256-bit direct bank encrypted</span>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            </div> {/* closes phone-glow-container */}
-
+            <AnimatedPhoneMockup demoAmount={demoAmount} />
           </div>
 
         </div>
