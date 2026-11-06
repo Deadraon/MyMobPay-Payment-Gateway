@@ -3,10 +3,10 @@
   "version": "1.0",
   "name": "MyMobPay",
   "description": "Direct-to-bank UPI payment gateway with 0% transaction fees. API and MCP resources for AI agents.",
-  "url": "https://mymobpay.tech",
+  "url": "https://www.mymobpay.tech",
   "contact": {
     "email": "support@mymobpay.tech",
-    "url": "https://mymobpay.tech/login"
+    "url": "https://www.mymobpay.tech/login"
   },
   "entries": [
     {

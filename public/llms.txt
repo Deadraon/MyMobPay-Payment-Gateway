@@ -4,12 +4,21 @@
 
 ## Key Pages
 
-- [Home](https://mymobpay.tech/) — Product overview, features, pricing calculator
-- [Login / Sign Up](https://mymobpay.tech/login) — Merchant dashboard access
-- [Developer Documentation](https://mymobpay.tech/#developer-section) — SDKs, REST API, webhooks
-- [Pricing](https://mymobpay.tech/#pricing-section) — Flat ₹499/month, 0% transaction fees
-- [Terms of Service](https://mymobpay.tech/terms)
-- [Privacy Policy](https://mymobpay.tech/privacy)
+- [Home](https://www.mymobpay.tech/) — Product overview, features, pricing calculator
+- [Login / Sign Up](https://www.mymobpay.tech/login) — Merchant dashboard access
+- [Developer Documentation](https://www.mymobpay.tech/#developer-section) — SDKs, REST API, webhooks
+- [Pricing](https://www.mymobpay.tech/#pricing-section) — Flat ₹499/month, 0% transaction fees
+- [Terms of Service](https://www.mymobpay.tech/terms)
+- [Privacy Policy](https://www.mymobpay.tech/privacy)
+
+## Comparisons & Guides
+
+- [MyMobPay vs Razorpay](https://www.mymobpay.tech/compare/razorpay) — Comprehensive fee and settlement comparison
+- [MyMobPay vs Cashfree](https://www.mymobpay.tech/compare/cashfree) — MDR fee calculator and features
+- [Best UPI Payment Gateway 2026](https://www.mymobpay.tech/compare/uapi-gateway) — Buyer's guide for SaaS founders
+- [Direct Bank Settlement vs Aggregator](https://www.mymobpay.tech/blog/direct-bank-settlement-vs-aggregator) — Educational architectural guide
+- [UPI Integration in Next.js](https://www.mymobpay.tech/blog/uapi-integration-guide) — Step-by-step developer tutorial
+- [Choosing a Payment Gateway for SaaS](https://www.mymobpay.tech/blog/payment-gateway-for-saas) — Decision framework
 
 ## Product Summary
 
