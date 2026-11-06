@@ -14,14 +14,14 @@ import {
   Volume2, Share2, FileText, CreditCard, Send
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
-
+import InteractiveBackground from '@/components/InteractiveBackground';
 import { useDropdownTransition } from '@/components/useDropdownTransition';
 import { supabase } from '@/lib/supabase';
 
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32, textSize = 'text-xl sm:text-2xl' }) => {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
   return (
-    <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 ${className}`}>
+    <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 hover:scale-[1.02] ${className}`}>
       {/* 3D Ribbon M Mark */}
       <img
         src="/logos/mymobpay_mark.png"
@@ -33,7 +33,7 @@ const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32, te
       />
       {/* Brand Wordmark */}
       <span
-        className={`font-semibold tracking-tight leading-none whitespace-nowrap ${textSize}`}
+        className={`font-extrabold tracking-tight leading-none whitespace-nowrap ${textSize}`}
         style={{
           fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           color: resolvedColor,
@@ -195,17 +195,17 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden selection:bg-blue-500/10 selection:text-[#0284C7] relative">
-
+    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden selection:bg-blue-500/10 selection:text-[#533afd] relative">
+      <InteractiveBackground />
       
       {/* ────────────────────────────────────────────────────────
          ORIGINAL FULL-WIDTH STATIC HEADER WITH MULTI-LAYERED SHADOWS
          ──────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-[#e3e8ee] shadow-xs transition-colors font-sohne">
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-[#e3e8ee] shadow-xs transition-all font-sohne">
         {/* ── TOP ANNOUNCEMENT BANNER ── */}
-        <div className="w-full bg-[#0F172A] text-white text-[11px] sm:text-xs font-normal py-2 px-3 sm:px-4 flex items-center justify-between sm:justify-center gap-2 sm:gap-3 select-none border-b border-white/10">
+        <div className="w-full bg-[#1c1e54] text-white text-[11px] sm:text-xs font-normal py-2 px-3 sm:px-4 flex items-center justify-between sm:justify-center gap-2 sm:gap-3 select-none border-b border-white/10">
           <div className="flex items-center gap-2 truncate">
-            <span className="inline-flex items-center gap-1.5 bg-[#0EA5E9] text-white font-semibold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide shrink-0">
+            <span className="inline-flex items-center gap-1.5 bg-[#533afd] text-white font-semibold px-2.5 py-0.5 rounded-full text-[10px] tracking-wide uppercase shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Direct UPI 2.0
             </span>
@@ -218,7 +218,7 @@ export default function HomePage() {
           </div>
           <a
             href="#pricing-section"
-            className="inline-flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white font-medium text-[11px] px-2.5 py-0.5 rounded-full transition-colors shrink-0 border border-white/20"
+            className="inline-flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white font-medium text-[11px] px-2.5 py-0.5 rounded-full transition-all shrink-0 border border-white/20"
           >
             <span>Savings</span>
             <span aria-hidden="true">&rarr;</span>
@@ -235,10 +235,10 @@ export default function HomePage() {
 
             {/* Desktop Nav Links */}
             <nav className="hidden lg:flex items-center gap-7 text-[15px] text-[#273951] font-normal">
-              <Link href="#developer-section" className="hover:text-[#0284C7] transition-colors py-1">Developers</Link>
-              <Link href="#pricing-section" className="hover:text-[#0284C7] transition-colors py-1">Pricing</Link>
-              <Link href="/terms" className="hover:text-[#0284C7] transition-colors py-1">Terms</Link>
-              <Link href="/privacy" className="hover:text-[#0284C7] transition-colors py-1">Privacy</Link>
+              <Link href="#developer-section" className="hover:text-[#533afd] transition-colors py-1">Developers</Link>
+              <Link href="#pricing-section" className="hover:text-[#533afd] transition-colors py-1">Pricing</Link>
+              <Link href="/terms" className="hover:text-[#533afd] transition-colors py-1">Terms</Link>
+              <Link href="/privacy" className="hover:text-[#533afd] transition-colors py-1">Privacy</Link>
             </nav>
           </div>
 
@@ -246,7 +246,7 @@ export default function HomePage() {
           <div className="hidden sm:flex items-center">
             <Link 
               href="/login" 
-              className="px-5 py-2.5 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-[14px] font-semibold flex items-center gap-1.5 transition-colors shadow-sm hover:shadow-md group cursor-pointer"
+              className="px-5 py-2.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-[14px] font-semibold flex items-center gap-1.5 transition-all shadow-sm hover:shadow-md group cursor-pointer"
             >
               <Lock className="w-3.5 h-3.5 opacity-90" />
               <span>Login</span>
@@ -258,7 +258,7 @@ export default function HomePage() {
           <div className="flex items-center gap-2 lg:hidden">
             <Link 
               href="/login" 
-              className="sm:hidden px-3.5 py-1.5 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-xs font-semibold flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
+              className="sm:hidden px-3.5 py-1.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-xs font-semibold flex items-center gap-1 transition-all shadow-2xs cursor-pointer"
             >
               <Lock className="w-3 h-3 opacity-90" />
               <span>Login</span>
@@ -295,56 +295,56 @@ export default function HomePage() {
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('developer-section')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors cursor-pointer group">
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all cursor-pointer group">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#0284C7] flex items-center justify-center shrink-0 group- transition-transform">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#533afd] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <Code className="w-4 h-4" />
                 </div>
                 <span>Developers &amp; API</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </button>
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors cursor-pointer group">
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all cursor-pointer group">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group- transition-transform">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <span>Subscription Pricing</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </button>
             <button onClick={() => {
               setIsMobileMenuOpen(false);
               document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' });
-            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors cursor-pointer group">
+            }} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all cursor-pointer group">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group- transition-transform">
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <span>Platform Features</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </button>
-            <Link href="/terms" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors group">
+            <Link href="/terms" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all group">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group- transition-transform">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <FileText className="w-4 h-4" />
                 </div>
                 <span>Terms of Service</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </Link>
-            <Link href="/privacy" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-colors group">
+            <Link href="/privacy" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/60 font-semibold text-slate-800 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)] transition-all group">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group- transition-transform">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <span>Privacy Policy</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-colors" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
             </Link>
           </div>
 
@@ -354,14 +354,14 @@ export default function HomePage() {
             <Link 
               href="/login" 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full py-3.5 border border-slate-200 text-center font-bold text-slate-700 hover:text-slate-900 rounded-2xl transition-colors text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]"
+              className="w-full py-3.5 border border-slate-200 text-center font-bold text-slate-700 hover:text-slate-900 rounded-2xl transition-all text-sm shadow-[0_2px_6px_rgba(0,0,0,0.02)]"
             >
               Sign In to Console
             </Link>
             <Link 
               href="/login" 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full py-3.5 bg-[#0EA5E9] hover:bg-[#0284C7] text-white text-center font-bold rounded-2xl transition-colors text-sm shadow-[0_4px_14px_rgba(15, 23, 42,0.25)]"
+              className="w-full py-3.5 bg-[#533afd] hover:bg-[#4434d4] text-white text-center font-bold rounded-2xl transition-all text-sm shadow-[0_4px_14px_rgba(37,99,235,0.25)]"
             >
               Create Account
             </Link>
@@ -389,7 +389,7 @@ export default function HomePage() {
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               <span className="font-semibold text-[#0d253d]">Direct-to-bank UPI 2.0 Rails</span>
               <span className="text-slate-300">•</span>
-              <span className="font-medium text-[#0284C7]">0% Gateway Fees</span>
+              <span className="font-medium text-[#533afd]">0% Gateway Fees</span>
             </div>
 
             {/* Authoritative Headline with separate animated lines */}
@@ -400,7 +400,12 @@ export default function HomePage() {
               <span className="block animate-fade-up delay-200 mt-1 font-semibold">
                 direct UPI payments.
               </span>
-
+              <span className="block text-[#533afd] font-semibold animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight">
+                <span className="relative inline-block break-words">
+                  {typedLine}
+                  <span className="inline-block w-[3px] h-[0.85em] bg-[#533afd] ml-1.5 align-middle animate-pulse" style={{ verticalAlign: 'baseline', marginTop: '-2px' }}>|</span>
+                </span>
+              </span>
             </h1>
 
             {/* Calm, Reassuring Subhead */}
@@ -412,14 +417,14 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 animate-fade-up delay-200 w-full sm:w-auto">
               <Link 
                 href="/login?mode=signup" 
-                className="w-full sm:w-auto px-7 py-3.5 sm:py-3 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white font-normal rounded-full transition-colors shadow-sm text-center text-[15px] flex items-center justify-center gap-2 group cursor-pointer"
+                className="w-full sm:w-auto px-7 py-3.5 sm:py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all shadow-sm text-center text-[15px] flex items-center justify-center gap-2 group cursor-pointer"
               >
                 <span>Start now</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <a 
                 href="#developer-section"
-                className="w-full sm:w-auto px-6 py-3.5 sm:py-3 bg-white hover:bg-[#f6f9fc] border border-[#e3e8ee] text-[#273951] hover:text-[#0d253d] font-normal rounded-full transition-colors text-center flex items-center justify-center gap-2 text-[15px] shadow-xs"
+                className="w-full sm:w-auto px-6 py-3.5 sm:py-3 bg-white hover:bg-[#f6f9fc] border border-[#e3e8ee] text-[#273951] hover:text-[#0d253d] font-normal rounded-full transition-all text-center flex items-center justify-center gap-2 text-[15px] shadow-xs"
               >
                 <span>Explore developer docs</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -485,7 +490,7 @@ export default function HomePage() {
                   <div className="bg-[#0F1E36] border border-[#1D2D44] rounded-2xl p-4 shadow-sm space-y-2">
                     <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold">
                       <span>Total due</span>
-                      <span className="text-[#0EA5E9] font-semibold bg-[#0B2447] px-2 py-0.5 rounded text-[9px]">Direct bank rail</span>
+                      <span className="text-[#3395FF] font-semibold bg-[#0B2447] px-2 py-0.5 rounded text-[9px]">Direct bank rail</span>
                     </div>
                     <div className="flex items-baseline">
                       <span className="text-sm font-bold text-slate-400 mr-0.5">₹</span>
@@ -502,7 +507,11 @@ export default function HomePage() {
                   {/* QR Code Container */}
                   <div className="bg-white-pure border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col items-center justify-center space-y-3 relative overflow-hidden group">
                     
-
+                    {/* Futuristic Scanning Laser line with glowing beam */}
+                    <div className="absolute inset-x-0 top-0 pointer-events-none z-10 animate-laser">
+                      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#3395FF] to-transparent shadow-[0_0_12px_2px_rgba(51,149,255,0.85)]" />
+                      <div className="h-4 w-full bg-gradient-to-b from-[#3395FF]/15 to-transparent" />
+                    </div>
 
                     {/* Subtle Top Indicator line */}
                     <div className="absolute inset-x-0 h-0.5 bg-slate-300 top-0" />
@@ -569,14 +578,14 @@ export default function HomePage() {
             </div> {/* closes phone-glow-container */}
 
             {/* Metric float chips (visible on tablets/desktop, tucked on mobile to eliminate x-overflow) */}
-            <div className="hidden sm:flex absolute -left-6 top-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 -rotate-6">
-              <span className="text-[10px] font-semibold text-[#0284C7] leading-none">Platform average</span>
+            <div className="hidden sm:flex absolute -left-6 top-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 -rotate-6 animate-float">
+              <span className="text-[10px] font-semibold text-[#533afd] leading-none">Platform average</span>
               <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">Success rate</span>
               <span className="text-xl font-bold text-slate-900 leading-none mt-1">99.98%</span>
             </div>
 
-            <div className="hidden sm:flex absolute -right-6 bottom-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 rotate-6 delay-500">
-              <span className="text-[10px] font-semibold text-[#0284C7] leading-none">Real-time routing</span>
+            <div className="hidden sm:flex absolute -right-6 bottom-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 rotate-6 animate-float delay-500">
+              <span className="text-[10px] font-semibold text-[#533afd] leading-none">Real-time routing</span>
               <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">Settlement</span>
               <span className="text-xl font-bold text-emerald-600 leading-none mt-1">0 seconds</span>
             </div>
@@ -589,18 +598,42 @@ export default function HomePage() {
       {/* ────────────────────────────────────────────────────────
          TRUSTED BY FOUNDERS & STARTUPS TICKER (Razorpay-Style)
          ──────────────────────────────────────────────────────── */}
-            <section className="relative z-10 py-12 bg-slate-50 border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-6 text-center space-y-4">
-          <p className="text-sm font-medium text-slate-500">
-            Works with every UPI app
+      <section className="relative z-10 py-10 bg-slate-50 border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-6 text-center space-y-5">
+          <p className="text-xs font-semibold text-slate-500 tracking-wide">
+            Powering 10,000+ modern founders, developers, and fast-growing businesses across India
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-semibold text-slate-600">
-            <span>Google Pay</span>
-            <span>PhonePe</span>
-            <span>Paytm</span>
-            <span>BHIM</span>
-            <span>Amazon Pay</span>
-            <span>WhatsApp Pay</span>
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-75 grayscale hover:grayscale-0 transition-all duration-300">
+            {/* Startup Brand 1: KwickBill */}
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
+              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-black">K</div>
+              <span>KwickBill</span>
+            </div>
+            {/* Startup Brand 2: ScaleLoop */}
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
+              <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-black">S</div>
+              <span>ScaleLoop</span>
+            </div>
+            {/* Startup Brand 3: DevStack */}
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
+              <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black">D</div>
+              <span>DevStack</span>
+            </div>
+            {/* Startup Brand 4: NexaCart */}
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
+              <div className="w-7 h-7 rounded-lg bg-slate-800 text-white flex items-center justify-center text-xs font-black">N</div>
+              <span>NexaCart</span>
+            </div>
+            {/* Startup Brand 5: IndieFlow */}
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
+              <div className="w-7 h-7 rounded-lg bg-cyan-600 text-white flex items-center justify-center text-xs font-black">I</div>
+              <span>IndieFlow</span>
+            </div>
+            {/* Startup Brand 6: ZetaPay */}
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
+              <div className="w-7 h-7 rounded-lg bg-violet-600 text-white flex items-center justify-center text-xs font-black">Z</div>
+              <span>ZetaPay</span>
+            </div>
           </div>
         </div>
       </section>
@@ -612,7 +645,7 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto px-6 space-y-14">
           <div className="text-center space-y-3">
-            <span className="text-xs font-semibold text-[#0284C7] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
+            <span className="text-xs font-semibold text-[#533afd] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
               Merchant console
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
@@ -665,9 +698,9 @@ export default function HomePage() {
                     { label: 'API Keys', active: false, dot: null },
                     { label: 'Sandbox', active: false, dot: null },
                   ].map(item => (
-                    <div key={item.label} className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
+                    <div key={item.label} className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
                       item.active
-                        ? 'bg-blue-50 text-[#0284C7] border border-blue-200 shadow-xs'
+                        ? 'bg-blue-50 text-[#533afd] border border-blue-200 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     }`}>
                       <span>{item.label}</span>
@@ -683,11 +716,11 @@ export default function HomePage() {
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     {[
                       { label: 'Total revenue', value: '₹4,82,500', change: '+12.4%', color: 'text-emerald-700', bg: 'bg-slate-50 border-slate-200' },
-                      { label: 'Transactions', value: '1,842', change: '+8.1%', color: 'text-[#0284C7]', bg: 'bg-slate-50 border-slate-200' },
+                      { label: 'Transactions', value: '1,842', change: '+8.1%', color: 'text-[#4434d4]', bg: 'bg-slate-50 border-slate-200' },
                       { label: 'Success rate', value: '99.98%', change: '+0.02%', color: 'text-emerald-700', bg: 'bg-slate-50 border-slate-200' },
                       { label: 'Avg. settlement', value: '0.0s', change: 'Real-time', color: 'text-indigo-700', bg: 'bg-slate-50 border-slate-200' },
                     ].map(stat => (
-                      <div key={stat.label} className={`${stat.bg} border rounded-xl p-3.5 space-y-1 shadow-xs hover:border-slate-300 transition-colors`}>
+                      <div key={stat.label} className={`${stat.bg} border rounded-xl p-3.5 space-y-1 shadow-xs hover:border-slate-300 transition-all`}>
                         <p className="text-[11px] font-medium text-slate-500">{stat.label}</p>
                         <p className="text-base sm:text-lg font-bold text-slate-900">{stat.value}</p>
                         <p className={`text-[10px] font-medium ${stat.color}`}>{stat.change}</p>
@@ -701,7 +734,7 @@ export default function HomePage() {
                     <div className="lg:col-span-2 bg-slate-50/60 border border-slate-200 rounded-xl p-4 space-y-3 shadow-xs">
                       <div className="flex items-center justify-between">
                         <p className="text-xs font-semibold text-slate-900">Revenue (last 30 days)</p>
-                        <span className="text-[9px] bg-blue-50 text-[#0284C7] border border-blue-200 px-2 py-0.5 rounded font-semibold">Live</span>
+                        <span className="text-[9px] bg-blue-50 text-[#533afd] border border-blue-200 px-2 py-0.5 rounded font-semibold">Live</span>
                       </div>
                       {/* SVG Sparkline chart */}
                       <svg viewBox="0 0 400 80" className="w-full h-20" preserveAspectRatio="none">
@@ -740,7 +773,7 @@ export default function HomePage() {
                         ].map(tx => (
                           <div key={tx.id} className="flex items-center justify-between py-1.5 border-b border-slate-200/60 last:border-0">
                             <div>
-                              <p className="text-[10px] font-semibold text-[#0284C7]">{tx.id}</p>
+                              <p className="text-[10px] font-semibold text-[#533afd]">{tx.id}</p>
                               <p className="text-[9px] text-slate-400 font-mono">{tx.upi}</p>
                             </div>
                             <div className="text-right">
@@ -766,10 +799,10 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { label: 'Uptime SLA', value: '99.99%', icon: <ShieldCheck className="w-4 h-4" />, iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
-              { label: 'Webhook latency', value: '<200ms', icon: <Zap className="w-4 h-4" />, iconBg: 'bg-blue-50 text-[#0284C7] border-blue-200' },
+              { label: 'Webhook latency', value: '<200ms', icon: <Zap className="w-4 h-4" />, iconBg: 'bg-blue-50 text-[#533afd] border-blue-200' },
               { label: 'Avg. settlement', value: '0 sec', icon: <RefreshCw className="w-4 h-4" />, iconBg: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
             ].map(m => (
-              <div key={m.label} className="bg-white border border-slate-200 rounded-2xl px-5 py-4 flex items-center gap-3.5 shadow-xs hover:border-slate-300 hover:shadow-md transition-colors">
+              <div key={m.label} className="bg-white border border-slate-200 rounded-2xl px-5 py-4 flex items-center gap-3.5 shadow-xs hover:border-slate-300 hover:shadow-md transition-all">
                 <div className={`w-9 h-9 rounded-xl border flex items-center justify-center flex-shrink-0 ${m.iconBg}`}>
                   {m.icon}
                 </div>
@@ -792,12 +825,18 @@ export default function HomePage() {
          ──────────────────────────────────────────────────────── */}
       <section id="developer-section" className="relative z-10 bg-[#0c2340] text-white border-y border-white/10 overflow-hidden py-16 font-sohne">
         
-        <div className="w-full border-b border-white/10 py-4 select-none">
-          <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono text-slate-400">
+        {/* FULL-WIDTH BRAND BLUE MARQUEE TICKER (ACTUAL SITE LANGUAGES) */}
+        <div className="w-full bg-[#1D4ED8] py-3.5 sm:py-4 overflow-hidden border-b border-[#1E40AF] select-none shadow-inner">
+          <div className="animate-marquee-left flex items-center whitespace-nowrap text-sm sm:text-base font-black text-white uppercase tracking-widest">
             {[
-              'Next.js', 'React', 'Node.js', 'TypeScript', 'REST API', 'Python', 'PHP', 'Flutter', 'React Native', 'JavaScript'
-            ].map((item) => (
-              <span key={item}>{item}</span>
+              'NEXT.JS', 'REACT', 'NODE.JS', 'TYPESCRIPT', 'REST API', 'PYTHON', 'PHP', 'FLUTTER', 'REACT NATIVE', 'JAVASCRIPT',
+              'NEXT.JS', 'REACT', 'NODE.JS', 'TYPESCRIPT', 'REST API', 'PYTHON', 'PHP', 'FLUTTER', 'REACT NATIVE', 'JAVASCRIPT',
+              'NEXT.JS', 'REACT', 'NODE.JS', 'TYPESCRIPT', 'REST API', 'PYTHON', 'PHP', 'FLUTTER', 'REACT NATIVE', 'JAVASCRIPT'
+            ].map((item, index) => (
+              <span key={index} className="flex items-center">
+                <span className="mx-4 sm:mx-6 font-extrabold">{item}</span>
+                <span className="text-blue-200 text-base font-black">•</span>
+              </span>
             ))}
           </div>
         </div>
@@ -811,9 +850,9 @@ export default function HomePage() {
               <Terminal className="w-3.5 h-3.5 text-blue-400" />
               <span>DEVELOPER-FIRST ARCHITECTURE</span>
             </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-white tracking-tight leading-tight">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
               MyMobPay is built<br />
-              <span className="text-[#3B82F6] font-semibold">&lt;for developers by developers&gt;</span>
+              <span className="text-[#3B82F6] font-extrabold">&lt;for developers by developers&gt;</span>
             </h2>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal pt-1 max-w-2xl">
               Integrate direct-to-bank settlements in under 15 minutes. Eliminate the 2% aggregator cut with typed SDKs, deterministic REST endpoints, and signed HMAC webhooks.
@@ -824,8 +863,8 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             {/* Card 1: SDKs & Libraries */}
-            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-colors duration-300 space-y-4 group">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group- transition-transform">
+            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-all duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
                 <svg width="25" height="28" viewBox="0 0 25 28" fill="none" className="w-6 h-6 text-blue-400">
                   <path d="M8.13325 15.3333L10.0666 13.4C10.3333 13.1333 10.4613 12.8222 10.4506 12.4666C10.4399 12.1111 10.3119 11.8 10.0666 11.5333C9.79992 11.2666 9.48303 11.1275 9.11592 11.116C8.74881 11.1044 8.43236 11.2324 8.16659 11.5L5.26659 14.4C4.99992 14.6666 4.86659 14.9777 4.86659 15.3333C4.86659 15.6888 4.99992 16 5.26659 16.2666L8.16659 19.1666C8.43325 19.4333 8.75014 19.5613 9.11725 19.5506C9.48436 19.54 9.80081 19.4008 10.0666 19.1333C10.311 18.8666 10.439 18.5555 10.4506 18.2C10.4621 17.8444 10.3341 17.5333 10.0666 17.2666L8.13325 15.3333ZM16.5332 15.3333L14.5999 17.2666C14.3332 17.5333 14.2052 17.8444 14.2159 18.2C14.2266 18.5555 14.3546 18.8666 14.5999 19.1333C14.8666 19.4 15.1835 19.5386 15.5506 19.5493C15.9177 19.56 16.2341 19.4324 16.4999 19.1666L19.3999 16.2666C19.6666 16 19.7999 15.6888 19.7999 15.3333C19.7999 14.9777 19.6666 14.6666 19.3999 14.4L16.4999 11.5C16.2332 11.2333 15.9164 11.1053 15.5492 11.116C15.1821 11.1266 14.8657 11.2657 14.5999 11.5333C14.3555 11.8 14.2279 12.1111 14.2173 12.4666C14.2066 12.8222 14.3341 13.1333 14.5999 13.4L16.5332 15.3333ZM2.99992 27.3333C2.26659 27.3333 1.63859 27.072 1.11592 26.5493C0.593254 26.0266 0.332365 25.3991 0.333254 24.6666V5.99996C0.333254 5.26663 0.594588 4.63863 1.11725 4.11596C1.63992 3.59329 2.26748 3.3324 2.99992 3.33329H8.59992C8.88881 2.53329 9.37236 1.88885 10.0506 1.39996C10.7288 0.91107 11.4897 0.666626 12.3333 0.666626C13.1777 0.666626 13.939 0.91107 14.6173 1.39996C15.2955 1.88885 15.7786 2.53329 16.0666 3.33329H21.6666C22.3999 3.33329 23.0279 3.59463 23.5506 4.11729C24.0732 4.63996 24.3341 5.26751 24.3332 5.99996V24.6666C24.3332 25.4 24.0719 26.028 23.5492 26.5506C23.0266 27.0733 22.399 27.3342 21.6666 27.3333H2.99992ZM2.99992 24.6666H21.6666V5.99996H2.99992V24.6666ZM12.3333 4.99996C12.6221 4.99996 12.8608 4.90529 13.0492 4.71596C13.2377 4.52663 13.3324 4.28796 13.3333 3.99996C13.3333 3.71107 13.2386 3.4724 13.0492 3.28396C12.8599 3.09551 12.6213 3.00085 12.3333 2.99996C12.0444 2.99996 11.8057 3.09463 11.6173 3.28396C11.4288 3.47329 11.3341 3.71196 11.3333 3.99996C11.3333 4.28885 11.4279 4.52751 11.6173 4.71596C11.8066 4.9044 12.0453 4.99907 12.3333 4.99996Z" fill="currentColor" />
                 </svg>
@@ -844,8 +883,8 @@ export default function HomePage() {
             </div>
 
             {/* Card 2: REST APIs */}
-            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-colors duration-300 space-y-4 group">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group- transition-transform">
+            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-all duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
                 <svg width="25" height="23" viewBox="0 0 25 23" fill="none" className="w-6 h-6 text-blue-400">
                   <path d="M 2.835 13.147 C 2.048 13.639 1.404 14.329 0.966 15.147 C 0.527 15.965 0.31 16.883 0.335 17.811 C 0.36 18.738 0.627 19.643 1.109 20.436 C 1.591 21.229 2.272 21.883 3.084 22.332 C 3.895 22.782 4.811 23.011 5.739 22.999 C 6.666 22.986 7.575 22.732 8.374 22.261 C 9.174 21.79 9.837 21.118 10.297 20.312 C 10.757 19.507 11 18.595 11 17.667 L 19 17.667 M 16.421 22.336 C 17.134 22.729 17.927 22.954 18.739 22.994 C 19.552 23.033 20.363 22.886 21.11 22.564 C 21.857 22.242 22.521 21.753 23.05 21.135 C 23.579 20.517 23.96 19.786 24.163 18.998 C 24.366 18.21 24.386 17.386 24.222 16.589 C 24.057 15.792 23.713 15.044 23.215 14.4 C 22.716 13.757 22.078 13.237 21.347 12.878 C 20.616 12.52 19.814 12.334 19 12.333 C 18.059 12.333 17.101 12.572 16.333 13 L 12.333 5.667 M 17.667 5.667 C 17.667 4.252 17.105 2.896 16.104 1.895 C 15.104 0.895 13.748 0.333 12.333 0.333 C 10.919 0.333 9.562 0.895 8.562 1.895 C 7.562 2.896 7 4.252 7 5.667 C 7 7.675 8.027 9.424 9.667 10.333 L 5.667 17.667" fill="transparent" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -864,8 +903,8 @@ export default function HomePage() {
             </div>
 
             {/* Card 3: Webhooks */}
-            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-colors duration-300 space-y-4 group">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group- transition-transform">
+            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-all duration-300 space-y-4 group">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
                 <svg width="29" height="30" viewBox="-1 -1 29 30" fill="none" className="w-6 h-6 text-blue-400">
                   <path fillRule="evenodd" clipRule="evenodd" d="M26.2761 1.05715C26.7968 1.57785 26.7968 2.42207 26.2761 2.94277L23.7906 5.42832C24.74 6.87844 24.8996 8.46316 24.6933 9.8247C24.447 11.4504 23.665 12.8873 22.9428 13.6094L20.9428 15.6094C20.4221 16.1301 19.5779 16.1301 19.0572 15.6094L11.7239 8.2761C11.2032 7.7554 11.2032 6.91118 11.7239 6.39048L13.7239 4.39048C14.446 3.66833 15.8829 2.88633 17.5086 2.64001C18.8701 2.43371 20.4549 2.5933 21.905 3.5427L24.3905 1.05715C24.9112 0.536451 25.7554 0.536451 26.2761 1.05715ZM17.9081 5.27658C16.7838 5.44692 15.8873 5.99826 15.6095 6.2761L14.5523 7.33329L20 12.781L21.0572 11.7238C21.335 11.446 21.8864 10.5495 22.0567 9.42522C22.2165 8.37083 22.027 7.24592 21.0572 6.2761C20.0874 5.30628 18.9625 5.11682 17.9081 5.27658ZM11.6095 11.0572C12.1302 11.5778 12.1302 12.4221 11.6095 12.9428L9.88562 14.6666L12.6667 17.4477L14.3905 15.7238C14.9112 15.2031 15.7554 15.2031 16.2761 15.7238C16.7968 16.2445 16.7968 17.0887 16.2761 17.6094L14.5523 19.3333L14.9428 19.7238C15.4635 20.2445 15.4635 21.0887 14.9428 21.6094L12.9428 23.6094C12.2207 24.3316 10.7838 25.1136 9.15807 25.3599C7.79654 25.5662 6.21182 25.4066 4.7617 24.4572L2.27614 26.9428C1.75544 27.4635 0.911223 27.4635 0.390524 26.9428C-0.130175 26.4221 -0.130175 25.5779 0.390524 25.0571L2.87608 22.5716C1.92667 21.1215 1.76709 19.5368 1.97338 18.1752C2.2197 16.5495 3.0017 15.1126 3.72386 14.3905L5.72386 12.3905C6.24456 11.8698 7.08878 11.8698 7.60948 12.3905L8 12.781L9.72386 11.0572C10.2446 10.5365 11.0888 10.5365 11.6095 11.0572ZM6.66667 15.2189L5.60948 16.2761C5.33163 16.5539 4.7803 17.4504 4.60995 18.5747C4.4502 19.6291 4.63965 20.754 5.60948 21.7238C6.5793 22.6936 7.70421 22.8831 8.75859 22.7233C9.88286 22.553 10.7793 22.0017 11.0572 21.7238L12.1144 20.6666L6.66667 15.2189Z" fill="currentColor" />
                 </svg>
@@ -891,7 +930,7 @@ export default function HomePage() {
             {/* Header & Language Selectors */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Try it out for yourself</h3>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Try it out for yourself</h3>
                 <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-400">
                   Live API
                 </span>
@@ -917,7 +956,7 @@ export default function HomePage() {
                     aria-selected={productDevLang === lang.id}
                     aria-controls="dev-terminal-body"
                     onClick={() => setProductDevLang(lang.id)}
-                    className={`px-3.5 py-1.5 rounded-lg transition-colors font-semibold shrink-0 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-blue-400 ${
+                    className={`px-3.5 py-1.5 rounded-lg transition-all font-semibold shrink-0 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-blue-400 ${
                       productDevLang === lang.id 
                         ? 'bg-blue-600 text-white shadow-sm' 
                         : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -1087,7 +1126,7 @@ export default function HomePage() {
               
               {/* Left Column: Heading & Slider */}
               <div className="lg:col-span-6">
-                <span className="text-xs font-semibold text-[#9b6829] mb-2 sm:mb-3 block">
+                <span className="text-xs uppercase tracking-wider font-semibold text-[#9b6829] mb-2 sm:mb-3 block">
                   Interactive Fee Calculator
                 </span>
                 <h2 className="text-2xl sm:text-3xl md:text-[38px] font-light text-[#0d253d] tracking-tight leading-tight mb-3 sm:mb-4">
@@ -1112,7 +1151,7 @@ export default function HomePage() {
                     step="50000"
                     value={monthlyVolume}
                     onChange={(e) => setMonthlyVolume(Number(e.target.value))}
-                    className="w-full h-2 bg-[#ebd8bc] rounded-lg appearance-none cursor-pointer accent-[#0EA5E9]"
+                    className="w-full h-2 bg-[#ebd8bc] rounded-lg appearance-none cursor-pointer accent-[#533afd]"
                   />
                   <div className="flex justify-between text-[11px] text-[#64748d] font-mono">
                     <span>₹1 Lakh</span>
@@ -1142,7 +1181,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="pt-5 sm:pt-6">
-                    <div className="text-[11px] sm:text-xs font-semibold text-[#64748d] mb-1">
+                    <div className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-[#64748d] mb-1">
                       Net Monthly Savings
                     </div>
                     <div className="text-3xl sm:text-4xl font-light text-[#059669] tracking-tight font-mono tabular-nums flex items-baseline flex-wrap gap-1">
@@ -1169,7 +1208,7 @@ export default function HomePage() {
           
           {/* Header */}
           <div className="text-center space-y-3">
-            <span className="text-xs font-semibold text-[#0284C7] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
+            <span className="text-xs font-semibold text-[#533afd] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
               Merchant stories
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
@@ -1184,7 +1223,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Card 1: Scanning MyMobPay QR */}
-            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-colors duration-300 group flex flex-col justify-between">
+            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
               <div>
                 <div className="relative h-60 w-full overflow-hidden bg-slate-100">
                   <Image 
@@ -1193,7 +1232,7 @@ export default function HomePage() {
                     fill 
                     priority
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover group- transition-transform duration-500"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
                     <QrCode className="w-3.5 h-3.5 text-blue-400" />
@@ -1216,7 +1255,7 @@ export default function HomePage() {
             </div>
 
             {/* Card 2: Merchant using Dashboard */}
-            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-colors duration-300 group flex flex-col justify-between">
+            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
               <div>
                 <div className="relative h-60 w-full overflow-hidden bg-slate-100">
                   <Image 
@@ -1224,7 +1263,7 @@ export default function HomePage() {
                     alt="Founder using MyMobPay merchant dashboard on laptop" 
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover group- transition-transform duration-500"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
                     <Landmark className="w-3.5 h-3.5 text-emerald-400" />
@@ -1240,14 +1279,14 @@ export default function HomePage() {
               </div>
               <div className="px-6 pb-6 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
                 <span>Escrow hold: 0 days</span>
-                <span className="text-[#0284C7] font-medium flex items-center gap-1">
+                <span className="text-[#533afd] font-medium flex items-center gap-1">
                   Direct account route <CheckCircle2 className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* Card 3: In-Person Customer Success */}
-            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-colors duration-300 group flex flex-col justify-between">
+            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
               <div>
                 <div className="relative h-60 w-full overflow-hidden bg-slate-100">
                   <Image 
@@ -1255,7 +1294,7 @@ export default function HomePage() {
                     alt="Happy customer and business owner completing payment"
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover group- transition-transform duration-500"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -1289,7 +1328,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 space-y-16">
           
           <div className="text-center space-y-3">
-            <span className="text-xs font-semibold text-[#0284C7] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
+            <span className="text-xs font-semibold text-[#533afd] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
               Platform features
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
@@ -1300,7 +1339,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Feature 1 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-colors hover:shadow-md duration-200 group">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-all hover:shadow-md duration-200 group">
               <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center shadow-xs">
                 <Landmark className="w-5 h-5" />
               </div>
@@ -1311,7 +1350,7 @@ export default function HomePage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-colors hover:shadow-md duration-200 group">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-all hover:shadow-md duration-200 group">
               <div className="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center shadow-xs">
                 <ShieldCheck className="w-5 h-5" />
               </div>
@@ -1322,7 +1361,7 @@ export default function HomePage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-colors hover:shadow-md duration-200 group">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-all hover:shadow-md duration-200 group">
               <div className="w-10 h-10 rounded-xl bg-violet-500 text-white flex items-center justify-center shadow-xs">
                 <Layers className="w-5 h-5" />
               </div>
@@ -1333,7 +1372,7 @@ export default function HomePage() {
             </div>
 
             {/* Feature 4 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-colors hover:shadow-md duration-200 group">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-all hover:shadow-md duration-200 group">
               <div className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shadow-xs">
                 <Zap className="w-5 h-5" />
               </div>
@@ -1370,7 +1409,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch text-left">
             
             {/* Developer Sandbox Card */}
-            <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:border-slate-300 transition-colors">
+            <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:border-slate-300 transition-all">
               <div className="space-y-6">
                 <div>
                   <span className="text-xs font-semibold text-slate-500">Sandbox environment</span>
@@ -1391,21 +1430,21 @@ export default function HomePage() {
               </div>
               <Link 
                 href="/login" 
-                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-colors text-center text-xs"
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-all text-center text-xs"
               >
                 Launch sandbox console
               </Link>
             </div>
 
             {/* Standard Plan (Highlighted) */}
-            <div className="bg-[#0F172A] text-white border-none rounded-2xl sm:rounded-xl p-6 sm:p-8 flex flex-col justify-between stripe-elevated-shadow relative md:scale-[1.02] scale-100 overflow-hidden">
-              <div className="absolute top-4 right-4 bg-[#0EA5E9] text-white text-[10px] font-semibold px-3 py-1 rounded-full">
+            <div className="bg-[#1c1e54] text-white border-none rounded-2xl sm:rounded-xl p-6 sm:p-8 flex flex-col justify-between stripe-elevated-shadow relative md:scale-[1.02] scale-100 overflow-hidden">
+              <div className="absolute top-4 right-4 bg-[#533afd] text-white text-[10px] font-semibold tracking-wider px-3 py-1 rounded-full uppercase">
                 Most popular
               </div>
               <div className="space-y-6">
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-[#b9b9f9]">Production Pass</span>
+                    <span className="text-xs font-semibold text-[#b9b9f9] uppercase tracking-wider">Production Pass</span>
                   </div>
                   <h3 className="text-2xl font-light text-white mt-1">Standard Pro Plan</h3>
                   <p className="text-xs text-slate-300 font-light mt-1.5 leading-relaxed">For active SaaS founders and builders who want to stop giving away 2% on transaction cuts.</p>
@@ -1424,14 +1463,14 @@ export default function HomePage() {
               </div>
               <Link 
                 href="/login" 
-                className="mt-8 block w-full py-3.5 sm:py-3 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white font-normal rounded-full transition-colors text-center text-xs shadow-sm"
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all text-center text-xs shadow-sm"
               >
                 Activate Pro License &rarr;
               </Link>
             </div>
 
             {/* Pro/Enterprise Card */}
-            <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-slate-300 transition-all shadow-xs">
               <div className="space-y-6">
                 <div>
                   <span className="text-xs font-semibold text-slate-500">Enterprise scale</span>
@@ -1450,7 +1489,7 @@ export default function HomePage() {
               </div>
               <Link
                 href="/login"
-                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-colors text-center text-xs"
+                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-all text-center text-xs"
               >
                 Contact for enterprise
               </Link>
@@ -1477,28 +1516,28 @@ export default function HomePage() {
           </div>
 
           <div className="md:col-span-2 space-y-3">
-            <p className="text-xs font-semibold text-[#0d253d]">Product</p>
+            <p className="text-xs font-semibold text-[#0d253d] uppercase tracking-wider">Product</p>
             <ul className="space-y-2 text-xs font-normal text-[#64748d]">
-              <li><Link href="#pricing-section" className="hover:text-[#0284C7] transition-colors">Pricing plans</Link></li>
-              <li><Link href="#features-section" className="hover:text-[#0284C7] transition-colors">Platform features</Link></li>
+              <li><Link href="#pricing-section" className="hover:text-[#533afd] transition-colors">Pricing plans</Link></li>
+              <li><Link href="#features-section" className="hover:text-[#533afd] transition-colors">Platform features</Link></li>
             </ul>
           </div>
 
           <div className="md:col-span-2 space-y-3">
-            <p className="text-xs font-semibold text-[#0d253d]">Resources</p>
+            <p className="text-xs font-semibold text-[#0d253d] uppercase tracking-wider">Resources</p>
             <ul className="space-y-2 text-xs font-normal text-[#64748d]">
-              <li><Link href="#developer-section" className="hover:text-[#0284C7] transition-colors">Documentation</Link></li>
-              <li><Link href="/terms" className="hover:text-[#0284C7] transition-colors">Terms of service</Link></li>
-              <li><Link href="/privacy" className="hover:text-[#0284C7] transition-colors">Privacy policy</Link></li>
+              <li><Link href="#developer-section" className="hover:text-[#533afd] transition-colors">Documentation</Link></li>
+              <li><Link href="/terms" className="hover:text-[#533afd] transition-colors">Terms of service</Link></li>
+              <li><Link href="/privacy" className="hover:text-[#533afd] transition-colors">Privacy policy</Link></li>
               <li className="pt-2 border-t border-slate-200/60 mt-2">
-                <span className="text-[11px] font-semibold text-[#64748d] mb-2 block">Resources</span>
+                <span className="text-[11px] font-semibold text-[#64748d] uppercase tracking-wider mb-2 block">Resources</span>
               </li>
-              <li><Link href="/compare/razorpay" className="hover:text-[#0284C7] transition-colors text-xs">MyMobPay vs Razorpay</Link></li>
-              <li><Link href="/compare/cashfree" className="hover:text-[#0284C7] transition-colors text-xs">MyMobPay vs Cashfree</Link></li>
-              <li><Link href="/compare/uapi-gateway" className="hover:text-[#0284C7] transition-colors text-xs">Best UPI Payment Gateway 2026</Link></li>
-              <li><Link href="/blog/direct-bank-settlement-vs-aggregator" className="hover:text-[#0284C7] transition-colors text-xs">Direct Bank Settlement Guide</Link></li>
-              <li><Link href="/blog/uapi-integration-guide" className="hover:text-[#0284C7] transition-colors text-xs">UPI Integration Guide</Link></li>
-              <li><Link href="/blog/payment-gateway-for-saas" className="hover:text-[#0284C7] transition-colors text-xs">Choosing a Payment Gateway for Your SaaS</Link></li>
+              <li><Link href="/compare/razorpay" className="hover:text-[#533afd] transition-colors text-xs">MyMobPay vs Razorpay</Link></li>
+              <li><Link href="/compare/cashfree" className="hover:text-[#533afd] transition-colors text-xs">MyMobPay vs Cashfree</Link></li>
+              <li><Link href="/compare/uapi-gateway" className="hover:text-[#533afd] transition-colors text-xs">Best UPI Payment Gateway 2026</Link></li>
+              <li><Link href="/blog/direct-bank-settlement-vs-aggregator" className="hover:text-[#533afd] transition-colors text-xs">Direct Bank Settlement Guide</Link></li>
+              <li><Link href="/blog/uapi-integration-guide" className="hover:text-[#533afd] transition-colors text-xs">UPI Integration Guide</Link></li>
+              <li><Link href="/blog/payment-gateway-for-saas" className="hover:text-[#533afd] transition-colors text-xs">Choosing a Payment Gateway for Your SaaS</Link></li>
               <li>
                 <a 
                   href="https://instagram.com/mymobpay" 
@@ -1538,8 +1577,8 @@ export default function HomePage() {
               <InstagramIcon className="w-3.5 h-3.5 text-pink-500" />
               <span>@mymobpay</span>
             </a>
-            <Link href="/terms" className="hover:text-[#0284C7] transition-colors">Terms</Link>
-            <Link href="/privacy" className="hover:text-[#0284C7] transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-[#533afd] transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-[#533afd] transition-colors">Privacy</Link>
           </div>
         </div>
       </footer>
