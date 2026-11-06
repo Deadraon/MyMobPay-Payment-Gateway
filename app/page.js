@@ -87,48 +87,6 @@ export default function HomePage() {
     }
   }, [router]);
 
-  // Dynamic animated rotating text lines in Hero section
-  const heroLines = useMemo(() => [
-    'Zero gateway fees.',
-    'Instant bank credit.',
-    '0% transaction charges.',
-    'Real-time T+0 settlement.',
-    'Direct UPI to your account.'
-  ], []);
-
-  const [typedLine, setTypedLine] = useState(heroLines[0]);
-  const [lineIndex, setLineIndex] = useState(0);
-  const [isDeletingLine, setIsDeletingLine] = useState(false);
-  const [charIndex, setCharIndex] = useState(heroLines[0].length);
-  const [typingSpeed, setTypingSpeed] = useState(100);
-
-  useEffect(() => {
-    const handleType = () => {
-      const current = heroLines[lineIndex];
-      if (isDeletingLine) {
-        setTypedLine(current.substring(0, charIndex - 1));
-        setCharIndex(prev => prev - 1);
-        setTypingSpeed(45);
-      } else {
-        setTypedLine(current.substring(0, charIndex + 1));
-        setCharIndex(prev => prev + 1);
-        setTypingSpeed(95);
-      }
-
-      if (!isDeletingLine && charIndex === current.length) {
-        setTypingSpeed(2200); // Pause on completed line
-        setIsDeletingLine(true);
-      } else if (isDeletingLine && charIndex === 0) {
-        setIsDeletingLine(false);
-        setLineIndex(prev => (prev + 1) % heroLines.length);
-        setTypingSpeed(320); // Pause before next line
-      }
-    };
-
-    const timer = setTimeout(handleType, typingSpeed);
-    return () => clearTimeout(timer);
-  }, [charIndex, isDeletingLine, lineIndex, typingSpeed, heroLines]);
-
   // Senior Developer Product Suite Showcase states
   const [productDevLang, setProductDevLang] = useState('curl'); // 'curl' | 'node' | 'python'
   const [productGatewaySimulated, setProductGatewaySimulated] = useState(false);
@@ -384,27 +342,24 @@ export default function HomePage() {
           {/* Left Column: Authoritative Fintech Headline & Reassuring Copy */}
           <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
             
-            {/* Direct P2P Status Badge (Clean, without duplicate logo) */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 backdrop-blur-md border border-[#e3e8ee] rounded-full text-xs font-medium text-[#273951] shadow-xs animate-fade-up">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span className="font-semibold text-[#0d253d]">Direct-to-bank UPI 2.0 Rails</span>
+            {/* Direct P2P Status Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/95 backdrop-blur-md border border-[#e3e8ee] rounded-full text-xs font-medium text-[#273951] shadow-xs animate-fade-up">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="font-semibold text-[#0d253d]">Direct-to-Bank UPI Rails</span>
               <span className="text-slate-300">•</span>
               <span className="font-medium text-[#533afd]">0% Gateway Fees</span>
             </div>
 
-            {/* Authoritative Headline with separate animated lines */}
-            <h1 className="font-sohne text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-semibold text-[#0d253d] tracking-tight leading-[1.14] sm:leading-[1.08]">
-              <span className="block animate-fade-up delay-100 font-semibold">
+            {/* Authoritative Headline with rock-solid fintech typography */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold text-[#0d253d] tracking-tight leading-[1.12] sm:leading-[1.06]">
+              <span className="block animate-fade-up delay-100">
                 Financial infrastructure for
               </span>
-              <span className="block animate-fade-up delay-200 mt-1 font-semibold">
+              <span className="block animate-fade-up delay-200 mt-1">
                 direct UPI payments.
               </span>
-              <span className="block font-bold animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight">
-                <span className="relative inline-block break-words bg-gradient-to-r from-[#533afd] via-[#3395FF] to-[#0EA5E9] bg-clip-text text-transparent">
-                  {typedLine}
-                  <span className="inline-block w-[3px] h-[0.85em] bg-[#3395FF] ml-1.5 align-middle animate-pulse" style={{ verticalAlign: 'baseline', marginTop: '-2px' }}>|</span>
-                </span>
+              <span className="block font-bold animate-fade-up delay-300 mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight text-[#533afd]">
+                Zero gateway fees. Instant settlement.
               </span>
             </h1>
 
@@ -452,34 +407,12 @@ export default function HomePage() {
           {/* Right Column Custom Render Mockup Graphic (Phone Scanner with Real Dynamic QR) */}
           <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end animate-scale-up">
 
-            {/* Premium Interactive Phone Glow Container */}
+            {/* Premium Interactive Phone Frame */}
             <div className="phone-glow-container w-full max-w-[340px] relative">
-
-              {/* Top-Right Floating Live Stat Card */}
-              <div className="absolute -top-3 -right-4 sm:-right-6 bg-white/95 backdrop-blur-md border border-white/80 rounded-2xl px-3.5 py-2.5 shadow-[0_12px_30px_rgba(15,23,42,0.12)] flex items-center gap-2.5 z-40 hidden sm:flex">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 shrink-0">
-                  <Zap className="w-4 h-4 fill-emerald-500" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold text-slate-900 leading-tight">Instant T+0 Credit</p>
-                  <p className="text-[10px] text-emerald-600 font-semibold font-mono">Direct Bank IMPS</p>
-                </div>
-              </div>
-
-              {/* Bottom-Left Floating Security Card */}
-              <div className="absolute -bottom-3 -left-4 sm:-left-6 bg-white/95 backdrop-blur-md border border-white/80 rounded-2xl px-3.5 py-2.5 shadow-[0_12px_30px_rgba(15,23,42,0.12)] flex items-center gap-2.5 z-40 hidden sm:flex">
-                <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-[#3395FF] shrink-0">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold text-slate-900 leading-tight">0% Gateway Fee</p>
-                  <p className="text-[10px] text-slate-500 font-semibold font-mono">No Escrow Hold</p>
-                </div>
-              </div>
 
               {/* Premium Phone Frame displaying Actual MyMobPay checkout screen */}
               <div className="relative w-full bg-slate-900 border-8 border-slate-800 rounded-[44px] premium-phone-shadow overflow-hidden aspect-[9/18.5] flex flex-col">
-              
+
               {/* Speaker / Camera Notch (Dynamic Island) */}
               <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
                 <div className="bg-slate-800 w-28 h-4 rounded-b-2xl" />
@@ -487,10 +420,10 @@ export default function HomePage() {
 
               {/* Internal Screen Content */}
               <div className="flex-1 bg-[#0B192C] pt-8 px-5 pb-5 flex flex-col justify-between font-sans select-none text-white">
-                
+
                 {/* Header Info */}
                 <div className="space-y-4">
-                  
+
                   {/* Status Bar */}
                   <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 px-1">
                     <span>10:42 AM</span>
@@ -528,12 +461,6 @@ export default function HomePage() {
 
                   {/* QR Code Container */}
                   <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-md flex flex-col items-center justify-center space-y-2.5 relative overflow-hidden group">
-
-                    {/* Futuristic Scanning Laser line with glowing beam */}
-                    <div className="absolute inset-x-0 top-0 pointer-events-none z-10 animate-laser">
-                      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#3395FF] to-transparent shadow-[0_0_12px_2px_rgba(51,149,255,0.85)]" />
-                      <div className="h-4 w-full bg-gradient-to-b from-[#3395FF]/15 to-transparent" />
-                    </div>
 
                     {/* Subtle Top Indicator line */}
                     <div className="absolute inset-x-0 h-0.5 bg-slate-200 top-0" />
@@ -597,19 +524,6 @@ export default function HomePage() {
             </div>
 
             </div> {/* closes phone-glow-container */}
-
-            {/* Metric float chips (visible on tablets/desktop, tucked on mobile to eliminate x-overflow) */}
-            <div className="hidden sm:flex absolute -left-6 top-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 -rotate-6 animate-float">
-              <span className="text-[10px] font-semibold text-[#533afd] leading-none">Platform average</span>
-              <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">Success rate</span>
-              <span className="text-xl font-bold text-slate-900 leading-none mt-1">99.98%</span>
-            </div>
-
-            <div className="hidden sm:flex absolute -right-6 bottom-1/4 bg-white border border-slate-200 p-4 rounded-2xl shadow-xl flex-col gap-1 rotate-6 animate-float delay-500">
-              <span className="text-[10px] font-semibold text-[#533afd] leading-none">Real-time routing</span>
-              <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">Settlement</span>
-              <span className="text-xl font-bold text-emerald-600 leading-none mt-1">0 seconds</span>
-            </div>
 
           </div>
 
