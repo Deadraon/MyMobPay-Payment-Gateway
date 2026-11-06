@@ -400,7 +400,7 @@ export default function SubscriptionRedesign({
             <button
               onClick={handleDownloadInvoice}
               type="button"
-              className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-blue-600" />
               Download Invoice
@@ -408,7 +408,7 @@ export default function SubscriptionRedesign({
             <button
               onClick={() => setShowDetailsModal(true)}
               type="button"
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs shadow-blue-500/20 transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Info className="w-3.5 h-3.5" />
               Manage Subscription
@@ -420,8 +420,8 @@ export default function SubscriptionRedesign({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Tile 1: Current Plan */}
           <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
-            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
+            <span className="text-[10px] text-slate-400 font-semibold">
               Current Plan
             </span>
             <span className="text-sm font-bold text-[#000d21]">
@@ -438,8 +438,8 @@ export default function SubscriptionRedesign({
 
           {/* Tile 2: Next Renewal Date */}
           <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
-            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-indigo-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-indigo-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
+            <span className="text-[10px] text-slate-400 font-semibold">
               Next Renewal Date
             </span>
             <span className="text-sm font-bold text-[#000d21]">
@@ -455,8 +455,8 @@ export default function SubscriptionRedesign({
 
           {/* Tile 3: Direct Settlement Target */}
           <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
-            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
+            <span className="text-[10px] text-slate-400 font-semibold">
               Direct Settlement Target
             </span>
             <div className="flex items-center gap-1.5">
@@ -478,8 +478,8 @@ export default function SubscriptionRedesign({
 
           {/* Tile 4: Gateway Fee Saved */}
           <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
-            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300"></div>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
+            <span className="text-[10px] text-slate-400 font-semibold">
               Gateway Fee Saved
             </span>
             <div className="flex items-baseline gap-1">
@@ -522,14 +522,14 @@ export default function SubscriptionRedesign({
               <div
                 key={plan.id}
                 onClick={() => setSelectedPlanId(plan.id)}
-                className={`cursor-pointer p-5 rounded-2xl bg-white border-2 transition-all flex flex-col justify-between gap-4 relative overflow-hidden group ${
+                className={`cursor-pointer p-5 rounded-2xl bg-white border-2 transition-colors flex flex-col justify-between gap-4 relative overflow-hidden group ${
                   isSelected
                     ? 'border-blue-600 shadow-md shadow-blue-500/10'
                     : 'border-slate-200/80 hover:border-blue-300 shadow-xs'
                 }`}
               >
                 {/* Accent Corner Bubble matching Plan Color */}
-                <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-300 ${
+                <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full pointer-events-none group- transition-transform duration-300 ${
                   plan.isCustom
                     ? 'bg-amber-500/10'
                     : plan.id === '3months' || plan.id === '2months'
@@ -584,7 +584,7 @@ export default function SubscriptionRedesign({
                       handleProceedToCheckout(plan);
                     }
                   }}
-                  className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
+                  className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-colors cursor-pointer ${
                     isSelected
                       ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-xs shadow-blue-500/20'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -622,7 +622,7 @@ export default function SubscriptionRedesign({
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold text-[10px]">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-[10px]">
               <tr>
                 <th className="px-4 py-3">Feature / Capability</th>
                 <th className="px-4 py-3">Monthly Starter (₹499)</th>
@@ -715,7 +715,7 @@ export default function SubscriptionRedesign({
         {/* Desktop Table (Visible on md and up) */}
         <div className="hidden md:block overflow-x-auto rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <table className="w-full text-left text-xs text-slate-700">
-            <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500">
               <tr>
                 <th className="py-3.5 px-5 font-semibold" scope="col">Invoice Ref</th>
                 <th className="py-3.5 px-4 font-semibold" scope="col">Settlement Date</th>
@@ -865,7 +865,7 @@ export default function SubscriptionRedesign({
               {/* Primary Status Card */}
               <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-100 flex items-center justify-between">
                 <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider font-semibold text-blue-700">Active Tier</span>
+                  <span className="text-[10px] font-semibold text-blue-700">Active Tier</span>
                   <span className="text-base font-bold text-[#000d21]">{subDetails.planTitle}</span>
                   <span className="text-xs text-slate-500 mt-0.5">₹{subDetails.planAmount} / cycle · 0% MDR</span>
                 </div>
@@ -892,7 +892,7 @@ export default function SubscriptionRedesign({
                 </div>
                 <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
-                    className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                    className="h-full bg-blue-600 rounded-full transition-colors duration-500"
                     style={{ width: `${subDetails.percentRemaining}%` }}
                   />
                 </div>
@@ -901,32 +901,32 @@ export default function SubscriptionRedesign({
               {/* Comprehensive Key-Value Information Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Purchased On</span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Purchased On</span>
                   <span className="font-semibold text-[#000d21]">{subDetails.activatedAtStr}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Next Renewal / Expiry</span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Next Renewal / Expiry</span>
                   <span className="font-semibold text-[#000d21]">{subDetails.expiryDateStr}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Payment Method Used</span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Payment Method Used</span>
                   <span className="font-semibold text-[#000d21] truncate">{subDetails.paymentMethodUsed}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Amount Paid</span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Amount Paid</span>
                   <span className="font-bold text-blue-600">₹{subDetails.planAmount}.00 (0% Fee)</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Order / Invoice Ref</span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Order / Invoice Ref</span>
                   <span className="font-semibold text-[#000d21] truncate">#{subDetails.orderRef}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Settlement Target</span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Settlement Target</span>
                   <span className="font-semibold text-[#000d21] truncate">
                     {profile?.bank_name
                       ? `${profile.bank_name} •••• ${(profile.bank_account_number || '').slice(-4)}`
@@ -958,7 +958,7 @@ export default function SubscriptionRedesign({
                 <button
                   onClick={scrollToPlans}
                   type="button"
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs shadow-blue-500/20 transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   Extend or Upgrade Plan
                   <ArrowRight className="w-3.5 h-3.5" />

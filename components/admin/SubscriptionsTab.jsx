@@ -92,8 +92,8 @@ export default function SubscriptionsTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Active Plans</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-2">{activeCount}</h3>
+              <p className="text-[10px] font-semibold text-slate-400">Active Plans</p>
+              <h3 className="text-3xl font-semibold text-slate-900 mt-2">{activeCount}</h3>
             </div>
             <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
               <CheckCircle2 className="w-5 h-5" />
@@ -105,8 +105,8 @@ export default function SubscriptionsTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Total SaaS Inflow</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-2">₹{totalSubRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</h3>
+              <p className="text-[10px] font-semibold text-slate-400">Total SaaS Inflow</p>
+              <h3 className="text-3xl font-semibold text-slate-900 mt-2">₹{totalSubRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</h3>
             </div>
             <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
               <Zap className="w-5 h-5" />
@@ -118,8 +118,8 @@ export default function SubscriptionsTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Expired / Inactive</p>
-              <h3 className="text-3xl font-black text-amber-900 mt-2">{expiredCount}</h3>
+              <p className="text-[10px] font-semibold text-slate-400">Expired / Inactive</p>
+              <h3 className="text-3xl font-semibold text-amber-900 mt-2">{expiredCount}</h3>
             </div>
             <div className="p-2.5 rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
               <AlertCircle className="w-5 h-5" />
@@ -131,8 +131,8 @@ export default function SubscriptionsTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Gift &amp; Promo Codes</p>
-              <h3 className="text-3xl font-black text-purple-900 mt-2">{giftCodes.length}</h3>
+              <p className="text-[10px] font-semibold text-slate-400">Gift &amp; Promo Codes</p>
+              <h3 className="text-3xl font-semibold text-purple-900 mt-2">{giftCodes.length}</h3>
             </div>
             <div className="p-2.5 rounded-2xl bg-purple-50 text-purple-600 border border-purple-100">
               <Gift className="w-5 h-5" />
@@ -225,7 +225,7 @@ export default function SubscriptionsTab({
                   placeholder="e.g. SPECIAL30"
                   value={codeString}
                   onChange={(e) => setCodeString(e.target.value.toUpperCase())}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-800 uppercase focus:outline-none focus:border-purple-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-purple-500"
                 />
               </div>
 
@@ -294,7 +294,7 @@ export default function SubscriptionsTab({
 
         <div className="overflow-x-auto rounded-2xl border border-slate-200">
           <table className="min-w-full divide-y divide-slate-100 text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
               <tr>
                 <th className="px-5 py-3.5 text-left">Code String</th>
                 <th className="px-5 py-3.5 text-left">Duration Granted</th>
@@ -369,7 +369,7 @@ export default function SubscriptionsTab({
 
         <div className="overflow-x-auto rounded-2xl border border-slate-200">
           <table className="min-w-full divide-y divide-slate-100 text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
               <tr>
                 <th className="px-5 py-3.5 text-left">Order ID</th>
                 <th className="px-5 py-3.5 text-left">Subscriber Merchant</th>
@@ -422,7 +422,7 @@ export default function SubscriptionsTab({
                         {ord.utr || ord.customer_utr || 'Awaiting UTR'}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                           isPaid ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
                         }`}>
                           {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}

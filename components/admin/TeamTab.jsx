@@ -265,7 +265,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
       <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-slate-900 tracking-tight flex items-center gap-2">
               <Users className="w-5 h-5 text-blue-600" />
               <span>Admin Team &amp; RBAC Control</span>
             </h2>
@@ -289,7 +289,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
 
           <button
             onClick={() => setIsInviteOpen(true)}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs shadow-blue-600/20 flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-xs shadow-blue-600/20 flex items-center gap-1.5 cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>Add Administrator</span>
@@ -303,7 +303,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-400" />
-              <h3 className="text-sm font-black text-white">Granular Role Permissions Matrix</h3>
+              <h3 className="text-sm font-semibold text-white">Granular Role Permissions Matrix</h3>
             </div>
             <span className="text-[11px] font-mono text-slate-400">NPCI &amp; ISO 27001 Access Compliance</span>
           </div>
@@ -312,7 +312,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
             {Object.entries(ADMIN_ROLES).map(([key, role]) => (
               <div key={key} className="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${ROLE_COLORS[role] || 'bg-slate-700 text-slate-300'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${ROLE_COLORS[role] || 'bg-slate-700 text-slate-300'}`}>
                     {role.replace('_', ' ')}
                   </span>
                   <span className="text-[10px] font-mono text-slate-400">
@@ -366,7 +366,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/75 text-[10px] font-black uppercase tracking-wider text-slate-400">
+              <tr className="border-b border-slate-100 bg-slate-50/75 text-[10px] font-semibold text-slate-400">
                 <th className="py-3 px-5">Platform Officer</th>
                 <th className="py-3 px-4">Role Assignment</th>
                 <th className="py-3 px-4">2FA Protection</th>
@@ -398,7 +398,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
                     <tr key={u.id || u.email} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-5">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-black flex items-center justify-center text-xs shadow-xs">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-semibold flex items-center justify-center text-xs shadow-xs">
                             {(u.full_name || u.email).charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -407,7 +407,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
                                 {u.full_name || 'Admin User'}
                               </p>
                               {isProtectedSuperAdmin && (
-                                <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-200">
+                                <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-200">
                                   Primary Root
                                 </span>
                               )}
@@ -602,7 +602,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
                 >
                   {actionLoading ? 'Creating...' : 'Grant Access'}
                 </button>
@@ -653,7 +653,7 @@ export default function TeamTab({ showToast, getAuthHeaders }) {
                 type="button"
                 onClick={activeConfirmModal.onConfirm}
                 disabled={actionLoading}
-                className={`px-4 py-2 rounded-xl text-white font-bold transition-all shadow-xs cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-white font-bold transition-colors shadow-xs cursor-pointer ${
                   activeConfirmModal.isDanger 
                     ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20' 
                     : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'

@@ -83,15 +83,15 @@ export default function SystemTab({
               </h3>
               <p className="text-xs text-slate-400">Receiving VPA for merchant subscription payments</p>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
+            <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
               Billing Rail
             </span>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Platform Subscription Revenue</p>
-              <h2 className="text-2xl font-black text-slate-900 mt-0.5">
+              <p className="text-[10px] font-bold text-slate-400">Total Platform Subscription Revenue</p>
+              <h2 className="text-2xl font-semibold text-slate-900 mt-0.5">
                 ₹{Number(totalSubscriptionEarnings).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
               </h2>
             </div>
@@ -127,7 +127,7 @@ export default function SystemTab({
         {/* Live Test Subscription QR Preview */}
         <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row items-center gap-5 justify-between">
           <div className="space-y-2 text-center sm:text-left">
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px] uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px]">
               Live Preview
             </span>
             <h4 className="text-sm font-bold text-slate-900">Subscription QR Test</h4>
@@ -166,7 +166,7 @@ export default function SystemTab({
             </h3>
             <p className="text-xs text-slate-400">Protect the Master Console with Time-based One-Time Passwords (TOTP)</p>
           </div>
-          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider self-start sm:self-auto ${
+          <span className={`px-3 py-1 rounded-full text-xs font-bold self-start sm:self-auto ${
             totpEnabled ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600'
           }`}>
             {totpEnabled ? '● 2FA Active' : '○ Disabled'}
@@ -235,7 +235,7 @@ export default function SystemTab({
                     placeholder="123456"
                     value={totpCodeInput}
                     onChange={(e) => setTotpCodeInput(e.target.value.replace(/\D/g, ''))}
-                    className="w-36 bg-white border border-slate-200 rounded-xl px-3 py-2 text-center font-mono font-black text-sm text-slate-900 focus:outline-none focus:border-blue-500"
+                    className="w-36 bg-white border border-slate-200 rounded-xl px-3 py-2 text-center font-mono font-semibold text-sm text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                   <button
                     onClick={() => onEnableTotp && onEnableTotp(totpCodeInput)}

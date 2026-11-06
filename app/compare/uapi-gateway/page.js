@@ -67,12 +67,12 @@ export default function BestUapiGatewayPage() {
     <div className="min-h-screen bg-slate-50">
       <section className="bg-white border-b border-slate-200 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#533afd]">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#0284C7]">
             Buyer&apos;s Guide 2026
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
             Best UPI Payment Gateway{" "}
-            <span className="text-[#533afd]">for SaaS Founders in 2026</span>
+            <span className="text-[#0284C7]">for SaaS Founders in 2026</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Choosing the right UPI payment gateway can save your startup thousands in fees every month.
@@ -85,7 +85,7 @@ export default function BestUapiGatewayPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl font-bold text-slate-900 mb-8">Side-by-Side Comparison</h2>
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-            <div className="grid grid-cols-5 gap-0 border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            <div className="grid grid-cols-5 gap-0 border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500 tracking-wide">
               <span className="col-span-1">Gateway</span>
               <span className="col-span-1">Fees</span>
               <span className="col-span-1">Settlement</span>
@@ -159,7 +159,7 @@ export default function BestUapiGatewayPage() {
           <p className="text-slate-300 text-base leading-relaxed">
             Get set up in under 15 minutes. No KYC delays, no paperwork, no minimum volume requirements.
           </p>
-          <Link href="/login?mode=signup" className="inline-block px-6 py-3 bg-[#533afd] hover:bg-[#4434d4] text-white font-semibold rounded-full transition-all shadow-sm text-sm">
+          <Link href="/login?mode=signup" className="inline-block px-6 py-3 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold rounded-full transition-colors shadow-sm text-sm">
             Create Free Account
           </Link>
         </div>

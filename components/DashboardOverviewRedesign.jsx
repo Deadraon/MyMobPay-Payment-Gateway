@@ -322,7 +322,7 @@ export default function DashboardOverviewRedesign({
 
           {/* Section Title & Connection Badge */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">
               Business Inflow &amp; Settlements
             </h1>
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/80 shrink-0">
@@ -341,7 +341,7 @@ export default function DashboardOverviewRedesign({
           <button
             type="button"
             onClick={() => setActiveTab?.('payment-links')}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold transition-all shadow-xs hover:shadow-sm active:scale-[0.98] cursor-pointer"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold transition-colors shadow-xs hover:shadow-sm active:scale-[0.98] cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Create Payment Link</span>
@@ -350,7 +350,7 @@ export default function DashboardOverviewRedesign({
           <button
             type="button"
             onClick={() => setIsSettlementModalOpen(true)}
-            className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/90 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-all shadow-2xs active:scale-[0.98] cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/90 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors shadow-2xs active:scale-[0.98] cursor-pointer"
           >
             <Building2 className="w-4 h-4 text-slate-500" />
             <span>Bank Rails</span>
@@ -369,7 +369,7 @@ export default function DashboardOverviewRedesign({
               placeholder="Search transactions, UTR, orders..."
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200/90 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0D9488]/20 focus:border-[#0D9488] transition-all shadow-2xs"
+              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200/90 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0D9488]/20 focus:border-[#0D9488] transition-colors shadow-2xs"
             />
           </div>
 
@@ -437,7 +437,7 @@ export default function DashboardOverviewRedesign({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
 
         {/* ── CARD 1: DIRECT SETTLEMENT RAIL (Left 5 Cols) ─────────── */}
-        <div className="lg:col-span-5 bg-white border border-[#E5EAE7] rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col justify-between relative hover:border-slate-300 transition-all">
+        <div className="lg:col-span-5 bg-white border border-[#E5EAE7] rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col justify-between relative hover:border-slate-300 transition-colors">
           <div>
             {/* Header: Direct Settlement Rail + Info + 3-Dots */}
             <div className="flex items-center justify-between pb-3">
@@ -499,7 +499,7 @@ export default function DashboardOverviewRedesign({
               {/* Attached Bank Emblem or Region Flag Badge */}
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-900 via-slate-900 to-slate-800 border border-slate-700/40 flex items-center justify-center font-bold text-xs text-white shadow-xs shrink-0 select-none relative">
                 {attachedBank?.bank_name ? (
-                  <span className="tracking-tight font-extrabold text-white text-xs">
+                  <span className="tracking-tight font-semibold text-white text-xs">
                     {attachedBank.bank_name.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()}
                   </span>
                 ) : (
@@ -511,7 +511,7 @@ export default function DashboardOverviewRedesign({
               </div>
 
               <div>
-                <span className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight tabular-nums block">
+                <span className="text-3xl sm:text-4xl font-semibold text-slate-900 tracking-tight tabular-nums block">
                   {formatINR(totalCollections)}
                 </span>
                 <span className="text-xs text-slate-500 font-medium mt-0.5 block">
@@ -548,7 +548,7 @@ export default function DashboardOverviewRedesign({
                 {/* Account Number & IFSC Grid */}
                 <div className="pt-2 border-t border-slate-200/70 grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">
+                    <span className="text-[10px] font-bold text-slate-400 block">
                       A/C Number
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -591,7 +591,7 @@ export default function DashboardOverviewRedesign({
                   </div>
 
                   <div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">
+                    <span className="text-[10px] font-bold text-slate-400 block">
                       IFSC Code
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -620,7 +620,7 @@ export default function DashboardOverviewRedesign({
                 {/* Beneficiary Name row */}
                 {attachedBank.bank_account_name && (
                   <div className="pt-1.5 flex items-center justify-between text-[11px]">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                    <span className="text-[10px] font-bold text-slate-400">
                       Beneficiary
                     </span>
                     <span className="font-semibold text-slate-800 truncate max-w-[200px]" title={attachedBank.bank_account_name}>
@@ -671,7 +671,7 @@ export default function DashboardOverviewRedesign({
             <button
               type="button"
               onClick={() => setActiveTab?.('payment-links')}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs active:scale-[0.98] cursor-pointer"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors shadow-2xs active:scale-[0.98] cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 text-slate-500" />
               <span>Payment Link</span>
@@ -680,7 +680,7 @@ export default function DashboardOverviewRedesign({
             <button
               type="button"
               onClick={() => setActiveTab?.('payment-links')}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#1E293B] hover:bg-[#0F172A] text-white text-xs font-bold transition-all shadow-xs hover:shadow-sm active:scale-[0.98] cursor-pointer"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#1E293B] hover:bg-[#0F172A] text-white text-xs font-bold transition-colors shadow-xs hover:shadow-sm active:scale-[0.98] cursor-pointer"
             >
               <QrCode className="w-3.5 h-3.5 text-slate-300" />
               <span>Counter QR</span>
@@ -689,7 +689,7 @@ export default function DashboardOverviewRedesign({
         </div>
 
         {/* ── CARD 2: INFLOW VELOCITY & DUAL BAR/LINE CHART (Right 7 Cols) ─ */}
-        <div className="lg:col-span-7 bg-white border border-[#E5EAE7] rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col md:flex-row gap-4 sm:gap-6 items-stretch relative hover:border-slate-300 transition-all">
+        <div className="lg:col-span-7 bg-white border border-[#E5EAE7] rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col md:flex-row gap-4 sm:gap-6 items-stretch relative hover:border-slate-300 transition-colors">
 
           {/* Sub-Column 1: Today & 30-Day Collections */}
           <div className="grid grid-cols-2 md:grid-cols-1 gap-2.5 sm:gap-3 w-full md:w-44 shrink-0">
@@ -700,7 +700,7 @@ export default function DashboardOverviewRedesign({
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 block truncate">Today Inflow</span>
-                <span className="text-xs sm:text-sm font-extrabold text-slate-900 tabular-nums block truncate">
+                <span className="text-xs sm:text-sm font-semibold text-slate-900 tabular-nums block truncate">
                   {formatINR(todayInflow)}
                 </span>
               </div>
@@ -713,7 +713,7 @@ export default function DashboardOverviewRedesign({
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 block truncate">Settled Orders</span>
-                <span className="text-xs sm:text-sm font-extrabold text-slate-900 tabular-nums block truncate">
+                <span className="text-xs sm:text-sm font-semibold text-slate-900 tabular-nums block truncate">
                   {allTimeVerified.length} Orders
                 </span>
               </div>
@@ -749,7 +749,7 @@ export default function DashboardOverviewRedesign({
                     stroke="#0D9488"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    className="opacity-70 transition-all duration-300"
+                    className="opacity-70 transition-colors duration-300"
                   />
                 </svg>
               ) : null}
@@ -764,7 +764,7 @@ export default function DashboardOverviewRedesign({
                 >
                   {/* Teal Bar (Collections Volume) */}
                   <div
-                    className={`w-1.5 sm:w-2 rounded-t-full transition-all duration-150 ${
+                    className={`w-1.5 sm:w-2 rounded-t-full transition-colors duration-150 ${
                       d.incoming > 0 
                         ? 'bg-[#14B8A6] group-hover:bg-[#0D9488]' 
                         : 'bg-slate-100 group-hover:bg-slate-200'
@@ -773,7 +773,7 @@ export default function DashboardOverviewRedesign({
                   />
                   {/* Soft Amber Bar (Order frequency) */}
                   <div
-                    className={`w-1.5 sm:w-2 rounded-t-full transition-all duration-150 ${
+                    className={`w-1.5 sm:w-2 rounded-t-full transition-colors duration-150 ${
                       d.ordersCount > 0 
                         ? 'bg-[#F59E0B]/80 group-hover:bg-[#D97706]' 
                         : 'bg-slate-100 group-hover:bg-slate-200'
@@ -1032,7 +1032,7 @@ export default function DashboardOverviewRedesign({
                   setIsSettlementModalOpen(false);
                   setActiveTab?.('payment-links');
                 }}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold transition-all shadow-xs text-center cursor-pointer"
+                className="flex-1 py-2.5 px-4 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold transition-colors shadow-xs text-center cursor-pointer"
               >
                 Create Payment Link
               </button>
@@ -1042,7 +1042,7 @@ export default function DashboardOverviewRedesign({
                   setIsSettlementModalOpen(false);
                   setActiveTab?.('reports');
                 }}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all text-center cursor-pointer"
+                className="flex-1 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors text-center cursor-pointer"
               >
                 View Statements
               </button>
@@ -1106,7 +1106,7 @@ export default function DashboardOverviewRedesign({
             <button
               type="button"
               onClick={() => setSelectedTx(null)}
-              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all text-center cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors text-center cursor-pointer"
             >
               Close
             </button>

@@ -141,12 +141,12 @@ export default function RazorpayComparePage() {
       {/* Hero */}
       <section className="bg-white border-b border-slate-200 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#533afd]">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#0284C7]">
             Comparison — MyMobPay vs Razorpay
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
             MyMobPay vs Razorpay:{" "}
-            <span className="text-[#533afd]">Why founders are switching in 2026</span>
+            <span className="text-[#0284C7]">Why founders are switching in 2026</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Razorpay charges 2% + 18% GST on every transaction. MyMobPay charges
@@ -156,13 +156,13 @@ export default function RazorpayComparePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link
               href="/login?mode=signup"
-              className="px-6 py-3 bg-[#533afd] hover:bg-[#4434d4] text-white font-semibold rounded-full transition-all shadow-sm text-sm"
+              className="px-6 py-3 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold rounded-full transition-colors shadow-sm text-sm"
             >
               Start Free with MyMobPay
             </Link>
             <a
               href="#savings"
-              className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold rounded-full transition-all text-sm"
+              className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold rounded-full transition-colors text-sm"
             >
               View Savings Table
             </a>
@@ -183,7 +183,7 @@ export default function RazorpayComparePage() {
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-            <div className="grid grid-cols-4 gap-0 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            <div className="grid grid-cols-4 gap-0 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-500 tracking-wide">
               <span>Monthly Volume</span>
               <span className="text-red-600">Razorpay Cost</span>
               <span className="text-emerald-600">MyMobPay Cost</span>
@@ -224,7 +224,7 @@ export default function RazorpayComparePage() {
 
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
             {/* Header */}
-            <div className="grid grid-cols-3 gap-0 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            <div className="grid grid-cols-3 gap-0 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-500 tracking-wide">
               <span>Feature</span>
               <span>Razorpay</span>
               <span>MyMobPay</span>
@@ -289,7 +289,7 @@ export default function RazorpayComparePage() {
             <div className="bg-white rounded-2xl border-2 border-emerald-200 p-6 space-y-4 shadow-xs">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wide">Recommended For</span>
+                <span className="text-xs font-bold text-emerald-700 tracking-wide">Recommended For</span>
               </div>
               <h3 className="text-xl font-bold text-slate-900">MyMobPay</h3>
               <ul className="space-y-2 text-sm text-slate-600">
@@ -312,7 +312,7 @@ export default function RazorpayComparePage() {
               </ul>
               <Link
                 href="/login?mode=signup"
-                className="block w-full text-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all text-sm"
+                className="block w-full text-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors text-sm"
               >
                 Try MyMobPay Free
               </Link>
@@ -322,7 +322,7 @@ export default function RazorpayComparePage() {
             <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-slate-400" />
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Consider Razorpay If</span>
+                <span className="text-xs font-bold text-slate-500 tracking-wide">Consider Razorpay If</span>
               </div>
               <h3 className="text-xl font-bold text-slate-900">Razorpay</h3>
               <ul className="space-y-2 text-sm text-slate-600">
@@ -347,7 +347,7 @@ export default function RazorpayComparePage() {
                 href="https://razorpay.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full text-center px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all text-sm"
+                className="block w-full text-center px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors text-sm"
               >
                 Visit Razorpay →
               </a>
@@ -402,13 +402,13 @@ export default function RazorpayComparePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/login?mode=signup"
-              className="px-6 py-3 bg-[#533afd] hover:bg-[#4434d4] text-white font-semibold rounded-full transition-all shadow-sm text-sm"
+              className="px-6 py-3 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold rounded-full transition-colors shadow-sm text-sm"
             >
               Start with MyMobPay — ₹499/month
             </Link>
             <Link
               href="/#developer-section"
-              className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full transition-all text-sm border border-white/20"
+              className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full transition-colors text-sm border border-white/20"
             >
               Read the API Docs
             </Link>

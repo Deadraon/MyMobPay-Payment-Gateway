@@ -69,7 +69,7 @@ export default function VerificationTab({ showToast, getAuthHeaders }) {
       <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-slate-900 tracking-tight flex items-center gap-2">
               <Radio className="w-5 h-5 text-blue-600" />
               <span>Verification Control Center</span>
             </h2>
@@ -86,7 +86,7 @@ export default function VerificationTab({ showToast, getAuthHeaders }) {
         <button
           onClick={fetchTelemetry}
           disabled={loading}
-          className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh Telemetry</span>
@@ -97,8 +97,8 @@ export default function VerificationTab({ showToast, getAuthHeaders }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Mean Ingest Latency</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
+            <p className="text-[10px] font-semibold text-slate-400">Mean Ingest Latency</p>
+            <h3 className="text-2xl font-semibold text-slate-900 mt-1">
               {telemetry ? `${telemetry.averageLatencyMs}ms` : '...'}
             </h3>
             <p className="text-[10px] text-emerald-600 font-bold mt-1">✓ Within NPCI 3s Target SLA</p>
@@ -110,8 +110,8 @@ export default function VerificationTab({ showToast, getAuthHeaders }) {
 
         <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Ingest Queue Depth</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
+            <p className="text-[10px] font-semibold text-slate-400">Ingest Queue Depth</p>
+            <h3 className="text-2xl font-semibold text-slate-900 mt-1">
               {telemetry ? telemetry.totalQueueDepth : '0'}
             </h3>
             <p className="text-[10px] text-slate-500 font-semibold mt-1">Zero backlog accumulating</p>
@@ -123,8 +123,8 @@ export default function VerificationTab({ showToast, getAuthHeaders }) {
 
         <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">High-Value Dual Approver Cap</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
+            <p className="text-[10px] font-semibold text-slate-400">High-Value Dual Approver Cap</p>
+            <h3 className="text-2xl font-semibold text-slate-900 mt-1">
               ₹10,000
             </h3>
             <p className="text-[10px] text-amber-700 font-bold mt-1">Requires 2 Admins to Override</p>

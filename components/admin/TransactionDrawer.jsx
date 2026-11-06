@@ -60,7 +60,7 @@ export default function TransactionDrawer({
         {/* Top Header */}
         <div className="sticky top-0 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-slate-100 flex items-center justify-between z-10">
           <div className="flex items-center gap-2">
-            <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+            <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
               order.status === 'verified' 
                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
                 : order.status === 'rejected'
@@ -85,8 +85,8 @@ export default function TransactionDrawer({
           
           {/* Amount Hero */}
           <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 border border-slate-200/80 text-center">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Transaction Amount</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">
+            <p className="text-xs font-bold text-slate-400">Transaction Amount</p>
+            <h2 className="text-3xl sm:text-4xl font-semibold text-slate-900 mt-1">
               ₹{Number(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </h2>
             <p className="text-xs text-slate-500 font-medium mt-1">
@@ -96,7 +96,7 @@ export default function TransactionDrawer({
 
           {/* Core Lifecycle Timeline */}
           <div className="space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+            <h4 className="text-xs font-semibold text-slate-400">
               Transaction Lifecycle
             </h4>
             <div className="relative pl-6 space-y-4 border-l-2 border-slate-200 ml-2 text-xs">
@@ -144,7 +144,7 @@ export default function TransactionDrawer({
 
           {/* Transaction Metadata Grid */}
           <div className="space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+            <h4 className="text-xs font-semibold text-slate-400">
               Payment Parameters
             </h4>
             
@@ -193,7 +193,7 @@ export default function TransactionDrawer({
           {/* Webhook Endpoint & Payload Viewer */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+              <h4 className="text-xs font-semibold text-slate-400">
                 Outbound Webhook
               </h4>
               <button

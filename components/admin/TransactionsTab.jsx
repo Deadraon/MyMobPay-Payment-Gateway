@@ -187,7 +187,7 @@ export default function TransactionsTab({
 
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-all cursor-pointer shadow-xs"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer shadow-xs"
             title="Download CSV report of filtered transactions"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
@@ -212,7 +212,7 @@ export default function TransactionsTab({
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-8 text-xs text-slate-900 font-semibold focus:outline-none focus:border-blue-500 focus:bg-white transition-all shadow-xs"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-8 text-xs text-slate-900 font-semibold focus:outline-none focus:border-blue-500 focus:bg-white transition-colors shadow-xs"
           />
           {searchQuery && (
             <button 
@@ -260,7 +260,7 @@ export default function TransactionsTab({
                 setStatusFilter(f.id);
                 setCurrentPage(1);
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
                 statusFilter === f.id
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
@@ -276,7 +276,7 @@ export default function TransactionsTab({
       {/* Transactions Data Table */}
       <div className="overflow-x-auto rounded-2xl border border-slate-200">
         <table className="min-w-full divide-y divide-slate-100 text-xs">
-          <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+          <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
             <tr>
               <th className="px-5 py-3.5 text-left">Store / Merchant</th>
               <th className="px-5 py-3.5 text-left">Order &amp; Customer</th>
@@ -323,7 +323,7 @@ export default function TransactionsTab({
                     {/* Store */}
                     <td className="px-5 py-3.5 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 font-black text-xs flex items-center justify-center">
+                        <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 font-semibold text-xs flex items-center justify-center">
                           {storeName.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -345,7 +345,7 @@ export default function TransactionsTab({
                     </td>
 
                     {/* Amount */}
-                    <td className="px-5 py-3.5 whitespace-nowrap font-black text-slate-900 text-sm">
+                    <td className="px-5 py-3.5 whitespace-nowrap font-semibold text-slate-900 text-sm">
                       ₹{Number(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
 
@@ -358,7 +358,7 @@ export default function TransactionsTab({
                           </span>
                           {isDuplicateUtr && (
                             <span 
-                              className="px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-200 text-[9px] font-black"
+                              className="px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-200 text-[9px] font-semibold"
                               title="Fraud Alert: This UTR was used on multiple orders!"
                             >
                               REPLAY
@@ -381,7 +381,7 @@ export default function TransactionsTab({
 
                     {/* Status Badge */}
                     <td className="px-5 py-3.5 whitespace-nowrap text-center">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         order.status === 'verified'
                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                           : order.status === 'rejected'

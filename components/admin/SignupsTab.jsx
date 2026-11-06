@@ -110,7 +110,7 @@ export default function SignupsTab({
               placeholder="Search signup name, email, phone..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-8 text-xs text-slate-900 font-semibold focus:outline-none focus:border-blue-500 focus:bg-white transition-all shadow-xs"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-8 text-xs text-slate-900 font-semibold focus:outline-none focus:border-blue-500 focus:bg-white transition-colors shadow-xs"
             />
             {searchQuery && (
               <button 
@@ -124,7 +124,7 @@ export default function SignupsTab({
 
           <button
             onClick={() => onRequestDelete && onRequestDelete({ isDirectLookup: true })}
-            className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
+            className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
             title="Purge any account completely from database by ID or email"
           >
             <Trash2 className="w-3.5 h-3.5 text-rose-600" />
@@ -139,68 +139,68 @@ export default function SignupsTab({
         {/* Missing Phone (Priority 1) */}
         <button
           onClick={() => setPipelineFilter('missing_phone')}
-          className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+          className={`p-3.5 rounded-2xl border text-left transition-colors cursor-pointer ${
             pipelineFilter === 'missing_phone'
               ? 'bg-rose-50 border-rose-300 ring-2 ring-rose-200'
               : 'bg-white border-slate-200 hover:bg-slate-50'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase text-rose-700 tracking-wider">Needs Phone</span>
+            <span className="text-[10px] font-semibold text-rose-700">Needs Phone</span>
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
           </div>
-          <p className="text-2xl font-black text-rose-950 mt-1">{missingPhoneUsers.length}</p>
+          <p className="text-2xl font-semibold text-rose-950 mt-1">{missingPhoneUsers.length}</p>
           <p className="text-[10px] text-rose-800/80 font-medium mt-0.5">Send outreach email &rarr;</p>
         </button>
 
         {/* Awaiting VPA / Bank Setup */}
         <button
           onClick={() => setPipelineFilter('pending_setup')}
-          className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+          className={`p-3.5 rounded-2xl border text-left transition-colors cursor-pointer ${
             pipelineFilter === 'pending_setup'
               ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-200'
               : 'bg-white border-slate-200 hover:bg-slate-50'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase text-amber-700 tracking-wider">Awaiting VPA</span>
+            <span className="text-[10px] font-semibold text-amber-700">Awaiting VPA</span>
             <Clock className="w-3.5 h-3.5 text-amber-600" />
           </div>
-          <p className="text-2xl font-black text-amber-950 mt-1">{awaitingVpaUsers.length}</p>
+          <p className="text-2xl font-semibold text-amber-950 mt-1">{awaitingVpaUsers.length}</p>
           <p className="text-[10px] text-amber-800/80 font-medium mt-0.5">Phone verified, needs bank</p>
         </button>
 
         {/* Fully Ready */}
         <button
           onClick={() => setPipelineFilter('ready')}
-          className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+          className={`p-3.5 rounded-2xl border text-left transition-colors cursor-pointer ${
             pipelineFilter === 'ready'
               ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-200'
               : 'bg-white border-slate-200 hover:bg-slate-50'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase text-emerald-700 tracking-wider">Ready / Active</span>
+            <span className="text-[10px] font-semibold text-emerald-700">Ready / Active</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
           </div>
-          <p className="text-2xl font-black text-emerald-950 mt-1">{fullyReadyUsers.length}</p>
+          <p className="text-2xl font-semibold text-emerald-950 mt-1">{fullyReadyUsers.length}</p>
           <p className="text-[10px] text-emerald-800/80 font-medium mt-0.5">VPA &amp; phone active</p>
         </button>
 
         {/* All Signups */}
         <button
           onClick={() => setPipelineFilter('all')}
-          className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+          className={`p-3.5 rounded-2xl border text-left transition-colors cursor-pointer ${
             pipelineFilter === 'all'
               ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200'
               : 'bg-white border-slate-200 hover:bg-slate-50'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase text-blue-700 tracking-wider">All Accounts</span>
+            <span className="text-[10px] font-semibold text-blue-700">All Accounts</span>
             <Users className="w-3.5 h-3.5 text-blue-600" />
           </div>
-          <p className="text-2xl font-black text-blue-950 mt-1">{allSignups.length}</p>
+          <p className="text-2xl font-semibold text-blue-950 mt-1">{allSignups.length}</p>
           <p className="text-[10px] text-blue-800/80 font-medium mt-0.5">Total platform signups</p>
         </button>
 
@@ -209,7 +209,7 @@ export default function SignupsTab({
       {/* Signups List Table */}
       <div className="overflow-x-auto rounded-2xl border border-slate-200">
         <table className="min-w-full divide-y divide-slate-100 text-xs">
-          <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+          <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
             <tr>
               <th className="px-5 py-3.5 text-left">User Profile</th>
               <th className="px-5 py-3.5 text-left">Joined Via</th>
@@ -245,11 +245,11 @@ export default function SignupsTab({
                     {/* User Profile */}
                     <td className="px-5 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-black text-xs flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs flex items-center justify-center shrink-0">
                           {signup.owner_name ? signup.owner_name.charAt(0).toUpperCase() : 'U'}
                         </div>
                         <div>
-                          <p className="font-extrabold text-slate-900">{signup.owner_name || signup.business_name || 'Merchant User'}</p>
+                          <p className="font-semibold text-slate-900">{signup.owner_name || signup.business_name || 'Merchant User'}</p>
                           <p className="text-[11px] text-blue-600 font-mono font-medium">{signup.email}</p>
                           <p className="text-[9px] text-slate-400 font-mono">
                             Registered: {new Date(signup.created_at).toLocaleDateString('en-IN', { dateStyle: 'medium' })}

@@ -46,7 +46,7 @@ export function MyMobPayLogo({
       />
       {/* Wordmark: MyMobPay */}
       <span
-        className={`font-extrabold tracking-tight leading-none whitespace-nowrap ${textSize}`}
+        className={`font-semibold tracking-tight leading-none whitespace-nowrap ${textSize}`}
         style={{
           fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           color: resolvedColor,

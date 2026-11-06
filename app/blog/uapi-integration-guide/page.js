@@ -33,12 +33,12 @@ export default function UapiIntegrationGuidePage() {
     <div className="min-h-screen bg-slate-50">
       <section className="bg-white border-b border-slate-200 py-16 sm:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#533afd]">
+          <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#0284C7]">
             Tutorial — Integration Guide
           </span>
           <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
             How to Integrate UPI Payments in{" "}
-            <span className="text-[#533afd]">Next.js</span>
+            <span className="text-[#0284C7]">Next.js</span>
           </h1>
           <div className="mt-4 flex items-center gap-4 text-sm text-slate-500">
             <span>By <span className="font-semibold text-slate-700">Kunal Chauhan</span></span>
@@ -58,7 +58,7 @@ export default function UapiIntegrationGuidePage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 prose prose-slate max-w-none">
           <h2 className="text-2xl font-bold text-slate-900 mt-0">Prerequisites</h2>
           <ul className="list-disc pl-6 space-y-2 text-slate-600">
-            <li>A MyMobPay account — <Link href="/login?mode=signup" className="text-[#533afd] hover:underline">sign up free</Link></li>
+            <li>A MyMobPay account — <Link href="/login?mode=signup" className="text-[#0284C7] hover:underline">sign up free</Link></li>
             <li>API keys from your dashboard (Settings → API Keys)</li>
             <li>Basic familiarity with Next.js App Router and API routes</li>
           </ul>
@@ -193,7 +193,7 @@ MYMOBPAY_WEBHOOK_SECRET=whsec_your_webhook_secret_here`}
           <div className="mt-10 p-6 bg-emerald-50 border border-emerald-200 rounded-xl">
             <h3 className="text-lg font-bold text-emerald-900 mt-0">Ready to integrate?</h3>
             <p className="text-emerald-800 mb-4">Get your API keys and start building in minutes.</p>
-            <Link href="/login?mode=signup" className="inline-block px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full text-sm transition-all">
+            <Link href="/login?mode=signup" className="inline-block px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full text-sm transition-colors">
               Create Free Account
             </Link>
           </div>
@@ -204,13 +204,13 @@ MYMOBPAY_WEBHOOK_SECRET=whsec_your_webhook_secret_here`}
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <h2 className="text-xl font-bold text-slate-900 mb-6">Related Articles</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link href="/blog/direct-bank-settlement-vs-aggregator" className="block p-5 bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-all">
-              <span className="text-xs text-[#533afd] font-semibold">Payments Guide</span>
+            <Link href="/blog/direct-bank-settlement-vs-aggregator" className="block p-5 bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+              <span className="text-xs text-[#0284C7] font-semibold">Payments Guide</span>
               <h3 className="font-semibold text-slate-900 mt-1">Direct Bank Settlement vs Aggregators</h3>
               <p className="text-sm text-slate-500 mt-2">Why direct UPI settlement is cheaper and faster than Razorpay, Cashfree, and other aggregators.</p>
             </Link>
-            <Link href="/blog/payment-gateway-for-saas" className="block p-5 bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-all">
-              <span className="text-xs text-[#533afd] font-semibold">Strategy</span>
+            <Link href="/blog/payment-gateway-for-saas" className="block p-5 bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+              <span className="text-xs text-[#0284C7] font-semibold">Strategy</span>
               <h3 className="font-semibold text-slate-900 mt-1">Choosing a Payment Gateway for Your SaaS</h3>
               <p className="text-sm text-slate-500 mt-2">Framework for evaluating payment gateways based on your volume, tech stack, and growth stage.</p>
             </Link>

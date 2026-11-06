@@ -127,7 +127,7 @@ export default function SupportHelpRedesign({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Support &amp; Help Desk</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Support &amp; Help Desk</h1>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
               <LifeBuoy className="w-3.5 h-3.5 text-blue-600" />
               Priority Founder Support
@@ -144,7 +144,7 @@ export default function SupportHelpRedesign({
             onClick={() => {
               window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
             }}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5 text-blue-200" />
             <span>Ask AI Copilot</span>
@@ -153,7 +153,7 @@ export default function SupportHelpRedesign({
             href="https://status.mymobpay.tech"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer"
           >
             <Activity className="w-3.5 h-3.5 text-emerald-600" />
             Public System Status <ExternalLink className="w-3 h-3 text-slate-400" />
@@ -174,7 +174,7 @@ export default function SupportHelpRedesign({
               key={tab.id}
               type="button"
               onClick={() => setActiveSubTab(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                 activeSubTab === tab.id
                   ? 'bg-white text-slate-900 shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -273,7 +273,7 @@ export default function SupportHelpRedesign({
                   <button
                     type="submit"
                     disabled={ticketSubmitting}
-                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5"
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5"
                   >
                     <Send className="w-3.5 h-3.5" />
                     {ticketSubmitting ? 'Submitting...' : 'Submit Ticket'}
@@ -310,7 +310,7 @@ export default function SupportHelpRedesign({
           {/* Ticket History */}
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs space-y-2">
             <div className="px-5 py-3 border-b border-slate-100 flex justify-between items-center">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Your Ticket History</h3>
+              <h3 className="text-xs font-bold text-slate-900">Your Ticket History</h3>
               <span className="text-[11px] text-slate-500">{tickets.length} total</span>
             </div>
 
@@ -393,7 +393,7 @@ export default function SupportHelpRedesign({
               {upiErrorCodes.map(c => (
                 <div key={c.code} className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono font-black text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                    <span className="font-mono font-semibold text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">
                       Code: {c.code}
                     </span>
                     <span className="font-bold text-slate-800 text-[11px]">{c.meaning}</span>

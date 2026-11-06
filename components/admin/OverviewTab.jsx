@@ -42,7 +42,7 @@ function CustomTooltip({ active, payload, label }) {
     return (
       <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1 border border-slate-800">
         <p className="font-bold text-slate-400">{label}</p>
-        <p className="text-sm font-black text-blue-400">
+        <p className="text-sm font-semibold text-blue-400">
           ₹{Number(payload[0].value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
         </p>
         {payload[0].payload?.count !== undefined && (
@@ -166,7 +166,7 @@ export default function OverviewTab({
             <button
               key={btn.id}
               onClick={() => setDateRange(btn.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                 dateRange === btn.id
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
@@ -215,7 +215,7 @@ export default function OverviewTab({
               <div className="flex items-center gap-2.5">
                 {iconMap[alt.type]}
                 <div>
-                  <span className="font-black mr-2">{alt.title}:</span>
+                  <span className="font-semibold mr-2">{alt.title}:</span>
                   <span className="font-medium opacity-90">{alt.desc}</span>
                 </div>
               </div>
@@ -223,7 +223,7 @@ export default function OverviewTab({
               {alt.tab && onNavigateTab && (
                 <button
                   onClick={() => onNavigateTab(alt.tab)}
-                  className="px-3 py-1 rounded-xl bg-white/80 hover:bg-white text-slate-900 font-bold border border-slate-200/60 shadow-xs self-start sm:self-auto shrink-0 transition-all cursor-pointer"
+                  className="px-3 py-1 rounded-xl bg-white/80 hover:bg-white text-slate-900 font-bold border border-slate-200/60 shadow-xs self-start sm:self-auto shrink-0 transition-colors cursor-pointer"
                 >
                   {alt.actionLabel} &rarr;
                 </button>
@@ -240,8 +240,8 @@ export default function OverviewTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Total Volume (GMV)</p>
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mt-2 flex items-baseline">
+              <p className="text-[10px] font-semibold text-slate-400">Total Volume (GMV)</p>
+              <h3 className="text-2xl sm:text-3xl font-semibold text-slate-900 mt-2 flex items-baseline">
                 <span className="text-sm font-bold text-slate-400 mr-0.5">₹</span>
                 <span>{platformMetrics.totalVolume.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
               </h3>
@@ -260,8 +260,8 @@ export default function OverviewTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Today&apos;s Revenue</p>
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mt-2 flex items-baseline">
+              <p className="text-[10px] font-semibold text-slate-400">Today&apos;s Revenue</p>
+              <h3 className="text-2xl sm:text-3xl font-semibold text-slate-900 mt-2 flex items-baseline">
                 <span className="text-sm font-bold text-slate-400 mr-0.5">₹</span>
                 <span>{platformMetrics.today.revenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
               </h3>
@@ -280,8 +280,8 @@ export default function OverviewTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Total Merchants</p>
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
+              <p className="text-[10px] font-semibold text-slate-400">Total Merchants</p>
+              <h3 className="text-2xl sm:text-3xl font-semibold text-slate-900 mt-2">
                 {platformMetrics.totalMerchants}
               </h3>
             </div>
@@ -304,8 +304,8 @@ export default function OverviewTab({
         <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Awaiting Match</p>
-              <h3 className="text-2xl sm:text-3xl font-black text-amber-900 mt-2">
+              <p className="text-[10px] font-semibold text-slate-400">Awaiting Match</p>
+              <h3 className="text-2xl sm:text-3xl font-semibold text-amber-900 mt-2">
                 {platformMetrics.pendingCount}
               </h3>
             </div>
@@ -432,7 +432,7 @@ export default function OverviewTab({
 
           <div className="overflow-x-auto rounded-2xl border border-slate-100">
             <table className="min-w-full divide-y divide-slate-100 text-xs">
-              <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+              <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
                 <tr>
                   <th className="px-4 py-3 text-left">Rank &amp; Business</th>
                   <th className="px-4 py-3 text-left">UPI VPA</th>
@@ -472,7 +472,7 @@ export default function OverviewTab({
                       <td className="px-4 py-3 whitespace-nowrap text-center font-bold text-slate-700">
                         {m.ordersCount}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-right font-black text-blue-600">
+                      <td className="px-4 py-3 whitespace-nowrap text-right font-semibold text-blue-600">
                         ₹{Number(m.salesVolume || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                       </td>
                     </tr>
@@ -500,7 +500,7 @@ export default function OverviewTab({
                 <div 
                   key={order.id} 
                   onClick={() => onSelectOrder && onSelectOrder(order)}
-                  className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-100 transition-all cursor-pointer flex items-center justify-between gap-3 text-xs"
+                  className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-100 transition-colors cursor-pointer flex items-center justify-between gap-3 text-xs"
                 >
                   <div className="min-w-0">
                     <p className="font-bold text-slate-900 truncate">
@@ -511,8 +511,8 @@ export default function OverviewTab({
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-black text-slate-900">₹{order.amount}</p>
-                    <span className={`inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase mt-0.5 ${
+                    <p className="font-semibold text-slate-900">₹{order.amount}</p>
+                    <span className={`inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold mt-0.5 ${
                       order.status === 'verified' 
                         ? 'bg-emerald-100 text-emerald-700' 
                         : order.status === 'rejected'
@@ -546,7 +546,7 @@ export default function OverviewTab({
           <div>
             <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <span>Live Website Login Activity</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">
                 Live
               </span>
             </h4>
@@ -558,7 +558,7 @@ export default function OverviewTab({
 
         <button
           onClick={() => onNavigateTab && onNavigateTab('logins')}
-          className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-xs flex items-center gap-2 self-start sm:self-auto shrink-0 cursor-pointer"
+          className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shadow-xs flex items-center gap-2 self-start sm:self-auto shrink-0 cursor-pointer"
         >
           <span>View Live Login Activity</span>
           <span>&rarr;</span>

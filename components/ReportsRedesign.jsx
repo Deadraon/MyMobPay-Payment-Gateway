@@ -343,7 +343,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Financial & Analytics Reports</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Financial & Analytics Reports</h1>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
               <Sparkles className="w-3 h-3 text-blue-600" />
               Tax & CA Ready
@@ -369,7 +369,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
                 key={tab.id}
                 type="button"
                 onClick={() => setTimeRange(tab.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                   timeRange === tab.id
                     ? 'bg-white text-slate-900 shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -383,7 +383,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
           <button
             type="button"
             onClick={handleDownloadCsv}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#0c2340] hover:bg-[#143660] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#0c2340] hover:bg-[#143660] text-white text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             Export CA CSV
@@ -422,7 +422,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
         {/* Total Collections */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Gross Collections</span>
+            <span className="text-[11px] font-bold text-slate-500">Gross Collections</span>
             <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
               metrics.totalGrowth > 0 ? 'bg-emerald-50 text-emerald-700' : metrics.totalGrowth < 0 ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600'
             }`}>
@@ -431,7 +431,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
             </div>
           </div>
           <div className="mt-3">
-            <p className="text-2xl font-black text-slate-900 tabular-nums">{formatINR(metrics.curTotal)}</p>
+            <p className="text-2xl font-semibold text-slate-900 tabular-nums">{formatINR(metrics.curTotal)}</p>
             <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
               <span>{periodLabel}</span>
               <span>Prior: {formatINR(metrics.prevTotal)}</span>
@@ -442,7 +442,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
         {/* Total Verified Transactions */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Verified Orders</span>
+            <span className="text-[11px] font-bold text-slate-500">Verified Orders</span>
             <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
               metrics.countGrowth > 0 ? 'bg-emerald-50 text-emerald-700' : metrics.countGrowth < 0 ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600'
             }`}>
@@ -451,7 +451,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
             </div>
           </div>
           <div className="mt-3">
-            <p className="text-2xl font-black text-slate-900 tabular-nums">{metrics.curCount}</p>
+            <p className="text-2xl font-semibold text-slate-900 tabular-nums">{metrics.curCount}</p>
             <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
               <span>{metrics.curCount} paid</span>
               <span>Prior: {metrics.prevCount}</span>
@@ -462,7 +462,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
         {/* Average Ticket Size */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Average Ticket Size</span>
+            <span className="text-[11px] font-bold text-slate-500">Average Ticket Size</span>
             <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
               metrics.avgTicketGrowth > 0 ? 'bg-emerald-50 text-emerald-700' : metrics.avgTicketGrowth < 0 ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600'
             }`}>
@@ -471,7 +471,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
             </div>
           </div>
           <div className="mt-3">
-            <p className="text-2xl font-black text-slate-900 tabular-nums">{formatINR(metrics.curAvgTicket)}</p>
+            <p className="text-2xl font-semibold text-slate-900 tabular-nums">{formatINR(metrics.curAvgTicket)}</p>
             <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
               <span>Per customer</span>
               <span>Prior: {formatINR(metrics.prevAvgTicket)}</span>
@@ -482,19 +482,19 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
         {/* Success Rate */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">UPI Success Rate</span>
+            <span className="text-[11px] font-bold text-slate-500">UPI Success Rate</span>
             <span className="text-[10px] font-bold text-slate-500">{currentOrders.length} attempts</span>
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 tabular-nums">{metrics.curSuccessRate}%</span>
+              <span className="text-2xl font-semibold text-slate-900 tabular-nums">{metrics.curSuccessRate}%</span>
               <span className={`text-[11px] font-bold ${parseFloat(metrics.rateDiff) >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                 {parseFloat(metrics.rateDiff) >= 0 ? `+${metrics.rateDiff}%` : `${metrics.rateDiff}%`}
               </span>
             </div>
             <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
               <div
-                className="bg-emerald-500 h-1.5 rounded-full transition-all duration-500"
+                className="bg-emerald-500 h-1.5 rounded-full transition-colors duration-500"
                 style={{ width: `${Math.min(parseFloat(metrics.curSuccessRate), 100)}%` }}
               />
             </div>
@@ -529,7 +529,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
               return (
                 <div key={h.hour} className="flex flex-col items-center gap-1 group relative h-full justify-end">
                   <div
-                    className={`w-full rounded-t-sm transition-all duration-300 ${
+                    className={`w-full rounded-t-sm transition-colors duration-300 ${
                       isPeak
                         ? 'bg-emerald-600'
                         : h.count > 0
@@ -714,7 +714,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
             <button
               type="button"
               onClick={handleDownloadCsv}
-              className="w-full flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               Download GST CSV
@@ -722,7 +722,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
             <button
               type="button"
               onClick={handleCopySummary}
-              className="w-full flex items-center justify-center gap-2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
               aria-label={copiedCsv ? "Copied summary to clipboard" : "Copy summary for CA"}
             >
               <span className="t-icon-swap" data-state={copiedCsv ? 'b' : 'a'}>
@@ -758,7 +758,7 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
           <button
             type="button"
             onClick={() => setEmailNotificationScheduled(!emailNotificationScheduled)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
               emailNotificationScheduled
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                 : 'bg-white text-slate-600 border-slate-200'

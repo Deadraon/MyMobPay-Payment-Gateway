@@ -273,7 +273,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
               <FileCheck2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
                 <span>Customer Claims &amp; Inquiries Desk</span>
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -287,7 +287,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
           <button
             onClick={fetchDisputes}
             disabled={loading}
-            className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             title="Refresh disputes"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${loading ? 'animate-spin text-blue-600' : ''}`} />
@@ -296,7 +296,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
 
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs shrink-0 flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-xs shrink-0 flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Intake New Claim</span>
@@ -321,65 +321,65 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
         <div 
           onClick={() => setStatusFilter('all')}
-          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-colors cursor-pointer ${
             statusFilter === 'all' 
               ? 'bg-blue-50/70 border-blue-300 ring-2 ring-blue-500/10' 
               : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
           }`}
         >
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Claims</span>
+            <span className="text-xs font-bold text-slate-500">Total Claims</span>
             <FileCheck2 className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">{counts.total}</div>
+          <div className="text-2xl font-semibold text-slate-900 font-mono">{counts.total}</div>
           <div className="text-[11px] text-slate-400 font-medium mt-0.5">All customer inquiries</div>
         </div>
 
         <div 
           onClick={() => setStatusFilter('open')}
-          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-colors cursor-pointer ${
             statusFilter === 'open' 
               ? 'bg-rose-50/70 border-rose-300 ring-2 ring-rose-500/10' 
               : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
           }`}
         >
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-rose-600">Open Tickets</span>
+            <span className="text-xs font-bold text-rose-600">Open Tickets</span>
             <AlertCircle className="w-4 h-4 text-rose-600" />
           </div>
-          <div className="text-2xl font-black text-rose-700 font-mono">{counts.open}</div>
+          <div className="text-2xl font-semibold text-rose-700 font-mono">{counts.open}</div>
           <div className="text-[11px] text-rose-500 font-medium mt-0.5">Needs ops or merchant action</div>
         </div>
 
         <div 
           onClick={() => setStatusFilter('evidence_requested')}
-          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-colors cursor-pointer ${
             statusFilter === 'evidence_requested' 
               ? 'bg-amber-50/70 border-amber-300 ring-2 ring-amber-500/10' 
               : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
           }`}
         >
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-600">Evidence Pending</span>
+            <span className="text-xs font-bold text-amber-600">Evidence Pending</span>
             <Clock className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-2xl font-black text-amber-700 font-mono">{counts.evidence}</div>
+          <div className="text-2xl font-semibold text-amber-700 font-mono">{counts.evidence}</div>
           <div className="text-[11px] text-amber-600 font-medium mt-0.5">Awaiting store fulfillment proof</div>
         </div>
 
         <div 
           onClick={() => setStatusFilter('resolved')}
-          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-colors cursor-pointer ${
             statusFilter === 'resolved' 
               ? 'bg-emerald-50/70 border-emerald-300 ring-2 ring-emerald-500/10' 
               : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
           }`}
         >
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">Resolved &amp; Closed</span>
+            <span className="text-xs font-bold text-emerald-600">Resolved &amp; Closed</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-emerald-700 font-mono">{counts.resolved}</div>
+          <div className="text-2xl font-semibold text-emerald-700 font-mono">{counts.resolved}</div>
           <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Payment verified or settled</div>
         </div>
       </div>
@@ -392,7 +392,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
             <button
               onClick={() => setStatusFilter('all')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 cursor-pointer ${
                 statusFilter === 'all'
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'bg-slate-100 hover:bg-slate-200/80 text-slate-600'
@@ -402,7 +402,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
             </button>
             <button
               onClick={() => setStatusFilter('open')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 cursor-pointer ${
                 statusFilter === 'open'
                   ? 'bg-rose-600 text-white shadow-xs'
                   : 'bg-rose-50 hover:bg-rose-100 text-rose-700'
@@ -412,7 +412,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
             </button>
             <button
               onClick={() => setStatusFilter('evidence_requested')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 cursor-pointer ${
                 statusFilter === 'evidence_requested'
                   ? 'bg-amber-600 text-white shadow-xs'
                   : 'bg-amber-50 hover:bg-amber-100 text-amber-700'
@@ -422,7 +422,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
             </button>
             <button
               onClick={() => setStatusFilter('merchant_responded')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 cursor-pointer ${
                 statusFilter === 'merchant_responded'
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'bg-blue-50 hover:bg-blue-100 text-blue-700'
@@ -432,7 +432,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
             </button>
             <button
               onClick={() => setStatusFilter('resolved')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 cursor-pointer ${
                 statusFilter === 'resolved'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'
@@ -450,7 +450,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
               placeholder="Search UTR, payer, merchant..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium transition-all shadow-2xs"
+              className="w-full pl-9 pr-8 py-2 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium transition-colors shadow-2xs"
             />
             {searchTerm && (
               <button 
@@ -466,7 +466,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
         {/* ── Disputes Table ─────────────────────────────────────────── */}
         <div className="overflow-x-auto rounded-2xl border border-slate-200/80">
           <table className="min-w-full divide-y divide-slate-100 text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
               <tr>
                 <th className="px-4 py-3.5 text-left">Claim ID &amp; UTR</th>
                 <th className="px-4 py-3.5 text-left">Payer / Customer</th>
@@ -520,7 +520,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
                           setSearchTerm('');
                           setStatusFilter('all');
                         }}
-                        className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
                       >
                         Reset Filters
                       </button>
@@ -575,7 +575,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
                       </td>
 
                       {/* Claim Amount */}
-                      <td className="px-4 py-3.5 text-center font-black font-mono text-slate-900 text-sm">
+                      <td className="px-4 py-3.5 text-center font-semibold font-mono text-slate-900 text-sm">
                         ₹{parseFloat(d.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
 
@@ -592,7 +592,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
                             setNewStatus(d.status || 'evidence_requested');
                             setStatusNote('');
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-bold text-xs inline-flex items-center gap-1 transition-all cursor-pointer border border-transparent hover:border-blue-200"
+                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-bold text-xs inline-flex items-center gap-1 transition-colors cursor-pointer border border-transparent hover:border-blue-200"
                         >
                           <span>Manage</span>
                           <ChevronRight className="w-3.5 h-3.5" />
@@ -621,8 +621,8 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
           >
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">Dispute Operations Ticket</span>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] font-mono text-slate-400 font-bold">Dispute Operations Ticket</span>
+                <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2 mt-0.5">
                   <span>Claim #{activeDispute.id}</span>
                   {getStatusBadge(activeDispute.status)}
                 </h3>
@@ -638,21 +638,21 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
             {/* Claim Highlights Summary */}
             <div className="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs">
               <div>
-                <p className="text-slate-400 text-[10px] uppercase font-bold">UTR / Order ID</p>
+                <p className="text-slate-400 text-[10px] font-bold">UTR / Order ID</p>
                 <p className="font-mono font-bold text-slate-800 mt-0.5">{activeDispute.utr}</p>
                 <p className="font-mono text-[10px] text-slate-400">{activeDispute.order_id}</p>
               </div>
               <div>
-                <p className="text-slate-400 text-[10px] uppercase font-bold">Claimed Amount</p>
-                <p className="font-mono font-black text-slate-900 text-sm mt-0.5">₹{activeDispute.amount}</p>
+                <p className="text-slate-400 text-[10px] font-bold">Claimed Amount</p>
+                <p className="font-mono font-semibold text-slate-900 text-sm mt-0.5">₹{activeDispute.amount}</p>
               </div>
               <div>
-                <p className="text-slate-400 text-[10px] uppercase font-bold">Payer Contact</p>
+                <p className="text-slate-400 text-[10px] font-bold">Payer Contact</p>
                 <p className="font-semibold text-slate-800 mt-0.5">{activeDispute.customer_name}</p>
                 <p className="font-mono text-[10px] text-slate-500">{activeDispute.customer_phone}</p>
               </div>
               <div>
-                <p className="text-slate-400 text-[10px] uppercase font-bold">Target Merchant Store</p>
+                <p className="text-slate-400 text-[10px] font-bold">Target Merchant Store</p>
                 <p className="font-semibold text-slate-800 mt-0.5">{activeDispute.merchant_name}</p>
                 <p className="font-mono text-[10px] text-slate-500 truncate">{activeDispute.merchant_email}</p>
               </div>
@@ -667,7 +667,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
             {/* Timeline Audit */}
             {activeDispute.timeline && activeDispute.timeline.length > 0 && (
               <div className="space-y-2">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Claim Activity Log</span>
+                <span className="text-[11px] font-bold text-slate-500 block">Claim Activity Log</span>
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3.5 space-y-2 max-h-36 overflow-y-auto">
                   {activeDispute.timeline.map((item, idx) => (
                     <div key={idx} className="text-[11px] flex items-start gap-2">
@@ -737,7 +737,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
                   <button
                     type="submit"
                     disabled={actionLoading}
-                    className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                    className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                   >
                     {actionLoading && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                     <span>Update Status</span>
@@ -763,7 +763,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
           >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                   <Plus className="w-4 h-4 text-blue-600" />
                   <span>Intake Customer Claim / Inquiry</span>
                 </h3>
@@ -873,7 +873,7 @@ export default function DisputesTab({ showToast, getAuthHeaders }) {
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {actionLoading && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   <span>Register Claim</span>

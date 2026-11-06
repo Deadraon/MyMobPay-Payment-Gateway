@@ -35,12 +35,12 @@ export default function DirectBankSettlementPage() {
       {/* Hero */}
       <section className="bg-white border-b border-slate-200 py-16 sm:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#533afd]">
+          <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#0284C7]">
             Blog — Payments Guide
           </span>
           <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
             Direct Bank Settlement vs Payment Aggregators:{" "}
-            <span className="text-[#533afd]">Which Is Better for UPI?</span>
+            <span className="text-[#0284C7]">Which Is Better for UPI?</span>
           </h1>
           <div className="mt-4 flex items-center gap-4 text-sm text-slate-500">
             <span>By <span className="font-semibold text-slate-700">Kunal Chauhan</span></span>
@@ -135,7 +135,7 @@ export default function DirectBankSettlementPage() {
           <div className="mt-10 p-6 bg-emerald-50 border border-emerald-200 rounded-xl">
             <h3 className="text-lg font-bold text-emerald-900 mt-0">Ready to switch?</h3>
             <p className="text-emerald-800 mb-4">Join founders who are keeping 100% of their revenue with direct bank settlement.</p>
-            <Link href="/login?mode=signup" className="inline-block px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full text-sm transition-all">
+            <Link href="/login?mode=signup" className="inline-block px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full text-sm transition-colors">
               Start Free — ₹499/month
             </Link>
           </div>
@@ -147,13 +147,13 @@ export default function DirectBankSettlementPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <h2 className="text-xl font-bold text-slate-900 mb-6">Related Articles</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link href="/blog/uapi-integration-guide" className="block p-5 bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-all">
-              <span className="text-xs text-[#533afd] font-semibold">Integration Guide</span>
+            <Link href="/blog/uapi-integration-guide" className="block p-5 bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+              <span className="text-xs text-[#0284C7] font-semibold">Integration Guide</span>
               <h3 className="font-semibold text-slate-900 mt-1">How to Integrate UPI Payments in Next.js</h3>
               <p className="text-sm text-slate-500 mt-2">Step-by-step guide to adding UPI payments to your Next.js app in under 15 minutes.</p>
             </Link>
-            <Link href="/blog/payment-gateway-for-saas" className="block p-5 bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-all">
-              <span className="text-xs text-[#533afd] font-semibold">Strategy</span>
+            <Link href="/blog/payment-gateway-for-saas" className="block p-5 bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+              <span className="text-xs text-[#0284C7] font-semibold">Strategy</span>
               <h3 className="font-semibold text-slate-900 mt-1">Choosing a Payment Gateway for Your SaaS</h3>
               <p className="text-sm text-slate-500 mt-2">Framework for evaluating payment gateways based on your volume, tech stack, and growth stage.</p>
             </Link>

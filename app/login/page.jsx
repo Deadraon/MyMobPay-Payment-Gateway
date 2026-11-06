@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
-import InteractiveBackground from '@/components/InteractiveBackground';
+
 import { useModalTransition } from '@/components/useModalTransition';
 import { validateStrongPassword, getPasswordCriteria } from '@/lib/passwordValidation';
 
@@ -34,7 +34,7 @@ const getBankFromUpi = (upi) => {
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) => {
   const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
   return (
-    <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 hover:scale-[1.02] ${className}`}>
+    <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 ${className}`}>
       <img
         src="/logos/mymobpay_mark.png"
         alt="MyMobPay Mark"
@@ -44,7 +44,7 @@ const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) 
         style={{ width: `${markSize}px`, height: `${markSize}px` }}
       />
       <span
-        className="font-extrabold tracking-tight leading-none text-xl sm:text-2xl"
+        className="font-semibold tracking-tight leading-none text-xl sm:text-2xl"
         style={{
           fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           color: resolvedColor,
@@ -60,7 +60,7 @@ const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) 
 // ── Authentic Indian Tricolour Flag SVG (renders accurately across Windows and all platforms) ──
 const IndianFlag = ({ className = 'w-4 h-3' }) => (
   <svg 
-    className={`${className} rounded-[1.5px] shadow-[0_0_1px_rgba(0,0,0,0.4)] overflow-hidden shrink-0 inline-block`} 
+    className={`${className} rounded-[1.5px] overflow-hidden shrink-0 inline-block`} 
     viewBox="0 0 640 480" 
     aria-label="India Flag"
   >
@@ -272,11 +272,11 @@ function OtpBoxInput({ value, onChange, disabled }) {
           onPaste={handlePaste}
           onClick={e => e.target.select()}
           placeholder={d ? '' : '·'}
-          className={`h-11 sm:h-12 w-full text-center font-bold text-[17px] sm:text-[20px] rounded-lg border-2 transition-all outline-none ${
+          className={`h-11 sm:h-12 w-full text-center font-bold text-[17px] sm:text-[20px] rounded-lg border-2 transition-colors outline-none ${
             d
-              ? 'bg-white border-[#533afd] text-[#0d253d] ring-2 ring-[#533afd]/20 shadow-xs'
+              ? 'bg-white border-[#0EA5E9] text-[#0d253d] ring-2 ring-[#0EA5E9]/20 shadow-xs'
               : 'bg-[#f6f9fc] border-[#e3e8ee] text-[#0d253d] placeholder:text-[#64748d]'
-          } focus:border-[#533afd] focus:bg-white focus:ring-2 focus:ring-[#533afd]/20 disabled:opacity-50`}
+          } focus:border-[#0EA5E9] focus:bg-white focus:ring-2 focus:ring-[#0EA5E9]/20 disabled:opacity-50`}
         />
       ))}
     </div>
@@ -1418,7 +1418,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen lg:h-screen lg:overflow-hidden grid grid-cols-1 lg:grid-cols-12 bg-[#f6f9fc] font-sohne text-[#0d253d] relative">
-      <InteractiveBackground />
+
       
       {/* ────────────────────────────────────────────────────────
          LEFT PANE: DYNAMIC PRODUCT HERO SHOWCASE (Desktop only)
@@ -1426,8 +1426,8 @@ export default function LoginPage() {
       <div className="hidden lg:flex lg:col-span-7 bg-[#070913] relative z-10 flex-col justify-between p-8 xl:p-12 h-screen overflow-hidden border-r border-[#1a2035] shrink-0">
         
         {/* Soft Ambient Depth Glows */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#533afd]/15 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3b82f6]/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#0EA5E9]/15 rounded-full pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3b82f6]/10 rounded-full pointer-events-none" />
 
         {/* Deep Tech Grid Line Overlay - Subtle & Refined */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] pointer-events-none" />
@@ -1441,7 +1441,7 @@ export default function LoginPage() {
         <div className="grid grid-cols-12 gap-6 xl:gap-8 items-center relative z-10 my-auto">
           
           <div className="col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/[0.06] border border-white/10 rounded-full text-[10px] font-semibold text-[#b9b9f9] uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/[0.06] border border-white/10 rounded-full text-[10px] font-semibold text-[#b9b9f9]">
               🟢 Direct P2P Settlements
             </div>
             
@@ -1471,7 +1471,7 @@ export default function LoginPage() {
 
           {/* Interactive Bezel Frame containing payment mockup */}
           <div className="col-span-5 flex justify-end">
-            <div className="relative w-full max-w-[220px] xl:max-w-[240px] bg-[#030712] border-4 border-[#1e293b] rounded-[30px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden aspect-[9/18.5] flex flex-col transition-transform duration-500 hover:scale-[1.04]">
+            <div className="relative w-full max-w-[220px] xl:max-w-[240px] bg-[#030712] border-4 border-[#1e293b] rounded-[30px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden aspect-[9/18.5] flex flex-col transition-transform duration-500">
               
               {/* Speaker camera notch */}
               <div className="absolute top-0 inset-x-0 h-4 flex justify-center z-30">
@@ -1489,17 +1489,17 @@ export default function LoginPage() {
 
                   <div className="flex flex-col items-center pt-1">
                     <MyMobPayLogo className="w-22 h-auto" textColor="#FFFFFF" />
-                    <p className="text-[6px] text-slate-400 font-extrabold uppercase tracking-wider mt-0.5">Direct Bank Checkout</p>
+                    <p className="text-[6px] text-slate-400 font-semibold mt-0.5">Direct Bank Checkout</p>
                   </div>
 
                   <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-2.5 shadow-sm space-y-1.5">
-                    <div className="flex justify-between items-center text-[7px] text-slate-400 font-bold uppercase">
+                    <div className="flex justify-between items-center text-[7px] text-slate-400 font-bold">
                       <span>Total Due</span>
-                      <span className="text-[#a5b4fc] font-semibold bg-[#533afd]/25 px-1 py-0.2 rounded text-[5px] uppercase">P2P Route</span>
+                      <span className="text-[#a5b4fc] font-semibold bg-[#0EA5E9]/25 px-1 py-0.2 rounded text-[5px]">P2P Route</span>
                     </div>
                     <div className="flex items-baseline">
                       <span className="text-[10px] font-bold text-slate-400 mr-0.5">₹</span>
-                      <span className="text-xl font-black text-white tracking-tight leading-none">500.00</span>
+                      <span className="text-xl font-semibold text-white tracking-tight leading-none">500.00</span>
                     </div>
                   </div>
 
@@ -1507,11 +1507,11 @@ export default function LoginPage() {
                   <div className="bg-white border border-[#e3e8ee] rounded-xl p-2.5 shadow-sm flex flex-col items-center justify-center space-y-2 relative overflow-hidden group">
                     
                     {/* Laser Scanner Beam */}
-                    <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#533afd] to-transparent top-0 animate-laser" />
+                    <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#0EA5E9] to-transparent top-0" />
 
                     <svg viewBox="0 0 100 100" className="w-18 h-18 text-slate-800" fill="currentColor">
                       {/* Corner marks */}
-                      <path d="M0,0 h24 v6 h-18 v18 h-6 z M76,0 h24 v24 h-6 v-18 h-18 z M0,76 h6 v18 h18 v6 h-24 z M76,100 h24 v-24 h-6 v18 h-18 z" fill="#533afd" opacity="0.2" />
+                      <path d="M0,0 h24 v6 h-18 v18 h-6 z M76,0 h24 v24 h-6 v-18 h-18 z M0,76 h6 v18 h18 v6 h-24 z M76,100 h24 v-24 h-6 v18 h-18 z" fill="#0EA5E9" opacity="0.2" />
                       
                       <rect x="10" y="10" width="20" height="20" fill="#0F172A" rx="2" />
                       <rect x="14" y="14" width="12" height="12" fill="#FFFFFF" rx="1.5" />
@@ -1527,18 +1527,18 @@ export default function LoginPage() {
                       
                       <path d="M40,10 h6 v6 h-6 z M50,15 h8 v4 h-8 z M45,25 h10 v4 h-10 z M35,35 h8 v8 h-8 z M55,35 h12 v4 h-12 z M35,50 h12 v4 h-12 z M50,50 h6 v6 h-6 z M10,40 h8 v8 h-8 z M25,45 h10 v4 h-10 z M70,40 h8 v6 h-8 z M82,45 h8 v4 h-8 z M70,55 h12 v4 h-12 z M10,55 h6 v6 h-6 z M80,70 h10 v8 h-10 z M80,85 h8 v8 h-8 z" fill="#0F172A" />
                       
-                      <rect x="40" y="40" width="20" height="20" fill="#533afd" rx="3" />
+                      <rect x="40" y="40" width="20" height="20" fill="#0EA5E9" rx="3" />
                       <text x="50" y="54" fontFamily="'Orbitron', sans-serif" fontWeight="950" fontSize="13" fill="#FFFFFF" textAnchor="middle">M</text>
                     </svg>
                     
-                    <span className="text-[6px] text-slate-400 font-extrabold uppercase tracking-wider flex items-center gap-0.5">
+                    <span className="text-[6px] text-slate-400 font-semibold flex items-center gap-0.5">
                       <ShieldCheck className="w-2.5 h-2.5 text-emerald-500" /> Auto-Verify Active
                     </span>
                   </div>
 
                 </div>
 
-                <div className="space-y-2 pt-2.5 border-t border-slate-800 text-center text-[6px] font-bold text-slate-500 uppercase tracking-wide">
+                <div className="space-y-2 pt-2.5 border-t border-slate-800 text-center text-[6px] font-bold text-slate-500 tracking-wide">
                   Secure checkout by MyMobPay
                 </div>
 
@@ -1634,9 +1634,9 @@ export default function LoginPage() {
                     <button 
                       type="button" 
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                      className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      className={`py-2 rounded-full text-xs font-medium transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         mode === 'signin' 
-                          ? 'bg-white text-[#533afd] shadow-xs' 
+                          ? 'bg-white text-[#0284C7] shadow-xs' 
                           : 'text-[#64748d] hover:text-[#0d253d]'
                       }`}
                     >
@@ -1646,9 +1646,9 @@ export default function LoginPage() {
                     <button 
                       type="button" 
                       onClick={() => { setMode('signup'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                      className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      className={`py-2 rounded-full text-xs font-medium transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         mode === 'signup' 
-                          ? 'bg-white text-[#533afd] shadow-xs' 
+                          ? 'bg-white text-[#0284C7] shadow-xs' 
                           : 'text-[#64748d] hover:text-[#0d253d]'
                       }`}
                     >
@@ -1670,15 +1670,15 @@ export default function LoginPage() {
                         setOtpSent(false);
                         setEmailOtpSent(false);
                       }}
-                      className={`py-2 rounded-md text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      className={`py-2 rounded-md text-xs font-semibold transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         authTab === 'whatsapp' || authTab === 'email'
-                          ? 'bg-white text-[#533afd] shadow-sm' 
+                          ? 'bg-white text-[#0284C7] shadow-sm' 
                           : 'text-[#64748d] hover:text-[#0d253d]'
                       }`}
                     >
                       {authTab === 'email' ? (
                         <>
-                          <Mail className="w-3.5 h-3.5 text-[#533afd]" />
+                          <Mail className="w-3.5 h-3.5 text-[#0284C7]" />
                           <span>Email OTP</span>
                           {isWaDegraded && (
                             <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.5 rounded ml-1">
@@ -1696,9 +1696,9 @@ export default function LoginPage() {
                     <button 
                       type="button" 
                       onClick={() => { setAuthTab('password'); setError(''); setMessage(''); }}
-                      className={`py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      className={`py-2 rounded-full text-xs font-medium transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                         authTab === 'password' 
-                          ? 'bg-white text-[#533afd] shadow-xs' 
+                          ? 'bg-white text-[#0284C7] shadow-xs' 
                           : 'text-[#64748d] hover:text-[#0d253d]'
                       }`}
                     >
@@ -1715,7 +1715,7 @@ export default function LoginPage() {
                     <div className="flex-1 text-[11px] leading-relaxed">
                       <div className="font-semibold text-amber-900 flex items-center justify-between">
                         <span>Email OTP Active</span>
-                        <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-200/80 text-amber-900 px-1.5 py-0.5 rounded">
+                        <span className="text-[9px] font-bold bg-amber-200/80 text-amber-900 px-1.5 py-0.5 rounded">
                           Auto Fallback
                         </span>
                       </div>
@@ -1756,7 +1756,7 @@ export default function LoginPage() {
                               Instant WhatsApp OTP
                             </span>
                           </label>
-                          <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all border border-[#e3e8ee] shadow-2xs">
+                          <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-colors border border-[#e3e8ee] shadow-2xs">
                             <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#0d253d] text-sm font-semibold border-r border-[#e3e8ee] shrink-0 select-none">
                               <IndianFlag className="w-4 h-3" />
                               <span>+91</span>
@@ -1781,7 +1781,7 @@ export default function LoginPage() {
                           type="button"
                           onClick={() => triggerOtpFlow('whatsapp')}
                           disabled={loading || phone.trim().replace(/\D/g, '').length !== 10}
-                          className="w-full h-11 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                          className="w-full h-11 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1799,7 +1799,7 @@ export default function LoginPage() {
                           <button
                             type="button"
                             onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                            className="text-xs text-[#533afd] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                            className="text-xs text-[#0284C7] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                           >
                             <span>Prefer email? Sign in with Email OTP &rarr;</span>
                           </button>
@@ -1815,7 +1815,7 @@ export default function LoginPage() {
                           <button
                             type="button"
                             onClick={() => { setOtpSent(false); setOtp(''); setError(''); setMessage(''); }}
-                            className="text-[11px] text-[#533afd] font-semibold hover:underline cursor-pointer"
+                            className="text-[11px] text-[#0284C7] font-semibold hover:underline cursor-pointer"
                           >
                             Change
                           </button>
@@ -1832,7 +1832,7 @@ export default function LoginPage() {
                           type="button"
                           onClick={handleVerifyOtp}
                           disabled={loading || otp.length !== 6}
-                          className="w-full h-11 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                          className="w-full h-11 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1871,7 +1871,7 @@ export default function LoginPage() {
                             <button
                               type="button"
                               onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                              className="text-xs text-[#533afd] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                              className="text-xs text-[#0284C7] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                             >
                               <span>Prefer email? Sign in with Email OTP &rarr;</span>
                             </button>
@@ -1890,11 +1890,11 @@ export default function LoginPage() {
                         <div className="flex flex-col space-y-1.5">
                           <label className="text-xs font-medium text-[#64748d] flex items-center justify-between">
                             <span>Merchant Email / ID</span>
-                            <span className="text-[#533afd] font-semibold text-[11px]">
+                            <span className="text-[#0284C7] font-semibold text-[11px]">
                               6-Digit OTP
                             </span>
                           </label>
-                          <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                          <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                             <Mail className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                             <input
                               type="text"
@@ -1915,7 +1915,7 @@ export default function LoginPage() {
                           type="button"
                           onClick={handleSendEmailOtp}
                           disabled={loading || !email.trim()}
-                          className="w-full h-11 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                          className="w-full h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1932,7 +1932,7 @@ export default function LoginPage() {
                           <button
                             type="button"
                             onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
-                            className="text-xs text-[#533afd] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                            className="text-xs text-[#0284C7] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                           >
                             <span>{isWaDegraded ? 'Prefer WhatsApp? Try WhatsApp OTP anyway \u2192' : 'Prefer WhatsApp? Sign in with WhatsApp OTP \u2192'}</span>
                           </button>
@@ -1942,13 +1942,13 @@ export default function LoginPage() {
                       <>
                         <div className="flex items-center justify-between p-3 rounded-lg bg-[#f6f9fc]/60 border border-[#e3e8ee]">
                           <div className="flex items-center gap-2 text-xs text-[#0d253d] font-medium">
-                            <Mail className="w-4 h-4 text-[#533afd] shrink-0" />
-                            <span>Code sent to <strong className="text-[#533afd]">{email}</strong></span>
+                            <Mail className="w-4 h-4 text-[#0284C7] shrink-0" />
+                            <span>Code sent to <strong className="text-[#0284C7]">{email}</strong></span>
                           </div>
                           <button
                             type="button"
                             onClick={() => { setEmailOtpSent(false); setEmailOtp(''); setError(''); setMessage(''); }}
-                            className="text-[11px] text-[#533afd] font-semibold hover:underline cursor-pointer"
+                            className="text-[11px] text-[#0284C7] font-semibold hover:underline cursor-pointer"
                           >
                             Change
                           </button>
@@ -1965,7 +1965,7 @@ export default function LoginPage() {
                           type="button"
                           onClick={handleVerifyEmailOtp}
                           disabled={loading || emailOtp.length !== 6}
-                          className="w-full h-11 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                          className="w-full h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
                         >
                           {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -1980,7 +1980,7 @@ export default function LoginPage() {
                         {/* Resend button & blue line at bottom */}
                         <div className="text-center pt-2 space-y-2.5">
                           <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-[#f6f9fc]/50 border border-[#e3e8ee]/70 text-[11px] text-[#64748d]">
-                            <Mail className="w-3.5 h-3.5 text-[#533afd] shrink-0" />
+                            <Mail className="w-3.5 h-3.5 text-[#0284C7] shrink-0" />
                             <span>Enter the 6-digit verification code from your email to sign in.</span>
                           </div>
 
@@ -1993,7 +1993,7 @@ export default function LoginPage() {
                               type="button"
                               onClick={handleSendEmailOtp}
                               disabled={loading}
-                              className="text-xs font-semibold text-[#533afd] hover:underline cursor-pointer"
+                              className="text-xs font-semibold text-[#0284C7] hover:underline cursor-pointer"
                             >
                               Didn&apos;t receive email? Resend code
                             </button>
@@ -2004,7 +2004,7 @@ export default function LoginPage() {
                             <button
                               type="button"
                               onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
-                              className="text-xs text-[#533afd] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                              className="text-xs text-[#0284C7] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
                             >
                               <span>{isWaDegraded ? 'Prefer WhatsApp? Try WhatsApp OTP anyway \u2192' : 'Prefer WhatsApp? Sign in with WhatsApp OTP \u2192'}</span>
                             </button>
@@ -2020,7 +2020,7 @@ export default function LoginPage() {
                   <form onSubmit={(e) => { e.preventDefault(); handleAuth('signin'); }} className="mt-6 flex flex-col space-y-4">
                     <div className="flex flex-col space-y-1.5">
                       <label className="text-xs font-medium text-[#64748d]">Merchant Email / ID</label>
-                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                         <Mail className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                         <input
                           type="text"
@@ -2039,12 +2039,12 @@ export default function LoginPage() {
                         <button
                           type="button"
                           onClick={handleForgotPassword}
-                          className="text-[11px] font-semibold text-[#533afd] hover:underline"
+                          className="text-[11px] font-semibold text-[#0284C7] hover:underline"
                         >
                           Forgot?
                         </button>
                       </div>
-                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                         <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                         <input
                           type={showPassword ? 'text' : 'password'}
@@ -2071,7 +2071,7 @@ export default function LoginPage() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-11 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                      className="w-full h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
                     >
                       {loading ? (
                         <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -2114,7 +2114,7 @@ export default function LoginPage() {
                         <button
                           type="button"
                           onClick={handleSignOutToSwitchAccount}
-                          className="text-[11px] font-semibold text-[#533afd] hover:underline cursor-pointer shrink-0 ml-2"
+                          className="text-[11px] font-semibold text-[#0284C7] hover:underline cursor-pointer shrink-0 ml-2"
                         >
                           Change
                         </button>
@@ -2123,7 +2123,7 @@ export default function LoginPage() {
                       {/* Stepper Progress Header */}
                       <div className="mb-5">
                         <div className="flex items-center justify-between text-xs mb-2">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#533afd] flex items-center gap-1.5">
+                          <span className="text-[11px] font-bold text-[#0284C7] flex items-center gap-1.5">
                             <span>Step {oauthStep} of 5</span>
                             <span className="text-[#64748d] font-normal">•</span>
                             <span className="text-[#0d253d]">
@@ -2144,7 +2144,7 @@ export default function LoginPage() {
                         </div>
                         <div className="w-full h-1.5 bg-[#f0f2f5] rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-[#533afd] rounded-full transition-all duration-300 ease-out"
+                            className="h-full bg-[#0EA5E9] rounded-full transition-colors duration-300 ease-out"
                             style={{ width: `${(oauthStep / 5) * 100}%` }}
                           />
                         </div>
@@ -2182,7 +2182,7 @@ export default function LoginPage() {
                                   </label>
                                   <span className="text-[10px] text-[#64748d] font-medium">8+ chars required</span>
                                 </div>
-                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                                   <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                                   <input
                                     type={showPassword ? 'text' : 'password'}
@@ -2209,7 +2209,7 @@ export default function LoginPage() {
 
                                 {/* Password criteria checklist */}
                                 <div className="p-3 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] space-y-1.5 text-[11px] mt-2">
-                                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#64748d]">Password Requirements</div>
+                                  <div className="text-[10px] font-bold text-[#64748d]">Password Requirements</div>
                                   <div className="grid grid-cols-2 gap-1.5">
                                     <span className={`flex items-center gap-1.5 ${passwordCriteria.hasMinLength ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
                                       <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasMinLength ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
@@ -2258,7 +2258,7 @@ export default function LoginPage() {
                                   <span>Business / Brand Name</span>
                                   <span className="text-red-500">*</span>
                                 </label>
-                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                                   <Building2 className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                                   <input
                                     type="text"
@@ -2307,10 +2307,10 @@ export default function LoginPage() {
                                   )}
                                 </div>
 
-                                <div className={`flex items-center rounded-lg px-3 transition-all border ${
+                                <div className={`flex items-center rounded-lg px-3 transition-colors border ${
                                   noWebsite 
                                     ? 'bg-slate-50 border-slate-200 opacity-60' 
-                                    : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs'
+                                    : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] shadow-2xs'
                                 }`}>
                                   <Globe className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                                   <span className="text-xs text-[#64748d] font-mono mr-1 select-none">https://</span>
@@ -2338,7 +2338,7 @@ export default function LoginPage() {
                                         setNoWebsite(e.target.checked);
                                         if (e.target.checked) setWebsiteUrl('');
                                       }}
-                                      className="w-3.5 h-3.5 rounded text-[#533afd] border-[#cbd5e1] focus:ring-[#533afd] cursor-pointer"
+                                      className="w-3.5 h-3.5 rounded text-[#0284C7] border-[#cbd5e1] focus:ring-[#0EA5E9] cursor-pointer"
                                     />
                                     <span className="text-xs text-[#64748d] hover:text-[#0d253d]">
                                       I don&apos;t have a website yet (UPI links will work directly)
@@ -2372,12 +2372,12 @@ export default function LoginPage() {
                                       {getBankFromUpi(upiId).name}
                                     </span>
                                   ) : (
-                                    <span className="text-[10px] text-[#533afd] font-semibold bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+                                    <span className="text-[10px] text-[#0284C7] font-semibold bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
                                       Direct Bank Routing
                                     </span>
                                   )}
                                 </div>
-                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                                   <QrCode className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                                   <input
                                     type="text"
@@ -2413,7 +2413,7 @@ export default function LoginPage() {
                                   Mobile Number (WhatsApp)
                                 </label>
 
-                                <div className="flex items-center rounded-lg px-3 transition-all border bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs">
+                                <div className="flex items-center rounded-lg px-3 transition-colors border bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] shadow-2xs">
                                   <div className="flex items-center gap-1.5 pr-2.5 py-2.5 text-[#0d253d] text-xs font-semibold border-r border-[#e3e8ee] shrink-0 select-none">
                                     <IndianFlag className="w-4 h-3" />
                                     <span>+91</span>
@@ -2434,7 +2434,7 @@ export default function LoginPage() {
 
                               {/* Account Summary Mini-Card */}
                               <div className="p-3 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] space-y-1.5 text-xs">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748d] block mb-1">
+                                <span className="text-[10px] font-bold text-[#64748d] block mb-1">
                                   Account Summary
                                 </span>
                                 <div className="flex items-center justify-between text-[11px]">
@@ -2499,7 +2499,7 @@ export default function LoginPage() {
                               (oauthStep === 4 && (!upiId.trim().includes('@') || upiId.trim().length < 5)) ||
                               (oauthStep === 5 && (phone.trim().length !== 10 || !/^[6-9]\d{9}$/.test(phone.trim())))
                             }
-                            className="flex-1 h-11 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50"
+                            className="flex-1 h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
                           >
                             {loading ? (
                               <>
@@ -2526,7 +2526,7 @@ export default function LoginPage() {
                             type="button"
                             onClick={handleSignOutToSwitchAccount}
                             disabled={loading}
-                            className="text-[11px] text-[#64748d] hover:text-[#533afd] transition-colors cursor-pointer"
+                            className="text-[11px] text-[#64748d] hover:text-[#0284C7] transition-colors cursor-pointer"
                           >
                             Want to sign up with Email OTP or a different account? <span className="underline font-semibold">Start Over</span>
                           </button>
@@ -2550,10 +2550,10 @@ export default function LoginPage() {
                           )}
                         </div>
 
-                        <div className={`flex items-center rounded-lg px-3 transition-all border ${
+                        <div className={`flex items-center rounded-lg px-3 transition-colors border ${
                           isEmailVerified 
                             ? 'bg-emerald-50/40 border-emerald-300' 
-                            : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs'
+                            : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] shadow-2xs'
                         }`}>
                           <Mail className={`w-4 h-4 mr-2 shrink-0 ${isEmailVerified ? 'text-emerald-600' : 'text-[#64748d]'}`} />
                           <input
@@ -2577,7 +2577,7 @@ export default function LoginPage() {
                                 setEmailOtpSent(false);
                                 setEmailOtp('');
                               }}
-                              className="text-[11px] text-[#533afd] font-medium hover:underline shrink-0 pl-2 cursor-pointer"
+                              className="text-[11px] text-[#0284C7] font-medium hover:underline shrink-0 pl-2 cursor-pointer"
                             >
                               Change
                             </button>
@@ -2586,7 +2586,7 @@ export default function LoginPage() {
                               type="button"
                               onClick={handleSendEmailOtp}
                               disabled={loading || !email.trim() || !email.includes('@')}
-                              className="shrink-0 ml-2 px-2.5 py-1.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] disabled:opacity-40 text-white rounded-full text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                              className="shrink-0 ml-2 px-2.5 py-1.5 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] disabled:opacity-40 text-white rounded-full text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer shadow-2xs"
                             >
                               {loading && !emailOtpSent ? (
                                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -2604,8 +2604,8 @@ export default function LoginPage() {
                           <div className="mt-2 p-3.5 rounded-xl bg-[#f6f9fc]/70 border border-[#e3e8ee] space-y-3">
                             <div className="flex items-center justify-between text-xs">
                               <span className="text-[11px] font-semibold text-[#0d253d] flex items-center gap-1.5">
-                                <Zap className="w-3.5 h-3.5 text-[#533afd]" />
-                                <span>Code sent to <strong className="text-[#533afd]">{email}</strong></span>
+                                <Zap className="w-3.5 h-3.5 text-[#0284C7]" />
+                                <span>Code sent to <strong className="text-[#0284C7]">{email}</strong></span>
                               </span>
                               {emailTimer > 0 ? (
                                 <span className="text-[10px] text-[#64748d]">
@@ -2616,7 +2616,7 @@ export default function LoginPage() {
                                   type="button"
                                   onClick={handleSendEmailOtp}
                                   disabled={loading}
-                                  className="text-[10px] font-bold text-[#533afd] hover:underline cursor-pointer"
+                                  className="text-[10px] font-bold text-[#0284C7] hover:underline cursor-pointer"
                                 >
                                   Resend Code
                                 </button>
@@ -2634,7 +2634,7 @@ export default function LoginPage() {
                               type="button"
                               onClick={handleVerifyEmailOtp}
                               disabled={loading || emailOtp.length !== 6}
-                              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                             >
                               {loading ? (
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -2658,7 +2658,7 @@ export default function LoginPage() {
                           </label>
                           <span className="text-[10px] text-[#64748d] font-medium">1 Upper, 1 Number, 1 Symbol</span>
                         </div>
-                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                           <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                           <input
                             type={showPassword ? 'text' : 'password'}
@@ -2721,7 +2721,7 @@ export default function LoginPage() {
                           <span>Business / Brand Name</span>
                           <span className="text-red-500">*</span>
                         </label>
-                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                           <Building2 className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                           <input
                             type="text"
@@ -2741,9 +2741,9 @@ export default function LoginPage() {
                             <span>Settlement UPI ID</span>
                             <span className="text-red-500">*</span>
                           </span>
-                          <span className="text-[10px] text-[#533afd] font-medium">Direct Bank Routing</span>
+                          <span className="text-[10px] text-[#0284C7] font-medium">Direct Bank Routing</span>
                         </label>
-                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] transition-all border border-[#e3e8ee] shadow-2xs">
+                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
                           <QrCode className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                           <input
                             type="text"
@@ -2786,7 +2786,7 @@ export default function LoginPage() {
                           </label>
                         </div>
 
-                        <div className="flex items-center rounded-lg px-3 transition-all border bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#533afd]/20 focus-within:border-[#533afd] shadow-2xs">
+                        <div className="flex items-center rounded-lg px-3 transition-colors border bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] shadow-2xs">
                           <div className="flex items-center gap-1.5 pr-2.5 py-2.5 text-[#0d253d] text-xs font-semibold border-r border-[#e3e8ee] shrink-0 select-none">
                             <IndianFlag className="w-4 h-3" />
                             <span>+91</span>
@@ -2811,9 +2811,9 @@ export default function LoginPage() {
                       <button
                         type="submit"
                         disabled={loading || !isEmailVerified || !(passwordCriteria?.isValid || passwordCriteria?.allMet) || !businessName.trim() || !upiId.trim() || phone.replace(/\D/g, '').length !== 10}
-                        className={`w-full h-11 rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all duration-200 mt-2 cursor-pointer disabled:cursor-not-allowed ${
+                        className={`w-full h-11 rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors duration-200 mt-2 cursor-pointer disabled:cursor-not-allowed ${
                           isEmailVerified && (passwordCriteria?.isValid || passwordCriteria?.allMet) && businessName.trim() && upiId.trim() && phone.replace(/\D/g, '').length === 10
-                            ? 'bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white shadow-sm'
+                            ? 'bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white shadow-sm'
                             : 'bg-slate-100 text-[#64748d] border border-[#e3e8ee] opacity-80'
                         }`}
                       >
@@ -2839,7 +2839,7 @@ export default function LoginPage() {
                 {mode === 'reset' && (
                   <form onSubmit={handleUpdateNewPassword} className="space-y-4">
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[#64748d] mb-1.5">
+                      <label className="block text-[11px] font-bold text-[#64748d] mb-1.5">
                         New Password
                       </label>
                       <div className="relative">
@@ -2850,7 +2850,7 @@ export default function LoginPage() {
                           onChange={(e) => setNewPassword(e.target.value)}
                           placeholder="••••••••••••"
                           minLength={6}
-                          className="w-full h-11 px-3.5 bg-white border border-[#e3e8ee] rounded-xl text-xs text-[#0d253d] focus:border-[#533afd] focus:ring-1 focus:ring-[#533afd] transition-all outline-hidden pr-10 shadow-2xs"
+                          className="w-full h-11 px-3.5 bg-white border border-[#e3e8ee] rounded-xl text-xs text-[#0d253d] focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors outline-hidden pr-10 shadow-2xs"
                         />
                         <button
                           type="button"
@@ -2867,7 +2867,7 @@ export default function LoginPage() {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[#64748d] mb-1.5">
+                      <label className="block text-[11px] font-bold text-[#64748d] mb-1.5">
                         Confirm New Password
                       </label>
                       <input
@@ -2877,14 +2877,14 @@ export default function LoginPage() {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="••••••••••••"
                         minLength={6}
-                        className="w-full h-11 px-3.5 bg-white border border-[#e3e8ee] rounded-xl text-xs text-[#0d253d] focus:border-[#533afd] focus:ring-1 focus:ring-[#533afd] transition-all outline-hidden shadow-2xs"
+                        className="w-full h-11 px-3.5 bg-white border border-[#e3e8ee] rounded-xl text-xs text-[#0d253d] focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors outline-hidden shadow-2xs"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-11 bg-[#533afd] hover:bg-[#432bc9] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+                      className="w-full h-11 bg-[#0EA5E9] hover:bg-[#432bc9] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
                     >
                       {loading ? (
                         <>
@@ -2905,7 +2905,7 @@ export default function LoginPage() {
                 {mode !== 'reset' && !isOAuthSignup && (
                   <div className="relative my-6 flex items-center justify-center">
                     <div className="w-full h-px bg-[#e3e8ee]"></div>
-                    <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold uppercase tracking-wider">
+                    <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold">
                       OR
                     </span>
                   </div>
@@ -2944,7 +2944,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowQrModal(true)}
-                      className="px-3 py-1.5 rounded-md bg-white hover:bg-[#f6f9fc] text-[#533afd] text-xs font-bold transition-colors cursor-pointer shadow-xs border border-slate-200/80"
+                      className="px-3 py-1.5 rounded-md bg-white hover:bg-[#f6f9fc] text-[#0284C7] text-xs font-bold transition-colors cursor-pointer shadow-xs border border-slate-200/80"
                     >
                       Show QR
                     </button>
@@ -2961,7 +2961,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
-                      className="font-bold text-[#533afd] hover:underline cursor-pointer ml-1"
+                      className="font-bold text-[#0284C7] hover:underline cursor-pointer ml-1"
                     >
                       Log In to Dashboard
                     </button>
@@ -2972,7 +2972,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => { setMode('signup'); setError(''); setMessage(''); }}
-                      className="font-bold text-[#533afd] hover:underline cursor-pointer ml-1"
+                      className="font-bold text-[#0284C7] hover:underline cursor-pointer ml-1"
                     >
                       Sign Up
                     </button>
@@ -2983,7 +2983,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
-                      className="font-bold text-[#533afd] hover:underline cursor-pointer ml-1"
+                      className="font-bold text-[#0284C7] hover:underline cursor-pointer ml-1"
                     >
                       Log In to Dashboard
                     </button>
@@ -3001,7 +3001,7 @@ export default function LoginPage() {
               </div>
               <span className="hidden sm:inline text-[#c4c6ce]">•</span>
               <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#533afd]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#0284C7]" />
                 <span>NPCI UPI Standard</span>
               </div>
               <span className="hidden sm:inline text-[#c4c6ce]">•</span>
@@ -3016,7 +3016,7 @@ export default function LoginPage() {
               <p className="text-xs text-[#64748d] flex items-center justify-center gap-1.5 flex-wrap">
                 <span>Need assistance? Contact support:</span>
                 <a 
-                  className="font-semibold text-[#533afd] hover:underline inline-flex items-center gap-1" 
+                  className="font-semibold text-[#0284C7] hover:underline inline-flex items-center gap-1" 
                   href="mailto:support@mymobpay.tech"
                 >
                   <Mail className="w-3.5 h-3.5" />
@@ -3067,7 +3067,7 @@ export default function LoginPage() {
                 style={{ width: '100%', height: 'auto' }}
               />
               <div className="absolute w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center">
-                <Zap className="w-4 h-4 text-[#533afd]" />
+                <Zap className="w-4 h-4 text-[#0284C7]" />
               </div>
             </div>
 

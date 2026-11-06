@@ -55,7 +55,7 @@ export default function ReportsTab({ showToast, getAuthHeaders }) {
       <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-slate-900 tracking-tight flex items-center gap-2">
               <DownloadCloud className="w-5 h-5 text-blue-600" />
               <span>Financial Reports &amp; Data Exports</span>
             </h2>
@@ -87,7 +87,7 @@ export default function ReportsTab({ showToast, getAuthHeaders }) {
           <button
             onClick={() => handleDownload('transactions', `mymobpay_transactions_${Date.now()}.csv`)}
             disabled={downloadingType === 'transactions'}
-            className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-50"
+            className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
           >
             <ArrowDownToLine className="w-4 h-4" />
             <span>{downloadingType === 'transactions' ? 'Generating CSV...' : 'Download Orders CSV'}</span>
@@ -109,7 +109,7 @@ export default function ReportsTab({ showToast, getAuthHeaders }) {
           <button
             onClick={() => handleDownload('merchants', `mymobpay_merchants_${Date.now()}.csv`)}
             disabled={downloadingType === 'merchants'}
-            className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-50"
+            className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
           >
             <ArrowDownToLine className="w-4 h-4" />
             <span>{downloadingType === 'merchants' ? 'Generating CSV...' : 'Download Merchants CSV'}</span>
@@ -131,7 +131,7 @@ export default function ReportsTab({ showToast, getAuthHeaders }) {
           <button
             onClick={() => handleDownload('gst', `mymobpay_gst_schedule_${Date.now()}.csv`)}
             disabled={downloadingType === 'gst'}
-            className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-50"
+            className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
           >
             <ArrowDownToLine className="w-4 h-4" />
             <span>{downloadingType === 'gst' ? 'Generating CSV...' : 'Download GST Schedule'}</span>
@@ -174,7 +174,7 @@ export default function ReportsTab({ showToast, getAuthHeaders }) {
 
           <button
             type="submit"
-            className="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer"
+            className="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-xs cursor-pointer"
           >
             Save Automated Schedule
           </button>

@@ -348,10 +348,10 @@ export default function MerchantOnboardingWizard({
           {/* Top Brand / Header */}
           <div className="space-y-6 relative z-10">
             <div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 font-mono">
+              <span className="text-[10px] font-semibold text-amber-400 font-mono">
                 ONBOARDING RAIL
               </span>
-              <h3 className="text-lg font-black text-white tracking-tight mt-0.5">
+              <h3 className="text-lg font-semibold text-white tracking-tight mt-0.5">
                 Setup Command
               </h3>
             </div>
@@ -390,11 +390,11 @@ export default function MerchantOnboardingWizard({
                       <>
                         {lineGlowClass && (
                           <div
-                            className={`absolute left-[14px] top-8 bottom-0 w-1 ${lineGlowClass} blur-[2px] pointer-events-none transition-all duration-300`}
+                            className={`absolute left-[14px] top-8 bottom-0 w-1 ${lineGlowClass} pointer-events-none transition-colors duration-300`}
                           />
                         )}
                         <div
-                          className={`absolute left-[15px] top-8 bottom-0 w-[2px] ${lineBarClass} transition-all duration-300`}
+                          className={`absolute left-[15px] top-8 bottom-0 w-[2px] ${lineBarClass} transition-colors duration-300`}
                         />
                       </>
                     )}
@@ -402,11 +402,11 @@ export default function MerchantOnboardingWizard({
                     {/* Step indicator squircle / badge */}
                     <div className="relative z-10 shrink-0">
                       {isCompleted ? (
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-500 text-slate-950 flex items-center justify-center font-black text-xs shadow-md shadow-emerald-500/30">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-500 text-slate-950 flex items-center justify-center font-semibold text-xs shadow-md shadow-emerald-500/30">
                           <Check className="w-4 h-4 stroke-[3]" />
                         </div>
                       ) : isActive ? (
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center font-black text-xs shadow-lg shadow-amber-400/40 ring-4 ring-amber-400/20">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center font-semibold text-xs shadow-lg shadow-amber-400/40 ring-4 ring-amber-400/20">
                           {step.num}
                         </div>
                       ) : (
@@ -456,7 +456,7 @@ export default function MerchantOnboardingWizard({
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Zero Escrow
             </span>
-            <span className="font-mono font-bold text-amber-400 tracking-wider">
+            <span className="font-mono font-bold text-amber-400">
               T+0 Rail
             </span>
           </div>
@@ -471,10 +471,10 @@ export default function MerchantOnboardingWizard({
             {/* Top Header Row with Step Badge & Close Button */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <h3 className="font-extrabold text-base text-slate-900 tracking-tight">
+                <h3 className="font-semibold text-base text-slate-900 tracking-tight">
                   Merchant Setup Wizard
                 </h3>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full border border-amber-200">
+                <span className="text-[10px] font-semibold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full border border-amber-200">
                   STEP {currentStep} OF 4
                 </span>
               </div>
@@ -507,7 +507,7 @@ export default function MerchantOnboardingWizard({
 
                 {/* Primary Heading & Description */}
                 <div className="space-y-1">
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  <h4 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
                     Where should customer payments go?
                   </h4>
                   <p className="text-xs text-slate-500 leading-relaxed font-medium">
@@ -519,7 +519,7 @@ export default function MerchantOnboardingWizard({
                   <div>
                     {/* Label Row with Verification Pill */}
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider">
+                      <label className="block text-[11px] font-semibold text-slate-700">
                         YOUR PRIMARY UPI ID / VPA <span className="text-rose-500">*</span>
                       </label>
                       {isUpiValid && (
@@ -593,7 +593,7 @@ export default function MerchantOnboardingWizard({
                             key={handle}
                             type="button"
                             onClick={() => handleAppendHandle(handle)}
-                            className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-xl border transition-all cursor-pointer ${
+                            className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-xl border transition-colors cursor-pointer ${
                               isSelected
                                 ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold shadow-xs ring-1 ring-amber-400/30'
                                 : 'bg-slate-50 hover:bg-amber-50/50 border-slate-200 hover:border-amber-200 text-slate-700'
@@ -634,7 +634,7 @@ export default function MerchantOnboardingWizard({
                     <button
                       type="submit"
                       disabled={upiSaving || !upiId.trim()}
-                      className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-[0.99] text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/25 disabled:opacity-50 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-[0.99] text-slate-950 font-semibold text-xs sm:text-sm shadow-lg shadow-amber-500/25 disabled:opacity-50 transition-colors cursor-pointer"
                     >
                       <span>{upiSaving ? 'Saving…' : 'Save & Continue'}</span>
                       <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -660,7 +660,7 @@ export default function MerchantOnboardingWizard({
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  <h4 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
                     Connect Bank Email for Auto-Verification
                   </h4>
                   <p className="text-xs text-slate-500 leading-relaxed font-medium">
@@ -690,7 +690,7 @@ export default function MerchantOnboardingWizard({
                     <button
                       type="button"
                       onClick={() => copyToClipboard(forwardingEmail, setCopiedEmail)}
-                      className="h-11 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all cursor-pointer shrink-0"
+                      className="h-11 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-colors cursor-pointer shrink-0"
                       aria-label="Copy forwarding email address"
                     >
                       <span className="t-icon-swap" data-state={copiedEmail ? 'b' : 'a'}>
@@ -709,7 +709,7 @@ export default function MerchantOnboardingWizard({
                 {/* 3 Step Guide */}
                 <div className="space-y-2 text-xs">
                   <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200">
-                    <span className="w-5 h-5 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center text-xs font-semibold shrink-0 mt-0.5">
                       1
                     </span>
                     <div className="space-y-0.5">
@@ -727,7 +727,7 @@ export default function MerchantOnboardingWizard({
                   </div>
 
                   <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200">
-                    <span className="w-5 h-5 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center text-xs font-semibold shrink-0 mt-0.5">
                       2
                     </span>
                     <div>
@@ -767,14 +767,14 @@ export default function MerchantOnboardingWizard({
                           href={gmailIntercept.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors"
                         >
                           <span>Confirm Forwarding in Google (1-Click)</span>
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-extrabold bg-white px-2.5 py-1 rounded-lg border border-emerald-300 text-emerald-900">
+                          <span className="font-mono text-xs font-semibold bg-white px-2.5 py-1 rounded-lg border border-emerald-300 text-emerald-900">
                             {gmailIntercept.code}
                           </span>
                           <button
@@ -808,7 +808,7 @@ export default function MerchantOnboardingWizard({
                   <button
                     type="button"
                     onClick={handleCompleteEmailStep}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-[0.99] text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-[0.99] text-slate-950 font-semibold text-xs sm:text-sm shadow-lg shadow-amber-500/25 transition-colors cursor-pointer"
                   >
                     <span>Continue to Bank Details</span>
                     <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -833,7 +833,7 @@ export default function MerchantOnboardingWizard({
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  <h4 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
                     Add Bank Account for Net Banking (Optional)
                   </h4>
                   <p className="text-xs text-slate-500 leading-relaxed font-medium">
@@ -851,7 +851,7 @@ export default function MerchantOnboardingWizard({
                   {/* ── Prominent, high-contrast, clearly visible input fields ── */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                         Bank Name
                       </label>
                       <input
@@ -859,12 +859,12 @@ export default function MerchantOnboardingWizard({
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
                         placeholder="e.g. HDFC Bank, ICICI Bank, SBI"
-                        className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-bold text-xs sm:text-sm placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-all"
+                        className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-bold text-xs sm:text-sm placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-colors"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                         Account Holder Name
                       </label>
                       <input
@@ -872,14 +872,14 @@ export default function MerchantOnboardingWizard({
                         value={bankAccName}
                         onChange={(e) => setBankAccName(e.target.value)}
                         placeholder="e.g. Rahul Sharma or Store Pvt Ltd"
-                        className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-bold text-xs sm:text-sm placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-all"
+                        className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-bold text-xs sm:text-sm placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-colors"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                         Account Number
                       </label>
                       <input
@@ -887,12 +887,12 @@ export default function MerchantOnboardingWizard({
                         value={bankAccNum}
                         onChange={(e) => setBankAccNum(e.target.value.replace(/\D/g, ''))}
                         placeholder="Enter bank account number"
-                        className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-mono font-bold text-xs sm:text-sm tracking-wider placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-all"
+                        className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-mono font-bold text-xs sm:text-sm placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-colors"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                         Confirm Account Number
                       </label>
                       <input
@@ -900,13 +900,13 @@ export default function MerchantOnboardingWizard({
                         value={bankAccNumConfirm}
                         onChange={(e) => setBankAccNumConfirm(e.target.value.replace(/\D/g, ''))}
                         placeholder="Re-enter bank account number"
-                        className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-mono font-bold text-xs sm:text-sm tracking-wider placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-all"
+                        className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-mono font-bold text-xs sm:text-sm placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-colors"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                       IFSC Code
                     </label>
                     <input
@@ -915,7 +915,7 @@ export default function MerchantOnboardingWizard({
                       value={bankIfsc}
                       onChange={(e) => setBankIfsc(e.target.value.toUpperCase().trim())}
                       placeholder="e.g. HDFC0001234"
-                      className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-mono font-bold text-xs sm:text-sm uppercase tracking-widest placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-all"
+                      className="w-full h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-slate-50/90 text-slate-900 font-mono font-bold text-xs sm:text-sm placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/15 shadow-xs transition-colors"
                     />
                   </div>
 
@@ -934,7 +934,7 @@ export default function MerchantOnboardingWizard({
                       <button
                         type="button"
                         onClick={handleSkipBank}
-                        className="px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold text-xs transition-all cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold text-xs transition-colors cursor-pointer"
                       >
                         Skip & Add Later
                       </button>
@@ -942,7 +942,7 @@ export default function MerchantOnboardingWizard({
                       <button
                         type="submit"
                         disabled={bankSaving}
-                        className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-semibold text-xs sm:text-sm shadow-lg shadow-amber-500/25 transition-colors cursor-pointer"
                       >
                         <span>{bankSaving ? 'Saving…' : 'Save & Continue'}</span>
                         <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -963,7 +963,7 @@ export default function MerchantOnboardingWizard({
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  <h4 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
                     Your Account Is Live!
                   </h4>
                   <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed font-medium">
@@ -1018,7 +1018,7 @@ export default function MerchantOnboardingWizard({
                     href={`/pay?key=${profile?.api_key || ''}&amount=1.00&project=${encodeURIComponent(profile?.business_name || 'MyMobPay Merchant')}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs shrink-0 flex items-center gap-1.5 shadow-sm shadow-amber-500/20 transition-all cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-semibold text-xs shrink-0 flex items-center gap-1.5 shadow-sm shadow-amber-500/20 transition-colors cursor-pointer"
                   >
                     <span>Test ₹1</span>
                     <ExternalLink className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1031,7 +1031,7 @@ export default function MerchantOnboardingWizard({
                     type="button"
                     disabled={completing}
                     onClick={handleFinishWizard}
-                    className="w-full py-3 sm:py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-[0.99] text-slate-950 font-black text-sm shadow-lg shadow-amber-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full py-3 sm:py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-[0.99] text-slate-950 font-semibold text-sm shadow-lg shadow-amber-500/25 transition-colors cursor-pointer flex items-center justify-center gap-2"
                   >
                     <span>{completing ? 'Completing setup…' : 'Enter Merchant Dashboard'}</span>
                     <ChevronRight className="w-4 h-4 stroke-[3]" />

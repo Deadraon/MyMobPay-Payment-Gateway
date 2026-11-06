@@ -53,7 +53,7 @@ import {
 const formatINR = (n) => '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-primary)' }) => (
-  <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300 hover:scale-[1.02]`}>
+  <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300`}>
         {/* 3D Ribbon M Mark */}
     <image
       href="/logos/mymobpay_mark.png"
@@ -1656,7 +1656,7 @@ export default function DashboardPage() {
 
     if (!/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword) || !/[^A-Za-z0-9]/.test(newPassword)) {
 
-      setPasswordResetError('Password must contain at least one uppercase letter, one number, and one special character.');
+      setPasswordResetError('Password must contain at least one letter, one number, and one special character.');
 
       return;
 
@@ -2410,9 +2410,9 @@ export default function DashboardPage() {
 
         <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-xl z-50">
 
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</p>
+          <p className="text-[10px] font-bold text-slate-400">{label}</p>
 
-          <p className="text-base font-black text-slate-900 mt-1.5 flex items-baseline">
+          <p className="text-base font-semibold text-slate-900 mt-1.5 flex items-baseline">
 
             <span className="text-xs font-bold text-slate-400 mr-0.5">₹</span>
 
@@ -2738,7 +2738,7 @@ echo "Order Created: " . $data['orderId'];
         <div className="flex flex-col flex-1 overflow-hidden">
           {/* Logo & Brand */}
           <div className="px-6 pt-6 pb-4 flex items-center">
-            <MyMobPayLogo className="w-44 lg:w-48 h-auto transition-transform hover:scale-[1.02]" textColor="#FFFFFF" />
+            <MyMobPayLogo className="w-44 lg:w-48 h-auto transition-transform" textColor="#FFFFFF" />
           </div>
 
           {/* Navigation Links with Original Categories */}
@@ -2755,7 +2755,7 @@ echo "Order Created: " . $data['orderId'];
               <button
                 onClick={() => setActiveTab('admin')}
                 type="button"
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 ${
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs transition-colors border font-bold cursor-pointer mt-1 ${
                   activeTab === 'admin'
                     ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-400/40'
                     : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent'
@@ -2763,15 +2763,15 @@ echo "Order Created: " . $data['orderId'];
                 title="Access SaaS Super Admin Console"
               >
                 <Shield className="w-3.5 h-3.5 text-blue-200" />
-                <span className="flex-1 text-left font-black tracking-wide text-[11px]">Admin Console</span>
-                <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-black uppercase">Root</span>
+                <span className="flex-1 text-left font-semibold tracking-wide text-[11px]">Admin Console</span>
+                <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-semibold">Root</span>
               </button>
             )}
 
             <div className="h-px bg-slate-800 my-1.5" />
 
             {/* Category: MAIN */}
-            <p className="px-3.5 pt-1.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="px-3.5 pt-1.5 pb-1 text-[10px] font-semibold text-slate-400">
               Main
             </p>
 
@@ -2800,7 +2800,7 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             {/* Category: OPERATIONS */}
-            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
               Operations
             </p>
 
@@ -2815,14 +2815,14 @@ echo "Order Created: " . $data['orderId'];
                 <span className="truncate">Verification</span>
               </div>
               {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0">
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0">
                   {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
                 </span>
               )}
             </button>
 
             {/* Category: REPORTS */}
-            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
               Reports &amp; Analytics
             </p>
 
@@ -2853,7 +2853,7 @@ echo "Order Created: " . $data['orderId'];
             {/* Category: PLATFORM SAAS REVENUE (ADMIN ONLY) */}
             {isAdminUser && (
               <>
-                <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-indigo-400 flex items-center justify-between">
                   <span>Platform SaaS</span>
                   <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">Admin</span>
                 </p>
@@ -2869,7 +2869,7 @@ echo "Order Created: " . $data['orderId'];
                     <span className="truncate">SaaS Subscriptions</span>
                   </div>
                   {subscriptionOrders.length > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
                       {subscriptionOrders.length}
                     </span>
                   )}
@@ -2878,7 +2878,7 @@ echo "Order Created: " . $data['orderId'];
             )}
 
             {/* Category: DEVELOPER & SETTINGS */}
-            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
               Others
             </p>
 
@@ -2954,15 +2954,15 @@ echo "Order Created: " . $data['orderId'];
             {/* Mobile Hamburger Toggle (Glitch-Free Responsive Transition) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden w-10 h-10 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200/70 transition-all shrink-0 flex items-center justify-center border border-slate-200/90 bg-white shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="md:hidden w-10 h-10 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200/70 transition-colors shrink-0 flex items-center justify-center border border-slate-200/90 bg-white shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               type="button"
               title={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={isMobileMenuOpen}
             >
               <div className="relative w-5 h-5 flex items-center justify-center">
-                <Menu className={`w-5 h-5 absolute inset-0 transition-all duration-200 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-75 pointer-events-none' : 'opacity-100 rotate-0 scale-100'}`} />
-                <X className={`w-5 h-5 absolute inset-0 transition-all duration-200 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75 pointer-events-none'}`} />
+                <Menu className={`w-5 h-5 absolute inset-0 transition-colors duration-200 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-75 pointer-events-none' : 'opacity-100 rotate-0 scale-100'}`} />
+                <X className={`w-5 h-5 absolute inset-0 transition-colors duration-200 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75 pointer-events-none'}`} />
               </div>
             </button>
 
@@ -2977,7 +2977,7 @@ echo "Order Created: " . $data['orderId'];
                 onClick={() => {
                   if (profile?.sandbox_mode !== false) toggleSandboxMode();
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
                   profile?.sandbox_mode === false
                     ? 'bg-white text-blue-600 shadow-sm border border-slate-200/60'
                     : 'text-slate-500 hover:text-slate-900'
@@ -3001,7 +3001,7 @@ echo "Order Created: " . $data['orderId'];
                 onClick={() => {
                   if (profile?.sandbox_mode === false) toggleSandboxMode();
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-2 cursor-pointer ${
                   profile?.sandbox_mode !== false
                     ? 'bg-white text-amber-600 shadow-sm border border-slate-200/60 font-semibold'
                     : 'text-slate-500 hover:text-slate-900'
@@ -3031,7 +3031,7 @@ echo "Order Created: " . $data['orderId'];
                     setActiveTab('transactions');
                   }
                 }}
-                className="h-10 w-full pl-10 pr-12 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all shadow-xs"
+                className="h-10 w-full pl-10 pr-12 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-colors shadow-xs"
               />
               <kbd
                 onClick={() => setIsCommandPaletteOpen(true)}
@@ -3057,7 +3057,7 @@ echo "Order Created: " . $data['orderId'];
             {/* Mobile Mode Switcher Pill (Compact & Uncluttered) */}
             <button
               onClick={toggleSandboxMode}
-              className={`sm:hidden h-8 px-2.5 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1.5 shrink-0 ${
+              className={`sm:hidden h-8 px-2.5 rounded-lg text-[10px] font-bold border transition-colors flex items-center gap-1.5 shrink-0 ${
                 profile?.sandbox_mode === false
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80 shadow-2xs'
                   : 'bg-amber-50 text-amber-700 border-amber-200/80 shadow-2xs'
@@ -3078,7 +3078,7 @@ echo "Order Created: " . $data['orderId'];
                     setIsNotificationOpen(!isNotificationOpen);
                     setIsProfileDropdownOpen(false);
                   }}
-                  className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
+                  className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
                     isNotificationOpen
                       ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border-slate-200/80 bg-white'
@@ -3330,7 +3330,7 @@ echo "Order Created: " . $data['orderId'];
                     setIsMobileMenuOpen(false);
                     setIsBusinessInfoModalOpen(true);
                   }}
-                  className="w-full flex items-center gap-3 p-3 bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.12] border border-white/[0.08] rounded-2xl transition-all text-left cursor-pointer group shrink-0"
+                  className="w-full flex items-center gap-3 p-3 bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.12] border border-white/[0.08] rounded-2xl transition-colors text-left cursor-pointer group shrink-0"
                   title="View Profile and Settings"
                   type="button"
                 >
@@ -3346,7 +3346,7 @@ echo "Order Created: " . $data['orderId'];
                     </p>
                     <p className="text-[11px] font-mono text-slate-400 truncate">{user?.email || 'merchant@mymobpay.tech'}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-colors shrink-0" />
                 </button>
 
                 {/* Mobile Mode Switcher inside Drawer */}
@@ -3362,7 +3362,7 @@ echo "Order Created: " . $data['orderId'];
                       toggleSandboxMode();
                     }}
                     type="button"
-                    className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-colors cursor-pointer border border-white/10"
+                    className="px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-colors cursor-pointer border border-white/10"
                   >
                     Switch
                   </button>
@@ -3389,7 +3389,7 @@ echo "Order Created: " . $data['orderId'];
                         setIsMobileMenuOpen(false);
                       }}
                       type="button"
-                      className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer mt-1 ${
+                      className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-colors border font-bold cursor-pointer mt-1 ${
                         activeTab === 'admin'
                           ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-400/40'
                           : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent'
@@ -3397,15 +3397,15 @@ echo "Order Created: " . $data['orderId'];
                       title="Access SaaS Super Admin Console"
                     >
                       <Shield className="w-3.5 h-3.5 text-blue-200" />
-                      <span className="flex-1 text-left font-black tracking-wide text-[11px]">Admin Console</span>
-                      <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-black uppercase">Root</span>
+                      <span className="flex-1 text-left font-semibold tracking-wide text-[11px]">Admin Console</span>
+                      <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-semibold">Root</span>
                     </button>
                   )}
 
                   <div className="h-px bg-slate-800 my-2" />
 
                   {/* Category: General */}
-                  <p className="px-3.5 pt-1.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3.5 pt-1.5 pb-1 text-[10px] font-semibold text-slate-400">
                     Main
                   </p>
                   <button
@@ -3438,7 +3438,7 @@ echo "Order Created: " . $data['orderId'];
                   </button>
 
                   {/* Category: Operations */}
-                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
                     Operations
                   </p>
                   <button
@@ -3455,14 +3455,14 @@ echo "Order Created: " . $data['orderId'];
                       <span className="truncate">Verification</span>
                     </div>
                     {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0">
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0">
                         {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
                       </span>
                     )}
                   </button>
 
                   {/* Category: Reports & Analytics */}
-                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
                     Reports &amp; Analytics
                   </p>
                   <button
@@ -3497,7 +3497,7 @@ echo "Order Created: " . $data['orderId'];
                   {/* Category: Platform SaaS (Admin Only) */}
                   {isAdminUser && (
                     <>
-                      <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                      <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-indigo-400 flex items-center justify-between">
                         <span>Platform SaaS</span>
                         <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">Admin</span>
                       </p>
@@ -3515,7 +3515,7 @@ echo "Order Created: " . $data['orderId'];
                           <span className="truncate">SaaS Subscriptions</span>
                         </div>
                         {subscriptionOrders.length > 0 && (
-                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
                             {subscriptionOrders.length}
                           </span>
                         )}
@@ -3524,7 +3524,7 @@ echo "Order Created: " . $data['orderId'];
                   )}
 
                   {/* Category: Developer & Settings */}
-                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
                     Others
                   </p>
                   <button
@@ -3607,13 +3607,13 @@ echo "Order Created: " . $data['orderId'];
             {activationDismissed && (
               <div className="bg-gradient-to-r from-emerald-500/10 via-emerald-50 to-teal-50 border border-emerald-200/90 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-fade-in">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black shadow-md shadow-emerald-500/20 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-semibold shadow-md shadow-emerald-500/20 shrink-0">
                     <Check className="w-6 h-6 stroke-[3]" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-black text-slate-900">Console Activated Successfully!</h4>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 uppercase tracking-wider">
+                      <h4 className="text-sm font-semibold text-slate-900">Console Activated Successfully!</h4>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
                         Active & Live
                       </span>
                     </div>
@@ -3622,7 +3622,7 @@ echo "Order Created: " . $data['orderId'];
                 </div>
                 <button 
                   onClick={() => setActivationDismissed(false)}
-                  className="self-end sm:self-center px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+                  className="self-end sm:self-center px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer"
                   type="button"
                 >
                   Dismiss
@@ -3637,7 +3637,7 @@ echo "Order Created: " . $data['orderId'];
 
               <div>
 
-                <h2 className="text-3xl font-black text-slate-900 capitalize">{activeTab === 'api' ? 'API Credentials' : activeTab === 'subscription' ? 'Subscription Console' : activeTab === 'payment-links' ? 'Payment Links' : activeTab}</h2>
+                <h2 className="text-3xl font-semibold text-slate-900 capitalize">{activeTab === 'api' ? 'API Credentials' : activeTab === 'subscription' ? 'Subscription Console' : activeTab === 'payment-links' ? 'Payment Links' : activeTab}</h2>
 
                 <p className="text-sm text-slate-500 font-medium mt-1">
 
@@ -3683,7 +3683,7 @@ echo "Order Created: " . $data['orderId'];
 
                   disabled={filteredOrders.length === 0}
 
-                  className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white-pure rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-md shadow-blue-500/20 disabled:opacity-50"
+                  className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white-pure rounded-xl font-bold text-sm flex items-center gap-2 transition-colors shadow-md shadow-blue-500/20 disabled:opacity-50"
 
                 >
 
@@ -3738,7 +3738,7 @@ echo "Order Created: " . $data['orderId'];
 
                     onClick={handleDismissVerification}
 
-                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white-pure font-bold text-sm rounded-xl whitespace-nowrap transition-all shadow-sm shadow-blue-500/20"
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white-pure font-bold text-sm rounded-xl whitespace-nowrap transition-colors shadow-sm shadow-blue-500/20"
 
                   >
 
@@ -3964,16 +3964,16 @@ echo "Order Created: " . $data['orderId'];
 
             <div className="w-full md:w-64 bg-slate-50 border-r border-slate-200/80 p-6 flex flex-col shrink-0 gap-6">
               <div>
-                <h3 className="text-base font-black text-slate-900">Merchant Settings</h3>
-                <p className="text-[10px] text-slate-500 font-bold mt-0.5 uppercase tracking-wide">Control Dashboard & Profile</p>
+                <h3 className="text-base font-semibold text-slate-900">Merchant Settings</h3>
+                <p className="text-[10px] text-slate-500 font-bold mt-0.5 tracking-wide">Control Dashboard & Profile</p>
               </div>
 
               <div className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible gap-1 pb-2 md:pb-0 scrollbar-none">
                 <button
                   onClick={() => setProfileModalTab('profile')}
-                  className={`flex-1 md:flex-initial flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-all border whitespace-nowrap ${
+                  className={`flex-1 md:flex-initial flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-colors border whitespace-nowrap ${
                     profileModalTab === 'profile' 
-                      ? 'bg-[#EEF2FF] text-blue-750 border-slate-250 shadow-xs border-l-[3.5px] border-l-[#3b5bdb] font-black' 
+                      ? 'bg-[#EEF2FF] text-blue-750 border-slate-250 shadow-xs border-l-[3.5px] border-l-[#3b5bdb] font-semibold' 
                       : 'text-slate-500 hover:bg-white/50 hover:text-slate-900 border-transparent'
                   }`}
                 >
@@ -3983,9 +3983,9 @@ echo "Order Created: " . $data['orderId'];
 
                 <button
                   onClick={() => setProfileModalTab('business')}
-                  className={`flex-1 md:flex-initial flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-all border whitespace-nowrap ${
+                  className={`flex-1 md:flex-initial flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-colors border whitespace-nowrap ${
                     profileModalTab === 'business' 
-                      ? 'bg-[#FEF3C7] text-amber-900 border-amber-250 shadow-xs border-l-[3.5px] border-l-[#d97706] font-black' 
+                      ? 'bg-[#FEF3C7] text-amber-900 border-amber-250 shadow-xs border-l-[3.5px] border-l-[#d97706] font-semibold' 
                       : 'text-slate-500 hover:bg-white/50 hover:text-slate-900 border-transparent'
                   }`}
                 >
@@ -3995,9 +3995,9 @@ echo "Order Created: " . $data['orderId'];
 
                 <button
                   onClick={() => setProfileModalTab('payment')}
-                  className={`flex-1 md:flex-initial flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-all border whitespace-nowrap ${
+                  className={`flex-1 md:flex-initial flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-colors border whitespace-nowrap ${
                     profileModalTab === 'payment' 
-                      ? 'bg-[#ECFDF5] text-emerald-950 border-emerald-250 shadow-xs border-l-[3.5px] border-l-[#059669] font-black' 
+                      ? 'bg-[#ECFDF5] text-emerald-950 border-emerald-250 shadow-xs border-l-[3.5px] border-l-[#059669] font-semibold' 
                       : 'text-slate-500 hover:bg-white/50 hover:text-slate-900 border-transparent'
                   }`}
                 >
@@ -4007,9 +4007,9 @@ echo "Order Created: " . $data['orderId'];
 
                 <button
                   onClick={() => setProfileModalTab('security')}
-                  className={`flex-1 md:flex-initial flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-all border whitespace-nowrap ${
+                  className={`flex-1 md:flex-initial flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl font-bold text-xs transition-colors border whitespace-nowrap ${
                     profileModalTab === 'security' 
-                      ? 'bg-[#EEF2FF] text-indigo-950 border-indigo-250 shadow-xs border-l-[3.5px] border-l-[#4f46e5] font-black' 
+                      ? 'bg-[#EEF2FF] text-indigo-950 border-indigo-250 shadow-xs border-l-[3.5px] border-l-[#4f46e5] font-semibold' 
                       : 'text-slate-500 hover:bg-white/50 hover:text-slate-900 border-transparent'
                   }`}
                 >
@@ -4028,18 +4028,18 @@ echo "Order Created: " . $data['orderId'];
               {profileModalTab === 'profile' && (
                 <div className="space-y-5 animate-fadeIn">
                   <div>
-                    <h4 className="text-base font-black text-slate-900">Owner Profile Details</h4>
+                    <h4 className="text-base font-semibold text-slate-900">Owner Profile Details</h4>
                     <p className="text-[11px] text-slate-500 font-medium">Update your account identity and primary notification phone number.</p>
                   </div>
 
                   <div className="space-y-4 font-semibold text-xs text-slate-700">
                     <div>
-                      <label className="block mb-1.5">Owner / Contact Name <span className="text-rose-500 font-black">*</span></label>
+                      <label className="block mb-1.5">Owner / Contact Name <span className="text-rose-500 font-semibold">*</span></label>
                       <input
                         type="text"
                         value={editOwnerName}
                         onChange={(e) => setEditOwnerName(e.target.value)}
-                        className={`w-full border focus:bg-white focus:outline-none transition-all py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 ${!editOwnerName.trim() ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
+                        className={`w-full border focus:bg-white focus:outline-none transition-colors py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 ${!editOwnerName.trim() ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
                         placeholder="e.g. Kunal Chauhan"
                       />
                       {!editOwnerName.trim() && (
@@ -4050,12 +4050,12 @@ echo "Order Created: " . $data['orderId'];
                     </div>
 
                     <div>
-                      <label className="block mb-1.5">Primary Phone Number <span className="text-rose-500 font-black">*</span></label>
+                      <label className="block mb-1.5">Primary Phone Number <span className="text-rose-500 font-semibold">*</span></label>
                       <input
                         type="tel"
                         value={editPhoneNumber}
                         onChange={(e) => setEditPhoneNumber(e.target.value)}
-                        className={`w-full border focus:bg-white focus:outline-none transition-all py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 font-mono ${!editPhoneNumber.trim() ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
+                        className={`w-full border focus:bg-white focus:outline-none transition-colors py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 font-mono ${!editPhoneNumber.trim() ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
                         placeholder="e.g. +91 98765 43210"
                       />
                       {!editPhoneNumber.trim() && (
@@ -4067,7 +4067,7 @@ echo "Order Created: " . $data['orderId'];
 
                     <div>
                       <label className="block mb-1.5 flex items-center gap-1.5 text-slate-600">
-                        <Mail className="w-3.5 h-3.5" /> Login Account Email <span className="text-[9px] bg-amber-100 text-amber-800 border border-amber-250 px-2 py-0.5 rounded-lg font-black uppercase tracking-wider flex items-center gap-1">🔒 LOCKED</span>
+                        <Mail className="w-3.5 h-3.5" /> Login Account Email <span className="text-[9px] bg-amber-100 text-amber-800 border border-amber-250 px-2 py-0.5 rounded-lg font-semibold flex items-center gap-1">🔒 LOCKED</span>
                       </label>
                       <input
                         type="email"
@@ -4086,18 +4086,18 @@ echo "Order Created: " . $data['orderId'];
               {profileModalTab === 'business' && (
                 <div className="space-y-5 animate-fadeIn">
                   <div>
-                    <h4 className="text-base font-black text-slate-900">Business Registry Information</h4>
+                    <h4 className="text-base font-semibold text-slate-900">Business Registry Information</h4>
                     <p className="text-[11px] text-slate-500 font-medium">Manage your registered company details, merchant category classification, and tax credentials.</p>
                   </div>
 
                   <div className="space-y-4 font-semibold text-xs text-slate-700">
                     <div>
-                      <label className="block mb-1.5">Registered Business Name <span className="text-rose-500 font-black">*</span></label>
+                      <label className="block mb-1.5">Registered Business Name <span className="text-rose-500 font-semibold">*</span></label>
                       <input
                         type="text"
                         value={editBusinessName}
                         onChange={(e) => setEditBusinessName(e.target.value)}
-                        className={`w-full border focus:bg-white focus:outline-none transition-all py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 ${!editBusinessName.trim() ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
+                        className={`w-full border focus:bg-white focus:outline-none transition-colors py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 ${!editBusinessName.trim() ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
                         placeholder="e.g. Vyapar Gateway Corp"
                       />
                       {!editBusinessName.trim() && (
@@ -4108,11 +4108,11 @@ echo "Order Created: " . $data['orderId'];
                     </div>
 
                     <div>
-                      <label className="block mb-1.5">Business Category <span className="text-rose-500 font-black">*</span></label>
+                      <label className="block mb-1.5">Business Category <span className="text-rose-500 font-semibold">*</span></label>
                       <select
                         value={editBusinessCategory}
                         onChange={(e) => setEditBusinessCategory(e.target.value)}
-                        className={`w-full border focus:bg-white focus:outline-none transition-all py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 cursor-pointer ${!editBusinessCategory ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
+                        className={`w-full border focus:bg-white focus:outline-none transition-colors py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 cursor-pointer ${!editBusinessCategory ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
                       >
                         <option value="" disabled>Select category...</option>
                         <option value="Retail">Retail Store / Kirana</option>
@@ -4132,12 +4132,12 @@ echo "Order Created: " . $data['orderId'];
                     </div>
 
                     <div>
-                      <label className="block mb-1.5">GSTIN / Tax ID <span className="text-[9px] bg-slate-200 text-slate-500 px-2 py-0.5 rounded font-black uppercase tracking-wider">Optional</span></label>
+                      <label className="block mb-1.5">GSTIN / Tax ID <span className="text-[9px] bg-slate-200 text-slate-500 px-2 py-0.5 rounded font-semibold">Optional</span></label>
                       <input
                         type="text"
                         value={editGstin}
                         onChange={(e) => setEditGstin(e.target.value.toUpperCase())}
-                        className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-all py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 font-mono"
+                        className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 font-mono"
                         placeholder="e.g. 22AAAAA0000A1Z5"
                         maxLength={15}
                       />
@@ -4148,7 +4148,7 @@ echo "Order Created: " . $data['orderId'];
                       <textarea
                         value={editBusinessAddress}
                         onChange={(e) => setEditBusinessAddress(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-all py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 leading-normal resize-none min-h-[90px]"
+                        className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 leading-normal resize-none min-h-[90px]"
                         placeholder="Complete business storefront or corporate address details..."
                         rows={3}
                       />
@@ -4162,18 +4162,18 @@ echo "Order Created: " . $data['orderId'];
               {profileModalTab === 'payment' && (
                 <div className="space-y-5 animate-fadeIn">
                   <div>
-                    <h4 className="text-base font-black text-slate-900">Deposit UPI & Outbound Webhook</h4>
+                    <h4 className="text-base font-semibold text-slate-900">Deposit UPI & Outbound Webhook</h4>
                     <p className="text-[11px] text-slate-500 font-medium">Configure where customer funds are settled and webhook callbacks are dispatched.</p>
                   </div>
 
                   <div className="space-y-4 font-semibold text-xs text-slate-700">
                     <div>
-                      <label className="block mb-1.5">UPI ID (VPA) for Direct Settlements <span className="text-rose-500 font-black">*</span></label>
+                      <label className="block mb-1.5">UPI ID (VPA) for Direct Settlements <span className="text-rose-500 font-semibold">*</span></label>
                       <input
                         type="text"
                         value={editUpiId}
                         onChange={(e) => setEditUpiId(e.target.value)}
-                        className={`w-full border focus:bg-white focus:outline-none transition-all py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 font-mono ${(!editUpiId.trim() || editUpiId.trim() === 'pending@upi') ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
+                        className={`w-full border focus:bg-white focus:outline-none transition-colors py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 font-mono ${(!editUpiId.trim() || editUpiId.trim() === 'pending@upi') ? 'border-rose-350 bg-rose-50/20 focus:border-rose-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'}`}
                         placeholder="e.g. yourshop@paytm"
                       />
                       {(!editUpiId.trim() || editUpiId.trim() === 'pending@upi') && (
@@ -4191,12 +4191,12 @@ echo "Order Created: " . $data['orderId'];
                     </div>
 
                     <div>
-                      <label className="block mb-1.5">Custom Webhook Integration URL <span className="text-[9px] bg-slate-200 text-slate-500 px-2 py-0.5 rounded font-black uppercase tracking-wider">Optional</span></label>
+                      <label className="block mb-1.5">Custom Webhook Integration URL <span className="text-[9px] bg-slate-200 text-slate-500 px-2 py-0.5 rounded font-semibold">Optional</span></label>
                       <input
                         type="url"
                         value={editWebhookUrl}
                         onChange={(e) => setEditWebhookUrl(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-all py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 font-mono"
+                        className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors py-3 px-4 rounded-xl text-sm font-semibold text-slate-900 placeholder-slate-400 font-mono"
                         placeholder="https://your-server.com/api/webhook"
                       />
                       <p className="text-[10px] text-slate-400 mt-1.5 font-medium leading-relaxed">We fire signed HMAC payload POST calls to this destination receiver when checkouts are successfully matched.</p>
@@ -4205,7 +4205,7 @@ echo "Order Created: " . $data['orderId'];
                     <div>
                       <label className="block mb-1.5">Custom Brand Theme Color</label>
                       <div 
-                        className="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-xl transition-all hover:bg-slate-100 group relative w-full"
+                        className="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-xl transition-colors hover:bg-slate-100 group relative w-full"
                         title="Click custom swatch color box to change brand theme color"
                       >
                         <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-300 cursor-pointer flex-shrink-0">
@@ -4224,7 +4224,7 @@ echo "Order Created: " . $data['orderId'];
                             className="w-full bg-transparent border-0 focus:outline-none font-mono text-sm font-bold text-slate-900"
                             placeholder="#3B82F6"
                           />
-                          <span className="block text-[9px] text-slate-400 font-bold uppercase select-none group-hover:text-slate-650 transition-colors">
+                          <span className="block text-[9px] text-slate-400 font-bold select-none group-hover:text-slate-650 transition-colors">
                             Click swatch to pick color • Hex Code
                           </span>
                         </div>
@@ -4236,9 +4236,9 @@ echo "Order Created: " . $data['orderId'];
                     <div className="pt-4 border-t border-slate-200/80 space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <label className="block text-xs font-black text-slate-900 flex items-center gap-1.5">
+                          <label className="block text-xs font-semibold text-slate-900 flex items-center gap-1.5">
                             <span className="text-emerald-600 font-bold">🏛️</span> Direct Bank Transfer (IMPS / NEFT)
-                            <span className="text-[9px] bg-emerald-100 text-emerald-800 font-black px-1.5 py-0.2 rounded-md uppercase">0% MDR</span>
+                            <span className="text-[9px] bg-emerald-100 text-emerald-800 font-semibold px-1.5 py-0.2 rounded-md">0% MDR</span>
                           </label>
                           <p className="text-[10px] text-slate-400 font-medium mt-0.5">Enable buyers to pay via high-value bank transfers verified automatically via bank email.</p>
                         </div>
@@ -4249,7 +4249,7 @@ echo "Order Created: " . $data['orderId'];
                             onChange={(e) => setEditEnableBankTransfer(e.target.checked)}
                             className="sr-only peer"
                           />
-                          <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                          <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-colors peer-checked:bg-emerald-600"></div>
                         </label>
                       </div>
 
@@ -4261,7 +4261,7 @@ echo "Order Created: " . $data['orderId'];
                               type="text"
                               value={editBankName}
                               onChange={(e) => setEditBankName(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400"
+                              className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white focus:outline-none transition-colors py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400"
                               placeholder="e.g. HDFC Bank, SBI, ICICI Bank"
                             />
                           </div>
@@ -4271,7 +4271,7 @@ echo "Order Created: " . $data['orderId'];
                               type="text"
                               value={editBankAccountName}
                               onChange={(e) => setEditBankAccountName(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400"
+                              className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white focus:outline-none transition-colors py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400"
                               placeholder="e.g. Acme Enterprises"
                             />
                           </div>
@@ -4281,7 +4281,7 @@ echo "Order Created: " . $data['orderId'];
                               type="text"
                               value={editBankAccountNumber}
                               onChange={(e) => setEditBankAccountNumber(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all py-2.5 px-3 rounded-xl text-xs font-mono font-semibold text-slate-900 placeholder-slate-400"
+                              className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white focus:outline-none transition-colors py-2.5 px-3 rounded-xl text-xs font-mono font-semibold text-slate-900 placeholder-slate-400"
                               placeholder="e.g. 50100234567890"
                             />
                           </div>
@@ -4291,7 +4291,7 @@ echo "Order Created: " . $data['orderId'];
                               type="text"
                               value={editBankIfsc}
                               onChange={(e) => setEditBankIfsc(e.target.value.toUpperCase())}
-                              className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all py-2.5 px-3 rounded-xl text-xs font-mono font-semibold text-slate-900 placeholder-slate-400 uppercase"
+                              className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white focus:outline-none transition-colors py-2.5 px-3 rounded-xl text-xs font-mono font-semibold text-slate-900 placeholder-slate-400"
                               placeholder="e.g. HDFC0001234"
                             />
                           </div>
@@ -4307,7 +4307,7 @@ echo "Order Created: " . $data['orderId'];
               {profileModalTab === 'security' && (
                 <div className="space-y-5 animate-fadeIn">
                   <div>
-                    <h4 className="text-base font-black text-slate-900">Account Security</h4>
+                    <h4 className="text-base font-semibold text-slate-900">Account Security</h4>
                     <p className="text-[11px] text-slate-500 font-medium">Modify your secret login credentials or change your account password instantly.</p>
                   </div>
 
@@ -4319,20 +4319,20 @@ echo "Order Created: " . $data['orderId'];
                     <div>
                       <p className="text-xs font-bold leading-normal text-blue-800">Direct Password Change Requirements</p>
                       <p className="text-[10px] text-blue-600/90 font-bold leading-normal mt-0.5">
-                        You can safely reset your login credentials in real-time. To maintain Fintech-grade security compliance, your new password must be at least **8 characters** in length and contain at least **one uppercase letter, one number, and one special character** (e.g. @, #, $, etc.).
+                        You can safely reset your login credentials in real-time. To maintain Fintech-grade security compliance, your new password must be at least **8 characters** in length and contain at least **one letter, one number, and one special character** (e.g. @, #, $, etc.).
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-4 font-semibold text-xs text-slate-700">
                     <div>
-                      <label className="block mb-1.5">Current Password <span className="text-rose-500 font-black">*</span></label>
+                      <label className="block mb-1.5">Current Password <span className="text-rose-500 font-semibold">*</span></label>
                       <div className="relative">
                         <input
                           type={showCurrentPassword ? "text" : "password"}
                           value={currentPassword}
                           onChange={(e) => setCurrentPassword(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-all py-3 pl-4 pr-12 rounded-xl text-sm font-semibold text-slate-900 font-mono"
+                          className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors py-3 pl-4 pr-12 rounded-xl text-sm font-semibold text-slate-900 font-mono"
                           placeholder="••••••••"
                         />
                         <button
@@ -4355,13 +4355,13 @@ echo "Order Created: " . $data['orderId'];
                     </div>
 
                     <div>
-                      <label className="block mb-1.5">New Password <span className="text-rose-500 font-black">*</span></label>
+                      <label className="block mb-1.5">New Password <span className="text-rose-500 font-semibold">*</span></label>
                       <div className="relative">
                         <input
                           type={showNewPassword ? "text" : "password"}
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-all py-3 pl-4 pr-12 rounded-xl text-sm font-semibold text-slate-900 font-mono"
+                          className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors py-3 pl-4 pr-12 rounded-xl text-sm font-semibold text-slate-900 font-mono"
                           placeholder="••••••••"
                         />
                         <button
@@ -4399,12 +4399,12 @@ echo "Order Created: " . $data['orderId'];
                         return (
                           <div className="mt-2.5 space-y-1.5 animate-fadeIn select-none">
                             <div className="flex items-center justify-between text-[10px] font-bold">
-                              <span className="text-slate-400 uppercase">Password Strength:</span>
+                              <span className="text-slate-400">Password Strength:</span>
                               <span className={strength.color.replace('bg-', 'text-')}>{strength.label}</span>
                             </div>
                             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
                               <div 
-                                className={`h-full ${strength.color} transition-all duration-500`}
+                                className={`h-full ${strength.color} transition-colors duration-500`}
                                 style={{ width: strength.percent }}
                               />
                             </div>
@@ -4414,13 +4414,13 @@ echo "Order Created: " . $data['orderId'];
                     </div>
 
                     <div>
-                      <label className="block mb-1.5">Confirm New Password <span className="text-rose-500 font-black">*</span></label>
+                      <label className="block mb-1.5">Confirm New Password <span className="text-rose-500 font-semibold">*</span></label>
                       <div className="relative">
                         <input
                           type={showConfirmPassword ? "text" : "password"}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-all py-3 pl-4 pr-12 rounded-xl text-sm font-semibold text-slate-900 font-mono"
+                          className="w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors py-3 pl-4 pr-12 rounded-xl text-sm font-semibold text-slate-900 font-mono"
                           placeholder="••••••••"
                         />
                         <button
@@ -4487,7 +4487,7 @@ echo "Order Created: " . $data['orderId'];
 
                       onClick={() => setIsProfileModalOpen(false)}
 
-                      className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200"
+                      className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors border border-slate-200"
 
                     >
 
@@ -4501,7 +4501,7 @@ echo "Order Created: " . $data['orderId'];
 
                       disabled={profileSaving}
 
-                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white-pure rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm shadow-blue-500/10"
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white-pure rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm shadow-blue-500/10"
 
                     >
 
@@ -4549,7 +4549,7 @@ echo "Order Created: " . $data['orderId'];
 
                       onClick={() => setIsProfileModalOpen(false)}
 
-                      className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200"
+                      className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors border border-slate-200"
 
                     >
 
@@ -4563,7 +4563,7 @@ echo "Order Created: " . $data['orderId'];
 
                       disabled={passwordResetLoading}
 
-                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white-pure rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm shadow-blue-500/10"
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white-pure rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm shadow-blue-500/10"
 
                     >
 
@@ -4660,7 +4660,7 @@ echo "Order Created: " . $data['orderId'];
 
                 }}
 
-                className="px-2.5 py-1.5 bg-slate-200/85 hover:bg-slate-350 text-slate-500 rounded-lg text-[10px] font-black transition-all shrink-0 uppercase tracking-wider"
+                className="px-2.5 py-1.5 bg-slate-200/85 hover:bg-slate-350 text-slate-500 rounded-lg text-[10px] font-semibold transition-colors shrink-0"
 
               >
 
@@ -4680,7 +4680,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <div className="space-y-1.5">
 
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-2.5">Dashboard Actions</p>
+                  <p className="text-[9px] font-semibold text-slate-400 px-2.5">Dashboard Actions</p>
 
                   <div className="space-y-1">
 
@@ -4746,7 +4746,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <div className="space-y-1.5">
 
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-2.5">Matched Checkout Orders</p>
+                  <p className="text-[9px] font-semibold text-slate-400 px-2.5">Matched Checkout Orders</p>
 
                   <div className="space-y-1">
 
@@ -4808,7 +4808,7 @@ echo "Order Created: " . $data['orderId'];
 
                           <div className="flex items-center gap-2 shrink-0">
 
-                            <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                            <span className={`text-[8px] font-semibold px-2 py-0.5 rounded-full ${
 
                               order.status === 'verified'
 
@@ -4826,7 +4826,7 @@ echo "Order Created: " . $data['orderId'];
 
                             </span>
 
-                            <span className="text-[8px] font-bold text-slate-400 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all font-mono">Copy Ref</span>
+                            <span className="text-[8px] font-bold text-slate-400 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-colors font-mono">Copy Ref</span>
 
                           </div>
 
@@ -4902,9 +4902,9 @@ echo "Order Created: " . $data['orderId'];
 
               <div>
 
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wide">Payment Receipt</h3>
+                <h3 className="text-sm font-semibold text-slate-900 tracking-wide">Payment Receipt</h3>
 
-                <p className="text-[10px] text-slate-400 font-bold mt-0.5 uppercase tracking-wide">Transaction Verified Successfully</p>
+                <p className="text-[10px] text-slate-400 font-bold mt-0.5 tracking-wide">Transaction Verified Successfully</p>
 
               </div>
 
@@ -4926,7 +4926,7 @@ echo "Order Created: " . $data['orderId'];
 
               <div className="flex justify-between items-center py-2.5">
 
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Order ID</span>
+                <span className="text-[11px] text-slate-400 font-bold tracking-wide">Order ID</span>
 
                 <span className="text-xs font-mono font-bold text-slate-800 tracking-wide select-all">{activeHistoryOrder.id}</span>
 
@@ -4934,15 +4934,15 @@ echo "Order Created: " . $data['orderId'];
 
               <div className="flex justify-between items-center py-2.5">
 
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Amount</span>
+                <span className="text-[11px] text-slate-400 font-bold tracking-wide">Amount</span>
 
-                <span className="text-xs font-black text-emerald-500 font-bold">₹{parseFloat(activeHistoryOrder.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span className="text-xs font-semibold text-emerald-500 font-bold">₹{parseFloat(activeHistoryOrder.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
 
               </div>
 
               <div className="flex justify-between items-center py-2.5">
 
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Method</span>
+                <span className="text-[11px] text-slate-400 font-bold tracking-wide">Method</span>
 
                 <span className="text-xs font-bold text-slate-800">{activeHistoryOrder.method || 'UPI'}</span>
 
@@ -4950,7 +4950,7 @@ echo "Order Created: " . $data['orderId'];
 
               <div className="flex justify-between items-center py-2.5">
 
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Status</span>
+                <span className="text-[11px] text-slate-400 font-bold tracking-wide">Status</span>
 
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-500">
 
@@ -4962,7 +4962,7 @@ echo "Order Created: " . $data['orderId'];
 
               <div className="flex justify-between items-center py-2.5">
 
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">UTR / Ref No.</span>
+                <span className="text-[11px] text-slate-400 font-bold tracking-wide">UTR / Ref No.</span>
 
                 <span className="text-xs font-mono font-bold text-slate-800 tracking-wide select-all">{activeHistoryOrder.utr || 'Auto-verified'}</span>
 
@@ -4972,7 +4972,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <div className="flex justify-between items-center py-2.5">
 
-                  <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Purpose / Note</span>
+                  <span className="text-[11px] text-slate-400 font-bold tracking-wide">Purpose / Note</span>
 
                   <span className="text-xs font-bold text-slate-700 max-w-[60%] truncate" title={activeHistoryOrder.note}>{activeHistoryOrder.note}</span>
 
@@ -4984,7 +4984,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <div className="flex justify-between items-center py-2.5">
 
-                  <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Customer</span>
+                  <span className="text-[11px] text-slate-400 font-bold tracking-wide">Customer</span>
 
                   <span className="text-xs font-bold text-slate-800">{activeHistoryOrder.customer_name}</span>
 
@@ -4996,7 +4996,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <div className="flex justify-between items-center py-2.5">
 
-                  <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Phone</span>
+                  <span className="text-[11px] text-slate-400 font-bold tracking-wide">Phone</span>
 
                   <span className="text-xs font-bold font-mono text-slate-800">{activeHistoryOrder.customer_phone}</span>
 
@@ -5006,7 +5006,7 @@ echo "Order Created: " . $data['orderId'];
 
               <div className="flex justify-between items-center py-2.5">
 
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Created</span>
+                <span className="text-[11px] text-slate-400 font-bold tracking-wide">Created</span>
 
                 <span className="text-xs font-bold text-slate-700">
 
@@ -5020,7 +5020,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <div className="flex justify-between items-center py-2.5">
 
-                  <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Verified At</span>
+                  <span className="text-[11px] text-slate-400 font-bold tracking-wide">Verified At</span>
 
                   <span className="text-xs font-bold text-slate-700">
 
@@ -5046,7 +5046,7 @@ echo "Order Created: " . $data['orderId'];
 
                 }}
 
-                className="flex-1 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                className="flex-1 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
 
               >
 
@@ -5060,7 +5060,7 @@ echo "Order Created: " . $data['orderId'];
 
                 onClick={() => setSelectedHistoryOrder(null)} 
 
-                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white-pure font-bold text-xs rounded-xl transition-all shadow-sm cursor-pointer"
+                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white-pure font-bold text-xs rounded-xl transition-colors shadow-sm cursor-pointer"
 
               >
 

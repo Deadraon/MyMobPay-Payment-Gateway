@@ -38,15 +38,15 @@ export default function AdminHeader({
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden w-10 h-10 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200/70 transition-all shrink-0 flex items-center justify-center border border-slate-200/90 bg-white shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="md:hidden w-10 h-10 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200/70 transition-colors shrink-0 flex items-center justify-center border border-slate-200/90 bg-white shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           type="button"
           title={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={isMobileMenuOpen}
         >
           <div className="relative w-5 h-5 flex items-center justify-center">
-            <Menu className={`w-5 h-5 absolute inset-0 transition-all duration-200 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-75 pointer-events-none' : 'opacity-100 rotate-0 scale-100'}`} />
-            <X className={`w-5 h-5 absolute inset-0 transition-all duration-200 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75 pointer-events-none'}`} />
+            <Menu className={`w-5 h-5 absolute inset-0 transition-colors duration-200 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-75 pointer-events-none' : 'opacity-100 rotate-0 scale-100'}`} />
+            <X className={`w-5 h-5 absolute inset-0 transition-colors duration-200 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75 pointer-events-none'}`} />
           </div>
         </button>
 
@@ -59,7 +59,7 @@ export default function AdminHeader({
         <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50/80 border border-blue-200/60 text-blue-900 text-xs font-bold tracking-tight shrink-0">
           <ShieldCheck className="w-4 h-4 text-blue-600" />
           <span>Super Admin Console</span>
-          <span className="text-[9px] bg-blue-600 text-white font-mono px-1.5 py-0.5 rounded font-black uppercase tracking-wider">
+          <span className="text-[9px] bg-blue-600 text-white font-mono px-1.5 py-0.5 rounded font-semibold">
             ROOT
           </span>
         </div>
@@ -76,7 +76,7 @@ export default function AdminHeader({
             placeholder="Search by UTR, Order ID, Phone, Merchant or Email..."
             value={globalSearch}
             onChange={(e) => setGlobalSearch(e.target.value)}
-            className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 rounded-xl py-2 pl-9 pr-8 text-xs text-slate-900 placeholder-slate-400 font-medium transition-all focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-xs"
+            className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 rounded-xl py-2 pl-9 pr-8 text-xs text-slate-900 placeholder-slate-400 font-medium transition-colors focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 shadow-xs"
           />
           {globalSearch && (
             <button 
@@ -102,7 +102,7 @@ export default function AdminHeader({
         <button
           onClick={onRefresh}
           disabled={loading}
-          className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
+          className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
           title="Refresh database records"
         >
           <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${loading ? 'animate-spin text-blue-600' : ''}`} />
@@ -113,7 +113,7 @@ export default function AdminHeader({
         <div className="relative">
           <button
             onClick={() => setIsNotifOpen(!isNotifOpen)}
-            className={`relative p-2 rounded-xl border transition-all cursor-pointer ${
+            className={`relative p-2 rounded-xl border transition-colors cursor-pointer ${
               isNotifOpen
                 ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border-slate-200 bg-white'
@@ -195,7 +195,7 @@ export default function AdminHeader({
         {onBackToMerchant && (
           <button
             onClick={onBackToMerchant}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/70 text-xs font-bold transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/70 text-xs font-bold transition-colors cursor-pointer"
             title="Return to standard merchant dashboard view"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -206,7 +206,7 @@ export default function AdminHeader({
         {/* Admin Signout */}
         <button
           onClick={onLogout}
-          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all cursor-pointer"
+          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-colors cursor-pointer"
           title="Lock & Exit Admin Console"
         >
           <LogOut className="w-4 h-4" />

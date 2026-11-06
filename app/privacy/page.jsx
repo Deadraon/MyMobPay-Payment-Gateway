@@ -24,7 +24,7 @@ export default function PrivacyPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#533AFD]/15 selection:text-[#533AFD]">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#0EA5E9]/15 selection:text-[#0284C7]">
       {/* Top Header Bar */}
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -61,7 +61,7 @@ export default function PrivacyPage() {
                 <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
                 <span>Data Protection &amp; DPDP Act 2023 Compliance</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-semibold text-slate-900 tracking-tight">
                 Privacy Policy
               </h1>
               <p className="text-sm text-slate-500 font-normal">
@@ -118,7 +118,7 @@ export default function PrivacyPage() {
             </p>
             <div className="space-y-3 pt-1">
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                <h3 className="text-xs font-bold text-slate-900 mb-1.5">
                   A. Merchant Profile &amp; Verified Contact Data
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-650 leading-relaxed">
@@ -127,7 +127,7 @@ export default function PrivacyPage() {
               </div>
 
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                <h3 className="text-xs font-bold text-slate-900 mb-1.5">
                   B. Settlement Configuration &amp; Technical Identifiers
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-650 leading-relaxed">
@@ -136,7 +136,7 @@ export default function PrivacyPage() {
               </div>
 
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                <h3 className="text-xs font-bold text-slate-900 mb-1.5">
                   C. Transactional Metadata
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-650 leading-relaxed">
@@ -224,13 +224,13 @@ export default function PrivacyPage() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
-                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">TLS 1.3 In-Transit Encryption</span>
+                <span className="text-xs font-bold text-slate-900">TLS 1.3 In-Transit Encryption</span>
                 <p className="text-xs text-slate-600 leading-normal">
                   All traffic across merchant browsers, payment links, and backend REST APIs is protected via modern 256-bit TLS encryption.
                 </p>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
-                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">Cryptographic Salt &amp; Hashing</span>
+                <span className="text-xs font-bold text-slate-900">Cryptographic Salt &amp; Hashing</span>
                 <p className="text-xs text-slate-600 leading-normal">
                   Passwords and webhook secrets are cryptographically hashed using industry-standard hashing algorithms (bcrypt/HMAC).
                 </p>

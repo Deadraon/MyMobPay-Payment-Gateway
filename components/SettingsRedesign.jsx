@@ -1092,7 +1092,7 @@ export default function SettingsRedesign({
             <span className="text-blue-600 font-semibold">Settings & Direct Routing</span>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-extrabold text-[#0c2340] tracking-tight">
+            <h1 className="text-2xl font-semibold text-[#0c2340] tracking-tight">
               Settings & Configuration
             </h1>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-500/20 text-emerald-600 text-xs font-semibold">
@@ -1108,7 +1108,7 @@ export default function SettingsRedesign({
             <button
               onClick={handleRevert}
               type="button"
-              className="h-9 px-3.5 rounded-xl bg-white text-slate-600 hover:bg-slate-50 font-semibold text-xs transition-all duration-200 border border-slate-200 shadow-xs flex items-center gap-1.5 hover:border-slate-300 cursor-pointer"
+              className="h-9 px-3.5 rounded-xl bg-white text-slate-600 hover:bg-slate-50 font-semibold text-xs transition-colors duration-200 border border-slate-200 shadow-xs flex items-center gap-1.5 hover:border-slate-300 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
               Revert to Default
@@ -1119,7 +1119,7 @@ export default function SettingsRedesign({
             onClick={handleSave}
             disabled={saving}
             type="button"
-            className="h-9 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-all duration-200 shadow-md shadow-blue-500/25 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+            className="h-9 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors duration-200 shadow-md shadow-blue-500/25 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
           >
             {saving ? (
               <RefreshCw className="w-4 h-4 animate-spin text-white" />
@@ -1167,7 +1167,7 @@ export default function SettingsRedesign({
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveCategory(cat.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-all cursor-pointer ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-colors cursor-pointer ${
                   isActive
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -1195,13 +1195,13 @@ export default function SettingsRedesign({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search settings..."
-              className="w-full h-8 pl-8 pr-3 bg-slate-50 hover:bg-slate-100 focus:bg-white rounded-lg text-xs text-slate-800 placeholder:text-slate-400 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
+              className="w-full h-8 pl-8 pr-3 bg-slate-50 hover:bg-slate-100 focus:bg-white rounded-lg text-xs text-slate-800 placeholder:text-slate-400 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors font-medium"
             />
           </div>
 
           {/* Categories List */}
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1">
+            <span className="text-[10px] font-bold text-slate-400 px-2 pb-1">
               System Sections
             </span>
 
@@ -1214,7 +1214,7 @@ export default function SettingsRedesign({
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   type="button"
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all text-xs font-medium group text-left w-full cursor-pointer ${
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors text-xs font-medium group text-left w-full cursor-pointer ${
                     isActive
                       ? 'bg-blue-50 text-blue-600 font-semibold shadow-xs border border-blue-100'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
@@ -1319,7 +1319,7 @@ export default function SettingsRedesign({
                           className={`absolute right-0 mt-2 w-72 bg-white text-slate-800 border border-slate-200 rounded-xl shadow-xl z-50 p-2 flex flex-col gap-1 ${switchBankDropdownClass}`}
                           data-origin="top-right"
                         >
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
+                          <span className="text-[10px] font-bold text-slate-400 px-2 py-1">
                             Select Settlement Destination
                           </span>
                           {bankAccounts.map((acc) => (
@@ -1425,7 +1425,7 @@ export default function SettingsRedesign({
                     return (
                       <div
                         key={acc.id || index}
-                        className={`p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${
+                        className={`p-4 rounded-xl border transition-colors flex flex-col justify-between gap-3 ${
                           acc.is_primary
                             ? 'bg-blue-50/40 border-blue-300 shadow-xs'
                             : 'bg-white border-slate-200 hover:border-slate-300'
@@ -1433,7 +1433,7 @@ export default function SettingsRedesign({
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-black text-xs border border-slate-200">
+                            <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-semibold text-xs border border-slate-200">
                               {acc.bank_name.slice(0, 2).toUpperCase()}
                             </div>
                             <div className="flex flex-col">
@@ -1452,7 +1452,7 @@ export default function SettingsRedesign({
                               <button
                                 onClick={() => handleSetPrimaryBank(acc.id)}
                                 type="button"
-                                className="text-[11px] font-bold text-blue-600 hover:text-blue-700 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-200 px-2.5 py-0.5 rounded-full transition-all cursor-pointer"
+                                className="text-[11px] font-bold text-blue-600 hover:text-blue-700 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-200 px-2.5 py-0.5 rounded-full transition-colors cursor-pointer"
                               >
                                 Set Active
                               </button>
@@ -1486,12 +1486,12 @@ export default function SettingsRedesign({
                         {/* Account Details Row */}
                         <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex flex-col gap-1.5 text-xs">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Beneficiary</span>
+                            <span className="text-[10px] text-slate-400 font-bold">Beneficiary</span>
                             <span className="font-semibold text-slate-800 truncate max-w-[170px]">{acc.bank_account_name}</span>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">A/C Number</span>
+                            <span className="text-[10px] text-slate-400 font-bold">A/C Number</span>
                             <div className="flex items-center gap-1.5">
                               <span className="font-mono font-bold text-slate-800">{displayNum}</span>
                               <button
@@ -1509,7 +1509,7 @@ export default function SettingsRedesign({
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">IFSC</span>
+                            <span className="text-[10px] text-slate-400 font-bold">IFSC</span>
                             <span className="font-mono font-bold text-slate-700">{acc.bank_ifsc}</span>
                           </div>
                         </div>
@@ -1523,7 +1523,7 @@ export default function SettingsRedesign({
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                        <span className="text-xs font-bold text-slate-800">
                           UPI Account Management & Multi-Outlet Routing
                         </span>
                         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
@@ -1547,7 +1547,7 @@ export default function SettingsRedesign({
                       <button
                         type="button"
                         onClick={() => setShowAddOutletModal(true)}
-                        className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+                        className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add Outlet / Counter</span>
@@ -1616,7 +1616,7 @@ export default function SettingsRedesign({
                             type="button"
                             onClick={handleSaveVpa}
                             disabled={isSavingVpa}
-                            className="h-8 px-3.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+                            className="h-8 px-3.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
                           >
                             {isSavingVpa ? (
                               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1649,7 +1649,7 @@ export default function SettingsRedesign({
                   {/* Outlets & Multi-Counter List */}
                   <div className="mt-1 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                      <span className="text-[11px] font-bold text-slate-700">
                         Linked Outlets & Billing Counters ({outlets.length})
                       </span>
                       <span className="text-[10px] text-slate-500">Each outlet has unique QR and separate reporting</span>
@@ -1708,7 +1708,7 @@ export default function SettingsRedesign({
 
                 {/* NPCI Routing Rules Toggles with Inline Tooltips */}
                 <div className="flex flex-col gap-3 pt-3 border-t border-slate-100">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-slate-700">
                     Settlement Dispatch Rules
                   </span>
 
@@ -1722,7 +1722,7 @@ export default function SettingsRedesign({
                           onChange={(e) => setFormData({ ...formData, zero_hold_sweep: e.target.checked })}
                           className="sr-only peer"
                         />
-                        <div className="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-colors peer-checked:bg-blue-600"></div>
                       </label>
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1.5">
@@ -1754,7 +1754,7 @@ export default function SettingsRedesign({
                           onChange={(e) => setFormData({ ...formData, bharatqr_fallback: e.target.checked })}
                           className="sr-only peer"
                         />
-                        <div className="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-colors peer-checked:bg-blue-600"></div>
                       </label>
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1.5">
@@ -1810,7 +1810,7 @@ export default function SettingsRedesign({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Business Name */}
                   <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-slate-400">
                       Business Legal Name
                     </label>
                     <input
@@ -1818,13 +1818,13 @@ export default function SettingsRedesign({
                       value={formData.business_name}
                       onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
                       placeholder="e.g. MyMobPay Technologies Pvt Ltd"
-                      className="bg-transparent text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-all"
+                      className="bg-transparent text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-colors"
                     />
                   </div>
 
                   {/* Owner Name */}
                   <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-slate-400">
                       Authorized Representative / Owner
                     </label>
                     <input
@@ -1832,13 +1832,13 @@ export default function SettingsRedesign({
                       value={formData.owner_name}
                       onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })}
                       placeholder="e.g. Kunal Chauhan"
-                      className="bg-transparent text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-all"
+                      className="bg-transparent text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-colors"
                     />
                   </div>
 
                   {/* Phone Number */}
                   <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-slate-400">
                       Primary Contact Phone
                     </label>
                     <input
@@ -1846,19 +1846,19 @@ export default function SettingsRedesign({
                       value={formData.phone_number}
                       onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                       placeholder="e.g. +91 98765 43210"
-                      className="bg-transparent text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-all"
+                      className="bg-transparent text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-colors"
                     />
                   </div>
 
                   {/* Business Category */}
                   <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-slate-400">
                       Merchant Category (MCC)
                     </label>
                     <select
                       value={formData.business_category}
                       onChange={(e) => setFormData({ ...formData, business_category: e.target.value })}
-                      className="bg-transparent text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-all"
+                      className="bg-transparent text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-colors"
                     >
                       <option value="E-Commerce & Digital Goods">E-Commerce & Digital Goods</option>
                       <option value="SaaS & Cloud Software">SaaS & Cloud Software</option>
@@ -1871,7 +1871,7 @@ export default function SettingsRedesign({
                   {/* GSTIN */}
                   <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
                     <div className="flex items-center justify-between">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      <label className="text-[10px] font-bold text-slate-400">
                         GSTIN Number
                       </label>
                       <span className="text-[10px] text-emerald-600 font-semibold">Optional</span>
@@ -1881,13 +1881,13 @@ export default function SettingsRedesign({
                       value={formData.gstin}
                       onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
                       placeholder="e.g. 27AADCB2230M1Z2"
-                      className="bg-transparent font-mono text-xs uppercase text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-all"
+                      className="bg-transparent font-mono text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-colors"
                     />
                   </div>
 
                   {/* Registered Address */}
                   <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-slate-400">
                       Business Operating Address
                     </label>
                     <input
@@ -1895,7 +1895,7 @@ export default function SettingsRedesign({
                       value={formData.business_address}
                       onChange={(e) => setFormData({ ...formData, business_address: e.target.value })}
                       placeholder="e.g. 402 Tech Hub, Bandra West, Mumbai"
-                      className="bg-transparent text-xs text-slate-800 font-medium focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-all"
+                      className="bg-transparent text-xs text-slate-800 font-medium focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-colors"
                     />
                   </div>
                 </div>
@@ -1904,7 +1904,7 @@ export default function SettingsRedesign({
                 <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-slate-800">
                         Custom Checkout Accent Theme
                       </span>
                       <p className="text-[11px] text-slate-500 mt-0.5">
@@ -1929,7 +1929,7 @@ export default function SettingsRedesign({
                         type="text"
                         value={formData.theme_color}
                         onChange={(e) => setFormData({ ...formData, theme_color: e.target.value })}
-                        className="w-24 font-mono text-xs font-bold text-slate-800 uppercase bg-transparent focus:outline-none"
+                        className="w-24 font-mono text-xs font-bold text-slate-800 bg-transparent focus:outline-none"
                       />
                     </div>
 
@@ -1945,7 +1945,7 @@ export default function SettingsRedesign({
                           key={preset.color}
                           type="button"
                           onClick={() => setFormData({ ...formData, theme_color: preset.color })}
-                          className={`h-8 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border cursor-pointer ${
+                          className={`h-8 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border cursor-pointer ${
                             formData.theme_color.toLowerCase() === preset.color.toLowerCase()
                               ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-2xs'
                               : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
@@ -1991,32 +1991,32 @@ export default function SettingsRedesign({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-slate-400">
                       Minimum Ticket Amount (₹)
                     </span>
                     <input
                       type="number"
                       value={formData.min_amount}
                       onChange={(e) => setFormData({ ...formData, min_amount: e.target.value })}
-                      className="bg-transparent font-mono text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-all"
+                      className="bg-transparent font-mono text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-colors"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-slate-400">
                       Maximum Single Ticket Amount (₹)
                     </span>
                     <input
                       type="number"
                       value={formData.max_amount}
                       onChange={(e) => setFormData({ ...formData, max_amount: e.target.value })}
-                      className="bg-transparent font-mono text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-all"
+                      className="bg-transparent font-mono text-xs text-slate-800 font-bold focus:outline-none focus:bg-white rounded px-1.5 py-1 border border-transparent focus:border-blue-400 transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 flex flex-col gap-3">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-slate-700">
                     Dynamic QR & Intent Session Expiry Window
                   </span>
                   <div className="flex items-center gap-3">
@@ -2025,7 +2025,7 @@ export default function SettingsRedesign({
                         key={mins}
                         type="button"
                         onClick={() => setFormData({ ...formData, checkout_expiry: mins })}
-                        className={`h-9 px-4 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                        className={`h-9 px-4 rounded-xl text-xs font-bold transition-colors border cursor-pointer ${
                           formData.checkout_expiry === mins
                             ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                             : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
@@ -2115,7 +2115,7 @@ export default function SettingsRedesign({
                         setTeamMsg(`Invitation sent to ${newMember.email} with ${newMember.role} access.`);
                         setTimeout(() => setTeamMsg(null), 4000);
                       }}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer"
                     >
                       Send Invite
                     </button>
@@ -2125,7 +2125,7 @@ export default function SettingsRedesign({
                 {/* Team List Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-200">
+                    <thead className="bg-slate-50 text-slate-500 font-bold text-[10px] border-b border-slate-200">
                       <tr>
                         <th className="px-4 py-3">Member</th>
                         <th className="px-4 py-3">Role</th>
@@ -2224,7 +2224,7 @@ export default function SettingsRedesign({
 
                 {/* Delivery Channels */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Alert Channels</h4>
+                  <h4 className="text-xs font-bold text-slate-700">Alert Channels</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <label className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between cursor-pointer hover:bg-slate-100/70 transition-colors">
                       <div>
@@ -2269,7 +2269,7 @@ export default function SettingsRedesign({
 
                 {/* Event Matrix */}
                 <div className="space-y-3 pt-2 border-t border-slate-100">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Event Triggers</h4>
+                  <h4 className="text-xs font-bold text-slate-700">Event Triggers</h4>
                   <div className="space-y-2">
                     {[
                       { id: 'payment_received', label: 'Payment Received (Instant Alert)', desc: 'Real-time alert whenever customer money credits your bank UPI' },
@@ -2301,7 +2301,7 @@ export default function SettingsRedesign({
                       setNotifSavedMsg(true);
                       setTimeout(() => setNotifSavedMsg(false), 4000);
                     }}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
                   >
                     Save Notification Preferences
                   </button>
@@ -2400,7 +2400,7 @@ export default function SettingsRedesign({
 
                 {/* 2. Change Password Form */}
                 <div className="p-4 rounded-xl border border-slate-200 space-y-3">
-                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Change Password</h4>
+                  <h4 className="text-xs font-bold text-slate-800">Change Password</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-600 mb-1">New Password</label>
@@ -2450,7 +2450,7 @@ export default function SettingsRedesign({
                           setTimeout(() => setPasswordChangeStatus(null), 5000);
                         }
                       }}
-                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer disabled:opacity-50"
                     >
                       {isChangingPassword ? 'Updating...' : 'Update Password'}
                     </button>
@@ -2461,7 +2461,7 @@ export default function SettingsRedesign({
                 <div className="space-y-3 pt-2 border-t border-slate-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Account Activity Audit Log</h4>
+                      <h4 className="text-xs font-bold text-slate-800">Account Activity Audit Log</h4>
                       <p className="text-[11px] text-slate-500">Immutable record of security and administrative actions</p>
                     </div>
                     <span className="text-[10px] font-mono text-slate-400">Read-Only</span>
@@ -2469,7 +2469,7 @@ export default function SettingsRedesign({
 
                   <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
                     <table className="w-full text-left">
-                      <thead className="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase border-b border-slate-200">
+                      <thead className="bg-slate-50 text-slate-500 text-[10px] font-bold border-b border-slate-200">
                         <tr>
                           <th className="px-4 py-2.5">Timestamp (IST)</th>
                           <th className="px-4 py-2.5">Event Description</th>
@@ -2656,7 +2656,7 @@ export default function SettingsRedesign({
                       bank_ifsc: (!prev.bank_ifsc || Object.values(IFSC_PREFIX_MAP).some(p => prev.bank_ifsc.startsWith(p))) ? autoIfsc : prev.bank_ifsc
                     }));
                   }}
-                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                 >
                   <IndianBankOptions />
                 </select>
@@ -2672,7 +2672,7 @@ export default function SettingsRedesign({
                     value={newBankForm.custom_bank_name || ''}
                     onChange={(e) => setNewBankForm({ ...newBankForm, custom_bank_name: e.target.value })}
                     placeholder="Enter your bank name"
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   />
                 </div>
               )}
@@ -2686,7 +2686,7 @@ export default function SettingsRedesign({
                   value={newBankForm.bank_account_name}
                   onChange={(e) => setNewBankForm({ ...newBankForm, bank_account_name: e.target.value })}
                   placeholder="e.g. MyMobPay Technologies Pvt Ltd"
-                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                 />
               </div>
 
@@ -2700,7 +2700,7 @@ export default function SettingsRedesign({
                     value={newBankForm.bank_account_number}
                     onChange={(e) => setNewBankForm({ ...newBankForm, bank_account_number: e.target.value })}
                     placeholder="Enter account number"
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   />
                 </div>
 
@@ -2712,7 +2712,7 @@ export default function SettingsRedesign({
                     value={newBankForm.confirm_account_number}
                     onChange={(e) => setNewBankForm({ ...newBankForm, confirm_account_number: e.target.value })}
                     placeholder="Re-enter to verify"
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   />
                 </div>
               </div>
@@ -2727,7 +2727,7 @@ export default function SettingsRedesign({
                     value={newBankForm.bank_ifsc}
                     onChange={(e) => setNewBankForm({ ...newBankForm, bank_ifsc: e.target.value.toUpperCase() })}
                     placeholder="e.g. HDFC0000060"
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold uppercase text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   />
                 </div>
 
@@ -2736,7 +2736,7 @@ export default function SettingsRedesign({
                   <select
                     value={newBankForm.account_type}
                     onChange={(e) => setNewBankForm({ ...newBankForm, account_type: e.target.value })}
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   >
                     <option value="Current Account">Current Account</option>
                     <option value="Savings Account">Savings Account</option>
@@ -2770,7 +2770,7 @@ export default function SettingsRedesign({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-md shadow-blue-500/20 flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-md shadow-blue-500/20 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
                   <span>Verify & Add Bank</span>
@@ -2834,7 +2834,7 @@ export default function SettingsRedesign({
                       bank_ifsc: (!prev.bank_ifsc || Object.values(IFSC_PREFIX_MAP).some(p => prev.bank_ifsc.startsWith(p))) ? autoIfsc : prev.bank_ifsc
                     }));
                   }}
-                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                 >
                   <IndianBankOptions />
                 </select>
@@ -2850,7 +2850,7 @@ export default function SettingsRedesign({
                     value={editBankForm.custom_bank_name || ''}
                     onChange={(e) => setEditBankForm({ ...editBankForm, custom_bank_name: e.target.value })}
                     placeholder="Enter your bank name"
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   />
                 </div>
               )}
@@ -2864,7 +2864,7 @@ export default function SettingsRedesign({
                   value={editBankForm.bank_account_name}
                   onChange={(e) => setEditBankForm({ ...editBankForm, bank_account_name: e.target.value })}
                   placeholder="e.g. MyMobPay Technologies Pvt Ltd"
-                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                  className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                 />
               </div>
 
@@ -2878,7 +2878,7 @@ export default function SettingsRedesign({
                     value={editBankForm.bank_account_number}
                     onChange={(e) => setEditBankForm({ ...editBankForm, bank_account_number: e.target.value })}
                     placeholder="Enter account number"
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   />
                 </div>
 
@@ -2890,7 +2890,7 @@ export default function SettingsRedesign({
                     value={editBankForm.confirm_account_number}
                     onChange={(e) => setEditBankForm({ ...editBankForm, confirm_account_number: e.target.value })}
                     placeholder="Re-enter to verify"
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   />
                 </div>
               </div>
@@ -2905,7 +2905,7 @@ export default function SettingsRedesign({
                     value={editBankForm.bank_ifsc}
                     onChange={(e) => setEditBankForm({ ...editBankForm, bank_ifsc: e.target.value.toUpperCase() })}
                     placeholder="e.g. HDFC0000060"
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold uppercase text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   />
                 </div>
 
@@ -2914,7 +2914,7 @@ export default function SettingsRedesign({
                   <select
                     value={editBankForm.account_type}
                     onChange={(e) => setEditBankForm({ ...editBankForm, account_type: e.target.value })}
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
                   >
                     <option value="Current Account">Current Account</option>
                     <option value="Savings Account">Savings Account</option>
@@ -2948,7 +2948,7 @@ export default function SettingsRedesign({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-md shadow-blue-500/20 flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-md shadow-blue-500/20 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
                   <span>Save Bank Changes</span>
@@ -3070,7 +3070,7 @@ export default function SettingsRedesign({
                 <button
                   type="submit"
                   disabled={vpaSubmitting || !newProposedVpa}
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-xs flex items-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-xs flex items-center gap-2 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {vpaSubmitting ? (
                     <>
@@ -3188,7 +3188,7 @@ export default function SettingsRedesign({
                 <button
                   type="submit"
                   disabled={!newOutletName || !newOutletVpa}
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-xs flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Save Outlet Counter</span>

@@ -120,7 +120,7 @@ export default function ConsoleActivationPaywall({
       id: '1m',
       title: language === 'hi' ? '1 महीना स्टार्टर' : '1 Month Starter',
       badge: language === 'hi' ? 'अनुशंसित' : 'Recommended',
-      badgeColor: 'bg-emerald-100 text-emerald-800 font-extrabold',
+      badgeColor: 'bg-emerald-100 text-emerald-800 font-semibold',
       priceText: '₹499.00',
       priceSub: '₹499 / mo',
       desc: language === 'hi' ? 'पूर्ण डैशबोर्ड और लाइव वेबहुक एक्सेस' : 'Full dashboard & live webhook access',
@@ -333,7 +333,7 @@ export default function ConsoleActivationPaywall({
             Payment Verified • <strong>mymobpay.tech</strong>
           </span>
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-[10px] text-emerald-600 uppercase tracking-wider font-bold">Active</span>
+          <span className="text-[10px] text-emerald-600 font-bold">Active</span>
         </div>
 
         {/* Success Card Container */}
@@ -342,7 +342,7 @@ export default function ConsoleActivationPaywall({
           {/* Header */}
           <div className="bg-[#0c2340] text-white p-5 sm:p-6 flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-md shrink-0 text-white font-black text-lg">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-md shrink-0 text-white font-semibold text-lg">
                 <Check className="w-6 h-6 stroke-[3]" />
               </div>
               <div>
@@ -364,7 +364,7 @@ export default function ConsoleActivationPaywall({
 
             {/* Title & Message */}
             <div className="animate-cascade-2">
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">
+              <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight mt-3">
                 {language === 'hi' ? 'भुगतान सफल रहा!' : 'Payment Successful!'}
               </h2>
               <p className="text-sm text-slate-600 font-medium max-w-md mx-auto mt-2 leading-relaxed">
@@ -383,34 +383,34 @@ export default function ConsoleActivationPaywall({
             {/* Receipt Summary Card */}
             <div className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl p-5 mt-5 text-left space-y-3 animate-cascade-3">
               <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-slate-500">
                   {language === 'hi' ? 'सक्रिय प्लान' : 'Plan Activated'}
                 </span>
                 <span className="text-sm font-bold text-slate-900">{currentPlan.title}</span>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-slate-500">
                   {language === 'hi' ? 'भुगतान राशि' : 'Amount Paid'}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-base font-black text-emerald-600">{amountDisplay}</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 uppercase tracking-wide">
+                  <span className="text-base font-semibold text-emerald-600">{amountDisplay}</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 tracking-wide">
                     ✓ Paid
                   </span>
                 </div>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Merchant ID</span>
+                <span className="text-xs font-semibold text-slate-500">Merchant ID</span>
                 <span className="font-mono text-xs font-bold text-slate-700">{merchantId}</span>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-slate-500">
                   {language === 'hi' ? 'वैधता' : 'Subscription Validity'}
                 </span>
                 <span className="text-xs font-bold text-slate-800">{expiryDateStr}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-slate-500">
                   {language === 'hi' ? 'कंसोल स्थिति' : 'Console Status'}
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600">
@@ -452,7 +452,7 @@ export default function ConsoleActivationPaywall({
               </div>
               <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-1000 ease-linear rounded-full"
+                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-colors duration-1000 ease-linear rounded-full"
                   style={{ width: `${Math.min(100, Math.max(10, ((6 - countdown) / 5) * 100))}%` }}
                 />
               </div>
@@ -463,7 +463,7 @@ export default function ConsoleActivationPaywall({
               onClick={() => {
                 if (onActivationComplete) onActivationComplete();
               }}
-              className="w-full mt-5 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer animate-cascade-4"
+              className="w-full mt-5 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-colors transform hover:-translate-y-0.5 cursor-pointer animate-cascade-4"
             >
               <span>{language === 'hi' ? 'मर्चेंट डैशबोर्ड पर जाएं' : 'Continue to Merchant Dashboard'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -494,7 +494,7 @@ export default function ConsoleActivationPaywall({
           Official 256-Bit Encrypted Gateway • <strong>mymobpay.tech</strong>
         </span>
         <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#00ba9d]"></span>
-        <span className="text-[10px] text-[#00ba9d] uppercase tracking-wider font-bold">Live</span>
+        <span className="text-[10px] text-[#00ba9d] font-bold">Live</span>
       </div>
 
       {/* Main Hosted Checkout Container */}
@@ -505,7 +505,7 @@ export default function ConsoleActivationPaywall({
           
           {/* Merchant & Order Identity */}
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-xl bg-[#0284c7] flex items-center justify-center shadow-md shrink-0 text-white font-black text-xl">
+            <div className="w-12 h-12 rounded-xl bg-[#0284c7] flex items-center justify-center shadow-md shrink-0 text-white font-semibold text-xl">
               <span>M</span>
             </div>
             <div className="flex flex-col">
@@ -554,7 +554,7 @@ export default function ConsoleActivationPaywall({
               <span className="text-xs text-slate-300 font-medium">
                 {language === 'hi' ? 'देय राशि:' : 'Amount Due:'}
               </span>
-              <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight" id="headerAmountDue">
+              <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight" id="headerAmountDue">
                 {currentPlan.priceText}
               </span>
             </div>
@@ -568,14 +568,14 @@ export default function ConsoleActivationPaywall({
           {/* Left Vertical Plans Rail (5 cols) */}
           <aside className="md:col-span-5 bg-slate-50/70 p-3 sm:p-4 flex flex-col justify-between border-r border-slate-100">
             <div className="space-y-2">
-              <p className="text-[11px] text-slate-500 uppercase tracking-wider px-3 py-1 font-bold">
+              <p className="text-[11px] text-slate-500 px-3 py-1 font-bold">
                 {language === 'hi' ? 'सक्रियण योजना चुनें' : 'Select Activation Plan'}
               </p>
 
               {/* Option 1: 1 Month Starter */}
               <div 
                 onClick={() => setSelectedPlan('1m')}
-                className={`w-full text-left p-3.5 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                className={`w-full text-left p-3.5 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
                   selectedPlan === '1m' 
                     ? 'bg-white border-2 border-sky-500 shadow-sm' 
                     : 'bg-white hover:bg-slate-50 border border-slate-200'
@@ -606,7 +606,7 @@ export default function ConsoleActivationPaywall({
               {/* Option 3: 3 Months Growth */}
               <div 
                 onClick={() => setSelectedPlan('3m')}
-                className={`w-full text-left p-3.5 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                className={`w-full text-left p-3.5 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
                   selectedPlan === '3m' 
                     ? 'bg-white border-2 border-emerald-500 shadow-sm' 
                     : 'bg-white hover:bg-slate-50 border border-slate-200'
@@ -639,7 +639,7 @@ export default function ConsoleActivationPaywall({
               {/* Option 4: Custom Enterprise */}
               <div 
                 onClick={() => { setSelectedPlan('custom'); setShowEnterpriseModal(true); }}
-                className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between cursor-pointer ${
+                className={`w-full text-left p-3 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
                   selectedPlan === 'custom'
                     ? 'bg-white border-2 border-slate-700 shadow-sm'
                     : 'bg-white/60 hover:bg-white border border-dashed border-slate-300'
@@ -691,7 +691,7 @@ export default function ConsoleActivationPaywall({
 
                 <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
                   {/* Google Pay */}
-                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-all">
+                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white shadow-xs border border-slate-100 flex items-center justify-center mb-1.5 p-1">
                       <img src="/logos/gpay.svg" alt="Google Pay" className="h-5.5 w-auto object-contain" />
                     </div>
@@ -699,7 +699,7 @@ export default function ConsoleActivationPaywall({
                   </div>
 
                   {/* PhonePe */}
-                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-all">
+                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white shadow-xs border border-slate-100 flex items-center justify-center mb-1.5 p-1">
                       <img src="/logos/phonepe.svg" alt="PhonePe" className="h-5 w-auto object-contain" />
                     </div>
@@ -707,7 +707,7 @@ export default function ConsoleActivationPaywall({
                   </div>
 
                   {/* Paytm */}
-                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-all">
+                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white shadow-xs border border-slate-100 flex items-center justify-center mb-1.5 p-1">
                       <img src="/logos/paytm.svg" alt="Paytm" className="h-4 w-auto object-contain" />
                     </div>
@@ -715,7 +715,7 @@ export default function ConsoleActivationPaywall({
                   </div>
 
                   {/* CRED */}
-                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-all">
+                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white shadow-xs border border-slate-100 flex items-center justify-center mb-1.5 p-1">
                       <img src="/logos/cred.svg" alt="CRED" className="h-4.5 w-auto object-contain" />
                     </div>
@@ -723,7 +723,7 @@ export default function ConsoleActivationPaywall({
                   </div>
 
                   {/* BHIM UPI */}
-                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-all">
+                  <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center select-none hover:bg-white hover:shadow-xs transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white shadow-xs border border-slate-100 flex items-center justify-center mb-1.5 p-1">
                       <img src="/logos/bhim.svg" alt="BHIM UPI" className="h-4 w-auto object-contain" />
                     </div>
@@ -798,7 +798,7 @@ export default function ConsoleActivationPaywall({
                 
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                    <span className="text-[10px] text-slate-400 font-semibold">
                       Merchant UPI ID / VPA
                     </span>
                     <div className="flex items-center space-x-2 mt-0.5">
@@ -809,7 +809,7 @@ export default function ConsoleActivationPaywall({
                   </div>
                   <button 
                     onClick={handleCopyVpa}
-                    className="h-9 px-3.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-sky-700 text-xs font-semibold flex items-center justify-center shadow-xs transition-all cursor-pointer shrink-0 gap-1.5" 
+                    className="h-9 px-3.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-sky-700 text-xs font-semibold flex items-center justify-center shadow-xs transition-colors cursor-pointer shrink-0 gap-1.5" 
                     type="button"
                     aria-label={copiedVpa ? "Copied UPI ID" : "Copy UPI ID"}
                   >
@@ -1016,13 +1016,13 @@ export default function ConsoleActivationPaywall({
             <div className="flex gap-2">
               <a
                 href="mailto:enterprise@mymobpay.tech?subject=Enterprise%20Plan%20Inquiry"
-                className="flex-1 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] text-white text-center rounded-xl text-xs font-bold transition-all"
+                className="flex-1 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] text-white text-center rounded-xl text-xs font-bold transition-colors"
               >
                 Send Email
               </a>
               <button
                 onClick={() => setShowEnterpriseModal(false)}
-                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all"
+                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors"
               >
                 Close
               </button>

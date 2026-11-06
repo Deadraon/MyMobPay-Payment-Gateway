@@ -474,7 +474,7 @@ export default function VerificationCenterRedesign({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Verification Center</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Verification Center</h1>
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${healthMetrics.statusColor}`}>
               <span className={`w-2 h-2 rounded-full ${healthMetrics.dotColor} animate-pulse`} />
               {healthMetrics.statusLabel}
@@ -489,7 +489,7 @@ export default function VerificationCenterRedesign({
           <button
             type="button"
             onClick={onRefresh}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
             Refresh Rails
@@ -538,14 +538,14 @@ export default function VerificationCenterRedesign({
         {/* Card 1: Auto-Verification Rate */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Confirm Rate</span>
+            <span className="text-[11px] font-bold text-slate-500">Confirm Rate</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
               <Zap className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 tabular-nums">{healthMetrics.autoVerifiedRate}%</span>
+              <span className="text-2xl font-semibold text-slate-900 tabular-nums">{healthMetrics.autoVerifiedRate}%</span>
               <span className="text-[11px] font-bold text-emerald-600">Auto-Verified</span>
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
@@ -557,14 +557,14 @@ export default function VerificationCenterRedesign({
         {/* Card 2: Avg Confirmation Latency */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Avg Confirmation Delay</span>
+            <span className="text-[11px] font-bold text-slate-500">Avg Confirmation Delay</span>
             <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-900 tabular-nums">{healthMetrics.formattedAvgDelay}</span>
+              <span className="text-2xl font-semibold text-slate-900 tabular-nums">{healthMetrics.formattedAvgDelay}</span>
               <span className="text-[11px] font-bold text-blue-600">Avg Settlement</span>
             </div>
             <p className="text-[11px] text-slate-500 mt-1">From customer scan to instant bank webhook/email match</p>
@@ -574,14 +574,14 @@ export default function VerificationCenterRedesign({
         {/* Card 3: Delayed Payments Queue */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Delayed Payments (&gt;5m)</span>
+            <span className="text-[11px] font-bold text-slate-500">Delayed Payments (&gt;5m)</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${delayedOrders.length > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-400'}`}>
               <AlertCircle className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className={`text-2xl font-black tabular-nums ${delayedOrders.length > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
+              <span className={`text-2xl font-semibold tabular-nums ${delayedOrders.length > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
                 {delayedOrders.length}
               </span>
               <span className="text-[11px] text-slate-500">awaiting confirmation</span>
@@ -595,14 +595,14 @@ export default function VerificationCenterRedesign({
         {/* Card 4: Duplicate Warnings */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Duplicate Flags</span>
+            <span className="text-[11px] font-bold text-slate-500">Duplicate Flags</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${duplicateWarnings.length > 0 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-400'}`}>
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className={`text-2xl font-black tabular-nums ${duplicateWarnings.length > 0 ? 'text-red-600' : 'text-slate-900'}`}>
+              <span className={`text-2xl font-semibold tabular-nums ${duplicateWarnings.length > 0 ? 'text-red-600' : 'text-slate-900'}`}>
                 {duplicateWarnings.length}
               </span>
               <span className="text-[11px] font-medium text-slate-500">alerts detected</span>
@@ -621,7 +621,7 @@ export default function VerificationCenterRedesign({
           <button
             type="button"
             onClick={() => setActiveSubTab('delayed')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
               activeSubTab === 'delayed'
                 ? 'bg-white text-slate-900 shadow-2xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -630,7 +630,7 @@ export default function VerificationCenterRedesign({
             <Clock className="w-3.5 h-3.5 text-amber-500" />
             <span>Delayed Payments</span>
             {delayedOrders.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800">
                 {delayedOrders.length}
               </span>
             )}
@@ -639,7 +639,7 @@ export default function VerificationCenterRedesign({
           <button
             type="button"
             onClick={() => setActiveSubTab('duplicates')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
               activeSubTab === 'duplicates'
                 ? 'bg-white text-slate-900 shadow-2xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -648,7 +648,7 @@ export default function VerificationCenterRedesign({
             <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
             <span>Duplicate Warnings</span>
             {duplicateWarnings.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-red-100 text-red-800">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-red-100 text-red-800">
                 {duplicateWarnings.length}
               </span>
             )}
@@ -657,7 +657,7 @@ export default function VerificationCenterRedesign({
           <button
             type="button"
             onClick={() => setActiveSubTab('logs')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
               activeSubTab === 'logs'
                 ? 'bg-white text-slate-900 shadow-2xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -665,7 +665,7 @@ export default function VerificationCenterRedesign({
           >
             <Mail className="w-3.5 h-3.5 text-blue-500" />
             <span>Bank Notification Rails</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-slate-200 text-slate-700">
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-slate-200 text-slate-700">
               {emailLogs.length}
             </span>
           </button>
@@ -673,7 +673,7 @@ export default function VerificationCenterRedesign({
           <button
             type="button"
             onClick={() => setActiveSubTab('disputes')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
               activeSubTab === 'disputes'
                 ? 'bg-white text-slate-900 shadow-2xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -682,7 +682,7 @@ export default function VerificationCenterRedesign({
             <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />
             <span>Customer Disputes</span>
             {disputes.filter((d) => d.status !== 'resolved').length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-800">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-indigo-100 text-indigo-800">
                 {disputes.filter((d) => d.status !== 'resolved').length}
               </span>
             )}
@@ -757,7 +757,7 @@ export default function VerificationCenterRedesign({
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold text-[10px]">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-[10px]">
                     <tr>
                       <th className="px-4 py-3">Order Details</th>
                       <th className="px-4 py-3">Amount</th>
@@ -851,7 +851,7 @@ export default function VerificationCenterRedesign({
                                 type="button"
                                 onClick={() => handleRecheckStatus(order)}
                                 disabled={isCheckingThis}
-                                className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[11px] transition-all cursor-pointer inline-flex items-center gap-1 disabled:opacity-50"
+                                className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[11px] transition-colors cursor-pointer inline-flex items-center gap-1 disabled:opacity-50"
                                 title="Re-query bank notifications & email logs for this order"
                               >
                                 <RefreshCw className={`w-3 h-3 ${isCheckingThis ? 'animate-spin text-blue-600' : 'text-slate-500'}`} />
@@ -862,7 +862,7 @@ export default function VerificationCenterRedesign({
                               <button
                                 type="button"
                                 onClick={() => handleOpenManualModal(order)}
-                                className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] transition-all cursor-pointer shadow-xs inline-flex items-center gap-1"
+                                className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1"
                               >
                                 <UserCheck className="w-3 h-3" />
                                 Mark as Paid
@@ -1011,7 +1011,7 @@ export default function VerificationCenterRedesign({
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold text-[10px]">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-[10px]">
                     <tr>
                       <th className="px-4 py-3">Received At (IST)</th>
                       <th className="px-4 py-3">Sender / Bank</th>
@@ -1085,7 +1085,7 @@ export default function VerificationCenterRedesign({
             <button
               type="button"
               onClick={() => setDisputeFilter('all')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 disputeFilter === 'all'
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -1096,7 +1096,7 @@ export default function VerificationCenterRedesign({
             <button
               type="button"
               onClick={() => setDisputeFilter('awaiting_merchant')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 disputeFilter === 'awaiting_merchant'
                   ? 'bg-amber-600 text-white shadow-xs'
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -1107,7 +1107,7 @@ export default function VerificationCenterRedesign({
             <button
               type="button"
               onClick={() => setDisputeFilter('open')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 disputeFilter === 'open'
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -1118,7 +1118,7 @@ export default function VerificationCenterRedesign({
             <button
               type="button"
               onClick={() => setDisputeFilter('resolved')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 disputeFilter === 'resolved'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -1143,7 +1143,7 @@ export default function VerificationCenterRedesign({
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold text-[10px]">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-[10px]">
                     <tr>
                       <th className="px-4 py-3">Case ID</th>
                       <th className="px-4 py-3">Claim Date (IST)</th>
@@ -1276,8 +1276,8 @@ export default function VerificationCenterRedesign({
             {/* Claim Summary Card */}
             <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Disputed Amount</span>
-                <span className="font-black text-slate-900 font-mono text-sm">{formatINR(selectedDispute.amount)}</span>
+                <span className="text-[10px] font-bold text-slate-400">Disputed Amount</span>
+                <span className="font-semibold text-slate-900 font-mono text-sm">{formatINR(selectedDispute.amount)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-slate-500">Customer Payer</span>
@@ -1294,7 +1294,7 @@ export default function VerificationCenterRedesign({
                 </span>
               </div>
               <div className="pt-2 border-t border-slate-200/80">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Customer Claim Note:</span>
+                <span className="text-[10px] font-bold text-slate-500 block">Customer Claim Note:</span>
                 <p className="text-slate-700 italic mt-0.5">&ldquo;{selectedDispute.claimText}&rdquo;</p>
               </div>
             </div>
@@ -1312,7 +1312,7 @@ export default function VerificationCenterRedesign({
 
             {/* Audit Timeline */}
             <div className="space-y-2">
-              <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
+              <span className="text-[11px] font-bold text-slate-700 block">
                 Dispute Lifecycle Timeline
               </span>
               <div className="border border-slate-200 rounded-xl p-3 bg-white space-y-2.5 text-xs">
@@ -1398,7 +1398,7 @@ export default function VerificationCenterRedesign({
                   <UserCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-slate-900">Manual Payment Verification</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">Manual Payment Verification</h3>
                   <p className="text-[11px] text-slate-500 font-mono">Order #{activeManualOrder.id?.slice(0, 8)}</p>
                 </div>
               </div>
@@ -1414,7 +1414,7 @@ export default function VerificationCenterRedesign({
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex justify-between items-center text-xs">
               <div>
                 <span className="text-slate-500 block">Amount to verify</span>
-                <span className="text-base font-black text-slate-900 font-mono">
+                <span className="text-base font-semibold text-slate-900 font-mono">
                   {formatINR(manualVerifyOrder.amount)}
                 </span>
               </div>
@@ -1480,7 +1480,7 @@ export default function VerificationCenterRedesign({
               <button
                 type="button"
                 onClick={() => setManualVerifyOrder(null)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -1488,7 +1488,7 @@ export default function VerificationCenterRedesign({
                 type="button"
                 onClick={handleConfirmManualVerify}
                 disabled={isVerifying}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5"
               >
                 {isVerifying ? (
                   <>

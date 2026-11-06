@@ -24,7 +24,7 @@ export default function TermsPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#533AFD]/15 selection:text-[#533AFD]">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#0EA5E9]/15 selection:text-[#0284C7]">
       {/* Top Header Bar */}
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -61,7 +61,7 @@ export default function TermsPage() {
                 <Scale className="w-3.5 h-3.5 text-blue-600" />
                 <span>Legal Framework &amp; Merchant Agreement</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-semibold text-slate-900 tracking-tight">
                 Terms of Service
               </h1>
               <p className="text-sm text-slate-500 font-normal">
@@ -141,13 +141,13 @@ export default function TermsPage() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">0% Per-Transaction Fee</span>
+                <span className="text-xs font-bold text-blue-600 block mb-1">0% Per-Transaction Fee</span>
                 <p className="text-xs sm:text-sm text-slate-650 leading-normal">
                   We deduct zero percentage commission (0%) from your sales volume. Every rupee sent by your buyer settles 100% in full into your bank account.
                 </p>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">Flat Subscription Service</span>
+                <span className="text-xs font-bold text-blue-600 block mb-1">Flat Subscription Service</span>
                 <p className="text-xs sm:text-sm text-slate-650 leading-normal">
                   Fees are charged as a recurring monthly or annual platform subscription. This fee covers automated UTR matching, Android/Email notification forwarders, webhooks, and dashboard infrastructure.
                 </p>

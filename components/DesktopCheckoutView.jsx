@@ -437,7 +437,7 @@ export default function DesktopCheckoutView({
           <IconVerifiedUser className="w-4 h-4 text-emerald-600" />
           <span>Payment Verified • <strong>mymobpay.tech</strong></span>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-[10px] text-emerald-600 uppercase tracking-wider font-bold">Success</span>
+          <span className="text-[10px] text-emerald-600 font-bold">Success</span>
         </div>
 
         {/* Animated Green Tick Icon (Razorpay / Top Fintech Style) */}
@@ -445,7 +445,7 @@ export default function DesktopCheckoutView({
 
         {/* Headline & Subtitle */}
         <div className="animate-cascade-2">
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight mt-3">
             Payment Successful!
           </h2>
           <p className="text-sm text-slate-600 font-medium max-w-md mx-auto mt-2 leading-relaxed">
@@ -462,34 +462,34 @@ export default function DesktopCheckoutView({
         {/* Receipt Details Card */}
         <div className="w-full bg-[#f8fafc] border border-slate-200/90 rounded-2xl p-5 mt-6 text-left space-y-3 animate-cascade-3">
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount Paid</span>
+            <span className="text-xs font-semibold text-slate-500">Amount Paid</span>
             <div className="flex items-center gap-2">
-              <span className="text-base font-black text-emerald-600">₹{formattedAmount}</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 uppercase tracking-wide">
+              <span className="text-base font-semibold text-emerald-600">₹{formattedAmount}</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 tracking-wide">
                 ✓ Paid
               </span>
             </div>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Order Reference</span>
+            <span className="text-xs font-semibold text-slate-500">Order Reference</span>
             <span className="font-mono text-xs font-bold text-slate-900" title={rawOrderRef}>{orderRefDisplay}</span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Merchant Name</span>
+            <span className="text-xs font-semibold text-slate-500">Merchant Name</span>
             <span className="text-xs font-bold text-slate-800">{safeBizName}</span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Payment Method</span>
-            <span className="text-xs font-bold text-slate-800 uppercase">
+            <span className="text-xs font-semibold text-slate-500">Payment Method</span>
+            <span className="text-xs font-bold text-slate-800">
               {activeOpt === 'bank' ? 'Bank Transfer (IMPS/NEFT)' : activeOpt === 'crypto' ? 'Crypto Settlement' : activeOpt === 'card' ? 'Credit / Debit Card' : 'UPI Instant Settlement'}
             </span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Settlement Time</span>
+            <span className="text-xs font-semibold text-slate-500">Settlement Time</span>
             <span className="text-xs font-bold text-slate-800">{okTime || new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Transaction Status</span>
+            <span className="text-xs font-semibold text-slate-500">Transaction Status</span>
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
               Verified & Complete
@@ -505,7 +505,7 @@ export default function DesktopCheckoutView({
           </div>
           <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-1000 ease-linear rounded-full"
+              className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-colors duration-1000 ease-linear rounded-full"
               style={{ width: `${Math.min(100, Math.max(10, ((6 - successCountdown) / 5) * 100))}%` }}
             />
           </div>
@@ -515,7 +515,7 @@ export default function DesktopCheckoutView({
         <button
           type="button"
           onClick={handleReturn}
-          className="focus-ring w-full mt-5 py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5 animate-cascade-4"
+          className="focus-ring w-full mt-5 py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/25 transition-colors flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5 animate-cascade-4"
         >
           <span>Return to {safeBizName}</span>
           <IconArrowForward className="w-4 h-4" />
@@ -553,7 +553,7 @@ export default function DesktopCheckoutView({
               window.location.reload();
             }
           }}
-          className="focus-ring w-full py-3 bg-[#000d21] hover:bg-slate-800 text-white font-semibold rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+          className="focus-ring w-full py-3 bg-[#000d21] hover:bg-slate-800 text-white font-semibold rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
           <IconSchedule className="w-5 h-5" />
           <span>Start Again</span>
@@ -727,13 +727,13 @@ export default function DesktopCheckoutView({
                 {/* ── LEFT COLUMN: Payment Methods ── */}
                 <aside className="md:col-span-5 bg-surface-container-low p-3 sm:p-4 flex flex-col justify-between border-r border-surface-container">
                   <div className="space-y-1.5" role="tablist" aria-label="Payment method">
-                    <p className="text-label-sm text-on-surface-variant uppercase tracking-wider px-3 py-1 font-semibold">
+                    <p className="text-label-sm text-on-surface-variant px-3 py-1 font-semibold">
                       {lang === 'hi' ? 'भुगतान विधियां' : 'Payment methods'}
                     </p>
 
                     {/* Method 1: UPI / QR code */}
                     <button
-                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
+                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-colors ${
                         activeOpt === 'upi'
                           ? 'bg-surface-container-lowest shadow-sm'
                           : 'hover:bg-surface-container-high/60'
@@ -774,7 +774,7 @@ export default function DesktopCheckoutView({
                     {/* Method 2: Direct bank transfer (Only if merchant has configured bank account) */}
                     {isBankAvailable && (
                     <button
-                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
+                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-colors ${
                         activeOpt === 'bank'
                           ? 'bg-surface-container-lowest shadow-sm'
                           : 'hover:bg-surface-container-high/60'
@@ -814,7 +814,7 @@ export default function DesktopCheckoutView({
 
                     {/* Method 3: Crypto currency */}
                     <button
-                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-all ${
+                      className={`payment-tab w-full text-left p-3 rounded-xl flex items-center justify-between gap-2 focus-ring cursor-pointer transition-colors ${
                         activeOpt === 'crypto'
                           ? 'bg-surface-container-lowest shadow-sm'
                           : 'hover:bg-surface-container-high/60'
@@ -881,7 +881,7 @@ export default function DesktopCheckoutView({
                         <span>View order details</span>
                       </button>
                       <div className="flex items-center gap-2.5">
-                        <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                        <span className="text-[11px] font-bold text-on-surface-variant">
                           Paying ₹{formattedAmount}
                         </span>
                         <span className="font-mono font-bold text-xs text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200/70 inline-flex items-center gap-1.5">
@@ -900,7 +900,7 @@ export default function DesktopCheckoutView({
                         {/* Order Header / Status Bar */}
                         <div className="flex items-center justify-between pb-3.5 border-b border-surface-container">
                           <div>
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant block">
+                            <span className="text-[11px] font-bold text-on-surface-variant block">
                               {lang === 'hi' ? 'ऑर्डर सारांश' : 'Order Summary'}
                             </span>
                             <div className="flex items-center gap-2 mt-0.5">
@@ -933,10 +933,10 @@ export default function DesktopCheckoutView({
                             </div>
 
                             <div className="text-right flex-shrink-0">
-                              <span className="text-[10.5px] font-semibold text-on-surface-variant uppercase tracking-wider block">
+                              <span className="text-[10.5px] font-semibold text-on-surface-variant block">
                                 {lang === 'hi' ? 'कुल देय' : 'Total Payable'}
                               </span>
-                              <span className="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight block">
+                              <span className="text-2xl sm:text-3xl font-semibold text-on-surface tracking-tight block">
                                 ₹{formattedAmount}
                               </span>
                             </div>
@@ -1151,9 +1151,9 @@ export default function DesktopCheckoutView({
 
                         <div className="flex-1 text-center sm:text-left">
                           {/* TOTAL amount banner matching reference layout */}
-                          <div className="text-[12px] font-black tracking-wider uppercase text-slate-700 font-mono mb-1.5 flex items-center justify-center sm:justify-start gap-1.5">
+                          <div className="text-[12px] font-semibold text-slate-700 font-mono mb-1.5 flex items-center justify-center sm:justify-start gap-1.5">
                             <span className="text-slate-400 font-bold">TOTAL :</span>
-                            <span className="text-slate-900 font-extrabold text-sm font-sans">₹{formattedAmount}</span>
+                            <span className="text-slate-900 font-semibold text-sm font-sans">₹{formattedAmount}</span>
                           </div>
 
                           {(paramProject || orderNote) && (
@@ -1219,7 +1219,7 @@ export default function DesktopCheckoutView({
                         
                         <div className="p-3.5 rounded-xl bg-surface-container-low border border-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                           <div className="flex flex-col">
-                            <span className="text-label-sm text-on-surface-variant uppercase tracking-wider text-[10px] font-semibold">
+                            <span className="text-label-sm text-on-surface-variant text-[10px] font-semibold">
                               Merchant UPI ID / VPA
                             </span>
                             <span
@@ -1231,7 +1231,7 @@ export default function DesktopCheckoutView({
                           </div>
                           
                           <button
-                            className="focus-ring h-10 px-4 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high border border-outline-variant/30 text-secondary text-label-md font-semibold flex items-center justify-center shadow-sm transition-all flex-shrink-0 gap-1.5 active:scale-95 cursor-pointer"
+                            className="focus-ring h-10 px-4 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high border border-outline-variant/30 text-secondary text-label-md font-semibold flex items-center justify-center shadow-sm transition-colors flex-shrink-0 gap-1.5 active:scale-95 cursor-pointer"
                             onClick={() => {
                               handleCopyUpi();
                               handleCopyText(safeUpiId, 'upi');
@@ -1257,7 +1257,7 @@ export default function DesktopCheckoutView({
 
                         {/* Check Payment Status Button */}
                         <button
-                          className="focus-ring w-full h-11 rounded-xl bg-secondary text-on-secondary text-title-md font-semibold shadow-sm hover:bg-[#0038b7] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-99 mt-2"
+                          className="focus-ring w-full h-11 rounded-xl bg-secondary text-on-secondary text-title-md font-semibold shadow-sm hover:bg-[#0038b7] transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-99 mt-2"
                           type="button"
                           onClick={handleUpiCheckClick}
                           disabled={isChecking}
@@ -1324,7 +1324,7 @@ export default function DesktopCheckoutView({
                                     type="button"
                                     disabled={!utr || utr.length < 8 || utrBusy}
                                     onClick={submitUtr}
-                                    className="h-9 px-3.5 rounded-lg bg-secondary text-on-secondary text-xs font-semibold hover:bg-[#0038b7] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-2xs"
+                                    className="h-9 px-3.5 rounded-lg bg-secondary text-on-secondary text-xs font-semibold hover:bg-[#0038b7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-2xs"
                                     id="verifyUtrDesktopBtn"
                                   >
                                     {utrBusy ? '…' : 'Submit UTR'}
@@ -1378,7 +1378,7 @@ export default function DesktopCheckoutView({
                           <button
                             type="button"
                             onClick={() => setActiveOpt('upi')}
-                            className="mt-4 px-5 py-2.5 bg-secondary text-on-secondary rounded-xl text-xs font-bold hover:bg-[#0038b7] transition-all cursor-pointer shadow-sm active:scale-98"
+                            className="mt-4 px-5 py-2.5 bg-secondary text-on-secondary rounded-xl text-xs font-bold hover:bg-[#0038b7] transition-colors cursor-pointer shadow-sm active:scale-98"
                           >
                             {lang === 'hi' ? 'यूपीआई से भुगतान करें' : 'Pay via UPI / QR Code'}
                           </button>
@@ -1520,7 +1520,7 @@ export default function DesktopCheckoutView({
                               type="button"
                               disabled={!utr || utr.length < 8 || utrBusy}
                               onClick={submitUtr}
-                              className="h-9 px-3.5 rounded-lg bg-secondary text-on-secondary text-xs font-semibold hover:bg-[#0038b7] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-2xs"
+                              className="h-9 px-3.5 rounded-lg bg-secondary text-on-secondary text-xs font-semibold hover:bg-[#0038b7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0 shadow-2xs"
                               id="verifyUtrBankDesktopBtn"
                             >
                               {utrBusy ? '…' : 'Submit UTR'}
@@ -1557,7 +1557,7 @@ export default function DesktopCheckoutView({
                         <button
                           type="button"
                           onClick={() => setSelectedCrypto('USDT')}
-                          className={`crypto-choice focus-ring p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+                          className={`crypto-choice focus-ring p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${
                             selectedCrypto === 'USDT'
                               ? 'bg-surface-container-lowest border-2 border-secondary shadow-sm'
                               : 'bg-surface-container border-2 border-transparent hover:bg-surface-container-high'
@@ -1572,7 +1572,7 @@ export default function DesktopCheckoutView({
                         <button
                           type="button"
                           onClick={() => setSelectedCrypto('BTC')}
-                          className={`crypto-choice focus-ring p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+                          className={`crypto-choice focus-ring p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${
                             selectedCrypto === 'BTC'
                               ? 'bg-surface-container-lowest border-2 border-secondary shadow-sm'
                               : 'bg-surface-container border-2 border-transparent hover:bg-surface-container-high'
@@ -1587,7 +1587,7 @@ export default function DesktopCheckoutView({
                         <button
                           type="button"
                           onClick={() => setSelectedCrypto('ETH')}
-                          className={`crypto-choice focus-ring p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+                          className={`crypto-choice focus-ring p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${
                             selectedCrypto === 'ETH'
                               ? 'bg-surface-container-lowest border-2 border-secondary shadow-sm'
                               : 'bg-surface-container border-2 border-transparent hover:bg-surface-container-high'

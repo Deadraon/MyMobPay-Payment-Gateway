@@ -28,7 +28,7 @@ const MyMobPayLogo = ({ className = 'w-44 lg:w-48 h-auto', textColor = '#FFFFFF'
     viewBox="0 0 220 40" 
     fill="none" 
     xmlns="http://www.w3.org/2000/svg" 
-    className={`${className} transition-transform duration-300 hover:scale-[1.02]`}
+    className={`${className} transition-transform duration-300`}
   >
     {/* 3D Ribbon M Mark */}
     <image
@@ -242,14 +242,14 @@ export default function AdminSidebar({
                   if (setIsMobileMenuOpen) setIsMobileMenuOpen(false);
                 }}
                 type="button"
-                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-all border font-bold cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent group mb-2"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-colors border font-bold cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent group mb-2"
                 title="Switch back to Merchant Dashboard"
               >
                 <Store className="w-3.5 h-3.5 text-blue-200 shrink-0" />
-                <span className="flex-1 text-left font-black tracking-wide text-[11px] truncate">
+                <span className="flex-1 text-left font-semibold tracking-wide text-[11px] truncate">
                   Merchant Dashboard
                 </span>
-                <span className="text-[8px] bg-white/20 text-white px-1.5 py-0.5 rounded font-black uppercase tracking-wider shrink-0 transition-colors">
+                <span className="text-[8px] bg-white/20 text-white px-1.5 py-0.5 rounded font-semibold shrink-0 transition-colors">
                   Switch
                 </span>
               </button>
@@ -260,7 +260,7 @@ export default function AdminSidebar({
           {/* Dynamic Navigation Sections */}
           {navSections.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1">
-              <p className="px-3 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between">
+              <p className="px-3 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400 flex items-center justify-between">
                 <span className={section.adminBadge ? 'text-indigo-400' : ''}>{section.title}</span>
                 {section.adminBadge && (
                   <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">
@@ -287,7 +287,7 @@ export default function AdminSidebar({
                     </div>
 
                     {item.badge && (
-                      <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-extrabold shrink-0 border ${item.badge.color}`}>
+                      <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold shrink-0 border ${item.badge.color}`}>
                         {item.badge.text}
                       </span>
                     )}

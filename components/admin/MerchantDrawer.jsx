@@ -181,13 +181,13 @@ export default function MerchantDrawer({
         {/* Header */}
         <div className="sticky top-0 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-slate-100 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-semibold text-sm flex items-center justify-center shadow-xs">
               {businessName.charAt(0).toUpperCase()}
             </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <h3 className="font-bold text-slate-900 text-sm leading-tight">{businessName}</h3>
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
                   {subscriptionStatus.toUpperCase()}
                 </span>
               </div>
@@ -252,7 +252,7 @@ export default function MerchantDrawer({
 
           {/* Account Status & Risk Controls */}
           <div className="space-y-2">
-            <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+            <label className="text-[10px] font-semibold text-slate-400 block">
               Operational State &amp; Risk Control
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -265,8 +265,8 @@ export default function MerchantDrawer({
                   key={st.id}
                   type="button"
                   onClick={() => setSubscriptionStatus(st.id)}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                    subscriptionStatus === st.id ? `${st.color} font-black shadow-xs` : 'border-slate-200 bg-white text-slate-600'
+                  className={`p-2.5 rounded-xl border text-left transition-colors cursor-pointer ${
+                    subscriptionStatus === st.id ? `${st.color} font-semibold shadow-xs` : 'border-slate-200 bg-white text-slate-600'
                   }`}
                 >
                   <p className="font-bold text-xs">{st.label}</p>
@@ -278,7 +278,7 @@ export default function MerchantDrawer({
 
           {/* Profile Inputs */}
           <div className="space-y-3">
-            <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+            <h4 className="text-[10px] font-semibold text-slate-400">
               Profile &amp; Bank Settings
             </h4>
 
@@ -380,7 +380,7 @@ export default function MerchantDrawer({
           {/* API Key Management */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              <h4 className="text-[10px] font-semibold text-slate-400">
                 API Key Credentials (Hashed in Production)
               </h4>
               <button
@@ -428,7 +428,7 @@ export default function MerchantDrawer({
           {/* Webhook Configuration & Test Console */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              <h4 className="text-[10px] font-semibold text-slate-400">
                 Outbound Webhook Route
               </h4>
               <button
@@ -461,7 +461,7 @@ export default function MerchantDrawer({
 
           {/* Subscription Validity Extension */}
           <div className="space-y-2">
-            <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+            <h4 className="text-[10px] font-semibold text-slate-400">
               Extend Subscription Validity (Flat-Fee SaaS)
             </h4>
             <div className="flex items-center gap-2">
@@ -490,7 +490,7 @@ export default function MerchantDrawer({
                 <ShieldAlert className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="font-extrabold text-xs text-rose-950">
+                <h4 className="font-semibold text-xs text-rose-950">
                   Danger Zone: Permanent Account Purge
                 </h4>
                 <p className="text-[11px] text-rose-700 leading-relaxed mt-0.5">
@@ -589,7 +589,7 @@ export default function MerchantDrawer({
                 <button
                   type="submit"
                   disabled={revealLoading}
-                  className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold transition-all shadow-xs disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold transition-colors shadow-xs disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   <span>{revealLoading ? 'Authorizing...' : 'Authorize & Reveal'}</span>

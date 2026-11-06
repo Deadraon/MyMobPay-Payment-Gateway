@@ -79,7 +79,7 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
       <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-slate-900 tracking-tight flex items-center gap-2">
               <Terminal className="w-5 h-5 text-blue-600" />
               <span>Developer Platform &amp; Webhook Center</span>
             </h2>
@@ -95,7 +95,7 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
         <button
           onClick={fetchDeveloperData}
           disabled={loading}
-          className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh Logs</span>
@@ -107,8 +107,8 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">24H API Traffic</p>
-              <h3 className="text-2xl font-black text-slate-900 mt-1">
+              <p className="text-[10px] font-semibold text-slate-400">24H API Traffic</p>
+              <h3 className="text-2xl font-semibold text-slate-900 mt-1">
                 {telemetry.total_api_calls_24h.toLocaleString('en-IN')}
               </h3>
               <p className="text-[10px] text-emerald-600 font-bold mt-1">✓ 100% Core Endpoints Responsive</p>
@@ -120,8 +120,8 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
 
           <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Mean API Latency</p>
-              <h3 className="text-2xl font-black text-slate-900 mt-1">
+              <p className="text-[10px] font-semibold text-slate-400">Mean API Latency</p>
+              <h3 className="text-2xl font-semibold text-slate-900 mt-1">
                 {telemetry.average_latency_ms}ms
               </h3>
               <p className="text-[10px] text-slate-500 font-semibold mt-1">Fast edge execution</p>
@@ -133,8 +133,8 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
 
           <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Webhook Error Rate</p>
-              <h3 className="text-2xl font-black text-slate-900 mt-1">
+              <p className="text-[10px] font-semibold text-slate-400">Webhook Error Rate</p>
+              <h3 className="text-2xl font-semibold text-slate-900 mt-1">
                 {telemetry.error_rate_percent}%
               </h3>
               <p className="text-[10px] text-emerald-600 font-bold mt-1">✓ High merchant deliverability</p>
@@ -160,7 +160,7 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
 
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="min-w-full divide-y divide-slate-100 text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
               <tr>
                 <th className="px-4 py-3 text-left">Event Type</th>
                 <th className="px-4 py-3 text-left">Merchant Store</th>
@@ -197,7 +197,7 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
                       </td>
 
                       <td className="px-4 py-3 text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black font-mono border ${
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold font-mono border ${
                           isSuccess ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'
                         }`}>
                           HTTP {log.http_status}
@@ -263,14 +263,14 @@ export default function DeveloperTab({ showToast, getAuthHeaders }) {
               </div>
 
               <div>
-                <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider block mb-1">Raw JSON Payload</span>
+                <span className="text-slate-400 text-[10px] font-bold block mb-1">Raw JSON Payload</span>
                 <pre className="p-3 rounded-2xl bg-black border border-slate-800 text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-56">
                   {JSON.stringify(activePayload.payload, null, 2)}
                 </pre>
               </div>
 
               <div>
-                <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider block mb-1">Server Response Body</span>
+                <span className="text-slate-400 text-[10px] font-bold block mb-1">Server Response Body</span>
                 <pre className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-300">
                   {activePayload.response_body || 'No response body recorded'}
                 </pre>

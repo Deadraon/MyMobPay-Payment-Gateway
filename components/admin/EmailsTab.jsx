@@ -319,7 +319,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               <Mail className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
                 <span>Direct Email Communications &amp; Broadcast</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-800">
                   Brevo SMTP
@@ -335,7 +335,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleSetSendToMe}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
             title="Populate your own admin email for a quick test preview"
           >
             <Sparkles className="w-3.5 h-3.5 text-blue-600" />
@@ -345,7 +345,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
           <button
             onClick={fetchHistory}
             disabled={outboxLoading}
-            className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             title="Refresh outbox logs"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${outboxLoading ? 'animate-spin text-blue-600' : ''}`} />
@@ -358,16 +358,16 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Emails Sent</span>
+            <span className="text-xs font-bold text-slate-500">Emails Sent</span>
             <Send className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">{outbox.length}</div>
+          <div className="text-2xl font-semibold text-slate-900 font-mono">{outbox.length}</div>
           <div className="text-[11px] text-slate-400 font-medium mt-0.5">Total recorded in outbox</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">Active Delivery Rail</span>
+            <span className="text-xs font-bold text-emerald-600">Active Delivery Rail</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="text-base font-bold text-slate-800 truncate">Brevo SMTP Relay</div>
@@ -379,16 +379,16 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Target Merchants</span>
+            <span className="text-xs font-bold text-slate-500">Target Merchants</span>
             <Users className="w-4 h-4 text-slate-500" />
           </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">{eligibleMerchants.length}</div>
+          <div className="text-2xl font-semibold text-slate-900 font-mono">{eligibleMerchants.length}</div>
           <div className="text-[11px] text-slate-400 font-medium mt-0.5">Registered merchant inboxes</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Sender Identity</span>
+            <span className="text-xs font-bold text-blue-600">Sender Identity</span>
             <ShieldCheck className="w-4 h-4 text-blue-600" />
           </div>
           <div className="text-xs font-bold font-mono text-slate-800 truncate">noreply@mymobpay.tech</div>
@@ -421,7 +421,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setRecipientMode('merchant')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                     recipientMode === 'merchant'
                       ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-500/10'
                       : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
@@ -432,7 +432,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setRecipientMode('custom')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                     recipientMode === 'custom'
                       ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-500/10'
                       : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
@@ -443,7 +443,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setRecipientMode('broadcast')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                     recipientMode === 'broadcast'
                       ? 'bg-rose-50 text-rose-700 border-rose-300 ring-2 ring-rose-500/10'
                       : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
@@ -564,7 +564,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                     key={t.id}
                     type="button"
                     onClick={() => handleSelectTemplate(t.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 cursor-pointer ${
                       selectedTemplateId === t.id
                         ? 'bg-blue-600 text-white shadow-xs'
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -658,7 +658,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               <button
                 type="submit"
                 disabled={sending}
-                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {sending ? (
                   <>
@@ -692,18 +692,18 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
           <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 max-h-[560px] overflow-y-auto">
             {/* Header with MyMobPay Mark */}
             <div className="text-center pb-3 border-b border-slate-100 flex items-center justify-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-black flex items-center justify-center text-xs">
+              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-semibold flex items-center justify-center text-xs">
                 M
               </div>
               <div className="text-left">
-                <span className="font-extrabold text-sm text-[#0c2340] tracking-tight block leading-tight">MyMobPay</span>
-                <span className="text-[8.5px] uppercase tracking-wider text-slate-400 font-bold block">Direct Bank UPI Rails</span>
+                <span className="font-semibold text-sm text-[#0c2340] tracking-tight block leading-tight">MyMobPay</span>
+                <span className="text-[8.5px] text-slate-400 font-bold block">Direct Bank UPI Rails</span>
               </div>
             </div>
 
             {/* Subject Badge */}
             <div className="space-y-1">
-              <span className="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-bold uppercase tracking-wider">
+              <span className="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-bold">
                 Official Communication
               </span>
               <h4 className="font-bold text-slate-900 text-sm leading-snug">
@@ -771,7 +771,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
 
         <div className="overflow-x-auto rounded-2xl border border-slate-200/80">
           <table className="min-w-full divide-y divide-slate-100 text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
               <tr>
                 <th className="px-4 py-3 text-left">Recipient</th>
                 <th className="px-4 py-3 text-left">Subject &amp; Snippet</th>

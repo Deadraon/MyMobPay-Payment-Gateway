@@ -185,7 +185,7 @@ export default function ProfileBusinessInfoModal({
   return (
     // Overlay with transitions-dev modal transition (06-modal.md)
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/40 backdrop-blur-[3px] ${overlayClass}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/40 backdrop- ${overlayClass}`}
       onClick={onClose}
     >
       <div 
@@ -215,7 +215,7 @@ export default function ProfileBusinessInfoModal({
         <div className="px-6 pt-4 pb-2">
           <div className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 tracking-wider">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
                 {merchantInitials}
               </div>
               <div className="min-w-0">
@@ -239,7 +239,7 @@ export default function ProfileBusinessInfoModal({
             {/* Merchant ID Pill */}
             <div className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 flex items-center gap-2 shrink-0 shadow-2xs">
               <div className="text-left">
-                <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block leading-none mb-0.5">
+                <span className="text-[9px] font-semibold text-slate-400 block leading-none mb-0.5">
                   MID
                 </span>
                 <span className="text-xs font-mono font-bold text-slate-900 leading-none">
@@ -267,7 +267,7 @@ export default function ProfileBusinessInfoModal({
             <button
               type="button"
               onClick={() => setActiveTab('business')}
-              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'business'
                   ? 'bg-white text-blue-600 shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -278,7 +278,7 @@ export default function ProfileBusinessInfoModal({
             <button
               type="button"
               onClick={() => setActiveTab('settlement')}
-              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'settlement'
                   ? 'bg-white text-blue-600 shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -319,7 +319,7 @@ export default function ProfileBusinessInfoModal({
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="e.g. Acme Tech Studio"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                   />
                 </div>
 
@@ -332,7 +332,7 @@ export default function ProfileBusinessInfoModal({
                     value={ownerName}
                     onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="e.g. Kunal Chauhan"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -366,7 +366,7 @@ export default function ProfileBusinessInfoModal({
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -380,7 +380,7 @@ export default function ProfileBusinessInfoModal({
                   <select
                     value={businessCategory}
                     onChange={(e) => setBusinessCategory(e.target.value)}
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors cursor-pointer"
                   >
                     <option value="Digital Services & SaaS">Digital Services &amp; SaaS</option>
                     <option value="E-Commerce & Retail">E-Commerce &amp; Retail</option>
@@ -401,7 +401,7 @@ export default function ProfileBusinessInfoModal({
                     value={supportEmail}
                     onChange={(e) => setSupportEmail(e.target.value)}
                     placeholder="support@company.com"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -417,7 +417,7 @@ export default function ProfileBusinessInfoModal({
                     value={businessWebsite}
                     onChange={(e) => setBusinessWebsite(e.target.value)}
                     placeholder="https://company.com"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                   />
                 </div>
 
@@ -430,7 +430,7 @@ export default function ProfileBusinessInfoModal({
                     value={gstin}
                     onChange={(e) => setGstin(e.target.value)}
                     placeholder="e.g. 07AAAAA0000A1Z5"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 uppercase"
+                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -464,7 +464,7 @@ export default function ProfileBusinessInfoModal({
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     placeholder="merchant@okhdfcbank or business@upi"
-                    className="w-full h-10 px-3 pr-10 bg-white border border-slate-200 rounded-xl text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                    className="w-full h-10 px-3 pr-10 bg-white border border-slate-200 rounded-xl text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                   />
                   {upiId && (
                     <button
@@ -504,7 +504,7 @@ export default function ProfileBusinessInfoModal({
                       value={bankName}
                       onChange={(e) => setBankName(e.target.value)}
                       placeholder="e.g. HDFC Bank, ICICI Bank"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                     />
                   </div>
 
@@ -515,7 +515,7 @@ export default function ProfileBusinessInfoModal({
                       value={bankAccountName}
                       onChange={(e) => setBankAccountName(e.target.value)}
                       placeholder="Account holder name"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                     />
                   </div>
 
@@ -526,7 +526,7 @@ export default function ProfileBusinessInfoModal({
                       value={bankAccountNumber}
                       onChange={(e) => setBankAccountNumber(e.target.value)}
                       placeholder="e.g. 50100234567890"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                     />
                   </div>
 
@@ -537,7 +537,7 @@ export default function ProfileBusinessInfoModal({
                       value={bankIfsc}
                       onChange={(e) => setBankIfsc(e.target.value.toUpperCase())}
                       placeholder="e.g. HDFC0001234"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium uppercase text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
+                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -569,7 +569,7 @@ export default function ProfileBusinessInfoModal({
               <button
                 type="submit"
                 disabled={saving}
-                className="h-9 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
+                className="h-9 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-colors cursor-pointer disabled:opacity-50"
               >
                 {saving ? (
                   <>

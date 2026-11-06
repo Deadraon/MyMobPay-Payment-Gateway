@@ -113,9 +113,9 @@ export default function DeleteAccountModal({
               <Trash2 className="w-5 h-5 text-rose-600" />
             </div>
             <div>
-              <h3 className="font-black text-slate-900 text-base leading-tight flex items-center gap-2">
+              <h3 className="font-semibold text-slate-900 text-base leading-tight flex items-center gap-2">
                 <span>Permanent Account Deletion</span>
-                <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-black uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-semibold">
                   Irreversible
                 </span>
               </h3>
@@ -156,7 +156,7 @@ export default function DeleteAccountModal({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-rose-500 focus:bg-white transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-rose-500 focus:bg-white transition-colors"
               />
             </div>
 
@@ -174,7 +174,7 @@ export default function DeleteAccountModal({
                     className="w-full text-left p-3 hover:bg-white transition-colors flex items-center justify-between gap-3 text-xs cursor-pointer group"
                   >
                     <div>
-                      <p className="font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors">
+                      <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
                         {acc.business_name || acc.owner_name || 'Merchant Account'}
                       </p>
                       <p className="text-[11px] font-mono text-slate-500">{acc.email || 'No email'}</p>
@@ -194,7 +194,7 @@ export default function DeleteAccountModal({
         {currentTarget && (
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              <span className="text-[10px] font-semibold text-slate-400">
                 Target Database Record
               </span>
               {!targetAccount?.id && selectedAccount && (
@@ -209,11 +209,11 @@ export default function DeleteAccountModal({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-black text-sm flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-semibold text-sm flex items-center justify-center shrink-0">
                 {currentTarget.business_name ? currentTarget.business_name.charAt(0).toUpperCase() : 'U'}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-black text-slate-900 text-sm truncate">
+                <p className="font-semibold text-slate-900 text-sm truncate">
                   {currentTarget.business_name || currentTarget.owner_name || 'Account'}
                 </p>
                 <p className="text-xs font-mono font-medium text-slate-600 truncate">
@@ -246,7 +246,7 @@ export default function DeleteAccountModal({
 
         {/* Warning List: What will be deleted */}
         <div className="p-3.5 rounded-2xl bg-rose-50/70 border border-rose-200/70 space-y-2 text-xs">
-          <p className="font-black text-rose-950 flex items-center gap-1.5">
+          <p className="font-semibold text-rose-950 flex items-center gap-1.5">
             <AlertTriangle className="w-4 h-4 text-rose-600" />
             <span>The following data will be permanently wiped from the database:</span>
           </p>
@@ -261,8 +261,8 @@ export default function DeleteAccountModal({
 
         {/* Confirmation Typing Input */}
         <div className="space-y-2">
-          <label className="text-xs font-extrabold text-slate-700 block">
-            Type <span className="font-mono text-rose-600 font-black px-1.5 py-0.5 rounded bg-rose-50 border border-rose-200">DELETE</span> to confirm:
+          <label className="text-xs font-semibold text-slate-700 block">
+            Type <span className="font-mono text-rose-600 font-semibold px-1.5 py-0.5 rounded bg-rose-50 border border-rose-200">DELETE</span> to confirm:
           </label>
           <input
             type="text"
@@ -270,7 +270,7 @@ export default function DeleteAccountModal({
             value={confirmInput}
             onChange={(e) => setConfirmInput(e.target.value)}
             disabled={actionLoading || !currentTarget?.id}
-            className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-black text-sm text-slate-900 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 uppercase transition-all tracking-wider placeholder:font-normal placeholder:tracking-normal"
+            className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-semibold text-sm text-slate-900 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-colors placeholder:font-normal placeholder:tracking-normal"
           />
         </div>
 
@@ -289,7 +289,7 @@ export default function DeleteAccountModal({
             type="button"
             onClick={handleExecutePurge}
             disabled={!canExecute || actionLoading}
-            className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs transition-all shadow-xs shadow-rose-600/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition-colors shadow-xs shadow-rose-600/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
           >
             {actionLoading ? (
               <>

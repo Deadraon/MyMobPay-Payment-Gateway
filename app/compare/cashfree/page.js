@@ -50,22 +50,22 @@ export default function CashfreeComparePage() {
     <div className="min-h-screen bg-slate-50">
       <section className="bg-white border-b border-slate-200 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#533afd]">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-[#0284C7]">
             Comparison — MyMobPay vs Cashfree
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
             MyMobPay vs Cashfree:{" "}
-            <span className="text-[#533afd]">The fee difference that matters</span>
+            <span className="text-[#0284C7]">The fee difference that matters</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Cashfree charges 1.4% + GST on every UPI payment. MyMobPay charges ₹499/month flat.
             At ₹5 Lakhs/month volume, that&apos;s a difference of ₹7,200 every single month.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link href="/login?mode=signup" className="px-6 py-3 bg-[#533afd] hover:bg-[#4434d4] text-white font-semibold rounded-full transition-all shadow-sm text-sm">
+            <Link href="/login?mode=signup" className="px-6 py-3 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold rounded-full transition-colors shadow-sm text-sm">
               Switch to MyMobPay
             </Link>
-            <a href="#savings" className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold rounded-full transition-all text-sm">
+            <a href="#savings" className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold rounded-full transition-colors text-sm">
               See the Numbers
             </a>
           </div>
@@ -79,7 +79,7 @@ export default function CashfreeComparePage() {
             <p className="text-slate-500 text-sm">Cashfree 1.4% + 18% GST vs MyMobPay flat ₹499</p>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-            <div className="grid grid-cols-4 gap-0 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            <div className="grid grid-cols-4 gap-0 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-500 tracking-wide">
               <span>Monthly Volume</span>
               <span className="text-red-600">Cashfree Cost</span>
               <span className="text-emerald-600">MyMobPay Cost</span>
@@ -101,7 +101,7 @@ export default function CashfreeComparePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center mb-12">Feature Comparison</h2>
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-            <div className="grid grid-cols-3 gap-0 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            <div className="grid grid-cols-3 gap-0 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-500 tracking-wide">
               <span>Feature</span>
               <span>Cashfree</span>
               <span>MyMobPay</span>
@@ -133,7 +133,7 @@ export default function CashfreeComparePage() {
           <p className="text-slate-300 text-base leading-relaxed">
             MyMobPay&apos;s direct-to-bank rail means every rupee you collect goes straight to your account — no intermediaries, no hidden cuts.
           </p>
-          <Link href="/login?mode=signup" className="inline-block px-6 py-3 bg-[#533afd] hover:bg-[#4434d4] text-white font-semibold rounded-full transition-all shadow-sm text-sm">
+          <Link href="/login?mode=signup" className="inline-block px-6 py-3 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold rounded-full transition-colors shadow-sm text-sm">
             Get Started — ₹499/month
           </Link>
         </div>
