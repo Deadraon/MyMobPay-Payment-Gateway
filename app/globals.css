@@ -94,6 +94,35 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
+/* ─── Diwali 2026 Theme (Nov 8 only — controlled by DiwaliOverlay.jsx) ──── */
+/* Subtle golden accent on links / focus rings for the day */
+.diwali-active a:focus-visible,
+.diwali-active button:focus-visible {
+  outline-color: #d4a820 !important;
+}
+
+/* Sidebar warm tint: adds a faint amber gradient over the dark sidebar */
+.diwali-sidebar-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    160deg,
+    rgba(180, 80, 0, 0.06) 0%,
+    transparent 60%
+  );
+  z-index: 0;
+}
+
+/* Gold shimmer on primary CTA buttons today */
+.diwali-active .btn-primary,
+.diwali-active [class*="bg-blue"],
+.diwali-active [class*="bg-accent"] {
+  box-shadow: 0 0 0 1px rgba(212,168,32,0.2), var(--tw-ring-shadow, 0 0 #0000) !important;
+}
+
 /* ─── Keyframes ──────────────────────────────────────────── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }

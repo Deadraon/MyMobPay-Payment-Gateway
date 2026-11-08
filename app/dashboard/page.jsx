@@ -43,6 +43,7 @@ import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
 import { formatMerchantId } from '@/lib/merchantId';
 import { useDropdownTransition } from '@/components/useDropdownTransition';
 import { useModalTransition } from '@/components/useModalTransition';
+import { DashboardDiwaliGreeting } from '@/components/DashboardDiwaliElements';
 
 import { 
 
@@ -3012,6 +3013,9 @@ echo "Order Created: " . $data['orderId'];
                 Test Mode
               </button>
             </div>
+
+            {/* Festive greeting on Diwali */}
+            <DashboardDiwaliGreeting />
 
             {/* Live Interactive Search Bar */}
             <div className="relative hidden sm:flex items-center w-60 md:w-72 lg:w-96">

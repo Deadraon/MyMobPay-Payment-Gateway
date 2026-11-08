@@ -10,6 +10,7 @@ import {
   Eye, EyeOff, Printer, Trash2, ArrowUpDown, HelpCircle
 } from 'lucide-react';
 import { formatMerchantId } from '@/lib/merchantId';
+import { isDiwaliToday } from '@/components/DashboardDiwaliElements';
 
 // ── Status Badges (Sharp & Refined Reference Style) ─────────────────
 function StatusBadge({ status }) {
@@ -341,9 +342,13 @@ export default function DashboardOverviewRedesign({
           <button
             type="button"
             onClick={() => setActiveTab?.('payment-links')}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold transition-colors shadow-xs hover:shadow-sm active:scale-[0.98] cursor-pointer"
+            className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-bold transition-all shadow-xs hover:shadow-sm active:scale-[0.98] cursor-pointer ${
+              isDiwaliToday()
+                ? 'bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 hover:from-amber-700 hover:to-orange-700 ring-2 ring-amber-400/30 shadow-[0_0_15px_rgba(245,158,11,0.25)]'
+                : 'bg-[#0D9488] hover:bg-[#0F766E]'
+            }`}
           >
-            <Plus className="w-4 h-4" />
+            {isDiwaliToday() ? <span className="text-xs">🪔</span> : <Plus className="w-4 h-4" />}
             <span>Create Payment Link</span>
           </button>
 

@@ -16,6 +16,7 @@ import {
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 import AnimatedPhoneMockup from '@/components/AnimatedPhoneMockup';
+import DiwaliOverlay from '@/components/DiwaliOverlay';
 import { useDropdownTransition } from '@/components/useDropdownTransition';
 import { supabase } from '@/lib/supabase';
 
@@ -197,6 +198,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden selection:bg-blue-500/10 selection:text-[#533afd] relative">
+      <DiwaliOverlay />
       <InteractiveBackground />
       
       {/* ────────────────────────────────────────────────────────
