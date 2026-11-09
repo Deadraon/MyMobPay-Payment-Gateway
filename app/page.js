@@ -394,19 +394,19 @@ export default function HomePage() {
               <span className="font-medium text-[#533afd]">0% Gateway Fees</span>
             </div>
 
-            {/* Authoritative Headline with typewriter rotating lines (Stripe display spec: weight 300, negative tracking) */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-light text-[#0d253d] tracking-[-1.4px] leading-[1.08] sm:leading-[1.03] font-sohne">
+            {/* Authoritative Headline with typewriter rotating lines */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold text-[#0d253d] tracking-tight leading-[1.12] sm:leading-[1.06]">
               <span className="block animate-fade-up delay-100">
                 Financial infrastructure for
               </span>
               <span className="block animate-fade-up delay-200 mt-1">
                 direct UPI payments.
               </span>
-              <span className="block font-light animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-[-1px] text-[#533afd]">
+              <span className="block font-bold animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight text-[#533afd]">
                 <span className="inline-block">
                   {typedLine}
                 </span>
-                <span className="inline-block w-[2.5px] h-[0.8em] bg-[#533afd] ml-1.5 align-middle animate-pulse" aria-hidden="true" />
+                <span className="inline-block w-[3px] h-[0.8em] bg-[#533afd] ml-1.5 align-middle animate-pulse" aria-hidden="true" />
               </span>
             </h1>
 
