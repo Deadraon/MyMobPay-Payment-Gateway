@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
-import AnimatedPhoneMockup from '@/components/AnimatedPhoneMockup';
 import DiwaliOverlay from '@/components/DiwaliOverlay';
 import { useDropdownTransition } from '@/components/useDropdownTransition';
 import { supabase } from '@/lib/supabase';
@@ -395,19 +394,19 @@ export default function HomePage() {
               <span className="font-medium text-[#533afd]">0% Gateway Fees</span>
             </div>
 
-            {/* Authoritative Headline with typewriter rotating lines */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold text-[#0d253d] tracking-tight leading-[1.12] sm:leading-[1.06]">
+            {/* Authoritative Headline with typewriter rotating lines (Stripe display spec: weight 300, negative tracking) */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-light text-[#0d253d] tracking-[-1.4px] leading-[1.08] sm:leading-[1.03] font-sohne">
               <span className="block animate-fade-up delay-100">
                 Financial infrastructure for
               </span>
               <span className="block animate-fade-up delay-200 mt-1">
                 direct UPI payments.
               </span>
-              <span className="block font-bold animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-tight text-[#533afd]">
+              <span className="block font-light animate-fade-up delay-300 mt-2 min-h-[2.4rem] sm:min-h-[2.8rem] md:min-h-[3.2rem] text-2xl sm:text-3xl md:text-4xl lg:text-[44px] tracking-[-1px] text-[#533afd]">
                 <span className="inline-block">
                   {typedLine}
                 </span>
-                <span className="inline-block w-[3px] h-[0.8em] bg-[#533afd] ml-1.5 align-middle animate-pulse" aria-hidden="true" />
+                <span className="inline-block w-[2.5px] h-[0.8em] bg-[#533afd] ml-1.5 align-middle animate-pulse" aria-hidden="true" />
               </span>
             </h1>
 
@@ -452,9 +451,127 @@ export default function HomePage() {
 
           </div>
 
-          {/* Right Column Custom Render Mockup Graphic (Interactive Animated Mobile Experience) */}
+          {/* Right Column Custom Render Mockup Graphic (Original Clean Phone Scanner with Scannable Dynamic QR) */}
           <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end animate-scale-up">
-            <AnimatedPhoneMockup demoAmount={demoAmount} />
+
+            {/* Premium Interactive Phone Frame */}
+            <div className="phone-glow-container w-full max-w-[340px] relative">
+
+              {/* Premium Phone Frame displaying Actual MyMobPay checkout screen */}
+              <div className="relative w-full bg-slate-900 border-8 border-slate-800 rounded-[44px] premium-phone-shadow overflow-hidden aspect-[9/18.5] flex flex-col">
+
+                {/* Speaker / Camera Notch (Dynamic Island) */}
+                <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
+                  <div className="bg-slate-800 w-28 h-4 rounded-b-2xl" />
+                </div>
+
+                {/* Internal Screen Content */}
+                <div className="flex-1 bg-[#0B192C] pt-8 px-5 pb-5 flex flex-col justify-between font-sans select-none text-white">
+
+                  {/* Header Info */}
+                  <div className="space-y-4">
+
+                    {/* Status Bar */}
+                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 px-1">
+                      <span>10:42 AM</span>
+                      <div className="flex items-center gap-1">
+                        <span>LTE</span>
+                        <div className="w-4 h-2 border border-slate-350 rounded-sm p-0.5 flex items-center">
+                          <div className="bg-slate-400 w-full h-full rounded-xs" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Logo */}
+                    <div className="flex flex-col items-center justify-center pt-2">
+                      <MyMobPayLogo className="w-36 h-auto" textColor="#FFFFFF" />
+                      <p className="text-xs text-slate-300 font-medium tracking-wide mt-1">Direct bank checkout</p>
+                    </div>
+
+                    {/* Due amount card */}
+                    <div className="bg-[#0F1E36] border border-[#1D2D44] rounded-2xl p-4 shadow-sm space-y-2">
+                      <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold">
+                        <span>Total due</span>
+                        <span className="text-[#3395FF] font-semibold bg-[#0B2447] px-2 py-0.5 rounded text-[9px]">Direct bank rail</span>
+                      </div>
+                      <div className="flex items-baseline">
+                        <span className="text-sm font-bold text-slate-400 mr-0.5">₹</span>
+                        <span className="text-3xl font-bold text-white tracking-tight leading-none">
+                          {parseFloat(demoAmount || '500').toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      <div className="pt-2 border-t border-[#1D2D44] flex justify-between text-[10px] font-medium text-slate-400">
+                        <span>Paying to:</span>
+                        <span className="font-semibold text-slate-200">Merchant Store</span>
+                      </div>
+                    </div>
+
+                    {/* QR Code Container */}
+                    <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-md flex flex-col items-center justify-center space-y-2.5 relative overflow-hidden group">
+
+                      {/* Subtle Top Indicator line */}
+                      <div className="absolute inset-x-0 h-0.5 bg-slate-200 top-0" />
+
+                      {/* Real Dynamic UPI QR Code (Scannable) */}
+                      <div className="p-2 bg-white rounded-xl border border-slate-100 flex items-center justify-center shadow-inner">
+                        <QRCode
+                          value={`upi://pay?pa=merchant@okaxis&pn=MyMobPay&am=${demoAmount || '500'}&cu=INR&tn=OrderDemo`}
+                          size={124}
+                          bgColor="#FFFFFF"
+                          fgColor="#0F172A"
+                          level="M"
+                        />
+                      </div>
+
+                      <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1.5 pt-0.5">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                        <span>Instant UTR auto-verification</span>
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                  {/* Footer Section */}
+                  <div className="space-y-3.5 pt-3.5 border-t border-[#1D2D44]">
+
+                    {/* Supported UPI Apps */}
+                    <div className="space-y-1.5">
+                      <p className="text-[11px] text-slate-300 font-medium text-center">Tap or scan with any UPI app</p>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        <span className="bg-[#0F1E36] hover:bg-[#152a4a] transition-colors border border-[#1D2D44] text-white text-[10px] font-bold py-1 px-1 rounded-lg text-center flex items-center justify-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4]"></span>
+                          GPay
+                        </span>
+                        <span className="bg-[#0F1E36] hover:bg-[#152a4a] transition-colors border border-[#1D2D44] text-white text-[10px] font-bold py-1 px-1 rounded-lg text-center flex items-center justify-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5f259f]"></span>
+                          PhonePe
+                        </span>
+                        <span className="bg-[#0F1E36] hover:bg-[#152a4a] transition-colors border border-[#1D2D44] text-white text-[10px] font-bold py-1 px-1 rounded-lg text-center flex items-center justify-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#00baf2]"></span>
+                          Paytm
+                        </span>
+                        <span className="bg-[#0F1E36] hover:bg-[#152a4a] transition-colors border border-[#1D2D44] text-white text-[10px] font-bold py-1 px-1 rounded-lg text-center flex items-center justify-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                          BHIM
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Security copy */}
+                    <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-400 text-center">
+                      <Lock className="w-3.5 h-3.5 text-slate-400" />
+                      <span>256-bit direct bank encrypted</span>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
 
         </div>
@@ -527,22 +644,16 @@ export default function HomePage() {
             {/* Browser frame */}
             <div className="relative bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
 
-              {/* Browser chrome */}
-              <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/90 border-b border-slate-200">
-                <div className="flex gap-1.5">
+              {/* Window chrome header (URL bar removed) */}
+              <div className="flex items-center justify-between px-5 py-3.5 bg-slate-50/90 border-b border-slate-200">
+                <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
                   <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
                   <div className="w-3 h-3 rounded-full bg-[#28c840]" />
                 </div>
-                <div className="flex-1 mx-2">
-                  <div className="bg-white border border-slate-200 rounded-md px-3 py-1 flex items-center gap-2 max-w-xs mx-auto shadow-xs">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                    <span className="text-xs text-slate-700 font-mono">dashboard.mymobpay.com</span>
-                  </div>
-                </div>
                 <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs text-emerald-700 font-semibold">Live</span>
+                  <span className="text-xs text-emerald-700 font-semibold font-mono">Live</span>
                 </div>
               </div>
 
@@ -693,61 +804,63 @@ export default function HomePage() {
 
 
       {/* ────────────────────────────────────────────────────────
-         DEVELOPER SECTION (SENIOR DEV FINISH & BRAND BLUE THEME)
+         DEVELOPER SECTION (STRIPE BRAND-DARK #1c1e54 SPEC)
          ──────────────────────────────────────────────────────── */}
-      <section id="developer-section" className="relative z-10 bg-[#0c2340] text-white border-y border-white/10 overflow-hidden py-16 font-sohne">
-        
-        {/* FULL-WIDTH BRAND BLUE MARQUEE TICKER (ACTUAL SITE LANGUAGES) */}
-        <div className="w-full bg-[#1D4ED8] py-3.5 sm:py-4 overflow-hidden border-b border-[#1E40AF] select-none shadow-inner">
-          <div className="animate-marquee-left flex items-center whitespace-nowrap text-sm sm:text-base font-black text-white uppercase tracking-widest">
-            {[
-              'NEXT.JS', 'REACT', 'NODE.JS', 'TYPESCRIPT', 'REST API', 'PYTHON', 'PHP', 'FLUTTER', 'REACT NATIVE', 'JAVASCRIPT',
-              'NEXT.JS', 'REACT', 'NODE.JS', 'TYPESCRIPT', 'REST API', 'PYTHON', 'PHP', 'FLUTTER', 'REACT NATIVE', 'JAVASCRIPT',
-              'NEXT.JS', 'REACT', 'NODE.JS', 'TYPESCRIPT', 'REST API', 'PYTHON', 'PHP', 'FLUTTER', 'REACT NATIVE', 'JAVASCRIPT'
-            ].map((item, index) => (
-              <span key={index} className="flex items-center">
-                <span className="mx-4 sm:mx-6 font-extrabold">{item}</span>
-                <span className="text-blue-200 text-base font-black">•</span>
-              </span>
-            ))}
+      <section id="developer-section" className="relative z-10 bg-[#1c1e54] text-white border-y border-white/10 overflow-hidden font-sohne">
+
+        {/* Subtle Architectural Language Strip */}
+        <div className="w-full bg-[#161842] py-3 overflow-hidden border-b border-white/5 select-none">
+          <div className="max-w-7xl mx-auto px-6 flex items-center justify-between text-xs font-mono text-slate-400 overflow-x-auto gap-6 scrollbar-none">
+            <span className="flex items-center gap-2 text-[#b9b9f9] font-medium shrink-0">
+              <Terminal className="w-3.5 h-3.5 text-[#533afd]" />
+              <span>OFFICIAL SDKs &amp; RUNTIMES:</span>
+            </span>
+            <div className="flex items-center gap-5 sm:gap-8 shrink-0">
+              {['TypeScript', 'Next.js 14/15', 'Node.js', 'Python', 'PHP', 'React Native', 'Flutter', 'cURL / REST'].map((item, idx) => (
+                <span key={idx} className="flex items-center gap-2 hover:text-white transition-colors cursor-default">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#533afd]/60" />
+                  <span>{item}</span>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* MAIN DEVELOPER HERO CONTENT */}
-        <div className="max-w-6xl mx-auto px-6 py-20 sm:py-24 space-y-16">
-          
-          {/* Senior Developer Headline with Brand Blue Accents */}
-          <div className="space-y-5 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-400 text-xs font-mono font-bold tracking-wide">
-              <Terminal className="w-3.5 h-3.5 text-blue-400" />
-              <span>DEVELOPER-FIRST ARCHITECTURE</span>
+        <div className="max-w-7xl mx-auto px-6 py-20 sm:py-24 space-y-16">
+
+          {/* Senior Developer Headline with Stripe Brand Accents */}
+          <div className="space-y-4 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#533afd]/20 border border-[#533afd]/40 text-[#b9b9f9] text-xs font-mono font-medium tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>DEVELOPER-FIRST INFRASTRUCTURE</span>
             </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
-              MyMobPay is built<br />
-              <span className="text-[#3B82F6] font-extrabold">&lt;for developers by developers&gt;</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-light text-white tracking-[-1.4px] leading-[1.08] font-sohne">
+              Embed direct UPI checkout<br />
+              <span className="text-[#b9b9f9] font-light">in under 3 lines of code.</span>
             </h2>
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal pt-1 max-w-2xl">
-              Integrate direct-to-bank settlements in under 15 minutes. Eliminate the 2% aggregator cut with typed SDKs, deterministic REST endpoints, and signed HMAC webhooks.
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-light pt-1 max-w-2xl">
+              Integrate direct-to-bank settlements in under 15 minutes. Eliminate the 2% aggregator deduction with fully typed SDKs, deterministic REST endpoints, and signed HMAC-SHA256 webhooks.
             </p>
           </div>
 
           {/* 3 Core Architecture Cards: SDKs, REST APIs, Webhooks */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
             {/* Card 1: SDKs & Libraries */}
-            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-all duration-300 space-y-4 group">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
-                <svg width="25" height="28" viewBox="0 0 25 28" fill="none" className="w-6 h-6 text-blue-400">
+            <div className="p-6 rounded-2xl bg-[#161842] border border-white/10 hover:border-[#533afd]/60 transition-all duration-300 space-y-4 shadow-[0_16px_36px_rgba(0,0,0,0.2)] group">
+              <div className="w-12 h-12 rounded-xl bg-[#533afd]/15 border border-[#533afd]/30 flex items-center justify-center text-[#b9b9f9] group-hover:scale-105 transition-transform">
+                <svg width="25" height="28" viewBox="0 0 25 28" fill="none" className="w-6 h-6 text-[#b9b9f9]">
                   <path d="M8.13325 15.3333L10.0666 13.4C10.3333 13.1333 10.4613 12.8222 10.4506 12.4666C10.4399 12.1111 10.3119 11.8 10.0666 11.5333C9.79992 11.2666 9.48303 11.1275 9.11592 11.116C8.74881 11.1044 8.43236 11.2324 8.16659 11.5L5.26659 14.4C4.99992 14.6666 4.86659 14.9777 4.86659 15.3333C4.86659 15.6888 4.99992 16 5.26659 16.2666L8.16659 19.1666C8.43325 19.4333 8.75014 19.5613 9.11725 19.5506C9.48436 19.54 9.80081 19.4008 10.0666 19.1333C10.311 18.8666 10.439 18.5555 10.4506 18.2C10.4621 17.8444 10.3341 17.5333 10.0666 17.2666L8.13325 15.3333ZM16.5332 15.3333L14.5999 17.2666C14.3332 17.5333 14.2052 17.8444 14.2159 18.2C14.2266 18.5555 14.3546 18.8666 14.5999 19.1333C14.8666 19.4 15.1835 19.5386 15.5506 19.5493C15.9177 19.56 16.2341 19.4324 16.4999 19.1666L19.3999 16.2666C19.6666 16 19.7999 15.6888 19.7999 15.3333C19.7999 14.9777 19.6666 14.6666 19.3999 14.4L16.4999 11.5C16.2332 11.2333 15.9164 11.1053 15.5492 11.116C15.1821 11.1266 14.8657 11.2657 14.5999 11.5333C14.3555 11.8 14.2279 12.1111 14.2173 12.4666C14.2066 12.8222 14.3341 13.1333 14.5999 13.4L16.5332 15.3333ZM2.99992 27.3333C2.26659 27.3333 1.63859 27.072 1.11592 26.5493C0.593254 26.0266 0.332365 25.3991 0.333254 24.6666V5.99996C0.333254 5.26663 0.594588 4.63863 1.11725 4.11596C1.63992 3.59329 2.26748 3.3324 2.99992 3.33329H8.59992C8.88881 2.53329 9.37236 1.88885 10.0506 1.39996C10.7288 0.91107 11.4897 0.666626 12.3333 0.666626C13.1777 0.666626 13.939 0.91107 14.6173 1.39996C15.2955 1.88885 15.7786 2.53329 16.0666 3.33329H21.6666C22.3999 3.33329 23.0279 3.59463 23.5506 4.11729C24.0732 4.63996 24.3341 5.26751 24.3332 5.99996V24.6666C24.3332 25.4 24.0719 26.028 23.5492 26.5506C23.0266 27.0733 22.399 27.3342 21.6666 27.3333H2.99992ZM2.99992 24.6666H21.6666V5.99996H2.99992V24.6666ZM12.3333 4.99996C12.6221 4.99996 12.8608 4.90529 13.0492 4.71596C13.2377 4.52663 13.3324 4.28796 13.3333 3.99996C13.3333 3.71107 13.2386 3.4724 13.0492 3.28396C12.8599 3.09551 12.6213 3.00085 12.3333 2.99996C12.0444 2.99996 11.8057 3.09463 11.6173 3.28396C11.4288 3.47329 11.3341 3.71196 11.3333 3.99996C11.3333 4.28885 11.4279 4.52751 11.6173 4.71596C11.8066 4.9044 12.0453 4.99907 12.3333 4.99996Z" fill="currentColor" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">SDKs & Libraries</h3>
-              <p className="text-sm text-slate-400 leading-relaxed font-normal">
+              <h3 className="text-xl font-medium text-white tracking-tight">SDKs &amp; Libraries</h3>
+              <p className="text-sm text-[#e3e8ee]/80 leading-relaxed font-light">
                 Official typed libraries for Next.js, Node.js, Python, PHP, Flutter, and React Native with end-to-end type safety.
               </p>
-              <Link 
-                href="/login" 
-                className="text-sm font-bold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1.5 pt-1 transition-colors"
+              <Link
+                href="/login"
+                className="text-sm font-medium text-[#b9b9f9] hover:text-white inline-flex items-center gap-1.5 pt-1 transition-colors"
               >
                 <span>Explore SDKs</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -755,19 +868,19 @@ export default function HomePage() {
             </div>
 
             {/* Card 2: REST APIs */}
-            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-all duration-300 space-y-4 group">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
-                <svg width="25" height="23" viewBox="0 0 25 23" fill="none" className="w-6 h-6 text-blue-400">
+            <div className="p-6 rounded-2xl bg-[#161842] border border-white/10 hover:border-[#533afd]/60 transition-all duration-300 space-y-4 shadow-[0_16px_36px_rgba(0,0,0,0.2)] group">
+              <div className="w-12 h-12 rounded-xl bg-[#533afd]/15 border border-[#533afd]/30 flex items-center justify-center text-[#b9b9f9] group-hover:scale-105 transition-transform">
+                <svg width="25" height="23" viewBox="0 0 25 23" fill="none" className="w-6 h-6 text-[#b9b9f9]">
                   <path d="M 2.835 13.147 C 2.048 13.639 1.404 14.329 0.966 15.147 C 0.527 15.965 0.31 16.883 0.335 17.811 C 0.36 18.738 0.627 19.643 1.109 20.436 C 1.591 21.229 2.272 21.883 3.084 22.332 C 3.895 22.782 4.811 23.011 5.739 22.999 C 6.666 22.986 7.575 22.732 8.374 22.261 C 9.174 21.79 9.837 21.118 10.297 20.312 C 10.757 19.507 11 18.595 11 17.667 L 19 17.667 M 16.421 22.336 C 17.134 22.729 17.927 22.954 18.739 22.994 C 19.552 23.033 20.363 22.886 21.11 22.564 C 21.857 22.242 22.521 21.753 23.05 21.135 C 23.579 20.517 23.96 19.786 24.163 18.998 C 24.366 18.21 24.386 17.386 24.222 16.589 C 24.057 15.792 23.713 15.044 23.215 14.4 C 22.716 13.757 22.078 13.237 21.347 12.878 C 20.616 12.52 19.814 12.334 19 12.333 C 18.059 12.333 17.101 12.572 16.333 13 L 12.333 5.667 M 17.667 5.667 C 17.667 4.252 17.105 2.896 16.104 1.895 C 15.104 0.895 13.748 0.333 12.333 0.333 C 10.919 0.333 9.562 0.895 8.562 1.895 C 7.562 2.896 7 4.252 7 5.667 C 7 7.675 8.027 9.424 9.667 10.333 L 5.667 17.667" fill="transparent" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">RESTful Endpoints</h3>
-              <p className="text-sm text-slate-400 leading-relaxed font-normal">
+              <h3 className="text-xl font-medium text-white tracking-tight">RESTful Endpoints</h3>
+              <p className="text-sm text-[#e3e8ee]/80 leading-relaxed font-light">
                 Deterministic, idempotent HTTP APIs for order creation, dynamic QR generation, and real-time status verification.
               </p>
-              <Link 
-                href="/login" 
-                className="text-sm font-bold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1.5 pt-1 transition-colors"
+              <Link
+                href="/login"
+                className="text-sm font-medium text-[#b9b9f9] hover:text-white inline-flex items-center gap-1.5 pt-1 transition-colors"
               >
                 <span>API Reference</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -775,19 +888,19 @@ export default function HomePage() {
             </div>
 
             {/* Card 3: Webhooks */}
-            <div className="p-6 rounded-2xl bg-[#0B1528] border border-blue-900/30 hover:border-blue-500/50 transition-all duration-300 space-y-4 group">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
-                <svg width="29" height="30" viewBox="-1 -1 29 30" fill="none" className="w-6 h-6 text-blue-400">
+            <div className="p-6 rounded-2xl bg-[#161842] border border-white/10 hover:border-[#533afd]/60 transition-all duration-300 space-y-4 shadow-[0_16px_36px_rgba(0,0,0,0.2)] group">
+              <div className="w-12 h-12 rounded-xl bg-[#533afd]/15 border border-[#533afd]/30 flex items-center justify-center text-[#b9b9f9] group-hover:scale-105 transition-transform">
+                <svg width="29" height="30" viewBox="-1 -1 29 30" fill="none" className="w-6 h-6 text-[#b9b9f9]">
                   <path fillRule="evenodd" clipRule="evenodd" d="M26.2761 1.05715C26.7968 1.57785 26.7968 2.42207 26.2761 2.94277L23.7906 5.42832C24.74 6.87844 24.8996 8.46316 24.6933 9.8247C24.447 11.4504 23.665 12.8873 22.9428 13.6094L20.9428 15.6094C20.4221 16.1301 19.5779 16.1301 19.0572 15.6094L11.7239 8.2761C11.2032 7.7554 11.2032 6.91118 11.7239 6.39048L13.7239 4.39048C14.446 3.66833 15.8829 2.88633 17.5086 2.64001C18.8701 2.43371 20.4549 2.5933 21.905 3.5427L24.3905 1.05715C24.9112 0.536451 25.7554 0.536451 26.2761 1.05715ZM17.9081 5.27658C16.7838 5.44692 15.8873 5.99826 15.6095 6.2761L14.5523 7.33329L20 12.781L21.0572 11.7238C21.335 11.446 21.8864 10.5495 22.0567 9.42522C22.2165 8.37083 22.027 7.24592 21.0572 6.2761C20.0874 5.30628 18.9625 5.11682 17.9081 5.27658ZM11.6095 11.0572C12.1302 11.5778 12.1302 12.4221 11.6095 12.9428L9.88562 14.6666L12.6667 17.4477L14.3905 15.7238C14.9112 15.2031 15.7554 15.2031 16.2761 15.7238C16.7968 16.2445 16.7968 17.0887 16.2761 17.6094L14.5523 19.3333L14.9428 19.7238C15.4635 20.2445 15.4635 21.0887 14.9428 21.6094L12.9428 23.6094C12.2207 24.3316 10.7838 25.1136 9.15807 25.3599C7.79654 25.5662 6.21182 25.4066 4.7617 24.4572L2.27614 26.9428C1.75544 27.4635 0.911223 27.4635 0.390524 26.9428C-0.130175 26.4221 -0.130175 25.5779 0.390524 25.0571L2.87608 22.5716C1.92667 21.1215 1.76709 19.5368 1.97338 18.1752C2.2197 16.5495 3.0017 15.1126 3.72386 14.3905L5.72386 12.3905C6.24456 11.8698 7.08878 11.8698 7.60948 12.3905L8 12.781L9.72386 11.0572C10.2446 10.5365 11.0888 10.5365 11.6095 11.0572ZM6.66667 15.2189L5.60948 16.2761C5.33163 16.5539 4.7803 17.4504 4.60995 18.5747C4.4502 19.6291 4.63965 20.754 5.60948 21.7238C6.5793 22.6936 7.70421 22.8831 8.75859 22.7233C9.88286 22.553 10.7793 22.0017 11.0572 21.7238L12.1144 20.6666L6.66667 15.2189Z" fill="currentColor" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">Real-time Webhooks</h3>
-              <p className="text-sm text-slate-400 leading-relaxed font-normal">
+              <h3 className="text-xl font-medium text-white tracking-tight">Real-time Webhooks</h3>
+              <p className="text-sm text-[#e3e8ee]/80 leading-relaxed font-light">
                 Cryptographically signed HMAC-SHA256 event notifications dispatched straight to your server with automated retries.
               </p>
-              <Link 
-                href="/login" 
-                className="text-sm font-bold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1.5 pt-1 transition-colors"
+              <Link
+                href="/login"
+                className="text-sm font-medium text-[#b9b9f9] hover:text-white inline-flex items-center gap-1.5 pt-1 transition-colors"
               >
                 <span>Webhook Guide</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -797,14 +910,14 @@ export default function HomePage() {
           </div>
 
           {/* Interactive Developer Code Sandbox ("Try it out for yourself") */}
-          <div className="space-y-4">
-            
+          <div className="space-y-4 pt-4">
+
             {/* Header & Language Selectors */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Try it out for yourself</h3>
-                <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-400">
-                  Live API
+                <h3 className="text-2xl sm:text-3xl font-light text-white tracking-[-0.8px]">Try it out for yourself</h3>
+                <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#533afd]/20 border border-[#533afd]/40 text-[#b9b9f9]">
+                  Live Production API
                 </span>
               </div>
 
@@ -812,7 +925,7 @@ export default function HomePage() {
               <div
                 role="tablist"
                 aria-label="Code sample programming languages"
-                className="flex items-center gap-1.5 bg-[#0a1424] p-1.5 rounded-xl border border-blue-900/50 text-xs font-mono overflow-x-auto max-w-full scrollbar-none"
+                className="flex items-center gap-1.5 bg-[#161842] p-1.5 rounded-xl border border-white/10 text-xs font-mono overflow-x-auto max-w-full scrollbar-none shadow-inner"
               >
                 {[
                   { id: 'curl', label: 'cURL' },
@@ -828,10 +941,10 @@ export default function HomePage() {
                     aria-selected={productDevLang === lang.id}
                     aria-controls="dev-terminal-body"
                     onClick={() => setProductDevLang(lang.id)}
-                    className={`px-3.5 py-1.5 rounded-lg transition-all font-semibold shrink-0 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-blue-400 ${
-                      productDevLang === lang.id 
-                        ? 'bg-blue-600 text-white shadow-sm' 
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                    className={`px-3.5 py-1.5 rounded-lg transition-all font-medium shrink-0 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-[#533afd] ${
+                      productDevLang === lang.id
+                        ? 'bg-[#533afd] text-white shadow-[0_4px_12px_rgba(83,58,253,0.35)]'
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     {lang.label}
@@ -841,17 +954,17 @@ export default function HomePage() {
             </div>
 
             {/* Terminal Chassis */}
-            <div className="bg-[#060D1A] rounded-2xl overflow-hidden border border-blue-900/40 shadow-2xl">
-              
+            <div className="bg-[#12133b] rounded-2xl overflow-hidden border border-white/10 shadow-[0_24px_50px_rgba(0,0,0,0.35)]">
+
               {/* Terminal Top Bar */}
-              <div className="bg-[#040812] px-5 py-3.5 flex items-center justify-between border-b border-blue-900/30">
+              <div className="bg-[#161842] px-5 py-3.5 flex items-center justify-between border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1.5">
                     <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
                     <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
-                    <span className="w-3 h-3 rounded-full bg-blue-500/80 inline-block"></span>
+                    <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
                   </div>
-                  <span className="text-xs font-mono text-slate-400 ml-2">
+                  <span className="text-xs font-mono text-slate-300 ml-2">
                     {productDevLang === 'curl' && 'request.sh'}
                     {productDevLang === 'node' && 'server.js'}
                     {productDevLang === 'nextjs' && 'app/api/checkout/route.ts'}
@@ -860,13 +973,13 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                {/* Copy button with transitions-dev icon swap (09-icon-swap.md) */}
-                <button 
+                {/* Copy button with transitions-dev icon swap */}
+                <button
                   onClick={() => {
                     setCopiedDevSnippet(true);
                     setTimeout(() => setCopiedDevSnippet(false), 2000);
                   }}
-                  className="flex items-center gap-1.5 text-xs font-mono text-slate-300 hover:text-white px-3 py-1 rounded-lg bg-blue-950/40 border border-blue-800/40 transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-mono text-slate-300 hover:text-white px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-[#533afd]/50 hover:bg-[#533afd]/20 transition-all cursor-pointer"
                   title={copiedDevSnippet ? "Copied" : "Copy snippet"}
                   aria-label={copiedDevSnippet ? "Code snippet copied" : "Copy code snippet"}
                 >
@@ -875,42 +988,42 @@ export default function HomePage() {
                       <Copy className="w-3.5 h-3.5" />
                     </span>
                     <span className="t-icon" data-icon="b" aria-hidden={!copiedDevSnippet}>
-                      <Check className="w-3.5 h-3.5 text-blue-400" />
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
                     </span>
                   </span>
-                  <span className={copiedDevSnippet ? 'text-blue-400 font-semibold' : ''}>
+                  <span className={copiedDevSnippet ? 'text-emerald-400 font-medium' : ''}>
                     {copiedDevSnippet ? 'Copied' : 'Copy'}
                   </span>
                 </button>
               </div>
 
               {/* Syntax-Highlighted Code Body */}
-              <div className="p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto bg-[#060D1A] text-slate-200 min-h-[230px]">
+              <div className="p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto bg-[#0f1035] text-slate-200 min-h-[230px]">
                 {productDevLang === 'curl' && (
                   <pre className="text-slate-200">
-                    <span className="text-blue-400 font-bold">curl</span> -X POST https://api.mymobpay.tech/v1/orders \<br />
-                    {"  "}-H <span className="text-cyan-300">&quot;Authorization: Bearer sec_live_948a201...&quot;</span> \<br />
-                    {"  "}-H <span className="text-cyan-300">&quot;Content-Type: application/json&quot;</span> \<br />
+                    <span className="text-[#b9b9f9] font-semibold">curl</span> -X POST https://api.mymobpay.tech/v1/orders \<br />
+                    {"  "}-H <span className="text-emerald-300">&quot;Authorization: Bearer sec_live_948a201...&quot;</span> \<br />
+                    {"  "}-H <span className="text-emerald-300">&quot;Content-Type: application/json&quot;</span> \<br />
                     {"  "}-d <span className="text-slate-400">&#39;&#123;</span><br />
-                    {"    "}<span className="text-sky-300">&quot;amount&quot;</span>: <span className="text-amber-300">149900</span>,<br />
-                    {"    "}<span className="text-sky-300">&quot;currency&quot;</span>: <span className="text-cyan-300">&quot;INR&quot;</span>,<br />
-                    {"    "}<span className="text-sky-300">&quot;orderId&quot;</span>: <span className="text-cyan-300">&quot;ORD_2026_9821&quot;</span>,<br />
-                    {"    "}<span className="text-sky-300">&quot;customerVpa&quot;</span>: <span className="text-cyan-300">&quot;customer@okhdfcbank&quot;</span>,<br />
-                    {"    "}<span className="text-sky-300">&quot;settlementRoute&quot;</span>: <span className="text-cyan-300">&quot;direct_bank&quot;</span><br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;amount&quot;</span>: <span className="text-amber-300 font-semibold">149900</span>,<br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;currency&quot;</span>: <span className="text-emerald-300">&quot;INR&quot;</span>,<br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;orderId&quot;</span>: <span className="text-emerald-300">&quot;ORD_2026_9821&quot;</span>,<br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;customerVpa&quot;</span>: <span className="text-emerald-300">&quot;customer@okhdfcbank&quot;</span>,<br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;settlementRoute&quot;</span>: <span className="text-emerald-300">&quot;direct_bank&quot;</span><br />
                     {"  "}<span className="text-slate-400">&#125;&#39;</span>
                   </pre>
                 )}
 
                 {productDevLang === 'node' && (
                   <pre className="text-slate-200">
-                    <span className="text-blue-400 font-bold">import</span> &#123; <span className="text-sky-300">MyMobPay</span> &#125; <span className="text-blue-400 font-bold">from</span> <span className="text-cyan-300">&#39;@mymobpay/node&#39;</span>;<br /><br />
-                    <span className="text-blue-400 font-bold">const</span> client = <span className="text-blue-400 font-bold">new</span> <span className="text-sky-300">MyMobPay</span>(&#123; apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span> &#125;);<br /><br />
+                    <span className="text-[#665efd] font-semibold">import</span> &#123; <span className="text-[#b9b9f9]">MyMobPay</span> &#125; <span className="text-[#665efd] font-semibold">from</span> <span className="text-emerald-300">&#39;@mymobpay/node&#39;</span>;<br /><br />
+                    <span className="text-[#665efd] font-semibold">const</span> client = <span className="text-[#665efd] font-semibold">new</span> <span className="text-[#b9b9f9]">MyMobPay</span>(&#123; apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span> &#125;);<br /><br />
                     <span className="text-slate-500 italic">{"//"} Initialize 0% commission direct bank order</span><br />
-                    <span className="text-blue-400 font-bold">const</span> order = <span className="text-blue-400 font-bold">await</span> client.orders.<span className="text-sky-300">create</span>(&#123;<br />
-                    {"  "}amount: <span className="text-amber-300">149900</span>, <span className="text-slate-500 italic">{"//"} ₹1,499.00 in paise</span><br />
-                    {"  "}orderId: <span className="text-cyan-300">&#39;ORD_2026_9821&#39;</span>,<br />
-                    {"  "}customerVpa: <span className="text-cyan-300">&#39;customer@okhdfcbank&#39;</span>,<br />
-                    {"  "}settlementRoute: <span className="text-cyan-300">&#39;direct_bank&#39;</span><br />
+                    <span className="text-[#665efd] font-semibold">const</span> order = <span className="text-[#665efd] font-semibold">await</span> client.orders.<span className="text-[#b9b9f9]">create</span>(&#123;<br />
+                    {"  "}amount: <span className="text-amber-300 font-semibold">149900</span>, <span className="text-slate-500 italic">{"//"} ₹1,499.00 in paise</span><br />
+                    {"  "}orderId: <span className="text-emerald-300">&#39;ORD_2026_9821&#39;</span>,<br />
+                    {"  "}customerVpa: <span className="text-emerald-300">&#39;customer@okhdfcbank&#39;</span>,<br />
+                    {"  "}settlementRoute: <span className="text-emerald-300">&#39;direct_bank&#39;</span><br />
                     &#125;);
                   </pre>
                 )}
@@ -918,63 +1031,63 @@ export default function HomePage() {
                 {productDevLang === 'nextjs' && (
                   <pre className="text-slate-200">
                     <span className="text-slate-500 italic">{"//"} Next.js App Router API Route (app/api/checkout/route.ts)</span><br />
-                    <span className="text-blue-400 font-bold">import</span> &#123; <span className="text-sky-300">NextResponse</span> &#125; <span className="text-blue-400 font-bold">from</span> <span className="text-cyan-300">&#39;next/server&#39;</span>;<br />
-                    <span className="text-blue-400 font-bold">import</span> &#123; <span className="text-sky-300">MyMobPay</span> &#125; <span className="text-blue-400 font-bold">from</span> <span className="text-cyan-300">&#39;@mymobpay/node&#39;</span>;<br /><br />
-                    <span className="text-blue-400 font-bold">const</span> gateway = <span className="text-blue-400 font-bold">new</span> <span className="text-sky-300">MyMobPay</span>(&#123; apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span> &#125;);<br /><br />
-                    <span className="text-blue-400 font-bold">export async function</span> <span className="text-sky-300">POST</span>(req: <span className="text-sky-300">Request</span>) &#123;<br />
-                    {"  "}<span className="text-blue-400 font-bold">const</span> &#123; amount, orderId &#125; = <span className="text-blue-400 font-bold">await</span> req.<span className="text-sky-300">json</span>();<br />
-                    {"  "}<span className="text-blue-400 font-bold">const</span> session = <span className="text-blue-400 font-bold">await</span> gateway.orders.<span className="text-sky-300">create</span>(&#123; amount, orderId &#125;);<br />
-                    {"  "}<span className="text-blue-400 font-bold">return</span> <span className="text-sky-300">NextResponse</span>.<span className="text-sky-300">json</span>(&#123; qrString: session.qrString, intentUrl: session.intentUrl &#125;);<br />
+                    <span className="text-[#665efd] font-semibold">import</span> &#123; <span className="text-[#b9b9f9]">NextResponse</span> &#125; <span className="text-[#665efd] font-semibold">from</span> <span className="text-emerald-300">&#39;next/server&#39;</span>;<br />
+                    <span className="text-[#665efd] font-semibold">import</span> &#123; <span className="text-[#b9b9f9]">MyMobPay</span> &#125; <span className="text-[#665efd] font-semibold">from</span> <span className="text-emerald-300">&#39;@mymobpay/node&#39;</span>;<br /><br />
+                    <span className="text-[#665efd] font-semibold">const</span> gateway = <span className="text-[#665efd] font-semibold">new</span> <span className="text-[#b9b9f9]">MyMobPay</span>(&#123; apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span> &#125;);<br /><br />
+                    <span className="text-[#665efd] font-semibold">export async function</span> <span className="text-[#b9b9f9]">POST</span>(req: <span className="text-[#b9b9f9]">Request</span>) &#123;<br />
+                    {"  "}<span className="text-[#665efd] font-semibold">const</span> &#123; amount, orderId &#125; = <span className="text-[#665efd] font-semibold">await</span> req.<span className="text-[#b9b9f9]">json</span>();<br />
+                    {"  "}<span className="text-[#665efd] font-semibold">const</span> session = <span className="text-[#665efd] font-semibold">await</span> gateway.orders.<span className="text-[#b9b9f9]">create</span>(&#123; amount, orderId &#125;);<br />
+                    {"  "}<span className="text-[#665efd] font-semibold">return</span> <span className="text-[#b9b9f9]">NextResponse</span>.<span className="text-[#b9b9f9]">json</span>(&#123; qrString: session.qrString, intentUrl: session.intentUrl &#125;);<br />
                     &#125;
                   </pre>
                 )}
 
                 {productDevLang === 'python' && (
                   <pre className="text-slate-200">
-                    <span className="text-blue-400 font-bold">import</span> os<br />
-                    <span className="text-blue-400 font-bold">from</span> mymobpay <span className="text-blue-400 font-bold">import</span> <span className="text-sky-300">MyMobPay</span><br /><br />
-                    client = <span className="text-sky-300">MyMobPay</span>(api_key=os.environ[<span className="text-cyan-300">&quot;MYMOBPAY_SECRET_KEY&quot;</span>])<br /><br />
+                    <span className="text-[#665efd] font-semibold">import</span> os<br />
+                    <span className="text-[#665efd] font-semibold">from</span> mymobpay <span className="text-[#665efd] font-semibold">import</span> <span className="text-[#b9b9f9]">MyMobPay</span><br /><br />
+                    client = <span className="text-[#b9b9f9]">MyMobPay</span>(api_key=os.environ[<span className="text-emerald-300">&quot;MYMOBPAY_SECRET_KEY&quot;</span>])<br /><br />
                     <span className="text-slate-500 italic"># Create direct UPI intent order</span><br />
-                    order = client.orders.<span className="text-sky-300">create</span>(<br />
-                    {"  "}amount=<span className="text-amber-300">149900</span>,<br />
-                    {"  "}order_id=<span className="text-cyan-300">&quot;ORD_2026_9821&quot;</span>,<br />
-                    {"  "}customer_vpa=<span className="text-cyan-300">&quot;customer@okhdfcbank&quot;</span>,<br />
-                    {"  "}settlement_route=<span className="text-cyan-300">&quot;direct_bank&quot;</span><br />
+                    order = client.orders.<span className="text-[#b9b9f9]">create</span>(<br />
+                    {"  "}amount=<span className="text-amber-300 font-semibold">149900</span>,<br />
+                    {"  "}order_id=<span className="text-emerald-300">&quot;ORD_2026_9821&quot;</span>,<br />
+                    {"  "}customer_vpa=<span className="text-emerald-300">&quot;customer@okhdfcbank&quot;</span>,<br />
+                    {"  "}settlement_route=<span className="text-emerald-300">&quot;direct_bank&quot;</span><br />
                     )
                   </pre>
                 )}
 
                 {productDevLang === 'php' && (
                   <pre className="text-slate-200">
-                    <span className="text-blue-400 font-bold">&lt;?php</span><br />
-                    <span className="text-blue-400 font-bold">use</span> MyMobPay\<span className="text-sky-300">Client</span>;<br /><br />
-                    $client = <span className="text-blue-400 font-bold">new</span> <span className="text-sky-300">Client</span>([<span className="text-cyan-300">&#39;api_key&#39;</span> =&gt; getenv(<span className="text-cyan-300">&#39;MYMOBPAY_SECRET_KEY&#39;</span>)]);<br /><br />
+                    <span className="text-[#665efd] font-semibold">&lt;?php</span><br />
+                    <span className="text-[#665efd] font-semibold">use</span> MyMobPay\<span className="text-[#b9b9f9]">Client</span>;<br /><br />
+                    $client = <span className="text-[#665efd] font-semibold">new</span> <span className="text-[#b9b9f9]">Client</span>([<span className="text-emerald-300">&#39;api_key&#39;</span> =&gt; getenv(<span className="text-emerald-300">&#39;MYMOBPAY_SECRET_KEY&#39;</span>)]);<br /><br />
                     <span className="text-slate-500 italic">{"//"} Create payment intent with zero fees</span><br />
-                    $order = $client-&gt;orders-&gt;<span className="text-sky-300">create</span>([<br />
-                    {"  "}<span className="text-cyan-300">&#39;amount&#39;</span> =&gt; <span className="text-amber-300">149900</span>,<br />
-                    {"  "}<span className="text-cyan-300">&#39;order_id&#39;</span> =&gt; <span className="text-cyan-300">&#39;ORD_2026_9821&#39;</span>,<br />
-                    {"  "}<span className="text-cyan-300">&#39;customer_vpa&#39;</span> =&gt; <span className="text-cyan-300">&#39;customer@okhdfcbank&#39;</span>,<br />
-                    {"  "}<span className="text-cyan-300">&#39;settlement_route&#39;</span> =&gt; <span className="text-cyan-300">&#39;direct_bank&#39;</span><br />
+                    $order = $client-&gt;orders-&gt;<span className="text-[#b9b9f9]">create</span>([<br />
+                    {"  "}<span className="text-emerald-300">&#39;amount&#39;</span> =&gt; <span className="text-amber-300 font-semibold">149900</span>,<br />
+                    {"  "}<span className="text-emerald-300">&#39;order_id&#39;</span> =&gt; <span className="text-emerald-300">&#39;ORD_2026_9821&#39;</span>,<br />
+                    {"  "}<span className="text-emerald-300">&#39;customer_vpa&#39;</span> =&gt; <span className="text-emerald-300">&#39;customer@okhdfcbank&#39;</span>,<br />
+                    {"  "}<span className="text-emerald-300">&#39;settlement_route&#39;</span> =&gt; <span className="text-emerald-300">&#39;direct_bank&#39;</span><br />
                     ]);
                   </pre>
                 )}
               </div>
 
               {/* Live Webhook Event Dispatch Panel */}
-              <div className="bg-[#040812] p-3.5 sm:p-5 border-t border-blue-900/30 space-y-2">
+              <div className="bg-[#161842] p-4 sm:p-5 border-t border-white/10 space-y-2.5">
                 <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs font-mono">
-                  <span className="text-blue-400 flex items-center gap-2 font-bold truncate">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0"></span>
+                  <span className="text-[#b9b9f9] flex items-center gap-2 font-medium truncate">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
                     <span className="truncate">POST /api/webhooks/settlement • 200 OK</span>
                   </span>
-                  <span className="text-slate-400 font-medium text-[11px] shrink-0">42ms latency</span>
+                  <span className="text-emerald-400 font-mono text-[11px] shrink-0 font-medium">14ms latency</span>
                 </div>
-                <div className="text-xs font-mono text-slate-300 bg-[#07101E] p-3 rounded-xl border border-blue-900/30">
-                  <div className="text-slate-400 text-[11px] pb-1.5 border-b border-blue-900/40 flex flex-wrap items-center justify-between gap-1">
-                    <span className="truncate">Header: x-mymobpay-signature: <strong className="text-blue-300">sha256=9f8a...</strong></span>
-                    <span className="text-blue-400 font-semibold shrink-0">HMAC Verified ✓</span>
+                <div className="text-xs font-mono text-slate-300 bg-[#0f1035] p-3.5 rounded-xl border border-white/10">
+                  <div className="text-slate-400 text-[11px] pb-2 border-b border-white/10 flex flex-wrap items-center justify-between gap-1">
+                    <span className="truncate">Header: x-mymobpay-signature: <strong className="text-[#b9b9f9]">sha256=9f8a...</strong></span>
+                    <span className="text-emerald-400 font-medium shrink-0">HMAC Verified ✓</span>
                   </div>
-                  <div className="text-slate-200 pt-2 break-all text-[11px] sm:text-xs">
+                  <div className="text-slate-200 pt-2.5 break-all text-[11px] sm:text-xs">
                     &#123; event: &quot;payment.settled&quot;, utr: &quot;329184029182&quot;, net: 1499.00, fee: 0.00, route: &quot;direct_bank&quot; &#125;
                   </div>
                 </div>
@@ -988,31 +1101,33 @@ export default function HomePage() {
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         INTERACTIVE SAVINGS SLIDER CALCULATOR
+         INTERACTIVE SAVINGS SLIDER CALCULATOR (STRIPE WARM SAND SPEC)
          ──────────────────────────────────────────────────────── */}
-      <section id="pricing-section" className="py-24 bg-[#f5e9d4]/60 border-b border-[#e3e8ee] font-sohne">
+      <section id="calculator-section" className="py-24 bg-[#fbf7f0] border-b border-[#e3e8ee] font-sohne">
         <div className="max-w-7xl mx-auto px-6">
 
-          <div className="rounded-2xl bg-[#f5e9d4] border border-[#ebd8bc] p-5 sm:p-8 md:p-12 shadow-sm">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="rounded-3xl bg-[#f5e9d4] border border-[#ebd8bc] p-6 sm:p-10 md:p-14 shadow-[0_20px_50px_rgba(155,104,41,0.08)]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
 
               {/* Left Column: Heading & Slider */}
-              <div className="lg:col-span-6">
-                <span className="text-xs uppercase tracking-wider font-semibold text-[#9b6829] mb-2 sm:mb-3 block">
-                  Interactive Fee Calculator
-                </span>
-                <h2 className="text-2xl sm:text-3xl md:text-[38px] font-light text-[#0d253d] tracking-tight leading-tight mb-3 sm:mb-4">
-                  See how much revenue you retain every month.
+              <div className="lg:col-span-6 space-y-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ebd8bc] border border-[#ddc29e] text-[#7a501a] text-xs font-mono font-medium tracking-wide">
+                  <Sparkles className="w-3.5 h-3.5 text-[#9b6829]" />
+                  <span>TRANSPARENT REVENUE RETENTION</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl md:text-[44px] font-light text-[#0d253d] tracking-[-1.4px] leading-[1.1] font-sohne">
+                  See how much revenue<br />
+                  <span className="font-light text-[#9b6829]">you retain every month.</span>
                 </h2>
-                <p className="text-xs sm:text-sm font-light text-[#273951] leading-relaxed mb-6 sm:mb-8">
+                <p className="text-sm sm:text-base font-light text-[#273951] leading-relaxed max-w-lg">
                   Adjust your monthly transaction volume to see the compounding difference between standard 2% + GST gateway deductions versus MyMobPay direct passthrough.
                 </p>
 
-                {/* Range Slider */}
-                <div className="space-y-4">
+                {/* Range Slider Box */}
+                <div className="pt-2 space-y-4 bg-white/60 p-5 rounded-2xl border border-[#ebd8bc]/80">
                   <div className="flex justify-between items-center text-xs sm:text-sm">
-                    <span className="text-[#64748d] font-light">Monthly Collection Volume:</span>
-                    <strong className="text-base sm:text-lg font-mono tabular-nums text-[#0d253d]">
+                    <span className="text-[#64748d] font-medium">Monthly Collection Volume:</span>
+                    <strong className="text-lg sm:text-xl font-mono tabular-nums text-[#0d253d] font-semibold">
                       ₹{(monthlyVolume / 100000).toFixed(1)} Lakhs
                     </strong>
                   </div>
@@ -1023,9 +1138,9 @@ export default function HomePage() {
                     step="50000"
                     value={monthlyVolume}
                     onChange={(e) => setMonthlyVolume(Number(e.target.value))}
-                    className="w-full h-2 bg-[#ebd8bc] rounded-lg appearance-none cursor-pointer accent-[#533afd]"
+                    className="w-full h-2.5 bg-[#ebd8bc] rounded-lg appearance-none cursor-pointer accent-[#533afd]"
                   />
-                  <div className="flex justify-between text-[11px] text-[#64748d] font-mono">
+                  <div className="flex justify-between text-[11px] text-[#64748d] font-mono font-medium">
                     <span>₹1 Lakh</span>
                     <span>₹25 Lakhs</span>
                     <span>₹50 Lakhs+</span>
@@ -1035,35 +1150,51 @@ export default function HomePage() {
 
               {/* Right Column: Comparison Card */}
               <div className="lg:col-span-6">
-                <div className="bg-white rounded-xl border border-[#ebd8bc] p-5 sm:p-8 shadow-sm">
+                <div className="bg-[#ffffff] rounded-2xl border border-[#e3e8ee] p-6 sm:p-8 shadow-[0_24px_48px_rgba(0,55,112,0.1),0_4px_12px_rgba(0,55,112,0.04)] space-y-6">
 
-                  <div className="space-y-3.5 sm:space-y-4 pb-5 sm:pb-6 border-b border-[#e3e8ee]">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-[#64748d]">Traditional Gateways (2% + 18% GST)</span>
-                      <span className="text-xs sm:text-sm font-mono text-[#ea2261] tabular-nums font-semibold shrink-0 ml-2">
+                  <div className="space-y-4 pb-6 border-b border-[#e3e8ee]">
+                    <div className="flex justify-between items-center text-xs sm:text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#ea2261]" />
+                        <span className="text-[#64748d]">Traditional Gateways (2% + 18% GST)</span>
+                      </div>
+                      <span className="font-mono text-[#ea2261] tabular-nums font-semibold shrink-0 ml-2">
                         -₹{savings.traditionalTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-[#64748d]">MyMobPay Flat License</span>
-                      <span className="text-xs sm:text-sm font-mono text-[#059669] tabular-nums font-semibold shrink-0 ml-2">
+                    <div className="flex justify-between items-center text-xs sm:text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        <span className="text-[#0d253d] font-medium">MyMobPay Flat License</span>
+                      </div>
+                      <span className="font-mono text-emerald-600 tabular-nums font-semibold shrink-0 ml-2">
                         ₹499.00/mo (Fixed)
                       </span>
                     </div>
                   </div>
 
-                  <div className="pt-5 sm:pt-6">
-                    <div className="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-[#64748d] mb-1">
-                      Net Monthly Savings
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-[#64748d] mb-1.5 flex items-center justify-between">
+                      <span>Net Monthly Capital Retained</span>
+                      <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                        {savings.pctSaved}% RETAINED
+                      </span>
                     </div>
-                    <div className="text-3xl sm:text-4xl font-light text-[#059669] tracking-tight font-mono tabular-nums flex items-baseline flex-wrap gap-1">
+                    <div className="text-3xl sm:text-4xl md:text-[42px] font-light text-emerald-600 tracking-tight font-mono tabular-nums flex items-baseline flex-wrap gap-2">
                       <span>₹{savings.netSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
-                      <span className="text-xs sm:text-sm font-sans text-[#273951] font-light">retained</span>
+                      <span className="text-xs sm:text-sm font-sans text-[#64748d] font-normal">/ month retained</span>
                     </div>
-                    <p className="text-xs text-[#64748d] mt-2">
-                      That is <strong className="text-[#0d253d]">{savings.pctSaved}% savings</strong> directly redirected to your product development and growth.
+                    <p className="text-xs text-[#64748d] mt-3 font-light leading-relaxed">
+                      Over a 12-month period, you retain <strong className="text-[#0d253d] font-semibold">₹{(savings.netSaved * 12).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</strong> that would otherwise be captured by intermediaries.
                     </p>
                   </div>
+
+                  <Link
+                    href="/login"
+                    className="block w-full text-center py-3.5 rounded-full bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-medium text-xs shadow-[0_4px_12px_rgba(83,58,253,0.25)] transition-all"
+                  >
+                    Start retaining 100% of revenue &rarr;
+                  </Link>
 
                 </div>
               </div>
@@ -1074,20 +1205,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-24 bg-transparent border-b border-slate-200/60 overflow-hidden relative">
+      {/* ────────────────────────────────────────────────────────
+         MERCHANT STORIES / IN-ACTION SHOWCASE (STRIPE CANVAS SOFT SPEC)
+         ──────────────────────────────────────────────────────── */}
+      <section className="py-24 bg-[#f6f9fc] border-b border-[#e3e8ee] overflow-hidden relative font-sohne">
 
         <div className="max-w-7xl mx-auto px-6 space-y-16">
-          
+
           {/* Header */}
-          <div className="text-center space-y-3">
-            <span className="text-xs font-semibold text-[#533afd] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
-              Merchant stories
+          <div className="text-center space-y-4 max-w-3xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#533afd]/10 border border-[#533afd]/20 text-[#533afd] text-xs font-mono font-medium tracking-wide">
+              <span>REAL-WORLD DEPLOYMENTS</span>
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
-              See MyMobPay in action
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-[#0d253d] tracking-[-1.4px] leading-tight font-sohne">
+              See MyMobPay in action.
             </h2>
-            <p className="text-base text-slate-600 font-normal max-w-xl mx-auto leading-relaxed">
-              Trusted by SaaS founders, indie developers, and growing businesses across India.
+            <p className="text-base text-[#64748d] font-light max-w-xl mx-auto leading-relaxed">
+              Trusted by SaaS founders, indie developers, and growing businesses across India to power direct UPI checkout.
             </p>
           </div>
 
@@ -1095,94 +1229,94 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Card 1: Scanning MyMobPay QR */}
-            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl overflow-hidden shadow-[0_12px_32px_rgba(0,55,112,0.06)] hover:shadow-[0_20px_48px_rgba(0,55,112,0.12)] hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between">
               <div>
                 <div className="relative h-60 w-full overflow-hidden bg-slate-100">
-                  <Image 
-                    src="/images/using_mymobpay_scan.jpg" 
-                    alt="Customer scanning MyMobPay QR code on tablet" 
-                    fill 
+                  <Image
+                    src="/images/using_mymobpay_scan.jpg"
+                    alt="Customer scanning MyMobPay QR code on tablet"
+                    fill
                     priority
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
-                    <QrCode className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Instant QR checkout</span>
+                  <div className="absolute top-4 left-4 bg-[#0d253d]/85 backdrop-blur-md text-white text-[10px] font-mono font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-white/10 shadow-sm">
+                    <QrCode className="w-3.5 h-3.5 text-[#b9b9f9]" />
+                    <span>Instant Dynamic QR</span>
                   </div>
                 </div>
                 <div className="p-6 space-y-2">
-                  <h3 className="text-lg font-semibold text-slate-900">Seamless scan and pay</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed font-normal">
-                    Customers scan dynamic QR codes using any UPI application with immediate payment confirmation.
+                  <h3 className="text-lg font-medium text-[#0d253d] tracking-tight">Seamless scan and pay</h3>
+                  <p className="text-xs text-[#64748d] leading-relaxed font-light">
+                    Customers scan dynamic QR codes using Google Pay, PhonePe, Paytm, or CRED with immediate payment verification.
                   </p>
                 </div>
               </div>
-              <div className="px-6 pb-6 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
-                <span>Payment rail: UPI</span>
-                <span className="text-emerald-600 font-medium flex items-center gap-1">
+              <div className="px-6 pb-6 pt-3 border-t border-[#e3e8ee] flex items-center justify-between text-xs text-[#64748d] font-mono">
+                <span>Payment rail: UPI 2.0</span>
+                <span className="text-emerald-600 font-medium flex items-center gap-1 font-sans">
                   Instant verification <CheckCircle2 className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* Card 2: Merchant using Dashboard */}
-            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl overflow-hidden shadow-[0_12px_32px_rgba(0,55,112,0.06)] hover:shadow-[0_20px_48px_rgba(0,55,112,0.12)] hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between">
               <div>
                 <div className="relative h-60 w-full overflow-hidden bg-slate-100">
-                  <Image 
-                    src="/images/using_mymobpay_merchant.jpg" 
-                    alt="Founder using MyMobPay merchant dashboard on laptop" 
+                  <Image
+                    src="/images/using_mymobpay_merchant.jpg"
+                    alt="Founder using MyMobPay merchant dashboard on laptop"
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                  <div className="absolute top-4 left-4 bg-[#0d253d]/85 backdrop-blur-md text-white text-[10px] font-mono font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-white/10 shadow-sm">
                     <Landmark className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Merchant console</span>
                   </div>
                 </div>
                 <div className="p-6 space-y-2">
-                  <h3 className="text-lg font-semibold text-slate-900">Real-time revenue analytics</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed font-normal">
-                    Track incoming transfers, inspect webhook dispatches, and audit reconciliations in real time.
+                  <h3 className="text-lg font-medium text-[#0d253d] tracking-tight">Real-time revenue analytics</h3>
+                  <p className="text-xs text-[#64748d] leading-relaxed font-light">
+                    Track incoming bank transfers, inspect webhook dispatches, and audit reconciliations without third-party delay.
                   </p>
                 </div>
               </div>
-              <div className="px-6 pb-6 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+              <div className="px-6 pb-6 pt-3 border-t border-[#e3e8ee] flex items-center justify-between text-xs text-[#64748d] font-mono">
                 <span>Escrow hold: 0 days</span>
-                <span className="text-[#533afd] font-medium flex items-center gap-1">
-                  Direct account route <CheckCircle2 className="w-3.5 h-3.5" />
+                <span className="text-[#533afd] font-medium flex items-center gap-1 font-sans">
+                  Direct bank route <CheckCircle2 className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* Card 3: In-Person Customer Success */}
-            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl overflow-hidden shadow-[0_12px_32px_rgba(0,55,112,0.06)] hover:shadow-[0_20px_48px_rgba(0,55,112,0.12)] hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between">
               <div>
                 <div className="relative h-60 w-full overflow-hidden bg-slate-100">
-                  <Image 
+                  <Image
                     src="/images/merchant_customer.jpg"
                     alt="Happy customer and business owner completing payment"
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                  <div className="absolute top-4 left-4 bg-[#0d253d]/85 backdrop-blur-md text-white text-[10px] font-mono font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-white/10 shadow-sm">
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
                     <span>Customer experience</span>
                   </div>
                 </div>
                 <div className="p-6 space-y-2">
-                  <h3 className="text-lg font-semibold text-slate-900">Frictionless checkout</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed font-normal">
-                    Deliver high checkout conversion rates with direct bank-to-bank settlement reliability.
+                  <h3 className="text-lg font-medium text-[#0d253d] tracking-tight">Frictionless checkout</h3>
+                  <p className="text-xs text-[#64748d] leading-relaxed font-light">
+                    Deliver higher checkout conversion rates by avoiding redirect hops and aggregator escrow holding periods.
                   </p>
                 </div>
               </div>
-              <div className="px-6 pb-6 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+              <div className="px-6 pb-6 pt-3 border-t border-[#e3e8ee] flex items-center justify-between text-xs text-[#64748d] font-mono">
                 <span>Universal UPI support</span>
-                <span className="text-emerald-600 font-medium flex items-center gap-1">
+                <span className="text-emerald-600 font-medium flex items-center gap-1 font-sans">
                   99.98% success rate <CheckCircle2 className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -1194,63 +1328,66 @@ export default function HomePage() {
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         CORE TECHNICAL FEATURE GRID
+         CORE TECHNICAL FEATURE GRID (STRIPE BENTO SPEC)
          ──────────────────────────────────────────────────────── */}
-      <section id="features-section" className="py-24 bg-transparent border-b border-slate-200/60">
+      <section id="features-section" className="py-24 bg-white border-b border-[#e3e8ee] font-sohne">
         <div className="max-w-7xl mx-auto px-6 space-y-16">
-          
-          <div className="text-center space-y-3">
-            <span className="text-xs font-semibold text-[#533afd] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
-              Platform features
+
+          <div className="text-center space-y-4 max-w-3xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#533afd]/10 border border-[#533afd]/20 text-[#533afd] text-xs font-mono font-medium tracking-wide">
+              <span>CORE ARCHITECTURE</span>
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Direct infrastructure and secure verifications
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-[#0d253d] tracking-[-1.4px] leading-tight">
+              Direct infrastructure and cryptographic security.
             </h2>
+            <p className="text-base text-[#64748d] font-light max-w-xl mx-auto leading-relaxed">
+              Engineered from the ground up for high-throughput merchants requiring deterministic uptime and zero intermediary custody.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            
+
             {/* Feature 1 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-all hover:shadow-md duration-200 group">
-              <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center shadow-xs">
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-6 space-y-4 hover:border-[#533afd]/40 shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 flex items-center justify-center transition-transform group-hover:scale-105">
                 <Landmark className="w-5 h-5" />
               </div>
-              <h3 className="font-semibold text-slate-900 text-base">Direct bank routing</h3>
-              <p className="text-xs text-slate-500 leading-relaxed font-normal">
-                Customer payments transfer directly to your designated bank account without escrow holding.
+              <h3 className="font-medium text-[#0d253d] text-base tracking-tight">Direct bank routing</h3>
+              <p className="text-xs text-[#64748d] leading-relaxed font-light">
+                Customer payments settle directly into your current account via NPCI IMPS rails without intermediate escrow holding.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-all hover:shadow-md duration-200 group">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center shadow-xs">
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-6 space-y-4 hover:border-[#533afd]/40 shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-xl bg-[#533afd]/10 border border-[#533afd]/20 text-[#533afd] flex items-center justify-center transition-transform group-hover:scale-105">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h3 className="font-semibold text-slate-900 text-base">HMAC SHA-256 webhooks</h3>
-              <p className="text-xs text-slate-500 leading-relaxed font-normal">
-                Every transaction event callback is cryptographically signed using standard HMAC SHA-256.
+              <h3 className="font-medium text-[#0d253d] text-base tracking-tight">HMAC-SHA256 signatures</h3>
+              <p className="text-xs text-[#64748d] leading-relaxed font-light">
+                Every webhook event dispatch carries an immutable cryptographic signature, preventing spoofing and replay attacks.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-all hover:shadow-md duration-200 group">
-              <div className="w-10 h-10 rounded-xl bg-violet-500 text-white flex items-center justify-center shadow-xs">
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-6 space-y-4 hover:border-[#533afd]/40 shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-xl bg-[#1c1e54]/10 border border-[#1c1e54]/20 text-[#1c1e54] flex items-center justify-center transition-transform group-hover:scale-105">
                 <Layers className="w-5 h-5" />
               </div>
-              <h3 className="font-semibold text-slate-900 text-base">Isolated developer sandbox</h3>
-              <p className="text-xs text-slate-500 leading-relaxed font-normal">
-                Test checkout redirection flows and webhook dispatches in an isolated sandbox environment.
+              <h3 className="font-medium text-[#0d253d] text-base tracking-tight">Isolated staging sandbox</h3>
+              <p className="text-xs text-[#64748d] leading-relaxed font-light">
+                Develop, test, and iterate your checkout flows using test UPI VPAs with simulated instant settlement responses.
               </p>
             </div>
 
             {/* Feature 4 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-300 transition-all hover:shadow-md duration-200 group">
-              <div className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shadow-xs">
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-6 space-y-4 hover:border-[#533afd]/40 shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 flex items-center justify-center transition-transform group-hover:scale-105">
                 <Zap className="w-5 h-5" />
               </div>
-              <h3 className="font-semibold text-slate-900 text-base">Instant settlements</h3>
-              <p className="text-xs text-slate-500 leading-relaxed font-normal">
-                Maintain working capital liquidity with real-time settlement directly to your account.
+              <h3 className="font-medium text-[#0d253d] text-base tracking-tight">Zero T+2 holding</h3>
+              <p className="text-xs text-[#64748d] leading-relaxed font-light">
+                Retain full working capital liquidity with instant T+0 settlement instead of standard 48-hour aggregator delays.
               </p>
             </div>
 
@@ -1260,110 +1397,116 @@ export default function HomePage() {
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         PRICING SUBSCRIPTION CALLOUT
+         PRICING SUBSCRIPTION CALLOUT (STRIPE TIERS SPEC)
          ──────────────────────────────────────────────────────── */}
-      <section className="py-24 bg-transparent relative overflow-hidden">
+      <section id="pricing-section" className="py-24 bg-[#f6f9fc] border-b border-[#e3e8ee] relative overflow-hidden font-sohne">
 
         <div className="max-w-6xl mx-auto px-6 text-center space-y-12">
-          
-          <div className="space-y-3">
-            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full inline-block">
-              Subscription plans
+
+          <div className="space-y-4 max-w-2xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#533afd]/10 border border-[#533afd]/20 text-[#533afd] text-xs font-mono font-medium tracking-wide">
+              <span>SUBSCRIPTION TIERS</span>
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
-              Simple, flat pricing for any scale
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-[-1.4px] text-[#0d253d]">
+              Simple, transparent pricing for any scale.
             </h2>
-            <p className="text-base text-slate-600 max-w-lg mx-auto leading-relaxed font-normal">
-              Start integration testing for free, scale to live payments with our standard subscription, or inquire about custom high-volume deployments.
+            <p className="text-base text-[#64748d] max-w-lg mx-auto leading-relaxed font-light">
+              Prototyping is 100% free forever in sandbox. Scale to live production with flat monthly licensing and zero gateway percentage fees.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch text-left">
-            
+
             {/* Developer Sandbox Card */}
-            <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:border-slate-300 transition-all">
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-7 flex flex-col justify-between shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:border-[#533afd]/40 transition-all duration-300">
               <div className="space-y-6">
                 <div>
-                  <span className="text-xs font-semibold text-slate-500">Sandbox environment</span>
-                  <h3 className="text-xl font-bold text-slate-900 mt-1">Developer free</h3>
-                  <p className="text-xs text-slate-500 font-normal mt-1.5 leading-relaxed">Perfect for prototyping, testing API signatures, and staging your UI callback dispatches.</p>
+                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#64748d]">Sandbox environment</span>
+                  <h3 className="text-xl font-medium text-[#0d253d] mt-1">Developer Free</h3>
+                  <p className="text-xs text-[#64748d] font-light mt-1.5 leading-relaxed">
+                    Perfect for prototyping, testing API signatures, and staging your UI callback dispatches.
+                  </p>
                 </div>
                 <div className="flex items-baseline">
-                  <span className="text-2xl font-semibold text-slate-400 mr-0.5">₹</span>
-                  <span className="text-4xl font-bold text-slate-900">0</span>
-                  <span className="text-xs font-normal text-slate-400 ml-1">/ month</span>
+                  <span className="text-2xl font-light text-[#64748d] mr-1">₹</span>
+                  <span className="text-4xl font-light text-[#0d253d] tabular-nums">0</span>
+                  <span className="text-xs font-light text-[#64748d] ml-1.5">/ month</span>
                 </div>
-                <div className="border-t border-slate-100 pt-6 space-y-3.5 text-xs text-slate-600 font-medium">
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Isolated sandbox testing API key</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Interactive dynamic checkout screen</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Automated webhook event delivery stream</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Live order status verification logs</p>
+                <div className="border-t border-[#e3e8ee] pt-6 space-y-3.5 text-xs text-[#273951] font-light">
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Isolated sandbox testing API key</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Interactive dynamic checkout screen</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Automated webhook event delivery stream</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Live order status verification logs</p>
                 </div>
               </div>
-              <Link 
-                href="/login" 
-                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-all text-center text-xs"
+              <Link
+                href="/login"
+                className="mt-8 block w-full py-3 bg-[#f6f9fc] hover:bg-[#e3e8ee] text-[#0d253d] font-medium rounded-full border border-[#e3e8ee] transition-all text-center text-xs tracking-wide"
               >
-                Launch sandbox console
+                Launch Sandbox Console
               </Link>
             </div>
 
-            {/* Standard Plan (Highlighted) */}
-            <div className="bg-[#1c1e54] text-white border-none rounded-2xl sm:rounded-xl p-6 sm:p-8 flex flex-col justify-between stripe-elevated-shadow relative md:scale-[1.02] scale-100 overflow-hidden">
-              <div className="absolute top-4 right-4 bg-[#533afd] text-white text-[10px] font-semibold tracking-wider px-3 py-1 rounded-full uppercase">
+            {/* Standard Plan (Highlighted Stripe Navy) */}
+            <div className="bg-[#1c1e54] text-white border border-[#533afd]/40 rounded-2xl p-7 flex flex-col justify-between shadow-[0_24px_54px_rgba(28,30,84,0.35),0_4px_16px_rgba(83,58,253,0.2)] relative md:scale-[1.03] scale-100 overflow-hidden">
+              <div className="absolute top-4 right-4 bg-[#533afd] text-white text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-full">
                 Most popular
               </div>
               <div className="space-y-6">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-[#b9b9f9] uppercase tracking-wider">Production Pass</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#b9b9f9]">Production Pass</span>
                   </div>
                   <h3 className="text-2xl font-light text-white mt-1">Standard Pro Plan</h3>
-                  <p className="text-xs text-slate-300 font-light mt-1.5 leading-relaxed">For active SaaS founders and builders who want to stop giving away 2% on transaction cuts.</p>
+                  <p className="text-xs text-[#b9b9f9]/80 font-light mt-1.5 leading-relaxed">
+                    For active SaaS founders and builders who want to stop giving away 2% on transaction cuts.
+                  </p>
                 </div>
                 <div className="flex items-baseline">
-                  <span className="text-2xl font-light text-slate-400 mr-0.5">₹</span>
+                  <span className="text-2xl font-light text-[#b9b9f9] mr-1">₹</span>
                   <span className="text-4xl font-light text-white tabular-nums">{subscriptionFee}</span>
-                  <span className="text-xs font-light text-slate-400 ml-1">/ month</span>
+                  <span className="text-xs font-light text-[#b9b9f9] ml-1.5">/ month</span>
                 </div>
-                <div className="border-t border-white/10 pt-6 space-y-3.5 text-xs text-slate-200 font-light">
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> 100% direct-to-bank UPI transfers</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> 0% transaction gateway fees</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> HMAC SHA-256 signed webhooks</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> Automated bank email reconciliation</p>
+                <div className="border-t border-white/10 pt-6 space-y-3.5 text-xs text-[#e3e8ee] font-light">
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> 100% direct-to-bank UPI transfers</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> 0% transaction gateway fees</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> HMAC-SHA256 signed webhooks</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> Automated bank email reconciliation</p>
                 </div>
               </div>
-              <Link 
-                href="/login" 
-                className="mt-8 block w-full py-3.5 sm:py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-normal rounded-full transition-all text-center text-xs shadow-sm"
+              <Link
+                href="/login"
+                className="mt-8 block w-full py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-medium rounded-full transition-all text-center text-xs shadow-[0_4px_14px_rgba(83,58,253,0.35)] tracking-wide"
               >
                 Activate Pro License &rarr;
               </Link>
             </div>
 
-            {/* Pro/Enterprise Card */}
-            <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-slate-300 transition-all shadow-xs">
+            {/* Enterprise Card */}
+            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-7 flex flex-col justify-between shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:border-[#533afd]/40 transition-all duration-300">
               <div className="space-y-6">
                 <div>
-                  <span className="text-xs font-semibold text-slate-500">Enterprise scale</span>
-                  <h3 className="text-xl font-bold text-slate-900 mt-1">Enterprise pro</h3>
-                  <p className="text-xs text-slate-500 font-normal mt-1.5 leading-relaxed">For high-throughput organizations needing custom webhook routing architectures.</p>
+                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#64748d]">Enterprise scale</span>
+                  <h3 className="text-xl font-medium text-[#0d253d] mt-1">Enterprise Custom</h3>
+                  <p className="text-xs text-[#64748d] font-light mt-1.5 leading-relaxed">
+                    For high-throughput organizations needing custom webhook routing architectures and dedicated workers.
+                  </p>
                 </div>
                 <div className="flex items-baseline">
-                  <span className="text-xl font-bold text-slate-900">Custom volume</span>
+                  <span className="text-2xl font-light text-[#0d253d] tracking-tight">Custom volume</span>
                 </div>
-                <div className="border-t border-slate-200/80 pt-6 space-y-3.5 text-xs text-slate-600 font-medium">
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-400 shrink-0" /> Dedicated secure matching worker instances</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-400 shrink-0" /> Customized retry webhook schedules</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-400 shrink-0" /> Sub-merchant console access controls</p>
-                  <p className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-400 shrink-0" /> Dedicated SLA support with uptime assurances</p>
+                <div className="border-t border-[#e3e8ee] pt-6 space-y-3.5 text-xs text-[#273951] font-light">
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Dedicated secure matching worker instances</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Customized retry webhook schedules</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Sub-merchant console access controls</p>
+                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Dedicated SLA support with uptime assurances</p>
                 </div>
               </div>
               <Link
                 href="/login"
-                className="mt-8 block w-full py-3.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition-all text-center text-xs"
+                className="mt-8 block w-full py-3 bg-[#f6f9fc] hover:bg-[#e3e8ee] text-[#0d253d] font-medium rounded-full border border-[#e3e8ee] transition-all text-center text-xs tracking-wide"
               >
-                Contact for enterprise
+                Contact Enterprise Sales
               </Link>
             </div>
 

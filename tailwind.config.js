@@ -8,6 +8,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // ── Stripe Design System (DESIGN.md) ──────────────────────
+        'stripe-primary':          '#533afd',
+        'stripe-primary-deep':     '#4434d4',
+        'stripe-primary-press':    '#2e2b8c',
+        'stripe-primary-soft':     '#665efd',
+        'stripe-primary-subdued':  '#b9b9f9',
+        'stripe-brand-dark':       '#1c1e54',
+        'stripe-ink':              '#0d253d',
+        'stripe-ink-secondary':    '#273951',
+        'stripe-ink-mute':         '#64748d',
+        'stripe-canvas':           '#ffffff',
+        'stripe-canvas-soft':      '#f6f9fc',
+        'stripe-canvas-cream':     '#f5e9d4',
+        'stripe-hairline':         '#e3e8ee',
+        'stripe-ruby':             '#ea2261',
+        // ──────────────────────────────────────────────────────────
         'brand-blue':  '#2563EB',
         'brand-dark':  '#0B192C',
         'bg-base':     'var(--bg-base)',

@@ -916,34 +916,159 @@ input[type=number] {
   top: 0;
 }
 
-/* ─── Stripe Design Language Tokens (DESIGN-stripe.md) ────── */
+/* ─── Stripe Design Language Tokens (DESIGN.md) ────── */
+
+/* Stripe color palette */
+:root {
+  --stripe-primary:          #533afd;
+  --stripe-primary-deep:     #4434d4;
+  --stripe-primary-press:    #2e2b8c;
+  --stripe-primary-soft:     #665efd;
+  --stripe-primary-subdued:  #b9b9f9;
+  --stripe-brand-dark:       #1c1e54;
+  --stripe-ink:              #0d253d;
+  --stripe-ink-secondary:    #273951;
+  --stripe-ink-mute:         #64748d;
+  --stripe-canvas:           #ffffff;
+  --stripe-canvas-soft:      #f6f9fc;
+  --stripe-canvas-cream:     #f5e9d4;
+  --stripe-hairline:         #e3e8ee;
+  --stripe-hairline-input:   #a8c3de;
+  --stripe-ruby:             #ea2261;
+  --stripe-magenta:          #f96bee;
+  --stripe-shadow-blue:      #003770;
+
+  /* Stripe elevation shadows */
+  --stripe-shadow-1: rgba(0, 55, 112, 0.08) 0 1px 3px;
+  --stripe-shadow-2: rgba(0, 55, 112, 0.08) 0 8px 24px, rgba(0, 55, 112, 0.04) 0 2px 6px;
+}
+
+/* Apply ss01 globally — Stripe's typographic signature */
+html {
+  font-feature-settings: 'ss01' 1;
+}
+
+/* Stripe display typography: Inter at weight 300 with negative tracking */
+.stripe-display-xxl {
+  font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+  font-size: 56px; font-weight: 300; line-height: 1.03; letter-spacing: -1.4px;
+  font-feature-settings: 'ss01' 1;
+}
+.stripe-display-xl {
+  font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+  font-size: 48px; font-weight: 300; line-height: 1.15; letter-spacing: -0.96px;
+  font-feature-settings: 'ss01' 1;
+}
+.stripe-display-lg {
+  font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+  font-size: 32px; font-weight: 300; line-height: 1.1; letter-spacing: -0.64px;
+  font-feature-settings: 'ss01' 1;
+}
+.stripe-display-md {
+  font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+  font-size: 26px; font-weight: 300; line-height: 1.12; letter-spacing: -0.26px;
+  font-feature-settings: 'ss01' 1;
+}
+
 .font-sohne {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
   font-feature-settings: 'ss01' 1;
 }
 
+/* Tabular figures for money — Stripe's quiet financial-data signal */
 .tabular-nums {
   font-feature-settings: 'tnum' 1, 'ss01' 1;
   letter-spacing: -0.42px;
 }
 
+/* Stripe gradient mesh — cream/orange/lavender/indigo/ruby wash */
 .stripe-gradient-mesh {
   background-color: #ffffff;
   background-image:
-    radial-gradient(at 10% 15%, rgba(245, 233, 212, 0.95) 0px, transparent 50%),
-    radial-gradient(at 88% 12%, rgba(185, 185, 249, 0.85) 0px, transparent 52%),
-    radial-gradient(at 48% 28%, rgba(254, 215, 249, 0.70) 0px, transparent 55%),
-    radial-gradient(at 22% 55%, rgba(234, 34, 97, 0.16) 0px, transparent 48%),
-    radial-gradient(at 78% 48%, rgba(83, 58, 253, 0.18) 0px, transparent 52%),
-    radial-gradient(at 50% 80%, rgba(246, 249, 252, 1) 0px, transparent 65%);
+    radial-gradient(at 8%  10%, rgba(245, 233, 212, 1.00) 0px, transparent 48%),
+    radial-gradient(at 85% 8%,  rgba(185, 185, 249, 0.90) 0px, transparent 50%),
+    radial-gradient(at 45% 22%, rgba(249, 107, 238, 0.55) 0px, transparent 52%),
+    radial-gradient(at 20% 52%, rgba(234, 34,  97,  0.14) 0px, transparent 46%),
+    radial-gradient(at 80% 45%, rgba(83,  58, 253, 0.20) 0px, transparent 50%),
+    radial-gradient(at 50% 78%, rgba(246, 249, 252, 1.00) 0px, transparent 62%);
 }
 
+/* Stripe card shadows */
 .stripe-card-shadow {
-  box-shadow: rgba(0, 55, 112, 0.08) 0 1px 3px;
+  box-shadow: var(--stripe-shadow-1);
+}
+.stripe-elevated-shadow {
+  box-shadow: var(--stripe-shadow-2);
 }
 
-.stripe-elevated-shadow {
-  box-shadow: rgba(0, 55, 112, 0.08) 0 16px 40px, rgba(0, 55, 112, 0.04) 0 3px 8px;
+/* Stripe pill button — the primary CTA shape */
+.stripe-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  background: var(--stripe-primary);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  font-feature-settings: 'ss01' 1;
+  text-decoration: none;
+}
+.stripe-btn-primary:hover {
+  background: var(--stripe-primary-deep);
+  box-shadow: rgba(83, 58, 253, 0.28) 0 4px 16px;
+}
+.stripe-btn-primary:active {
+  background: var(--stripe-primary-press);
+  transform: scale(0.985);
+}
+
+/* Stripe secondary button */
+.stripe-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  background: var(--stripe-canvas);
+  color: var(--stripe-primary);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  border-radius: 9999px;
+  border: 1px solid var(--stripe-primary);
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  font-feature-settings: 'ss01' 1;
+  text-decoration: none;
+}
+.stripe-btn-secondary:hover {
+  background: rgba(83, 58, 253, 0.04);
+}
+
+/* Stripe soft pill tag */
+.stripe-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--stripe-primary-subdued);
+  color: var(--stripe-primary-deep);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.1px;
+  border-radius: 9999px;
+  font-feature-settings: 'ss01' 1;
+}
+
+/* Cream band section */
+.stripe-cream-band {
+  background-color: var(--stripe-canvas-cream);
 }
 
 /* ─── Transitions.dev: Icon Swap (09-icon-swap.md) ───────────────── */

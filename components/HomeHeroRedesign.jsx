@@ -277,17 +277,17 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-white text-[#0d253d] font-sans font-sohne selection:bg-[#533afd] selection:text-white">
       
       {/* ─────────────────────────────────────────────────────────────
           1. STICKY TOP NAVIGATION BAR (Clean High-Contrast Fintech)
           ───────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs transition-all">
         
-        {/* Top Announcement Bar: High-contrast Dark Navy + Crisp White Copy */}
-        <div className="w-full bg-[#0B1528] text-white text-[11px] sm:text-xs py-2 px-4 flex items-center justify-between sm:justify-center gap-2 sm:gap-3 border-b border-slate-800 select-none">
+        {/* Top Announcement Bar: Stripe brand-dark-900 + indigo accent pill */}
+        <div className="w-full bg-[#1c1e54] text-white text-[11px] sm:text-xs py-2 px-4 flex items-center justify-between sm:justify-center gap-2 sm:gap-3 border-b border-[#2a2d6e] select-none">
           <div className="flex items-center gap-2 truncate">
-            <span className="inline-flex items-center gap-1.5 bg-blue-600 text-white font-bold px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wide shrink-0">
+            <span className="inline-flex items-center gap-1.5 bg-[#533afd] text-white font-bold px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wide shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Direct UPI 2.0
             </span>
@@ -300,7 +300,7 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
           </div>
           <a
             href="#fee-comparison"
-            className="inline-flex items-center gap-1 text-white hover:text-blue-300 font-semibold underline underline-offset-2 transition-colors shrink-0 text-[11px]"
+            className="inline-flex items-center gap-1 text-white hover:text-[#b9b9f9] font-semibold underline underline-offset-2 transition-colors shrink-0 text-[11px]"
           >
             <span>Calculate savings</span>
             <span aria-hidden="true">&rarr;</span>
@@ -328,18 +328,18 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
 
           {/* Desktop Action CTAs */}
           <div className="hidden sm:flex items-center gap-3">
-            <Link 
-              href="/login" 
-              className="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors rounded-xl hover:bg-slate-100"
+            <Link
+              href="/login"
+              className="px-4 py-2 text-sm font-medium text-[#533afd] hover:text-[#4434d4] transition-colors rounded-full hover:bg-[#533afd]/[0.06]"
             >
               Sign In
             </Link>
-            <Link 
-              href="/login?mode=signup" 
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2 group btn-shimmer"
+            <Link
+              href="/login?mode=signup"
+              className="px-5 py-2.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white text-sm font-medium rounded-full shadow-sm hover:shadow-[rgba(83,58,253,0.28)_0_4px_16px] transition-all inline-flex items-center gap-2 group"
             >
               <span>Get Started</span>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
 
@@ -397,17 +397,17 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
               </a>
             </nav>
             <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 text-sm font-semibold text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+                className="w-full text-center py-2.5 text-sm font-medium text-[#533afd] border border-[#533afd]/30 rounded-full hover:bg-[#533afd]/[0.06] transition-colors"
               >
                 Sign In
               </Link>
-              <Link 
-                href="/login?mode=signup" 
+              <Link
+                href="/login?mode=signup"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
+                className="w-full text-center py-2.5 text-sm font-medium text-white bg-[#533afd] rounded-full hover:bg-[#4434d4] transition-colors shadow-sm"
               >
                 Get Started Free
               </Link>
@@ -417,16 +417,12 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
       </header>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. FLAGSHIP HERO: CRISP TECHNICAL CANVAS + SLEEK LIGHT PHONE
+          2. FLAGSHIP HERO: STRIPE GRADIENT MESH + LIGHT PHONE
           ───────────────────────────────────────────────────────────── */}
-      <section className="relative pt-12 pb-16 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-32 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-white to-white">
-        
-        {/* Crisp Architectural Technical Blueprint Dot Grid (No Muddy Pastels) */}
-        <div className="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_25%,#000_70%,transparent_100%)] opacity-40 pointer-events-none" />
+      <section className="relative pt-12 pb-16 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-32 overflow-hidden stripe-gradient-mesh">
 
-        {/* Subtle, Pure Blue Technical Radial Glow (Zero muddy yellow/pink) */}
-        <div className="absolute top-12 left-1/3 -translate-x-1/2 w-[550px] h-[450px] bg-blue-500/[0.04] rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute top-28 right-10 w-[450px] h-[400px] bg-indigo-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
+        {/* Subtle dot grid over the mesh — reduced opacity so mesh shows through */}
+        <div className="absolute inset-0 bg-[radial-gradient(#c4c6ce_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_70%_55%_at_50%_30%,#000_60%,transparent_100%)] opacity-25 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -434,52 +430,52 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
             {/* Left Column: Authoritative Copy & Dynamic Solid Headline */}
             <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-center lg:text-left">
               
-              {/* Trust Status Badge Pill */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 text-slate-800 text-xs font-semibold shadow-xs animate-fade-up">
+              {/* Trust Status Badge — Stripe soft pill-tag style */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 backdrop-blur-sm border border-[#e3e8ee] text-[#0d253d] text-xs font-medium shadow-[rgba(0,55,112,0.08)_0_1px_3px] animate-fade-up">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-slate-900 font-bold">Direct UPI 2.0 Rails</span>
-                <span className="text-slate-300">•</span>
-                <span className="text-blue-600 font-bold">0% Transaction Fee</span>
+                <span className="text-[#0d253d] font-semibold">Direct UPI 2.0 Rails</span>
+                <span className="text-[#e3e8ee]">•</span>
+                <span className="text-[#533afd] font-semibold">0% Transaction Fee</span>
               </div>
 
-              {/* Authoritative Solid Headline: Bold Slate + Punchy Blue (NO AI gradient text) */}
-              <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-extrabold text-[#0D253D] tracking-[-1.5px] leading-[1.08]">
+              {/* Stripe display headline — weight 300, negative tracking, Inter ss01 */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-light text-[#0d253d] tracking-[-1.4px] leading-[1.05] font-sohne">
                 <span className="block animate-fade-up delay-100">
                   Accept UPI payments with
                 </span>
-                <span className="block text-blue-600 animate-fade-up delay-200 mt-1.5 min-h-[1.25em]">
-                  <span className="relative inline-block font-black text-blue-600">
+                <span className="block text-[#533afd] animate-fade-up delay-200 mt-2 min-h-[1.2em]">
+                  <span className="relative inline-block font-light">
                     {typedLine}
                   </span>
-                  <span className="inline-block w-[3.5px] h-[0.82em] bg-blue-600 ml-1.5 align-middle animate-pulse" style={{ verticalAlign: 'baseline', marginTop: '-3px' }} />
+                  <span className="inline-block w-[2.5px] h-[0.82em] bg-[#533afd] ml-1.5 align-middle animate-pulse" style={{ verticalAlign: 'baseline', marginTop: '-3px' }} />
                 </span>
               </h1>
 
-              {/* Subheadline targeted at small business pain points */}
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150">
-                Why lose 2% on every customer transaction? MyMobPay routes funds directly from your customer&apos;s UPI app to your bank account for one flat fee. <strong className="text-slate-900 font-semibold">Zero commission. Zero escrow delay. We never hold your funds.</strong>
+              {/* Subheadline — Stripe ink-mute at font-normal, relaxed */}
+              <p className="text-base sm:text-lg text-[#64748d] max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed animate-fade-up delay-150 font-sohne">
+                Why lose 2% on every customer transaction? MyMobPay routes funds directly from your customer&apos;s UPI app to your bank account for one flat fee. <strong className="text-[#0d253d] font-medium">Zero commission. Zero escrow delay. We never hold your funds.</strong>
               </p>
 
-              {/* Dual Action CTAs */}
+              {/* Dual Action CTAs — Stripe pill buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 animate-fade-up delay-200">
-                <Link 
-                  href="/login?mode=signup" 
-                  className="w-full sm:w-auto px-7 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group btn-shimmer"
+                <Link
+                  href="/login?mode=signup"
+                  className="w-full sm:w-auto px-7 py-3.5 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white text-base font-medium rounded-full shadow-sm hover:shadow-[rgba(83,58,253,0.28)_0_4px_20px] transition-all flex items-center justify-center gap-2 group font-sohne"
                 >
                   <span>Get Started in 5 Minutes</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
-                <a 
+                <a
                   href="#fee-comparison"
-                  className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 text-base font-semibold rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 hover:border-slate-300"
+                  className="w-full sm:w-auto px-6 py-3.5 bg-white/70 hover:bg-white backdrop-blur-sm border border-[#e3e8ee] hover:border-[#533afd]/40 text-[#533afd] hover:text-[#4434d4] text-base font-medium rounded-full transition-all shadow-[rgba(0,55,112,0.06)_0_1px_3px] flex items-center justify-center gap-1.5 font-sohne"
                 >
                   <span>Compare Your Savings</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                  <ChevronRight className="w-4 h-4 text-[#533afd]/60" />
                 </a>
               </div>
 
               {/* Micro-Reassurance Items */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-slate-500 font-medium pt-1 animate-fade-up delay-250">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-[#64748d] font-medium pt-1 animate-fade-up delay-250">
                 <div className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-emerald-600 stroke-[2.5]" />
                   <span>No credit card required</span>
@@ -494,19 +490,19 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
                 </div>
               </div>
 
-              {/* Proof Stats Row */}
-              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-200 max-w-lg mx-auto lg:mx-0 text-left animate-fade-up delay-300">
+              {/* Proof Stats Row — tabular figures */}
+              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#e3e8ee] max-w-lg mx-auto lg:mx-0 text-left animate-fade-up delay-300">
                 <div>
-                  <p className="text-2xl sm:text-3xl font-extrabold text-[#0D253D] tracking-tight">₹0</p>
-                  <p className="text-xs text-slate-500 font-medium mt-0.5">Gateway commission</p>
+                  <p className="text-2xl sm:text-3xl font-light text-[#0d253d] tracking-[-0.8px] tabular-nums font-sohne">₹0</p>
+                  <p className="text-xs text-[#64748d] font-medium mt-0.5">Gateway commission</p>
                 </div>
                 <div>
-                  <p className="text-2xl sm:text-3xl font-extrabold text-[#0D253D] tracking-tight">0s</p>
-                  <p className="text-xs text-slate-500 font-medium mt-0.5">Settlement wait time</p>
+                  <p className="text-2xl sm:text-3xl font-light text-[#0d253d] tracking-[-0.8px] tabular-nums font-sohne">0s</p>
+                  <p className="text-xs text-[#64748d] font-medium mt-0.5">Settlement wait time</p>
                 </div>
                 <div>
-                  <p className="text-2xl sm:text-3xl font-extrabold text-[#0D253D] tracking-tight">100%</p>
-                  <p className="text-xs text-slate-500 font-medium mt-0.5">Direct to bank account</p>
+                  <p className="text-2xl sm:text-3xl font-light text-[#0d253d] tracking-[-0.8px] tabular-nums font-sohne">100%</p>
+                  <p className="text-xs text-[#64748d] font-medium mt-0.5">Direct to bank account</p>
                 </div>
               </div>
 
@@ -818,58 +814,58 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. TRUST STRIP & SECURITY PILLARS (Clean Fintech Cards)
+          3. TRUST STRIP & SECURITY PILLARS (Stripe canvas-soft band)
           ───────────────────────────────────────────────────────────── */}
-      <section id="trust-pillars" className="py-14 bg-slate-50/60 border-y border-slate-200">
+      <section id="trust-pillars" className="py-14 bg-[#f6f9fc] border-y border-[#e3e8ee]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-200/80">
+            <span className="stripe-pill-tag mx-auto">
               Institutional Grade Rails
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0D253D] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-light text-[#0d253d] tracking-[-0.64px] font-sohne mt-2">
               Why Indian merchants refuse 2% aggregator cuts
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 space-y-3 group">
-              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform border border-blue-100">
+
+            <div className="p-6 rounded-[12px] bg-white border border-[#e3e8ee] hover:border-[#533afd]/30 hover:shadow-[rgba(0,55,112,0.08)_0_8px_24px] hover:-translate-y-1 transition-all duration-300 space-y-3 group stripe-card-shadow">
+              <div className="w-11 h-11 rounded-xl bg-[#533afd]/[0.08] text-[#533afd] flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Building2 className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">We never hold your funds</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <h3 className="text-base font-medium text-[#0d253d]">We never hold your funds</h3>
+              <p className="text-xs text-[#64748d] leading-relaxed">
                 Payments route straight from your customer&apos;s bank to your bank. No intermediary escrow pool, no sudden account freezes.
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 space-y-3 group">
-              <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-emerald-100">
+            <div className="p-6 rounded-[12px] bg-white border border-[#e3e8ee] hover:border-emerald-300/60 hover:shadow-[rgba(0,55,112,0.08)_0_8px_24px] hover:-translate-y-1 transition-all duration-300 space-y-3 group stripe-card-shadow">
+              <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Percent className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">0% transaction commission</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <h3 className="text-base font-medium text-[#0d253d]">0% transaction commission</h3>
+              <p className="text-xs text-[#64748d] leading-relaxed">
                 Whether you collect ₹50,000 or ₹50,00,000, your payment fee stays completely flat. Keep 100% of your customer revenue.
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 space-y-3 group">
-              <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform border border-indigo-100">
+            <div className="p-6 rounded-[12px] bg-white border border-[#e3e8ee] hover:border-[#533afd]/30 hover:shadow-[rgba(0,55,112,0.08)_0_8px_24px] hover:-translate-y-1 transition-all duration-300 space-y-3 group stripe-card-shadow">
+              <div className="w-11 h-11 rounded-xl bg-[#533afd]/[0.08] text-[#533afd] flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Zap className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">T+0 instant settlement</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <h3 className="text-base font-medium text-[#0d253d]">T+0 instant settlement</h3>
+              <p className="text-xs text-[#64748d] leading-relaxed">
                 Stop waiting 2 to 3 business days for aggregators to release your earnings. Funds credit directly into your bank within seconds.
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-amber-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 space-y-3 group">
-              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-amber-100">
+            <div className="p-6 rounded-[12px] bg-white border border-[#e3e8ee] hover:border-amber-300/60 hover:shadow-[rgba(0,55,112,0.08)_0_8px_24px] hover:-translate-y-1 transition-all duration-300 space-y-3 group stripe-card-shadow">
+              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Lock className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">Bank-grade security</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <h3 className="text-base font-medium text-[#0d253d]">Bank-grade security</h3>
+              <p className="text-xs text-[#64748d] leading-relaxed">
                 End-to-end 256-bit encryption with cryptographically signed HMAC-SHA256 instant webhook reconciliation for your servers.
               </p>
             </div>
@@ -877,25 +873,25 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
           </div>
 
           {/* Social Proof Metric Ticker */}
-          <div className="mt-12 pt-8 border-t border-slate-200 flex flex-wrap items-center justify-around gap-6 text-center text-xs font-medium text-slate-500">
+          <div className="mt-12 pt-8 border-t border-[#e3e8ee] flex flex-wrap items-center justify-around gap-6 text-center text-xs font-medium text-[#64748d]">
             <div className="hover:scale-105 transition-transform">
-              <span className="block text-2xl sm:text-3xl font-extrabold text-[#0D253D]">99.98%</span>
-              <span className="text-slate-500">UPI Success Rate</span>
+              <span className="block text-2xl sm:text-3xl font-light text-[#0d253d] tracking-[-0.8px] tabular-nums font-sohne">99.98%</span>
+              <span className="text-[#64748d]">UPI Success Rate</span>
             </div>
-            <div className="hidden sm:block w-px h-8 bg-slate-200" />
+            <div className="hidden sm:block w-px h-8 bg-[#e3e8ee]" />
             <div className="hover:scale-105 transition-transform">
-              <span className="block text-2xl sm:text-3xl font-extrabold text-[#0D253D]">₹0</span>
-              <span className="text-slate-500">Setup / Onboarding Fee</span>
+              <span className="block text-2xl sm:text-3xl font-light text-[#0d253d] tracking-[-0.8px] tabular-nums font-sohne">₹0</span>
+              <span className="text-[#64748d]">Setup / Onboarding Fee</span>
             </div>
-            <div className="hidden sm:block w-px h-8 bg-slate-200" />
+            <div className="hidden sm:block w-px h-8 bg-[#e3e8ee]" />
             <div className="hover:scale-105 transition-transform">
-              <span className="block text-2xl sm:text-3xl font-extrabold text-[#0D253D]">&lt; 5 mins</span>
-              <span className="text-slate-500">Account Setup Time</span>
+              <span className="block text-2xl sm:text-3xl font-light text-[#0d253d] tracking-[-0.8px] font-sohne">&lt; 5 mins</span>
+              <span className="text-[#64748d]">Account Setup Time</span>
             </div>
-            <div className="hidden sm:block w-px h-8 bg-slate-200" />
+            <div className="hidden sm:block w-px h-8 bg-[#e3e8ee]" />
             <div className="hover:scale-105 transition-transform">
-              <span className="block text-2xl sm:text-3xl font-extrabold text-[#0D253D]">NPCI 2.0</span>
-              <span className="text-slate-500">Direct Bank Rail</span>
+              <span className="block text-2xl sm:text-3xl font-light text-[#0d253d] tracking-[-0.8px] font-sohne">NPCI 2.0</span>
+              <span className="text-[#64748d]">Direct Bank Rail</span>
             </div>
           </div>
 
@@ -903,68 +899,68 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. 3-STEP "HOW IT WORKS" ROW
+          4. 3-STEP "HOW IT WORKS" ROW — Stripe canvas-cream warm band
           ───────────────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-20 sm:py-28 bg-white">
+      <section id="how-it-works" className="py-20 sm:py-28 bg-[#f5e9d4]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-200/80">
+            <span className="stripe-pill-tag mx-auto">
               Simple 3-Step Setup
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0D253D] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-light text-[#0d253d] tracking-[-0.96px] font-sohne mt-2">
               Start collecting payments in 3 easy steps
             </h2>
-            <p className="text-sm sm:text-base text-slate-600">
+            <p className="text-sm sm:text-base text-[#64748d]">
               No mountains of paperwork, no waiting 10 days for merchant approval.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            <div className="bg-slate-50/60 rounded-2xl border border-slate-200 p-7 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 space-y-4 flex flex-col justify-between group">
+
+            <div className="bg-white/80 backdrop-blur-sm rounded-[12px] border border-[#e3e8ee] p-7 shadow-[rgba(0,55,112,0.08)_0_1px_3px] hover:shadow-[rgba(0,55,112,0.10)_0_8px_24px] hover:-translate-y-1.5 transition-all duration-300 space-y-4 flex flex-col justify-between group">
               <div>
-                <div className="w-12 h-12 rounded-xl bg-blue-100 border border-blue-200 text-blue-700 flex items-center justify-center font-extrabold text-lg mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-[#533afd]/[0.10] border border-[#533afd]/20 text-[#533afd] flex items-center justify-center font-medium text-lg mb-6 group-hover:scale-110 transition-transform font-sohne">
                   01
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">Connect Your Bank UPI</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
+                <h3 className="text-lg font-medium text-[#0d253d] mb-2">Connect Your Bank UPI</h3>
+                <p className="text-sm text-[#64748d] leading-relaxed">
                   Sign up and link your existing UPI ID (VPA) from any bank (SBI, HDFC, ICICI, Axis, Kotak, etc.). No separate bank account required.
                 </p>
               </div>
-              <div className="pt-4 border-t border-slate-200/80 flex items-center gap-2 text-xs font-semibold text-blue-700">
+              <div className="pt-4 border-t border-[#e3e8ee] flex items-center gap-2 text-xs font-medium text-[#533afd]">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>Instant verification in 2 minutes</span>
               </div>
             </div>
 
-            <div className="bg-slate-50/60 rounded-2xl border border-slate-200 p-7 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 space-y-4 flex flex-col justify-between group">
+            <div className="bg-white/80 backdrop-blur-sm rounded-[12px] border border-[#e3e8ee] p-7 shadow-[rgba(0,55,112,0.08)_0_1px_3px] hover:shadow-[rgba(0,55,112,0.10)_0_8px_24px] hover:-translate-y-1.5 transition-all duration-300 space-y-4 flex flex-col justify-between group">
               <div>
-                <div className="w-12 h-12 rounded-xl bg-blue-100 border border-blue-200 text-blue-700 flex items-center justify-center font-extrabold text-lg mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-[#533afd]/[0.10] border border-[#533afd]/20 text-[#533afd] flex items-center justify-center font-medium text-lg mb-6 group-hover:scale-110 transition-transform font-sohne">
                   02
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">Create Links or Embed Checkout</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
+                <h3 className="text-lg font-medium text-[#0d253d] mb-2">Create Links or Embed Checkout</h3>
+                <p className="text-sm text-[#64748d] leading-relaxed">
                   Generate instant payment links to share on WhatsApp or Instagram, or embed our 3-line JavaScript checkout onto your website or app.
                 </p>
               </div>
-              <div className="pt-4 border-t border-slate-200/80 flex items-center gap-2 text-xs font-semibold text-blue-700">
+              <div className="pt-4 border-t border-[#e3e8ee] flex items-center gap-2 text-xs font-medium text-[#533afd]">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>Works on WhatsApp, Web, and Mobile</span>
               </div>
             </div>
 
-            <div className="bg-slate-50/60 rounded-2xl border border-slate-200 p-7 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 space-y-4 flex flex-col justify-between group">
+            <div className="bg-white/80 backdrop-blur-sm rounded-[12px] border border-[#e3e8ee] p-7 shadow-[rgba(0,55,112,0.08)_0_1px_3px] hover:shadow-[rgba(0,55,112,0.10)_0_8px_24px] hover:-translate-y-1.5 transition-all duration-300 space-y-4 flex flex-col justify-between group">
               <div>
-                <div className="w-12 h-12 rounded-xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center font-extrabold text-lg mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center font-medium text-lg mb-6 group-hover:scale-110 transition-transform font-sohne">
                   03
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">Receive 100% Direct Credit</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
+                <h3 className="text-lg font-medium text-[#0d253d] mb-2">Receive 100% Direct Credit</h3>
+                <p className="text-sm text-[#64748d] leading-relaxed">
                   When a customer scans and pays, 100% of the funds land directly in your bank account immediately. Zero commission is ever deducted.
                 </p>
               </div>
-              <div className="pt-4 border-t border-slate-200/80 flex items-center gap-2 text-xs font-semibold text-emerald-700">
+              <div className="pt-4 border-t border-[#e3e8ee] flex items-center gap-2 text-xs font-medium text-emerald-700">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>T+0 instant credit • ₹0 fee deducted</span>
               </div>
@@ -976,20 +972,20 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          5. FEE COMPARISON & SAVINGS CALCULATOR (Wise-Style)
+          5. FEE COMPARISON & SAVINGS CALCULATOR
           ───────────────────────────────────────────────────────────── */}
-      <section id="fee-comparison" className="py-20 sm:py-28 bg-slate-50/70 border-y border-slate-200 relative">
+      <section id="fee-comparison" className="py-20 sm:py-28 bg-[#f6f9fc] border-y border-[#e3e8ee] relative">
         <div id="pricing-section" className="absolute -top-24 left-0" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
-            <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            <span className="stripe-pill-tag mx-auto">
               Interactive Cost Breakdown
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0D253D] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-light text-[#0d253d] tracking-[-0.96px] font-sohne mt-2">
               See how much you save vs. Razorpay &amp; Cashfree
             </h2>
-            <p className="text-sm sm:text-base text-slate-600">
+            <p className="text-sm sm:text-base text-[#64748d]">
               Aggregators charge 2% + 18% GST on every sale. Slide your monthly volume to see your net savings.
             </p>
           </div>
@@ -1165,7 +1161,7 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
                 </div>
                 <Link
                   href="/login?mode=signup"
-                  className="px-6 py-3 bg-white hover:bg-emerald-50 text-emerald-800 text-sm font-bold rounded-xl shadow-xs transition-all shrink-0 hover:scale-105"
+                  className="px-6 py-3 bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium rounded-full shadow-sm transition-all shrink-0 hover:scale-105 font-sohne"
                 >
                   Start Saving Now
                 </Link>
@@ -1178,29 +1174,29 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          6. INTERACTIVE DEVELOPER SECTION (3-Line Embed Checkout)
+          6. INTERACTIVE DEVELOPER SECTION — brand-dark-900 dark panel
           ───────────────────────────────────────────────────────────── */}
-      <section id="developer-section" className="py-20 sm:py-28 bg-[#0B1528] text-white relative overflow-hidden">
-        
+      <section id="developer-section" className="py-20 sm:py-28 bg-[#1c1e54] text-white relative overflow-hidden">
+
         {/* Architectural Grid Background */}
-        <div 
-          className="absolute inset-0 pointer-events-none opacity-20"
+        <div
+          className="absolute inset-0 pointer-events-none opacity-10"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(185,185,249,0.4) 1px, transparent 0)`,
             backgroundSize: '32px 32px'
           }}
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
-            <span className="text-xs font-bold text-blue-400 uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#533afd]/30 text-[#b9b9f9] text-xs font-medium border border-[#533afd]/40">
               Developer-First Simplicity
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-light text-white tracking-[-0.96px] font-sohne">
               Embed zero-fee UPI in under 3 lines of code
             </h2>
-            <p className="text-sm sm:text-base text-slate-300">
+            <p className="text-sm sm:text-base text-[#b9b9f9]">
               Zero backend friction. Works smoothly in vanilla HTML, React, Next.js, or any backend webhook.
             </p>
           </div>
@@ -1305,12 +1301,20 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
       {/* ─────────────────────────────────────────────────────────────
           7. MERCHANT FAQ SECTION (Transitions.dev Accordion - 21-accordion.md)
           ───────────────────────────────────────────────────────────── */}
-      <section id="faq-section" className="py-20 sm:py-28 bg-white border-t border-slate-200">
+      <section id="faq-section" className="py-20 sm:py-28 bg-white border-t border-[#e3e8ee]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-200/80">
+            <span className="stripe-pill-tag mx-auto">
               Frequently Asked Questions
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-light text-[#0d253d] tracking-[-0.96px] font-sohne mt-2">
+              Got questions? We have clear answers.
+            </h2>
+            <p className="text-sm sm:text-base text-[#64748d]">
+              Everything you need to know about 0% fees, direct bank settlement, and setup.
+            </p>
+          </div>
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0D253D] tracking-tight">
               Got questions? We have clear answers.
@@ -1359,7 +1363,7 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
           <div className="mt-10 text-center">
             <Link
               href="/contact"
-              className="t-learn text-sm font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1.5"
+              className="t-learn text-sm font-medium text-[#533afd] hover:text-[#4434d4] inline-flex items-center gap-1.5 font-sohne"
             >
               <span>Have a custom question or high-volume inquiry? Talk with our engineering team</span>
               <span className="t-learn-chevron">
@@ -1416,7 +1420,7 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
 
 export function HomeFooterCTA() {
   return (
-    <section className="py-16 sm:py-24 bg-[#0B1528] text-white relative overflow-hidden">
+    <section className="py-16 sm:py-24 bg-[#1c1e54] text-white relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8 relative z-10">
         
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-400/30">
@@ -1435,7 +1439,7 @@ export function HomeFooterCTA() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           <Link 
             href="/login?mode=signup" 
-            className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group btn-shimmer"
+            className="w-full sm:w-auto px-8 py-4 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white text-base font-medium rounded-full shadow-lg hover:shadow-[rgba(83,58,253,0.35)_0_8px_24px] transition-all flex items-center justify-center gap-2 group font-sohne"
           >
             <span>Get Started Free</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
