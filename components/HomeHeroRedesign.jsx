@@ -1315,14 +1315,6 @@ app.post('/api/mymobpay/webhook', express.raw({ type: 'application/json' }), (re
               Everything you need to know about 0% fees, direct bank settlement, and setup.
             </p>
           </div>
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0D253D] tracking-tight">
-              Got questions? We have clear answers.
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600">
-              Everything you need to know about 0% fees, direct bank settlement, and setup.
-            </p>
-          </div>
 
           <div className="space-y-4">
             {faqs.map((faq, idx) => {
