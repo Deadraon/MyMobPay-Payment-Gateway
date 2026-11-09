@@ -144,6 +144,15 @@ function PayPageContent() {
   /* Mobile method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' */
   const [selectedMethod, setSelectedMethod] = useState(cleanParamMethod);
 
+  /* Customer info collection screen for link payments (shown before method is picked) */
+  /* 'vCustomerInfo' = collecting name+phone; 'vMethodSelect' = method picker */
+  const isPaymentLink = Boolean(hasToken || paramLid || paramToken);
+  const needsCustomerInfo = isPaymentLink && (!paramName || !paramPhone);
+  const [customerInfoDone, setCustomerInfoDone] = useState(!needsCustomerInfo);
+  const [custInfoName,  setCustInfoName]  = useState(paramName || '');
+  const [custInfoPhone, setCustInfoPhone] = useState(paramPhone || '');
+  const [custInfoErr,   setCustInfoErr]   = useState('');
+
   /* Mobile accordion selection */
   const [activeAcc,    setActiveAcc]    = useState('');
 
@@ -156,6 +165,10 @@ function PayPageContent() {
   const [cardOtp,      setCardOtp]      = useState('');
   const [cardBusy,     setCardBusy]     = useState(false);
   const [cardMsg,      setCardMsg]      = useState('');
+
+  /* Apple Pay state */
+  const [applePayBusy, setApplePayBusy] = useState(false);
+  const [applePayMsg,  setApplePayMsg]  = useState('');
 
 
 
@@ -1072,6 +1085,33 @@ function PayPageContent() {
     }
   };
 
+  /* ── Process Apple Pay ── */
+  const submitApplePay = async () => {
+    setApplePayBusy(true);
+    setApplePayMsg('');
+    try {
+      const res = await fetch('/api/orders/process-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: activeId,
+          card_brand: 'apple_pay',
+          card_last4: '8892',
+          cardholder_name: custName || paramName || 'Apple Pay User',
+          otp: '123456'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Apple Pay processing failed');
+      setApplePayMsg('✓ Apple Pay authorized! Redirecting…');
+      handleSuccess();
+    } catch (err) {
+      setApplePayMsg(err.message);
+    } finally {
+      setApplePayBusy(false);
+    }
+  };
+
 
 
   /* ───────────────────────────────────────────────────────────
@@ -1656,250 +1696,348 @@ function PayPageContent() {
                   Shows clean, professional payment method choices first
               ───────────────────────────────────────────────────────────── */}
               {!selectedMethod ? (
-                <div className="mob-select-methods-wrap">
-                  {/* Brand Header */}
-                  <div className="mob-brand-header">
-                    <svg width="32" height="28" viewBox="0 0 38 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M 6.5 28.5 V 13 C 6.5 7.2 11.5 5 15.5 8.2 L 19 18.5"
-                        stroke="#0284C7"
-                        strokeWidth="5.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M 19 18.5 L 22.5 8.2 C 26.5 5 31.5 7.2 31.5 13 V 28.5"
-                        stroke="#FF7800"
-                        strokeWidth="5.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <span className="mob-brand-title">MyMobPay</span>
-                  </div>
-
-                  {/* Executive Order Summary Card */}
-                  <div className="mob-order-hero-card">
-                    {/* Top Row: Merchant Info & Total Payable */}
-                    <div className="mob-order-hero-top">
-                      <div className="mob-merchant-info-row">
-                        <div className="mob-biz-avatar">
-                          {bizInitial || bizName?.charAt(0)?.toUpperCase() || 'M'}
-                        </div>
-                        <div className="mob-biz-details">
-                          <div className="mob-biz-name-row">
-                            <span className="mob-biz-title">{bizName}</span>
-                            <span className="mob-verified-check" title="Verified Merchant">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
-                                <path d="M9 12l2 2 4-4"/>
-                              </svg>
-                            </span>
-                          </div>
-                          <span className="mob-biz-sub">
-                            {orderMode === 'test' ? 'Sandbox Order' : 'Verified Merchant Settlement'}
-                          </span>
-                        </div>
+                /* ── CUSTOMER INFO SCREEN (link payments without name/phone) ── */
+                !customerInfoDone ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', padding: '0 0 24px' }}>
+                    {/* Header */}
+                    <div style={{ textAlign: 'center', padding: '28px 20px 20px', borderBottom: '1px solid #f1f5f9' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '4px 12px', marginBottom: 16 }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
+                          <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#15803d', letterSpacing: '0.04em' }}>SECURE CHECKOUT</span>
                       </div>
 
-                      <div className="mob-order-amt-block">
-                        <span className="mob-order-hero-lbl">Total Payable</span>
-                        <div className="mob-order-hero-amt">{fmtInr(displayAmt)}</div>
+                      {/* Merchant avatar + name */}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
+                          {bizInitial}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>{bizName}</div>
+                          <div style={{ fontSize: 12, color: '#64748b', marginTop: 3 }}>Requesting payment of <strong style={{ color: '#0f172a' }}>{fmtInr(displayAmt)}</strong></div>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Specification Itemized Rows */}
-                    <div className="mob-order-hero-specs">
+                    {/* Form */}
+                    <div style={{ padding: '24px 20px', flex: 1 }}>
+                      <div style={{ marginBottom: 6 }}>
+                        <p style={{ margin: '0 0 18px', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Let us know who&apos;s paying</p>
+                      </div>
+
+                      {/* Full Name */}
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+                        Full Name
+                      </label>
+                      <div style={{ position: 'relative', marginBottom: 14 }}>
+                        <span style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                          </svg>
+                        </span>
+                        <input
+                          type="text"
+                          autoFocus
+                          placeholder="Rahul Sharma"
+                          value={custInfoName}
+                          onChange={e => { setCustInfoName(e.target.value); setCustInfoErr(''); }}
+                          style={{ width: '100%', minHeight: 48, border: `1.5px solid ${custInfoErr && !custInfoName.trim() ? '#fca5a5' : '#e2e8f0'}`, borderRadius: 12, padding: '0 14px 0 40px', fontSize: 15, fontFamily: 'inherit', color: '#0f172a', background: '#fff', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                          onFocus={e => { e.target.style.borderColor = '#6366f1'; }}
+                          onBlur={e => { e.target.style.borderColor = custInfoErr && !custInfoName.trim() ? '#fca5a5' : '#e2e8f0'; }}
+                        />
+                      </div>
+
+                      {/* Phone */}
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+                        Mobile Number
+                      </label>
+                      <div style={{ position: 'relative', marginBottom: 8 }}>
+                        <span style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                          </svg>
+                        </span>
+                        <span style={{ position: 'absolute', left: 40, top: '50%', transform: 'translateY(-50%)', fontSize: 14, fontWeight: 600, color: '#64748b', borderRight: '1.5px solid #e2e8f0', paddingRight: 10, lineHeight: '48px' }}>+91</span>
+                        <input
+                          type="tel"
+                          inputMode="numeric"
+                          maxLength={10}
+                          placeholder="9876543210"
+                          value={custInfoPhone}
+                          onChange={e => { setCustInfoPhone(e.target.value.replace(/\D/g, '').slice(0, 10)); setCustInfoErr(''); }}
+                          style={{ width: '100%', minHeight: 48, border: `1.5px solid ${custInfoErr && !custInfoPhone.trim() ? '#fca5a5' : '#e2e8f0'}`, borderRadius: 12, padding: '0 14px 0 76px', fontSize: 15, fontFamily: 'inherit', color: '#0f172a', background: '#fff', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                          onFocus={e => { e.target.style.borderColor = '#6366f1'; }}
+                          onBlur={e => { e.target.style.borderColor = custInfoErr && !custInfoPhone.trim() ? '#fca5a5' : '#e2e8f0'; }}
+                        />
+                      </div>
+
+                      {custInfoErr && (
+                        <p style={{ margin: '0 0 12px', fontSize: 12, fontWeight: 600, color: '#dc2626' }}>{custInfoErr}</p>
+                      )}
+
+                      <p style={{ margin: '0 0 24px', fontSize: 11.5, color: '#94a3b8', lineHeight: 1.5 }}>
+                        Your details are securely stored for this transaction only.
+                      </p>
+
+                      {/* CTA */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!custInfoName.trim()) { setCustInfoErr('Please enter your full name.'); return; }
+                          if (!custInfoPhone.trim() || custInfoPhone.length < 10) { setCustInfoErr('Please enter a valid 10-digit mobile number.'); return; }
+                          setCustName(custInfoName.trim());
+                          setCustPhone(custInfoPhone.trim());
+                          setCustomerInfoDone(true);
+                        }}
+                        style={{ width: '100%', minHeight: 52, border: 'none', borderRadius: 14, background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 4px 16px rgba(99,102,241,0.35)', transition: 'opacity 0.15s' }}
+                      >
+                        Continue to Payment
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="5" y1="12" x2="19" y2="12"/>
+                          <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                /* ── PAYMENT METHOD SELECTOR (new clean minimal design) ── */
+                <div style={{ display: 'flex', flexDirection: 'column', padding: '0 0 24px' }}>
+                  {/* Merchant + Amount hero card */}
+                  <div style={{ margin: '0 0 16px 0', background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 100%)', borderRadius: 20, padding: '20px 18px 22px', position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 24px -4px rgba(15,23,42,0.18)' }}>
+                    {/* Decorative blur orb */}
+                    <div style={{ position: 'absolute', top: -40, right: -40, width: 140, height: 140, borderRadius: '50%', background: 'rgba(99,102,241,0.18)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', bottom: -20, left: -20, width: 100, height: 100, borderRadius: '50%', background: 'rgba(56,189,248,0.12)', filter: 'blur(30px)', pointerEvents: 'none' }} />
+
+                    {/* Merchant row */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, position: 'relative' }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #6366f1 0%, #38bdf8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800, color: '#fff', flexShrink: 0, boxShadow: '0 2px 12px rgba(99,102,241,0.4)' }}>
+                        {bizInitial}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: 5 }}>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{bizName}</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                          </svg>
+                        </div>
+                        <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 2 }}>
+                          {orderMode === 'test' ? '⚠ Sandbox mode' : 'Verified merchant'}
+                        </div>
+                      </div>
                       {activeId && (
-                        <div className="mob-spec-row">
-                          <span className="mob-spec-k">Order ID</span>
-                          <div className="mob-spec-v-wrap">
-                            <code className="mob-spec-code" title={activeId}>{formatRefId(activeId)}</code>
-                            <button
-                              type="button"
-                              onClick={handleCopyOrderId}
-                              className="mob-copy-ref-btn"
-                              aria-label="Copy Order ID"
-                              title="Copy Order ID"
-                            >
-                              {copiedOrderId ? (
-                                <span className="mob-copy-done">✓ Copied</span>
-                              ) : (
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                                </svg>
-                              )}
-                            </button>
-                          </div>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={handleCopyOrderId}
+                          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '4px 8px', color: copiedOrderId ? '#34d399' : '#94a3b8', fontSize: 10.5, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}
+                        >
+                          {copiedOrderId ? '✓ Copied' : (
+                            <>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                              </svg>
+                              {formatRefId(activeId)}
+                            </>
+                          )}
+                        </button>
                       )}
+                    </div>
 
-                      {(paramProject || orderNote) && (
-                        <div className="mob-spec-row">
-                          <span className="mob-spec-k">Plan / Item</span>
-                          <span className="mob-spec-v font-semibold truncate max-w-[180px]">{paramProject || orderNote}</span>
-                        </div>
-                      )}
-
-                      <div className="mob-spec-row">
-                        <span className="mob-spec-k">Order Date</span>
-                        <span className="mob-spec-v">{orderDate || 'Today'}</span>
+                    {/* Amount display */}
+                    <div style={{ position: 'relative' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Total Payable</div>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#94a3b8', marginBottom: 2 }}>₹</span>
+                        <span style={{ fontSize: 36, fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.02em', lineHeight: 1 }}>{amtWhole}</span>
+                        <span style={{ fontSize: 20, fontWeight: 700, color: '#94a3b8' }}>{amtFrac}</span>
                       </div>
-
-                      <div className="mob-spec-row">
-                        <span className="mob-spec-k">Convenience Fee</span>
-                        <span className="mob-spec-v mob-fee-waived">₹0.00 (0% MDR Waived)</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 20, padding: '3px 10px', fontSize: 10.5, fontWeight: 700, color: '#34d399' }}>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                          0% MDR · Direct Settlement
+                        </span>
+                        {(paramProject || orderNote) && (
+                          <span style={{ fontSize: 11.5, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 130 }}>
+                            · {paramProject || orderNote}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Section Title */}
-                  <div className="mob-choose-hdr">
-                    <div>
-                      <h3>Choose Payment Method</h3>
-                      <p>Select your preferred option to complete payment</p>
-                    </div>
-                    <span className="mob-bento-badge">BENTO MODE</span>
-                  </div>
+                  {/* Payment method section */}
+                  <div style={{ padding: '0 4px' }}>
+                    <p style={{ margin: '0 0 12px', fontSize: 12, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      Choose payment method
+                    </p>
 
-                  {/* Bento Grid Layout */}
-                  <div className="mob-bento-grid">
-                    {/* 1. UPI / QR (Full-Width Top Card) */}
-                    <button
-                      type="button"
-                      className="mob-bento-upi-card"
-                      onClick={() => { setSelectedMethod('upi'); setActiveOpt('upi'); }}
-                    >
-                      <div className="mob-bento-upi-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M4 8V5a1 1 0 0 1 1-1h3"/>
-                          <path d="M16 4h3a1 1 0 0 1 1 1v3"/>
-                          <path d="M20 16v3a1 1 0 0 1-1 1h-3"/>
-                          <path d="M8 20H5a1 1 0 0 1-1-1v-3"/>
-                          <rect x="8" y="8" width="8" height="8" rx="1.5" stroke="#ffffff" strokeWidth="2"/>
-                          <circle cx="12" cy="12" r="1" fill="#ffffff"/>
-                        </svg>
-                      </div>
-                      <div className="mob-bento-upi-body">
-                        <div className="mob-bento-upi-title-row">
-                          <span className="mob-bento-upi-title">UPI / QR Code</span>
-                          <span className="mob-bento-upi-tag">INSTANT &bull; 0% FEE</span>
+                    {/* Method cards — 3 buttons in a row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
+
+                      {/* 1. GPay / UPI (Primary active option) */}
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedMethod('upi'); setActiveOpt('upi'); }}
+                        style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 6px 14px', background: '#ffffff', border: '2px solid #6366f1', borderRadius: 16, cursor: 'pointer', transition: 'all 0.15s', boxShadow: '0 4px 14px rgba(99,102,241,0.12)', minHeight: 110 }}
+                      >
+                        {/* RECOMMENDED badge */}
+                        <span style={{ position: 'absolute', top: -9, background: '#6366f1', color: '#fff', fontSize: 8.5, fontWeight: 800, padding: '2px 7px', borderRadius: 8, letterSpacing: '0.04em', textTransform: 'uppercase', boxShadow: '0 2px 6px rgba(99,102,241,0.3)' }}>
+                          0% FEE
+                        </span>
+
+                        {/* UPI QR scan icon */}
+                        <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)', border: '1.5px solid #c7d2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="#1a73e8" strokeWidth="2" fill="none"/>
+                            <rect x="14" y="2" width="8" height="8" rx="1.5" stroke="#ea4335" strokeWidth="2" fill="none"/>
+                            <rect x="2" y="14" width="8" height="8" rx="1.5" stroke="#34a853" strokeWidth="2" fill="none"/>
+                            <rect x="5" y="5" width="2" height="2" rx="0.5" fill="#1a73e8"/>
+                            <rect x="17" y="5" width="2" height="2" rx="0.5" fill="#ea4335"/>
+                            <rect x="5" y="17" width="2" height="2" rx="0.5" fill="#34a853"/>
+                            <path d="M14 14h2v2h-2zM18 14h2v2h-2zM16 16h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z" fill="#fbbc04"/>
+                          </svg>
                         </div>
-                        <span className="mob-bento-upi-sub">Pay via Google Pay, PhonePe, Paytm, or any UPI app</span>
-                      </div>
-                      <div className="mob-bento-upi-chevron">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                      </div>
-                    </button>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ fontSize: 12, fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>GPay / UPI</div>
+                          <div style={{ fontSize: 9.5, color: '#6366f1', marginTop: 3, fontWeight: 700 }}>Instant Pay</div>
+                        </div>
+                      </button>
 
-                    {/* 2 & 3. Split Row (Net Banking + Crypto) */}
-                    <div
-                      className="mob-bento-split-row"
-                      style={!hasBankTransfer ? { gridTemplateColumns: '1fr' } : undefined}
-                    >
-                      {/* Direct Net Banking Card (Only if configured) */}
+                      {/* 2. Apple Pay (Shows advisory -> UPI switch) */}
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedMethod('applepay'); setActiveOpt('applepay'); }}
+                        style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 6px 14px', background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: 16, cursor: 'pointer', transition: 'all 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', minHeight: 110 }}
+                      >
+                        <span style={{ position: 'absolute', top: -8, background: '#f1f5f9', color: '#64748b', fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 6, border: '1px solid #e2e8f0' }}>
+                          SOON
+                        </span>
+                        {/* Apple logo icon */}
+                        <div style={{ width: 42, height: 42, borderRadius: 12, background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff">
+                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.4c1.29.07 2.18.66 2.94.68.87-.14 1.7-.76 2.63-.69 1.13.08 2 .49 2.56 1.25-2.38 1.45-1.87 4.64.41 5.78-.43 1.08-1 2.13-1.54 1.86zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                          </svg>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', lineHeight: 1.2 }}>Apple Pay</div>
+                          <div style={{ fontSize: 9.5, color: '#94a3b8', marginTop: 3, fontWeight: 500 }}>Touch ID</div>
+                        </div>
+                      </button>
+
+                      {/* 3. Card Payment (Shows advisory -> UPI switch) */}
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedMethod('card'); setActiveOpt('card'); }}
+                        style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 6px 14px', background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: 16, cursor: 'pointer', transition: 'all 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', minHeight: 110 }}
+                      >
+                        <span style={{ position: 'absolute', top: -8, background: '#f1f5f9', color: '#64748b', fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 6, border: '1px solid #e2e8f0' }}>
+                          SOON
+                        </span>
+                        {/* Credit card icon */}
+                        <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="3" ry="3"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                          </svg>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', lineHeight: 1.2 }}>Card</div>
+                          <div style={{ fontSize: 9.5, color: '#94a3b8', marginTop: 3, fontWeight: 500 }}>Visa · MC</div>
+                        </div>
+                      </button>
+                    </div>
+
+                    {/* Secondary options (Bank + Crypto) */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
                       {hasBankTransfer && (
                         <button
                           type="button"
-                          className="mob-bento-split-card mob-bento-bank-card"
                           onClick={() => { setSelectedMethod('bank'); setActiveOpt('bank'); }}
+                          style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
                         >
-                          <div className="mob-bento-card-top">
-                            <div className="mob-bento-card-icon mob-bento-bank-icon">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="3" y1="21" x2="21" y2="21" />
-                                <line x1="6" y1="18" x2="6" y2="11" />
-                                <line x1="10" y1="18" x2="10" y2="11" />
-                                <line x1="14" y1="18" x2="14" y2="11" />
-                                <line x1="18" y1="18" x2="18" y2="11" />
-                                <polygon points="12 3 2 9 22 9 12 3" />
-                              </svg>
-                            </div>
-                            <div className="mob-bento-card-chevron mob-bento-bank-chevron">
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="9 18 15 12 9 6" />
-                              </svg>
-                            </div>
+                          <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="3" y1="21" x2="21" y2="21"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/>
+                              <polygon points="12 3 2 9 22 9 12 3"/>
+                            </svg>
                           </div>
-                          <span className="mob-bento-split-title">Direct Net Banking</span>
-                          <span className="mob-bento-split-tag mob-bento-bank-tag">IMPS / NEFT</span>
-                          <span className="mob-bento-split-sub">Direct transfer to merchant bank account</span>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 12.5, fontWeight: 700, color: '#0f172a' }}>Net Banking</div>
+                            <div style={{ fontSize: 10.5, color: '#94a3b8', marginTop: 1 }}>IMPS / NEFT direct to merchant</div>
+                          </div>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
                       )}
 
-                      {/* Crypto Currency Card */}
                       <button
                         type="button"
-                        className="mob-bento-split-card mob-bento-crypto-card"
                         onClick={() => { setSelectedMethod('crypto'); setActiveOpt('crypto'); }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
                       >
-                        <div className="mob-bento-card-top">
-                          <div className="mob-bento-card-icon mob-bento-crypto-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="9" />
-                              <path d="M9 8h4.5a2 2 0 0 1 0 4H9m0 0h5a2 2 0 0 1 0 4H9M9 6v12" />
-                            </svg>
-                          </div>
-                          <div className="mob-bento-card-chevron mob-bento-crypto-chevron">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                          </div>
+                        <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M9 8h4.5a2 2 0 0 1 0 4H9m0 0h5a2 2 0 0 1 0 4H9M9 6v12"/>
+                          </svg>
                         </div>
-                        <span className="mob-bento-split-title">Crypto Currency</span>
-                        <span className="mob-bento-split-tag mob-bento-crypto-tag">USDT &bull; TRC20</span>
-                        <span className="mob-bento-split-sub">Pay {usdtAmt || '0.0111'} USDT with on-chain verification</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 700, color: '#0f172a' }}>Crypto (USDT)</div>
+                          <div style={{ fontSize: 10.5, color: '#94a3b8', marginTop: 1 }}>Pay {usdtAmt || '0.0111'} USDT · TRC20</div>
+                        </div>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                       </button>
                     </div>
-                  </div>
 
-                  {/* Promo code link */}
-                  <div style={{ textAlign: 'center', marginTop: 14 }}>
-                    <button
-                      type="button"
-                      className="ghost"
-                      onClick={() => setShowPromo(!showPromo)}
-                      style={{ fontSize: 13 }}
-                    >
-                      {promoApplied ? `Promo applied: ${promoApplied.code} ✓` : 'Have a coupon code?'}
-                    </button>
-                  </div>
-                  {showPromo && (
-                    <form onSubmit={submitPromo} style={{ display: 'flex', gap: 8, marginTop: 6 }}>
-                      <input
-                        placeholder="Promo code"
-                        value={promoCode}
-                        onChange={e => setPromoCode(e.target.value.toUpperCase())}
-                        style={{ flex: 1, minHeight: 44, border: '1px solid #d0d5dd', borderRadius: 10, padding: '0 12px', fontSize: 13, textTransform: 'uppercase' }}
-                      />
+                    {/* Promo code */}
+                    <div style={{ textAlign: 'center', marginBottom: 6 }}>
                       <button
-                        type="submit"
-                        disabled={promoLoading || !promoCode.trim()}
-                        style={{ minHeight: 44, padding: '0 16px', border: 0, borderRadius: 10, background: 'var(--brand)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                        type="button"
+                        className="ghost"
+                        onClick={() => setShowPromo(!showPromo)}
+                        style={{ fontSize: 12 }}
                       >
-                        {promoLoading ? '…' : 'Apply'}
+                        {promoApplied ? `✓ Promo applied: ${promoApplied.code}` : 'Have a promo code?'}
                       </button>
-                    </form>
-                  )}
-                  {promoMsg && (
-                    <p style={{ textAlign: 'center', margin: '4px 0 0', fontSize: 12, fontWeight: 600, color: promoMsg.startsWith('✓') ? 'var(--ok)' : '#c0392b' }}>
-                      {promoMsg}
-                    </p>
-                  )}
+                    </div>
+                    {showPromo && (
+                      <form onSubmit={submitPromo} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                        <input
+                          placeholder="Promo code"
+                          value={promoCode}
+                          onChange={e => setPromoCode(e.target.value.toUpperCase())}
+                          style={{ flex: 1, minHeight: 40, border: '1px solid #e2e8f0', borderRadius: 10, padding: '0 12px', fontSize: 12.5, textTransform: 'uppercase', outline: 'none' }}
+                        />
+                        <button
+                          type="submit"
+                          disabled={promoLoading || !promoCode.trim()}
+                          style={{ minHeight: 40, padding: '0 14px', border: 0, borderRadius: 10, background: '#4f46e5', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+                        >
+                          {promoLoading ? '…' : 'Apply'}
+                        </button>
+                      </form>
+                    )}
+                    {promoMsg && (
+                      <p style={{ textAlign: 'center', margin: '0 0 8px', fontSize: 11.5, fontWeight: 600, color: promoMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
+                        {promoMsg}
+                      </p>
+                    )}
 
-                  {/* Trust footer */}
-                  <div className="mob-overview-trust">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
-                      <path d="M9 12l2 2 4-4"/>
-                    </svg>
-                    <span>100% Secure Checkout &bull; 0% Platform MDR</span>
+                    {/* Trust bar */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 0', borderTop: '1px solid #f1f5f9', marginTop: 6 }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                      </svg>
+                      <span style={{ fontSize: 10.5, fontWeight: 600, color: '#64748b' }}>256-bit SSL · 100% Secure · 0% Platform MDR</span>
+                    </div>
                   </div>
                 </div>
-              ) : (
+              )
+            ) : (
                 /* ─────────────────────────────────────────────────────────────
                     STATE B: A SPECIFIC PAYMENT METHOD IS SELECTED
                     Displays the chosen method with a prominent Change Method back button
@@ -2186,86 +2324,222 @@ function PayPageContent() {
                     </div>
                   )}
 
-                  {/* ── B.2: CARDS METHOD VIEW ── */}
-                  {selectedMethod === 'card' && (
-                    <div className="mob-checkout-card" style={{ textAlign: 'left' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Credit / Debit Card</h4>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: '#0284C7' }}>{fmtInr(displayAmt)}</span>
+                  {/* ── B.1b: APPLE PAY METHOD VIEW ── */}
+                  {selectedMethod === 'applepay' && (
+                    <div className="mob-checkout-card" style={{ textAlign: 'left', padding: '22px 18px' }}>
+                      {/* Apple Pay Sheet Card Header */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, paddingBottom: 14, borderBottom: '1px solid #f1f5f9' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="#0f172a">
+                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.4c1.29.07 2.18.66 2.94.68.87-.14 1.7-.76 2.63-.69 1.13.08 2 .49 2.56 1.25-2.38 1.45-1.87 4.64.41 5.78-.43 1.08-1 2.13-1.54 1.86zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                          </svg>
+                          <span style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>Pay</span>
+                        </div>
+                        <span style={{ fontSize: 10.5, fontWeight: 700, color: '#6366f1', background: '#eef2ff', padding: '3px 8px', borderRadius: 6, border: '1px solid #c7d2fe' }}>
+                          Coming Soon
+                        </span>
                       </div>
 
-                      {/* Card Brands Badges */}
-                      <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
-                        {['visa', 'mastercard', 'rupay'].map(b => (
-                          <button
-                            key={b}
-                            type="button"
-                            onClick={() => setCardBrand(b)}
-                            style={{
-                              flex: 1,
-                              padding: '8px 4px',
-                              borderRadius: 10,
-                              border: cardBrand === b ? '2px solid #0284C7' : '1px solid #e2e8f0',
-                              background: cardBrand === b ? '#f0f9ff' : '#ffffff',
-                              color: cardBrand === b ? '#0284C7' : '#64748b',
-                              fontSize: 11.5,
-                              fontWeight: 700,
-                              textTransform: 'uppercase',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            {b}
-                          </button>
-                        ))}
+                      {/* Apple Pay Card Mockup */}
+                      <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', borderRadius: 16, padding: '16px 18px', color: '#fff', marginBottom: 16, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: -30, right: -30, width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em' }}>DIRECT UPI SETTLEMENT</span>
+                          <span style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>Apple Pay</span>
+                        </div>
+                        <div style={{ fontSize: 13, fontFamily: "'IBM Plex Mono', monospace", color: '#cbd5e1', letterSpacing: '0.12em', marginBottom: 10 }}>
+                          •••• •••• •••• 8892
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11, color: '#94a3b8' }}>
+                          <span>{custName || paramName || 'Valued Customer'}</span>
+                          <span>₹{amtWhole}</span>
+                        </div>
                       </div>
 
-                      {/* Card Number */}
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                        Card Number
-                      </label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={19}
-                        placeholder="4532 •••• •••• 8892"
-                        value={cardNumber}
-                        onChange={e => {
-                          const v = e.target.value.replace(/\D/g, '').slice(0, 16);
-                          const formatted = v.match(/.{1,4}/g)?.join(' ') || v;
-                          setCardNumber(formatted);
-                          if (v.startsWith('4')) setCardBrand('visa');
-                          else if (v.startsWith('5')) setCardBrand('mastercard');
-                          else if (v.startsWith('6')) setCardBrand('rupay');
-                        }}
+                      {/* Advisory Notice */}
+                      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '12px 14px', marginBottom: 16 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                          <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, flexShrink: 0, marginTop: 1 }}>
+                            ℹ
+                          </div>
+                          <div style={{ flex: 1, fontSize: 12, color: '#334155', lineHeight: 1.45 }}>
+                            <strong style={{ color: '#0f172a' }}>Pay on Apple device via UPI:</strong>
+                            <p style={{ margin: '4px 0 0', color: '#64748b' }}>
+                              Apple Pay direct card settlement is coming soon. You can complete this payment instantly on your iPhone using Google Pay, PhonePe, or Paytm via UPI with <strong>0% fee</strong>.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Primary Action Button: Pay via UPI */}
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedMethod('upi'); setActiveOpt('upi'); }}
                         style={{
                           width: '100%',
-                          minHeight: 46,
-                          border: '1px solid #cbd5e1',
-                          borderRadius: 12,
-                          padding: '0 12px',
-                          fontSize: 14,
-                          fontFamily: "'IBM Plex Mono', monospace",
-                          marginBottom: 12,
-                          boxSizing: 'border-box'
+                          minHeight: 50,
+                          border: 0,
+                          borderRadius: 14,
+                          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                          color: '#ffffff',
+                          fontWeight: 700,
+                          fontSize: 14.5,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 8,
+                          boxShadow: '0 4px 14px rgba(99,102,241,0.25)',
+                          marginBottom: 10
                         }}
-                      />
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="#ffffff" strokeWidth="2" fill="none"/>
+                          <rect x="14" y="2" width="8" height="8" rx="1.5" stroke="#ffffff" strokeWidth="2" fill="none"/>
+                          <rect x="2" y="14" width="8" height="8" rx="1.5" stroke="#ffffff" strokeWidth="2" fill="none"/>
+                        </svg>
+                        <span>Pay {fmtInr(displayAmt)} via UPI / GPay</span>
+                      </button>
 
-                      {/* Expiry & CVV */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                      {/* Sandbox test fallback (only if test mode) */}
+                      {orderMode === 'test' && (
+                        <button
+                          type="button"
+                          disabled={applePayBusy}
+                          onClick={submitApplePay}
+                          style={{
+                            width: '100%',
+                            minHeight: 40,
+                            border: '1px solid #cbd5e1',
+                            borderRadius: 12,
+                            background: '#ffffff',
+                            color: '#475569',
+                            fontWeight: 600,
+                            fontSize: 12,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6
+                          }}
+                        >
+                          {applePayBusy ? 'Simulating…' : '🧪 Simulate Sandbox Apple Pay Authorization'}
+                        </button>
+                      )}
+
+                      {applePayMsg && (
+                        <p style={{ margin: '10px 0 0', textAlign: 'center', fontSize: 12, fontWeight: 600, color: applePayMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
+                          {applePayMsg}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ── B.2: CARDS METHOD VIEW ── */}
+                  {selectedMethod === 'card' && (
+                    <div className="mob-checkout-card" style={{ textAlign: 'left', padding: '22px 18px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, paddingBottom: 12, borderBottom: '1px solid #f1f5f9' }}>
                         <div>
+                          <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Credit / Debit Card</h4>
+                          <span style={{ fontSize: 11, color: '#64748b' }}>Visa, MasterCard, RuPay</span>
+                        </div>
+                        <span style={{ fontSize: 10.5, fontWeight: 700, color: '#7c3aed', background: '#f5f3ff', padding: '3px 8px', borderRadius: 6, border: '1px solid #ddd6fe' }}>
+                          {orderMode === 'test' ? 'Sandbox Test' : 'Coming Soon'}
+                        </span>
+                      </div>
+
+                      {/* Advisory Notice for Live Mode */}
+                      {orderMode !== 'test' ? (
+                        <div>
+                          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '14px', marginBottom: 16 }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                              <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#7c3aed', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, flexShrink: 0, marginTop: 1 }}>
+                                💳
+                              </div>
+                              <div style={{ flex: 1, fontSize: 12.5, color: '#334155', lineHeight: 1.45 }}>
+                                <strong style={{ color: '#0f172a' }}>Direct Card settlement coming soon!</strong>
+                                <p style={{ margin: '5px 0 0', color: '#64748b', fontSize: 12 }}>
+                                  This merchant accepts instant direct bank payments via <strong>UPI</strong> with <strong>0% MDR</strong>. You can also link and pay with your <strong>RuPay Credit Card</strong> through any UPI app!
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Quick switch to UPI button */}
+                          <button
+                            type="button"
+                            onClick={() => { setSelectedMethod('upi'); setActiveOpt('upi'); }}
+                            style={{
+                              width: '100%',
+                              minHeight: 50,
+                              border: 0,
+                              borderRadius: 14,
+                              background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                              color: '#ffffff',
+                              fontWeight: 700,
+                              fontSize: 14.5,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 8,
+                              boxShadow: '0 4px 14px rgba(99,102,241,0.25)',
+                              marginBottom: 10
+                            }}
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                              <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="#ffffff" strokeWidth="2" fill="none"/>
+                              <rect x="14" y="2" width="8" height="8" rx="1.5" stroke="#ffffff" strokeWidth="2" fill="none"/>
+                              <rect x="2" y="14" width="8" height="8" rx="1.5" stroke="#ffffff" strokeWidth="2" fill="none"/>
+                            </svg>
+                            <span>Pay {fmtInr(displayAmt)} via UPI / GPay</span>
+                          </button>
+                        </div>
+                      ) : (
+                        /* Sandbox Mode: Card testing form */
+                        <div>
+                          {/* Card Brands Badges */}
+                          <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+                            {['visa', 'mastercard', 'rupay'].map(b => (
+                              <button
+                                key={b}
+                                type="button"
+                                onClick={() => setCardBrand(b)}
+                                style={{
+                                  flex: 1,
+                                  padding: '8px 4px',
+                                  borderRadius: 10,
+                                  border: cardBrand === b ? '2px solid #0284C7' : '1px solid #e2e8f0',
+                                  background: cardBrand === b ? '#f0f9ff' : '#ffffff',
+                                  color: cardBrand === b ? '#0284C7' : '#64748b',
+                                  fontSize: 11.5,
+                                  fontWeight: 700,
+                                  textTransform: 'uppercase',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                {b}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Card Number */}
                           <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                            Expiry (MM/YY)
+                            Card Number
                           </label>
                           <input
                             type="text"
                             inputMode="numeric"
-                            maxLength={5}
-                            placeholder="MM/YY"
-                            value={cardExpiry}
+                            maxLength={19}
+                            placeholder="4532 •••• •••• 8892"
+                            value={cardNumber}
                             onChange={e => {
-                              let v = e.target.value.replace(/\D/g, '').slice(0, 4);
-                              if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
-                              setCardExpiry(v);
+                              const v = e.target.value.replace(/\D/g, '').slice(0, 16);
+                              const formatted = v.match(/.{1,4}/g)?.join(' ') || v;
+                              setCardNumber(formatted);
+                              if (v.startsWith('4')) setCardBrand('visa');
+                              else if (v.startsWith('5')) setCardBrand('mastercard');
+                              else if (v.startsWith('6')) setCardBrand('rupay');
                             }}
                             style={{
                               width: '100%',
@@ -2275,21 +2549,74 @@ function PayPageContent() {
                               padding: '0 12px',
                               fontSize: 14,
                               fontFamily: "'IBM Plex Mono', monospace",
+                              marginBottom: 12,
                               boxSizing: 'border-box'
                             }}
                           />
-                        </div>
-                        <div>
+
+                          {/* Expiry & CVV */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                                Expiry (MM/YY)
+                              </label>
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={5}
+                                placeholder="MM/YY"
+                                value={cardExpiry}
+                                onChange={e => {
+                                  let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                  if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+                                  setCardExpiry(v);
+                                }}
+                                style={{
+                                  width: '100%',
+                                  minHeight: 46,
+                                  border: '1px solid #cbd5e1',
+                                  borderRadius: 12,
+                                  padding: '0 12px',
+                                  fontSize: 14,
+                                  fontFamily: "'IBM Plex Mono', monospace",
+                                  boxSizing: 'border-box'
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
+                                CVV
+                              </label>
+                              <input
+                                type="password"
+                                inputMode="numeric"
+                                maxLength={4}
+                                placeholder="•••"
+                                value={cardCvv}
+                                onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                style={{
+                                  width: '100%',
+                                  minHeight: 46,
+                                  border: '1px solid #cbd5e1',
+                                  borderRadius: 12,
+                                  padding: '0 12px',
+                                  fontSize: 14,
+                                  fontFamily: "'IBM Plex Mono', monospace",
+                                  boxSizing: 'border-box'
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Cardholder Name */}
                           <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                            CVV
+                            Cardholder Name
                           </label>
                           <input
-                            type="password"
-                            inputMode="numeric"
-                            maxLength={4}
-                            placeholder="•••"
-                            value={cardCvv}
-                            onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                            type="text"
+                            placeholder="Name as on card"
+                            value={cardHolder}
+                            onChange={e => setCardHolder(e.target.value)}
                             style={{
                               width: '100%',
                               minHeight: 46,
@@ -2297,83 +2624,55 @@ function PayPageContent() {
                               borderRadius: 12,
                               padding: '0 12px',
                               fontSize: 14,
-                              fontFamily: "'IBM Plex Mono', monospace",
+                              marginBottom: 14,
                               boxSizing: 'border-box'
                             }}
                           />
-                        </div>
-                      </div>
 
-                      {/* Cardholder Name */}
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 5 }}>
-                        Cardholder Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Name as on card"
-                        value={cardHolder}
-                        onChange={e => setCardHolder(e.target.value)}
-                        style={{
-                          width: '100%',
-                          minHeight: 46,
-                          border: '1px solid #cbd5e1',
-                          borderRadius: 12,
-                          padding: '0 12px',
-                          fontSize: 14,
-                          marginBottom: 14,
-                          boxSizing: 'border-box'
-                        }}
-                      />
-
-                      {/* Test Sandbox or Live Advisory */}
-                      {orderMode === 'test' ? (
-                        <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 12, padding: '10px 12px', marginBottom: 14, fontSize: 12, color: '#92400e' }}>
-                          <span style={{ fontWeight: 700 }}>Sandbox Mode:</span> Simulated payment test. Default OTP is <code>123456</code>.
-                          <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
-                            <span style={{ fontSize: 11, fontWeight: 700 }}>OTP:</span>
-                            <input
-                              type="text"
-                              value={cardOtp}
-                              placeholder="123456"
-                              onChange={e => setCardOtp(e.target.value)}
-                              style={{ width: 90, minHeight: 32, padding: '0 8px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
-                            />
+                          <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 12, padding: '10px 12px', marginBottom: 14, fontSize: 12, color: '#92400e' }}>
+                            <span style={{ fontWeight: 700 }}>Sandbox Mode:</span> Simulated payment test. Default OTP is <code>123456</code>.
+                            <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
+                              <span style={{ fontSize: 11, fontWeight: 700 }}>OTP:</span>
+                              <input
+                                type="text"
+                                value={cardOtp}
+                                placeholder="123456"
+                                onChange={e => setCardOtp(e.target.value)}
+                                style={{ width: 90, minHeight: 32, padding: '0 8px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '10px 12px', marginBottom: 14, fontSize: 12, color: '#1e40af', lineHeight: 1.4 }}>
-                          Direct card processing rail: UPI or Net Banking is recommended for 0% MDR instant settlement.
-                        </div>
-                      )}
 
-                      {/* Card Submit Button */}
-                      <button
-                        type="button"
-                        disabled={cardBusy}
-                        onClick={submitCardPayment}
-                        style={{
-                          width: '100%',
-                          minHeight: 48,
-                          border: 0,
-                          borderRadius: 12,
-                          background: '#0284C7',
-                          color: '#fff',
-                          fontWeight: 700,
-                          fontSize: 14,
-                          cursor: cardBusy ? 'not-allowed' : 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 8
-                        }}
-                      >
-                        {cardBusy ? 'Processing Card…' : `Pay ${fmtInr(displayAmt)} by Card`}
-                      </button>
+                          {/* Card Submit Button */}
+                          <button
+                            type="button"
+                            disabled={cardBusy}
+                            onClick={submitCardPayment}
+                            style={{
+                              width: '100%',
+                              minHeight: 48,
+                              border: 0,
+                              borderRadius: 12,
+                              background: '#0284C7',
+                              color: '#fff',
+                              fontWeight: 700,
+                              fontSize: 14,
+                              cursor: cardBusy ? 'not-allowed' : 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 8
+                            }}
+                          >
+                            {cardBusy ? 'Processing Card…' : `Pay ${fmtInr(displayAmt)} by Card`}
+                          </button>
 
-                      {cardMsg && (
-                        <p style={{ margin: '8px 0 0', fontSize: 12, fontWeight: 600, color: cardMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
-                          {cardMsg}
-                        </p>
+                          {cardMsg && (
+                            <p style={{ margin: '8px 0 0', fontSize: 12, fontWeight: 600, color: cardMsg.startsWith('✓') ? '#059669' : '#dc2626' }}>
+                              {cardMsg}
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
@@ -2708,7 +3007,7 @@ export default function PayPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;700&family=Orbitron:wght@800;900&family=Outfit:wght@700;800&display=swap');
+        @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;700&family=Orbitron:wght@800;900&family=Outfit:wght@700;800&display=swap");
 
         :root {
           --page: #e8eef6;
