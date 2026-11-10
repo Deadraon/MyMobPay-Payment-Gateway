@@ -112,9 +112,9 @@ export default function DashboardPage() {
 
   const isLiveUnlocked = useMemo(() => {
     return Boolean(
-      (profile?.subscription_status === 'active' && !isSubExpired) || isAdminUser
+      profile?.subscription_status === 'active' && !isSubExpired
     );
-  }, [profile?.subscription_status, isSubExpired, isAdminUser]);
+  }, [profile?.subscription_status, isSubExpired]);
 
   const effectiveSandboxMode = useMemo(() => {
     if (!isLiveUnlocked) return true;
@@ -1130,14 +1130,13 @@ export default function DashboardPage() {
         }
       }
 
-      // If subscription is expired or inactive (and not platform admin), ensure sandbox_mode is forced to true
+      // If subscription is expired or inactive, ensure sandbox_mode is forced to true
       const isSubExpiredCheck = Boolean(
         data.subscription_status !== 'active' ||
         (data.subscription_expires_at && new Date(data.subscription_expires_at).getTime() < Date.now())
       );
-      const isPlatformAdminMerchant = userId === '677d9312-a53f-4b96-815f-53e0eee1b292' || data.api_key === CONFIG.platformApiKey;
 
-      if (isSubExpiredCheck && !isPlatformAdminMerchant && data.sandbox_mode === false) {
+      if (isSubExpiredCheck && data.sandbox_mode === false) {
         data.sandbox_mode = true;
         await supabase.from('merchants').update({ sandbox_mode: true }).eq('id', userId);
       }
@@ -3019,11 +3018,11 @@ echo "Order Created: " . $data['orderId'];
                 {isLiveUnlocked ? (
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 ) : (
-                  <Lock className="w-3.5 h-3.5 text-amber-600" />
+                  <Lock className="w-3.5 h-3.5 text-slate-400" />
                 )}
                 <span>Live Mode</span>
                 {!isLiveUnlocked && (
-                  <span className="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-200">
+                  <span className="text-[9px] bg-slate-200 text-slate-600 font-bold px-1.5 py-0.5 rounded">
                     Locked
                   </span>
                 )}

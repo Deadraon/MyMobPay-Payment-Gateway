@@ -10,9 +10,8 @@ test('--- Subscription Live Mode Gating & Expiry Security Suite ---', async (t) 
       new Date(merchant.subscription_expires_at).getTime() < Date.now()
     );
 
-    const isPlatformAdmin = merchant?.id === PLATFORM_ADMIN_ID;
     const isSubActive = merchant?.subscription_status === 'active' && !isSubExpired;
-    const isLiveUnlocked = Boolean(isSubActive || isPlatformAdmin);
+    const isLiveUnlocked = Boolean(isSubActive);
     const effectiveSandboxMode = !isLiveUnlocked ? true : (merchant?.sandbox_mode !== false);
 
     return {
@@ -27,9 +26,8 @@ test('--- Subscription Live Mode Gating & Expiry Security Suite ---', async (t) 
     const isTestKey = candidateKey.startsWith('test_');
     const isLiveKey = candidateKey.startsWith('live_');
     const isLiveMode = isLiveKey || (merchant.sandbox_mode === false && !isTestKey);
-    const isPlatformAdmin = merchant.id === PLATFORM_ADMIN_ID;
 
-    if (isLiveMode && !isPlatformAdmin) {
+    if (isLiveMode) {
       let isSubActive = merchant.subscription_status === 'active';
       if (isSubActive && merchant.subscription_expires_at) {
         if (new Date(merchant.subscription_expires_at).getTime() <= Date.now()) {
@@ -103,7 +101,7 @@ test('--- Subscription Live Mode Gating & Expiry Security Suite ---', async (t) 
     assert.equal(res.isLiveMode, true);
   });
 
-  await t.test('4. Platform Administrator retains Live Mode bypass even if subscription timestamp is past', () => {
+  await t.test('4. Expired account (including platform admin) strictly locks Live Mode and forces sandbox', () => {
     const adminMerchant = {
       id: PLATFORM_ADMIN_ID,
       subscription_status: 'expired',
@@ -112,10 +110,11 @@ test('--- Subscription Live Mode Gating & Expiry Security Suite ---', async (t) 
     };
 
     const status = evaluateLiveStatus(adminMerchant);
-    assert.equal(status.isLiveUnlocked, true, 'Platform admin must always unlock live mode');
-    assert.equal(status.effectiveSandboxMode, false);
+    assert.equal(status.isLiveUnlocked, false, 'Expired subscription must lock live mode without bypass');
+    assert.equal(status.effectiveSandboxMode, true);
 
     const res = simulateCreatePaymentLinkAuth(adminMerchant, 'live_admin123');
-    assert.equal(res.allowed, true);
+    assert.equal(res.allowed, false);
+    assert.equal(res.code, 'SUBSCRIPTION_EXPIRED');
   });
 });

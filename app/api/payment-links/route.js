@@ -59,7 +59,7 @@ export async function POST(request) {
     const isPlatformAdmin = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292';
 
     // 1b. Enforce Active Subscription for Live Mode
-    if (isLiveMode && !isPlatformAdmin) {
+    if (isLiveMode) {
       let isSubActive = merchant.subscription_status === 'active';
       if (isSubActive && merchant.subscription_expires_at) {
         if (new Date(merchant.subscription_expires_at).getTime() <= Date.now()) {

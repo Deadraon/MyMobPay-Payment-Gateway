@@ -35,7 +35,7 @@ export async function POST(request) {
     const isLiveMode = isLiveKey || (merchant.sandbox_mode === false && !isTestKey);
     const isPlatformAdmin = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292';
 
-    if (isLiveMode && !isPlatformAdmin) {
+    if (isLiveMode) {
       let isSubActive = merchant.subscription_status === 'active';
       if (isSubActive && merchant.subscription_expires_at) {
         if (new Date(merchant.subscription_expires_at).getTime() <= Date.now()) {
