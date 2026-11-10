@@ -1983,16 +1983,16 @@ function PayPageContent() {
                             gap: 13,
                             padding: '15px 14px',
                             background: selectedInlineMethod === 'upi' ? '#ffffff' : '#f8fafc',
-                            border: selectedInlineMethod === 'upi' ? '2px solid #6366f1' : '1.5px solid #e2e8f0',
+                            border: selectedInlineMethod === 'upi' ? '2px solid #10b981' : '1.5px solid #e2e8f0',
                             borderRadius: 18,
                             cursor: 'pointer',
-                            boxShadow: selectedInlineMethod === 'upi' ? '0 6px 18px rgba(99,102,241,0.14)' : '0 1px 3px rgba(0,0,0,0.02)',
+                            boxShadow: selectedInlineMethod === 'upi' ? '0 6px 18px rgba(16,185,129,0.14)' : '0 1px 3px rgba(0,0,0,0.02)',
                             transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                             position: 'relative',
                             boxSizing: 'border-box',
                           }}
                         >
-                          <div style={{ width: 44, height: 44, borderRadius: 13, background: selectedInlineMethod === 'upi' ? 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)' : '#f1f5f9', border: selectedInlineMethod === 'upi' ? '1.5px solid #c7d2fe' : '1.5px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <div style={{ width: 44, height: 44, borderRadius: 13, background: selectedInlineMethod === 'upi' ? 'linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%)' : '#f1f5f9', border: selectedInlineMethod === 'upi' ? '1.5px solid #a7f3d0' : '1.5px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                               <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="#1a73e8" strokeWidth="2" fill="none"/>
                               <rect x="14" y="2" width="8" height="8" rx="1.5" stroke="#ea4335" strokeWidth="2" fill="none"/>
@@ -2018,7 +2018,7 @@ function PayPageContent() {
                               Auto-verified in 30 seconds · 0% fee
                             </div>
                           </div>
-                          <div style={{ width: 20, height: 20, borderRadius: '50%', border: selectedInlineMethod === 'upi' ? '6px solid #6366f1' : '2px solid #cbd5e1', background: '#ffffff', flexShrink: 0, transition: 'all 0.2s ease', boxSizing: 'border-box' }} />
+                          <div style={{ width: 20, height: 20, borderRadius: '50%', border: selectedInlineMethod === 'upi' ? '6px solid #10b981' : '2px solid #cbd5e1', background: '#ffffff', flexShrink: 0, transition: 'all 0.2s ease', boxSizing: 'border-box' }} />
                         </button>
 
                         {/* 2. Net Banking Option */}
@@ -2136,7 +2136,7 @@ function PayPageContent() {
 
                           {/* 1. QR / UPI */}
                           <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ position: 'absolute', top: -9, left: '50%', transform: 'translateX(-50%)', zIndex: 5, background: selectedInlineMethod === 'upi' ? '#6366f1' : '#475569', color: '#fff', fontSize: 8, fontWeight: 800, padding: '2px 6px', borderRadius: 6, letterSpacing: '0.04em', textTransform: 'uppercase', boxShadow: '0 2px 4px rgba(0,0,0,0.12)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                            <span style={{ position: 'absolute', top: -9, left: '50%', transform: 'translateX(-50%)', zIndex: 5, background: selectedInlineMethod === 'upi' ? '#059669' : '#475569', color: '#fff', fontSize: 8, fontWeight: 800, padding: '2px 6px', borderRadius: 6, letterSpacing: '0.04em', textTransform: 'uppercase', boxShadow: '0 2px 4px rgba(0,0,0,0.12)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
                               0% FEE
                             </span>
                             <button
@@ -2155,10 +2155,10 @@ function PayPageContent() {
                                 gap: 6,
                                 padding: '14px 4px 12px',
                                 background: selectedInlineMethod === 'upi' ? '#ffffff' : '#f8fafc',
-                                border: selectedInlineMethod === 'upi' ? '2px solid #6366f1' : '1.5px solid #e2e8f0',
+                                border: selectedInlineMethod === 'upi' ? '2px solid #10b981' : '1.5px solid #e2e8f0',
                                 borderRadius: 16,
                                 cursor: 'pointer',
-                                boxShadow: selectedInlineMethod === 'upi' ? '0 4px 14px rgba(99,102,241,0.18)' : '0 1px 3px rgba(0,0,0,0.04)',
+                                boxShadow: selectedInlineMethod === 'upi' ? '0 4px 14px rgba(16,185,129,0.18)' : '0 1px 3px rgba(0,0,0,0.04)',
                                 minHeight: 104,
                                 boxSizing: 'border-box',
                               }}
@@ -2176,7 +2176,7 @@ function PayPageContent() {
                               </div>
                               <div style={{ textAlign: 'center' }}>
                                 <div style={{ fontSize: 11.5, fontWeight: selectedInlineMethod === 'upi' ? 800 : 700, color: selectedInlineMethod === 'upi' ? '#0f172a' : '#334155', lineHeight: 1.2 }}>QR / UPI</div>
-                                <div style={{ fontSize: 9.5, color: selectedInlineMethod === 'upi' ? '#6366f1' : '#94a3b8', marginTop: 2, fontWeight: 700 }}>Instant Pay</div>
+                                <div style={{ fontSize: 9.5, color: selectedInlineMethod === 'upi' ? '#059669' : '#94a3b8', marginTop: 2, fontWeight: 700 }}>Instant Pay</div>
                               </div>
                             </button>
                           </div>
@@ -2424,7 +2424,7 @@ function PayPageContent() {
                           ? 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)'
                           : selectedInlineMethod === 'bank'
                           ? 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)'
-                          : 'linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #4338ca 100%)',
+                          : 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
                         color: '#ffffff',
                         fontSize: 14.5,
                         fontWeight: 800,
@@ -2433,7 +2433,11 @@ function PayPageContent() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 8,
-                        boxShadow: '0 6px 20px -2px rgba(79, 70, 229, 0.38)',
+                        boxShadow: selectedInlineMethod === 'crypto'
+                          ? '0 6px 20px -2px rgba(217, 119, 6, 0.38)'
+                          : selectedInlineMethod === 'bank'
+                          ? '0 6px 20px -2px rgba(79, 70, 229, 0.38)'
+                          : '0 6px 20px -2px rgba(16, 185, 129, 0.42)',
                         marginBottom: 12,
                       }}
                     >
