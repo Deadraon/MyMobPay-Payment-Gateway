@@ -141,17 +141,54 @@ function PayPageContent() {
   /* Desktop method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' */
   const [activeOpt,    setActiveOpt]    = useState(cleanParamMethod);
 
-  /* Mobile method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' */
+  /* Mobile method selection: null (choose first) | 'upi' | 'bank' | 'crypto' */
   const [selectedMethod, setSelectedMethod] = useState(cleanParamMethod);
 
-  /* Customer info collection screen for link payments (shown before method is picked) */
-  /* 'vCustomerInfo' = collecting name+phone; 'vMethodSelect' = method picker */
-  const isPaymentLink = Boolean(hasToken || paramLid || paramToken);
-  const needsCustomerInfo = isPaymentLink && (!paramName || !paramPhone);
-  const [customerInfoDone, setCustomerInfoDone] = useState(!needsCustomerInfo);
-  const [custInfoName,  setCustInfoName]  = useState(paramName || '');
-  const [custInfoPhone, setCustInfoPhone] = useState(paramPhone || '');
-  const [custInfoErr,   setCustInfoErr]   = useState('');
+  /* Mobile inline selected method in 3-button selector: 'upi' | 'bank' | 'crypto' */
+  const [selectedInlineMethod, setSelectedInlineMethod] = useState(
+    cleanParamMethod === 'bank' || cleanParamMethod === 'crypto' ? cleanParamMethod : 'upi'
+  );
+
+  /* Customer info state */
+  const [custDetailsErr, setCustDetailsErr] = useState('');
+
+  /* Ripple helper function for 21st tactile button micro-animations */
+  const handleRipple = (e) => {
+    try {
+      const button = e.currentTarget;
+      if (!button) return;
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      const ripple = document.createElement('span');
+      ripple.className = 'mmp-ripple-effect';
+      ripple.style.width = `${size}px`;
+      ripple.style.height = `${size}px`;
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      button.appendChild(ripple);
+      setTimeout(() => {
+        try { ripple.remove(); } catch {}
+      }, 600);
+    } catch {}
+  };
+
+  /* Helper to validate customer details before processing payment */
+  const validateCustomerDetails = () => {
+    const name = (custName || '').trim();
+    const phone = (custPhone || '').trim();
+    if (!name) {
+      setCustDetailsErr('Please enter your full name');
+      return false;
+    }
+    if (!phone || phone.length < 10) {
+      setCustDetailsErr('Please enter a valid 10-digit mobile number');
+      return false;
+    }
+    setCustDetailsErr('');
+    return true;
+  };
 
   /* Mobile accordion selection */
   const [activeAcc,    setActiveAcc]    = useState('');
@@ -233,10 +270,12 @@ function PayPageContent() {
   const [okTime,       setOkTime]       = useState('');
 
   const autoCreated = useRef(false);
-  const [tempId, setTempId] = useState(() => generateOrderId('order'));
+  const [tempId, setTempId] = useState(cleanParamOrderId || '');
 
   useEffect(() => {
-    setTempId(generateOrderId('order'));
+    if (!cleanParamOrderId) {
+      setTempId(generateOrderId('order'));
+    }
     try {
       const d = new Intl.DateTimeFormat('en-IN', {
         day: 'numeric',
@@ -1688,149 +1727,40 @@ function PayPageContent() {
           {/* VIEW 1: PAY — Choice of Payment Methods First, then Selected Method */}
           {curView === 'vPay' && (
             <div id="vPay">
-              {/* Subtle top camera dot (mockup aesthetic) */}
-              <div className="mob-phone-dot" aria-hidden="true" />
-
               {/* ─────────────────────────────────────────────────────────────
                   STATE A: NO PAYMENT METHOD SELECTED YET (DEFAULT FIRST VIEW)
-                  Shows clean, professional payment method choices first
+                  Unified mobile checkout: Hero Card + 3-Button Selector
+                  + Inline Customer Name & Phone + 21st Tactile Pay Action Button
               ───────────────────────────────────────────────────────────── */}
               {!selectedMethod ? (
-                /* ── CUSTOMER INFO SCREEN (link payments without name/phone) ── */
-                !customerInfoDone ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', padding: '0 0 24px' }}>
-                    {/* Header */}
-                    <div style={{ textAlign: 'center', padding: '28px 20px 20px', borderBottom: '1px solid #f1f5f9' }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '4px 12px', marginBottom: 16 }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
-                          <path d="M9 12l2 2 4-4"/>
-                        </svg>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#15803d', letterSpacing: '0.04em' }}>SECURE CHECKOUT</span>
-                      </div>
-
-                      {/* Merchant avatar + name */}
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
-                          {bizInitial}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>{bizName}</div>
-                          <div style={{ fontSize: 12, color: '#64748b', marginTop: 3 }}>Requesting payment of <strong style={{ color: '#0f172a' }}>{fmtInr(displayAmt)}</strong></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Form */}
-                    <div style={{ padding: '24px 20px', flex: 1 }}>
-                      <div style={{ marginBottom: 6 }}>
-                        <p style={{ margin: '0 0 18px', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Let us know who&apos;s paying</p>
-                      </div>
-
-                      {/* Full Name */}
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
-                        Full Name
-                      </label>
-                      <div style={{ position: 'relative', marginBottom: 14 }}>
-                        <span style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                          </svg>
-                        </span>
-                        <input
-                          type="text"
-                          autoFocus
-                          placeholder="Rahul Sharma"
-                          value={custInfoName}
-                          onChange={e => { setCustInfoName(e.target.value); setCustInfoErr(''); }}
-                          style={{ width: '100%', minHeight: 48, border: `1.5px solid ${custInfoErr && !custInfoName.trim() ? '#fca5a5' : '#e2e8f0'}`, borderRadius: 12, padding: '0 14px 0 40px', fontSize: 15, fontFamily: 'inherit', color: '#0f172a', background: '#fff', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
-                          onFocus={e => { e.target.style.borderColor = '#6366f1'; }}
-                          onBlur={e => { e.target.style.borderColor = custInfoErr && !custInfoName.trim() ? '#fca5a5' : '#e2e8f0'; }}
-                        />
-                      </div>
-
-                      {/* Phone */}
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
-                        Mobile Number
-                      </label>
-                      <div style={{ position: 'relative', marginBottom: 8 }}>
-                        <span style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                          </svg>
-                        </span>
-                        <span style={{ position: 'absolute', left: 40, top: '50%', transform: 'translateY(-50%)', fontSize: 14, fontWeight: 600, color: '#64748b', borderRight: '1.5px solid #e2e8f0', paddingRight: 10, lineHeight: '48px' }}>+91</span>
-                        <input
-                          type="tel"
-                          inputMode="numeric"
-                          maxLength={10}
-                          placeholder="9876543210"
-                          value={custInfoPhone}
-                          onChange={e => { setCustInfoPhone(e.target.value.replace(/\D/g, '').slice(0, 10)); setCustInfoErr(''); }}
-                          style={{ width: '100%', minHeight: 48, border: `1.5px solid ${custInfoErr && !custInfoPhone.trim() ? '#fca5a5' : '#e2e8f0'}`, borderRadius: 12, padding: '0 14px 0 76px', fontSize: 15, fontFamily: 'inherit', color: '#0f172a', background: '#fff', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
-                          onFocus={e => { e.target.style.borderColor = '#6366f1'; }}
-                          onBlur={e => { e.target.style.borderColor = custInfoErr && !custInfoPhone.trim() ? '#fca5a5' : '#e2e8f0'; }}
-                        />
-                      </div>
-
-                      {custInfoErr && (
-                        <p style={{ margin: '0 0 12px', fontSize: 12, fontWeight: 600, color: '#dc2626' }}>{custInfoErr}</p>
-                      )}
-
-                      <p style={{ margin: '0 0 24px', fontSize: 11.5, color: '#94a3b8', lineHeight: 1.5 }}>
-                        Your details are securely stored for this transaction only.
-                      </p>
-
-                      {/* CTA */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!custInfoName.trim()) { setCustInfoErr('Please enter your full name.'); return; }
-                          if (!custInfoPhone.trim() || custInfoPhone.length < 10) { setCustInfoErr('Please enter a valid 10-digit mobile number.'); return; }
-                          setCustName(custInfoName.trim());
-                          setCustPhone(custInfoPhone.trim());
-                          setCustomerInfoDone(true);
-                        }}
-                        style={{ width: '100%', minHeight: 52, border: 'none', borderRadius: 14, background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 4px 16px rgba(99,102,241,0.35)', transition: 'opacity 0.15s' }}
-                      >
-                        Continue to Payment
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="5" y1="12" x2="19" y2="12"/>
-                          <polyline points="12 5 19 12 12 19"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                /* ── PAYMENT METHOD SELECTOR (new clean minimal design) ── */
-                <div style={{ display: 'flex', flexDirection: 'column', padding: '0 0 24px' }}>
+                <div className="mob-select-methods-wrap" style={{ display: 'flex', flexDirection: 'column', padding: '0 0 20px', gap: 12 }}>
                   {/* Merchant + Amount hero card */}
-                  <div style={{ margin: '0 0 16px 0', background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 100%)', borderRadius: 20, padding: '20px 18px 22px', position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 24px -4px rgba(15,23,42,0.18)' }}>
+                  <div style={{ margin: '0', background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 100%)', borderRadius: 20, padding: '16px 16px 18px', position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 24px -4px rgba(15,23,42,0.18)' }}>
                     {/* Decorative blur orb */}
-                    <div style={{ position: 'absolute', top: -40, right: -40, width: 140, height: 140, borderRadius: '50%', background: 'rgba(99,102,241,0.18)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-                    <div style={{ position: 'absolute', bottom: -20, left: -20, width: 100, height: 100, borderRadius: '50%', background: 'rgba(56,189,248,0.12)', filter: 'blur(30px)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', top: -35, right: -35, width: 130, height: 130, borderRadius: '50%', background: 'rgba(99,102,241,0.18)', filter: 'blur(35px)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', bottom: -20, left: -20, width: 90, height: 90, borderRadius: '50%', background: 'rgba(56,189,248,0.12)', filter: 'blur(28px)', pointerEvents: 'none' }} />
 
                     {/* Merchant row */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, position: 'relative' }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #6366f1 0%, #38bdf8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800, color: '#fff', flexShrink: 0, boxShadow: '0 2px 12px rgba(99,102,241,0.4)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, position: 'relative' }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #6366f1 0%, #38bdf8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 800, color: '#fff', flexShrink: 0, boxShadow: '0 2px 10px rgba(99,102,241,0.35)' }}>
                         {bizInitial}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 15, fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <div style={{ fontSize: 14.5, fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: 5 }}>
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{bizName}</span>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                             <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
                             <path d="M9 12l2 2 4-4"/>
                           </svg>
                         </div>
-                        <div style={{ fontSize: 11.5, color: '#94a3b8', marginTop: 2 }}>
+                        <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>
                           {orderMode === 'test' ? '⚠ Sandbox mode' : 'Verified merchant'}
                         </div>
                       </div>
                       {activeId && (
                         <button
                           type="button"
+                          suppressHydrationWarning
                           onClick={handleCopyOrderId}
                           style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '4px 8px', color: copiedOrderId ? '#34d399' : '#94a3b8', fontSize: 10.5, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}
                         >
@@ -1840,7 +1770,7 @@ function PayPageContent() {
                                 <rect x="9" y="9" width="13" height="13" rx="2"/>
                                 <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
                               </svg>
-                              {formatRefId(activeId)}
+                              <span suppressHydrationWarning>{formatRefId(activeId)}</span>
                             </>
                           )}
                         </button>
@@ -1849,19 +1779,19 @@ function PayPageContent() {
 
                     {/* Amount display */}
                     <div style={{ position: 'relative' }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Total Payable</div>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#94a3b8', marginBottom: 2 }}>₹</span>
-                        <span style={{ fontSize: 36, fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.02em', lineHeight: 1 }}>{amtWhole}</span>
-                        <span style={{ fontSize: 20, fontWeight: 700, color: '#94a3b8' }}>{amtFrac}</span>
+                      <div style={{ fontSize: 10.5, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Total Payable</div>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#94a3b8' }}>₹</span>
+                        <span style={{ fontSize: 32, fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.02em', lineHeight: 1 }}>{amtWhole}</span>
+                        <span style={{ fontSize: 18, fontWeight: 700, color: '#94a3b8' }}>{amtFrac}</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10 }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 20, padding: '3px 10px', fontSize: 10.5, fontWeight: 700, color: '#34d399' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 20, padding: '2px 8px', fontSize: 10, fontWeight: 700, color: '#34d399' }}>
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                           0% MDR · Direct Settlement
                         </span>
                         {(paramProject || orderNote) && (
-                          <span style={{ fontSize: 11.5, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 130 }}>
+                          <span style={{ fontSize: 11, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 130 }}>
                             · {paramProject || orderNote}
                           </span>
                         )}
@@ -1870,127 +1800,299 @@ function PayPageContent() {
                   </div>
 
                   {/* Payment method section */}
-                  <div style={{ padding: '0 4px' }}>
-                    <p style={{ margin: '0 0 12px', fontSize: 12, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                      Choose payment method
-                    </p>
-
-                    {/* Method cards — 3 buttons in a row */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
-
-                      {/* 1. GPay / UPI (Primary active option) */}
-                      <button
-                        type="button"
-                        onClick={() => { setSelectedMethod('upi'); setActiveOpt('upi'); }}
-                        style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 6px 14px', background: '#ffffff', border: '2px solid #6366f1', borderRadius: 16, cursor: 'pointer', transition: 'all 0.15s', boxShadow: '0 4px 14px rgba(99,102,241,0.12)', minHeight: 110 }}
-                      >
-                        {/* RECOMMENDED badge */}
-                        <span style={{ position: 'absolute', top: -9, background: '#6366f1', color: '#fff', fontSize: 8.5, fontWeight: 800, padding: '2px 7px', borderRadius: 8, letterSpacing: '0.04em', textTransform: 'uppercase', boxShadow: '0 2px 6px rgba(99,102,241,0.3)' }}>
-                          0% FEE
-                        </span>
-
-                        {/* UPI QR scan icon */}
-                        <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)', border: '1.5px solid #c7d2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="#1a73e8" strokeWidth="2" fill="none"/>
-                            <rect x="14" y="2" width="8" height="8" rx="1.5" stroke="#ea4335" strokeWidth="2" fill="none"/>
-                            <rect x="2" y="14" width="8" height="8" rx="1.5" stroke="#34a853" strokeWidth="2" fill="none"/>
-                            <rect x="5" y="5" width="2" height="2" rx="0.5" fill="#1a73e8"/>
-                            <rect x="17" y="5" width="2" height="2" rx="0.5" fill="#ea4335"/>
-                            <rect x="5" y="17" width="2" height="2" rx="0.5" fill="#34a853"/>
-                            <path d="M14 14h2v2h-2zM18 14h2v2h-2zM16 16h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z" fill="#fbbc04"/>
-                          </svg>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: 12, fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>GPay / UPI</div>
-                          <div style={{ fontSize: 9.5, color: '#6366f1', marginTop: 3, fontWeight: 700 }}>Instant Pay</div>
-                        </div>
-                      </button>
-
-                      {/* 2. Apple Pay (Shows advisory -> UPI switch) */}
-                      <button
-                        type="button"
-                        onClick={() => { setSelectedMethod('applepay'); setActiveOpt('applepay'); }}
-                        style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 6px 14px', background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: 16, cursor: 'pointer', transition: 'all 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', minHeight: 110 }}
-                      >
-                        <span style={{ position: 'absolute', top: -8, background: '#f1f5f9', color: '#64748b', fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 6, border: '1px solid #e2e8f0' }}>
-                          SOON
-                        </span>
-                        {/* Apple logo icon */}
-                        <div style={{ width: 42, height: 42, borderRadius: 12, background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff">
-                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.4c1.29.07 2.18.66 2.94.68.87-.14 1.7-.76 2.63-.69 1.13.08 2 .49 2.56 1.25-2.38 1.45-1.87 4.64.41 5.78-.43 1.08-1 2.13-1.54 1.86zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                          </svg>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', lineHeight: 1.2 }}>Apple Pay</div>
-                          <div style={{ fontSize: 9.5, color: '#94a3b8', marginTop: 3, fontWeight: 500 }}>Touch ID</div>
-                        </div>
-                      </button>
-
-                      {/* 3. Card Payment (Shows advisory -> UPI switch) */}
-                      <button
-                        type="button"
-                        onClick={() => { setSelectedMethod('card'); setActiveOpt('card'); }}
-                        style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '16px 6px 14px', background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: 16, cursor: 'pointer', transition: 'all 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', minHeight: 110 }}
-                      >
-                        <span style={{ position: 'absolute', top: -8, background: '#f1f5f9', color: '#64748b', fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 6, border: '1px solid #e2e8f0' }}>
-                          SOON
-                        </span>
-                        {/* Credit card icon */}
-                        <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="1" y="4" width="22" height="16" rx="3" ry="3"/>
-                            <line x1="1" y1="10" x2="23" y2="10"/>
-                          </svg>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', lineHeight: 1.2 }}>Card</div>
-                          <div style={{ fontSize: 9.5, color: '#94a3b8', marginTop: 3, fontWeight: 500 }}>Visa · MC</div>
-                        </div>
-                      </button>
+                  <div style={{ padding: '0 2px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <p style={{ margin: 0, fontSize: 11.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        Select Payment Method
+                      </p>
+                      <span style={{ fontSize: 10.5, fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '2px 6px', borderRadius: 6, border: '1px solid #a7f3d0' }}>
+                        Direct Transfer
+                      </span>
                     </div>
 
-                    {/* Secondary options (Bank + Crypto) */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
-                      {hasBankTransfer && (
+                    {/* 3-Button Selector: UPI, Net Banking, Crypto (USDT) */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
+
+                      {/* 1. QR / UPI */}
+                      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ position: 'absolute', top: -9, left: '50%', transform: 'translateX(-50%)', zIndex: 5, background: selectedInlineMethod === 'upi' ? '#6366f1' : '#475569', color: '#fff', fontSize: 8, fontWeight: 800, padding: '2px 6px', borderRadius: 6, letterSpacing: '0.04em', textTransform: 'uppercase', boxShadow: '0 2px 4px rgba(0,0,0,0.12)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                          0% FEE
+                        </span>
                         <button
                           type="button"
-                          onClick={() => { setSelectedMethod('bank'); setActiveOpt('bank'); }}
-                          style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
+                          className="mmp-ripple-btn"
+                          onClick={(e) => {
+                            handleRipple(e);
+                            setSelectedInlineMethod('upi');
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                            padding: '14px 4px 12px',
+                            background: selectedInlineMethod === 'upi' ? '#ffffff' : '#f8fafc',
+                            border: selectedInlineMethod === 'upi' ? '2px solid #6366f1' : '1.5px solid #e2e8f0',
+                            borderRadius: 16,
+                            cursor: 'pointer',
+                            boxShadow: selectedInlineMethod === 'upi' ? '0 4px 14px rgba(99,102,241,0.18)' : '0 1px 3px rgba(0,0,0,0.04)',
+                            minHeight: 104,
+                            boxSizing: 'border-box',
+                          }}
                         >
-                          <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          {/* UPI QR scan icon */}
+                          <div style={{ width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)', border: '1.5px solid #c7d2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                              <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="#1a73e8" strokeWidth="2" fill="none"/>
+                              <rect x="14" y="2" width="8" height="8" rx="1.5" stroke="#ea4335" strokeWidth="2" fill="none"/>
+                              <rect x="2" y="14" width="8" height="8" rx="1.5" stroke="#34a853" strokeWidth="2" fill="none"/>
+                              <rect x="5" y="5" width="2" height="2" rx="0.5" fill="#1a73e8"/>
+                              <rect x="17" y="5" width="2" height="2" rx="0.5" fill="#ea4335"/>
+                              <rect x="5" y="17" width="2" height="2" rx="0.5" fill="#34a853"/>
+                              <path d="M14 14h2v2h-2zM18 14h2v2h-2zM16 16h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z" fill="#fbbc04"/>
+                            </svg>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: 11.5, fontWeight: selectedInlineMethod === 'upi' ? 800 : 700, color: selectedInlineMethod === 'upi' ? '#0f172a' : '#334155', lineHeight: 1.2 }}>QR / UPI</div>
+                            <div style={{ fontSize: 9.5, color: selectedInlineMethod === 'upi' ? '#6366f1' : '#94a3b8', marginTop: 2, fontWeight: 700 }}>Instant Pay</div>
+                          </div>
+                        </button>
+                      </div>
+
+                      {/* 2. Net Banking */}
+                      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ position: 'absolute', top: -9, left: '50%', transform: 'translateX(-50%)', zIndex: 5, background: selectedInlineMethod === 'bank' ? '#4f46e5' : '#64748b', color: '#fff', fontSize: 8, fontWeight: 800, padding: '2px 6px', borderRadius: 6, letterSpacing: '0.04em', textTransform: 'uppercase', boxShadow: '0 2px 4px rgba(0,0,0,0.12)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                          DIRECT
+                        </span>
+                        <button
+                          type="button"
+                          className="mmp-ripple-btn"
+                          onClick={(e) => {
+                            handleRipple(e);
+                            setSelectedInlineMethod('bank');
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                            padding: '14px 4px 12px',
+                            background: selectedInlineMethod === 'bank' ? '#ffffff' : '#f8fafc',
+                            border: selectedInlineMethod === 'bank' ? '2px solid #6366f1' : '1.5px solid #e2e8f0',
+                            borderRadius: 16,
+                            cursor: 'pointer',
+                            boxShadow: selectedInlineMethod === 'bank' ? '0 4px 14px rgba(99,102,241,0.18)' : '0 1px 3px rgba(0,0,0,0.04)',
+                            minHeight: 104,
+                            boxSizing: 'border-box',
+                          }}
+                        >
+                          {/* Bank pillar icon */}
+                          <div style={{ width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                               <line x1="3" y1="21" x2="21" y2="21"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/>
                               <polygon points="12 3 2 9 22 9 12 3"/>
                             </svg>
                           </div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 12.5, fontWeight: 700, color: '#0f172a' }}>Net Banking</div>
-                            <div style={{ fontSize: 10.5, color: '#94a3b8', marginTop: 1 }}>IMPS / NEFT direct to merchant</div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: 11.5, fontWeight: selectedInlineMethod === 'bank' ? 800 : 700, color: selectedInlineMethod === 'bank' ? '#0f172a' : '#334155', lineHeight: 1.2 }}>Net Banking</div>
+                            <div style={{ fontSize: 9.5, color: selectedInlineMethod === 'bank' ? '#4f46e5' : '#94a3b8', marginTop: 2, fontWeight: 600 }}>IMPS / NEFT</div>
                           </div>
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
-                      )}
+                      </div>
 
-                      <button
-                        type="button"
-                        onClick={() => { setSelectedMethod('crypto'); setActiveOpt('crypto'); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
-                      >
-                        <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="9"/>
-                            <path d="M9 8h4.5a2 2 0 0 1 0 4H9m0 0h5a2 2 0 0 1 0 4H9M9 6v12"/>
-                          </svg>
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 12.5, fontWeight: 700, color: '#0f172a' }}>Crypto (USDT)</div>
-                          <div style={{ fontSize: 10.5, color: '#94a3b8', marginTop: 1 }}>Pay {usdtAmt || '0.0111'} USDT · TRC20</div>
-                        </div>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                      </button>
+                      {/* 3. Crypto (USDT) */}
+                      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ position: 'absolute', top: -9, left: '50%', transform: 'translateX(-50%)', zIndex: 5, background: selectedInlineMethod === 'crypto' ? '#d97706' : '#64748b', color: '#fff', fontSize: 8, fontWeight: 800, padding: '2px 6px', borderRadius: 6, letterSpacing: '0.04em', textTransform: 'uppercase', boxShadow: '0 2px 4px rgba(0,0,0,0.12)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                          TRC20
+                        </span>
+                        <button
+                          type="button"
+                          className="mmp-ripple-btn"
+                          onClick={(e) => {
+                            handleRipple(e);
+                            setSelectedInlineMethod('crypto');
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                            padding: '14px 4px 12px',
+                            background: selectedInlineMethod === 'crypto' ? '#ffffff' : '#f8fafc',
+                            border: selectedInlineMethod === 'crypto' ? '2px solid #6366f1' : '1.5px solid #e2e8f0',
+                            borderRadius: 16,
+                            cursor: 'pointer',
+                            boxShadow: selectedInlineMethod === 'crypto' ? '0 4px 14px rgba(99,102,241,0.18)' : '0 1px 3px rgba(0,0,0,0.04)',
+                            minHeight: 104,
+                            boxSizing: 'border-box',
+                          }}
+                        >
+                          {/* Crypto coin icon */}
+                          <div style={{ width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="9"/>
+                              <path d="M9 8h4.5a2 2 0 0 1 0 4H9m0 0h5a2 2 0 0 1 0 4H9M9 6v12"/>
+                            </svg>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: 11.5, fontWeight: selectedInlineMethod === 'crypto' ? 800 : 700, color: selectedInlineMethod === 'crypto' ? '#0f172a' : '#334155', lineHeight: 1.2 }}>Crypto</div>
+                            <div style={{ fontSize: 9.5, color: selectedInlineMethod === 'crypto' ? '#d97706' : '#94a3b8', marginTop: 2, fontWeight: 600 }}>USDT Transfer</div>
+                          </div>
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Inline Customer Details Form */}
+                    <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: 16, padding: '14px 14px 16px', marginBottom: 14, boxShadow: '0 1px 4px rgba(0,0,0,0.03)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                          </svg>
+                          <span style={{ fontSize: 12, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.01em' }}>Customer Information</span>
+                        </div>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: '#64748b' }}>For payment receipt</span>
+                      </div>
+
+                      {/* Full Name Input */}
+                      <div style={{ position: 'relative', marginBottom: 10 }}>
+                        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex', alignItems: 'center' }}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                          </svg>
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="Your Full Name"
+                          value={custName}
+                          onChange={e => { setCustName(e.target.value); setCustDetailsErr(''); }}
+                          style={{
+                            width: '100%',
+                            minHeight: 44,
+                            border: `1.5px solid ${custDetailsErr && !custName.trim() ? '#fca5a5' : '#e2e8f0'}`,
+                            borderRadius: 10,
+                            padding: '0 12px 0 38px',
+                            fontSize: 13.5,
+                            fontFamily: 'inherit',
+                            color: '#0f172a',
+                            background: '#fff',
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                            transition: 'border-color 0.15s',
+                          }}
+                          onFocus={e => { e.target.style.borderColor = '#6366f1'; }}
+                          onBlur={e => { e.target.style.borderColor = custDetailsErr && !custName.trim() ? '#fca5a5' : '#e2e8f0'; }}
+                        />
+                      </div>
+
+                      {/* Mobile Number Input */}
+                      <div style={{ position: 'relative', marginBottom: custDetailsErr ? 8 : 0 }}>
+                        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex', alignItems: 'center' }}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                          </svg>
+                        </span>
+                        <span style={{ position: 'absolute', left: 36, top: '50%', transform: 'translateY(-50%)', fontSize: 13, fontWeight: 700, color: '#64748b', borderRight: '1.5px solid #e2e8f0', paddingRight: 8, lineHeight: 1 }}>+91</span>
+                        <input
+                          type="tel"
+                          inputMode="numeric"
+                          maxLength={10}
+                          placeholder="10-digit mobile number"
+                          value={custPhone}
+                          onChange={e => { setCustPhone(e.target.value.replace(/\D/g, '').slice(0, 10)); setCustDetailsErr(''); }}
+                          style={{
+                            width: '100%',
+                            minHeight: 44,
+                            border: `1.5px solid ${custDetailsErr && (!custPhone.trim() || custPhone.length < 10) ? '#fca5a5' : '#e2e8f0'}`,
+                            borderRadius: 10,
+                            padding: '0 12px 0 74px',
+                            fontSize: 13.5,
+                            fontFamily: 'inherit',
+                            color: '#0f172a',
+                            background: '#fff',
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                            transition: 'border-color 0.15s',
+                          }}
+                          onFocus={e => { e.target.style.borderColor = '#6366f1'; }}
+                          onBlur={e => { e.target.style.borderColor = custDetailsErr && (!custPhone.trim() || custPhone.length < 10) ? '#fca5a5' : '#e2e8f0'; }}
+                        />
+                      </div>
+
+                      {custDetailsErr && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, color: '#dc2626', fontSize: 11.5, fontWeight: 600 }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                          <span>{custDetailsErr}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Primary Pay Button (21st Micro-animation Ripple & Spring) */}
+                    <button
+                      type="button"
+                      className="mmp-ripple-btn mmp-action-btn"
+                      onClick={(e) => {
+                        handleRipple(e);
+                        if (!validateCustomerDetails()) return;
+                        setSelectedMethod(selectedInlineMethod);
+                        setActiveOpt(selectedInlineMethod);
+                      }}
+                      style={{
+                        width: '100%',
+                        minHeight: 50,
+                        border: 'none',
+                        borderRadius: 14,
+                        background: selectedInlineMethod === 'crypto'
+                          ? 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)'
+                          : selectedInlineMethod === 'bank'
+                          ? 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)'
+                          : 'linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #4338ca 100%)',
+                        color: '#ffffff',
+                        fontSize: 14.5,
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                        boxShadow: '0 6px 20px -2px rgba(79, 70, 229, 0.38)',
+                        marginBottom: 12,
+                      }}
+                    >
+                      {selectedInlineMethod === 'upi' ? (
+                        <>
+                          <span>Pay {fmtInr(displayAmt)} with QR / UPI</span>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                          </svg>
+                        </>
+                      ) : selectedInlineMethod === 'bank' ? (
+                        <>
+                          <span>Continue to Net Banking ({fmtInr(displayAmt)})</span>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                          </svg>
+                        </>
+                      ) : (
+                        <>
+                          <span>Pay {usdtAmt || '0.011'} USDT with Crypto</span>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                          </svg>
+                        </>
+                      )}
+                    </button>
 
                     {/* Promo code */}
                     <div style={{ textAlign: 'center', marginBottom: 6 }}>
@@ -2027,7 +2129,7 @@ function PayPageContent() {
                     )}
 
                     {/* Trust bar */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 0', borderTop: '1px solid #f1f5f9', marginTop: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px 0 4px', borderTop: '1px solid #f1f5f9', marginTop: 4 }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M12 2l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V5z"/>
                         <path d="M9 12l2 2 4-4"/>
@@ -2036,8 +2138,7 @@ function PayPageContent() {
                     </div>
                   </div>
                 </div>
-              )
-            ) : (
+              ) : (
                 /* ─────────────────────────────────────────────────────────────
                     STATE B: A SPECIFIC PAYMENT METHOD IS SELECTED
                     Displays the chosen method with a prominent Change Method back button
@@ -3006,9 +3107,7 @@ function PayPageContent() {
 export default function PayPage() {
   return (
     <>
-      <style>{`
-        @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;700&family=Orbitron:wght@800;900&family=Outfit:wght@700;800&display=swap");
-
+      <style dangerouslySetInnerHTML={{ __html: `
         :root {
           --page: #e8eef6;
           --card: #fff;
@@ -3149,17 +3248,41 @@ export default function PayPage() {
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 12px 16px 90px;
+            padding: 4px 14px 80px;
           }
 
-          /* ── Mockup Phone Punch Hole / Camera Dot ── */
-          .mob-phone-dot {
-            width: 8px;
-            height: 8px;
-            background: #94a3b8;
+          /* ── 21st Tactile Button Micro-animations & Ripple ── */
+          .mmp-ripple-btn {
+            position: relative;
+            overflow: hidden;
+            transform: translate3d(0, 0, 0);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease;
+          }
+
+          .mmp-ripple-btn:active {
+            transform: scale(0.965);
+          }
+
+          .mmp-ripple-effect {
+            position: absolute;
             border-radius: 50%;
-            margin: 4px auto 14px;
-            opacity: 0.85;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 70%);
+            pointer-events: none;
+            transform: scale(0);
+            animation: mmpRippleAnim 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+
+          @keyframes mmpRippleAnim {
+            0% {
+              transform: scale(0);
+              opacity: 1;
+            }
+            100% {
+              transform: scale(2.6);
+              opacity: 0;
+            }
           }
 
           /* ── Mobile Payment Method Overview Selection Styles ── */
@@ -4786,7 +4909,7 @@ export default function PayPage() {
           .secure i { animation: none; }
           .okc circle, .okc path { animation-duration: 0.01s; animation-delay: 0s; }
         }
-      `}</style>
+      ` }} />
       <Suspense fallback={
         <div style={{ minHeight: '100vh', background: '#e8eef6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, fontFamily: '"DM Sans",sans-serif', color: '#5b6b80', fontSize: 14, fontWeight: 600 }}>
           <div style={{ width: 36, height: 36, border: '3px solid #d6dfea', borderTopColor: '#2f86f6', borderRadius: '50%', animation: 'spin .7s linear infinite' }} />
