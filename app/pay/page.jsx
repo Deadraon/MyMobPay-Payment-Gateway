@@ -92,6 +92,157 @@ const UPI_CHIPS = [
 ];
 
 /* ──────────────────────────────────────────────────────────────
+   21st-inspired Refined Floating Label Input Component
+   Used exclusively for Link Payments to collect customer details cleanly
+────────────────────────────────────────────────────────────── */
+function FloatingInputField({
+  id,
+  label,
+  type = 'text',
+  value = '',
+  onChange,
+  onFocus,
+  onBlur,
+  icon,
+  prefix,
+  error = false,
+  inputMode,
+  maxLength,
+  autoComplete,
+}) {
+  const [focused, setFocused] = useState(false);
+  const isFloating = focused || Boolean(value && String(value).length > 0);
+
+  return (
+    <div style={{ position: 'relative', width: '100%', marginBottom: 12 }}>
+      {/* Icon Slot */}
+      {icon && (
+        <span
+          style={{
+            position: 'absolute',
+            left: 14,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: error ? '#ef4444' : focused ? '#6366f1' : '#94a3b8',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            transition: 'color 0.18s ease',
+            zIndex: 3,
+          }}
+        >
+          {icon}
+        </span>
+      )}
+
+      {/* Prefix Badge (e.g. +91) */}
+      {prefix && (
+        <span
+          style={{
+            position: 'absolute',
+            left: icon ? 38 : 14,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: 13,
+            fontWeight: 700,
+            color: error ? '#dc2626' : focused ? '#4f46e5' : '#64748b',
+            paddingRight: 8,
+            borderRight: '1.5px solid #e2e8f0',
+            lineHeight: 1,
+            pointerEvents: 'none',
+            zIndex: 3,
+            transition: 'color 0.18s ease',
+          }}
+        >
+          {prefix}
+        </span>
+      )}
+
+      {/* Floating Animated Label */}
+      <label
+        htmlFor={id}
+        style={{
+          position: 'absolute',
+          left: prefix ? (icon ? 78 : 54) : (icon ? 40 : 14),
+          top: isFloating ? '8px' : '50%',
+          transform: isFloating ? 'none' : 'translateY(-50%)',
+          fontSize: isFloating ? '10px' : '13.5px',
+          fontWeight: isFloating ? 800 : 500,
+          color: error ? '#dc2626' : focused ? '#6366f1' : '#94a3b8',
+          letterSpacing: isFloating ? '0.04em' : 'normal',
+          textTransform: isFloating ? 'uppercase' : 'none',
+          pointerEvents: 'none',
+          transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+          zIndex: 3,
+        }}
+      >
+        {label}
+      </label>
+
+      {/* Native Input */}
+      <input
+        id={id}
+        type={type}
+        inputMode={inputMode}
+        maxLength={maxLength}
+        autoComplete={autoComplete}
+        value={value}
+        onChange={onChange}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
+        placeholder=" "
+        style={{
+          width: '100%',
+          minHeight: 52,
+          boxSizing: 'border-box',
+          background: '#ffffff',
+          border: `1.5px solid ${error ? '#fca5a5' : focused ? '#6366f1' : '#e2e8f0'}`,
+          borderRadius: 14,
+          paddingLeft: prefix ? (icon ? 78 : 54) : (icon ? 40 : 14),
+          paddingRight: 14,
+          paddingTop: isFloating ? 16 : 0,
+          paddingBottom: isFloating ? 2 : 0,
+          fontSize: 14,
+          fontWeight: 600,
+          color: '#0f172a',
+          outline: 'none',
+          boxShadow: focused
+            ? '0 0 0 3.5px rgba(99, 102, 241, 0.14)'
+            : '0 1px 2px rgba(15, 23, 42, 0.04)',
+          transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+          fontFamily: 'inherit',
+        }}
+      />
+
+      {/* Subtle bottom accent glow line */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 12,
+          right: 12,
+          height: 2,
+          background: error
+            ? 'linear-gradient(90deg, transparent, #ef4444, transparent)'
+            : 'linear-gradient(90deg, transparent, #6366f1, transparent)',
+          opacity: focused || error ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          pointerEvents: 'none',
+          borderRadius: 2,
+        }}
+      />
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────
    Main checkout component:
    - Desktop (>= 768px): Exact Receipt design v2 (ticket-punch receipt + accordions + original logo)
    - Mobile (< 768px): Mobile checkout (circular timer ring + bottom fixed bar + mobile card)
@@ -149,6 +300,9 @@ function PayPageContent() {
     cleanParamMethod === 'bank' || cleanParamMethod === 'crypto' ? cleanParamMethod : 'upi'
   );
 
+  /* Track whether this session is a direct payment link vs a redirect from merchant website */
+  const [isLinkPayment, setIsLinkPayment] = useState(Boolean(hasToken || paramLid));
+
   /* Customer info state */
   const [custDetailsErr, setCustDetailsErr] = useState('');
 
@@ -176,6 +330,9 @@ function PayPageContent() {
 
   /* Helper to validate customer details before processing payment */
   const validateCustomerDetails = () => {
+    // Only link payments prompt/validate customer details; redirect payments skip
+    if (!isLinkPayment) return true;
+
     const name = (custName || '').trim();
     const phone = (custPhone || '').trim();
     if (!name) {
@@ -601,6 +758,7 @@ function PayPageContent() {
           if (data.title) setOrderNote(data.title);
           if (data.customer_name) setCustName(data.customer_name);
           if (data.customer_phone) setCustPhone(data.customer_phone);
+          setIsLinkPayment(true);
 
           if (data.merchant) {
             setMerchant(prev => ({
@@ -724,6 +882,7 @@ function PayPageContent() {
         if (data.amount != null) setOrderAmount(parseFloat(data.amount));
         if (data.note) setOrderNote(data.note);
         if (data.mode) setOrderMode(data.mode);
+        if (data.payment_link_id || data.is_payment_link || data.token || paramLid) setIsLinkPayment(true);
         if (data.merchant) setMerchant(prev => ({ ...prev, ...data.merchant }));
         setCurView('vPay');
       })
@@ -1733,7 +1892,7 @@ function PayPageContent() {
                   + Inline Customer Name & Phone + 21st Tactile Pay Action Button
               ───────────────────────────────────────────────────────────── */}
               {!selectedMethod ? (
-                <div className="mob-select-methods-wrap" style={{ display: 'flex', flexDirection: 'column', padding: '0 0 20px', gap: 12 }}>
+                <div className="mob-select-methods-wrap" style={{ display: 'flex', flexDirection: 'column', margin: 'auto 0', width: '100%', padding: '0 0 16px', gap: 12 }}>
                   {/* Merchant + Amount hero card */}
                   <div style={{ margin: '0', background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 100%)', borderRadius: 20, padding: '16px 16px 18px', position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 24px -4px rgba(15,23,42,0.18)' }}>
                     {/* Decorative blur orb */}
@@ -1948,92 +2107,75 @@ function PayPageContent() {
                       </div>
                     </div>
 
-                    {/* Inline Customer Details Form */}
-                    <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: 16, padding: '14px 14px 16px', marginBottom: 14, boxShadow: '0 1px 4px rgba(0,0,0,0.03)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                          </svg>
-                          <span style={{ fontSize: 12, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.01em' }}>Customer Information</span>
+                    {/* Inline Customer Details Form (Only for direct Link Payments using 21st Floating-Label UI Components) */}
+                    {isLinkPayment && (
+                      <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: 18, padding: '16px 14px 18px', marginBottom: 14, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                            <div style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                              </svg>
+                            </div>
+                            <span style={{ fontSize: 12.5, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.01em' }}>Customer Information</span>
+                          </div>
+                          <span style={{ fontSize: 10.5, fontWeight: 700, color: '#6366f1', background: 'rgba(99,102,241,0.08)', padding: '2px 8px', borderRadius: 12 }}>
+                            Payment Receipt
+                          </span>
                         </div>
-                        <span style={{ fontSize: 10, fontWeight: 600, color: '#64748b' }}>For payment receipt</span>
-                      </div>
 
-                      {/* Full Name Input */}
-                      <div style={{ position: 'relative', marginBottom: 10 }}>
-                        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex', alignItems: 'center' }}>
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                          </svg>
-                        </span>
-                        <input
+                        {/* Floating Full Name */}
+                        <FloatingInputField
+                          id="mmp-cust-name"
+                          label="Your Full Name"
                           type="text"
-                          placeholder="Your Full Name"
                           value={custName}
-                          onChange={e => { setCustName(e.target.value); setCustDetailsErr(''); }}
-                          style={{
-                            width: '100%',
-                            minHeight: 44,
-                            border: `1.5px solid ${custDetailsErr && !custName.trim() ? '#fca5a5' : '#e2e8f0'}`,
-                            borderRadius: 10,
-                            padding: '0 12px 0 38px',
-                            fontSize: 13.5,
-                            fontFamily: 'inherit',
-                            color: '#0f172a',
-                            background: '#fff',
-                            outline: 'none',
-                            boxSizing: 'border-box',
-                            transition: 'border-color 0.15s',
+                          onChange={(e) => {
+                            setCustName(e.target.value);
+                            setCustDetailsErr('');
                           }}
-                          onFocus={e => { e.target.style.borderColor = '#6366f1'; }}
-                          onBlur={e => { e.target.style.borderColor = custDetailsErr && !custName.trim() ? '#fca5a5' : '#e2e8f0'; }}
+                          autoComplete="name"
+                          error={Boolean(custDetailsErr && !custName.trim())}
+                          icon={(
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                              <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                          )}
                         />
-                      </div>
 
-                      {/* Mobile Number Input */}
-                      <div style={{ position: 'relative', marginBottom: custDetailsErr ? 8 : 0 }}>
-                        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex', alignItems: 'center' }}>
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                          </svg>
-                        </span>
-                        <span style={{ position: 'absolute', left: 36, top: '50%', transform: 'translateY(-50%)', fontSize: 13, fontWeight: 700, color: '#64748b', borderRight: '1.5px solid #e2e8f0', paddingRight: 8, lineHeight: 1 }}>+91</span>
-                        <input
+                        {/* Floating Mobile Number (+91) */}
+                        <FloatingInputField
+                          id="mmp-cust-phone"
+                          label="10-Digit Mobile Number"
                           type="tel"
                           inputMode="numeric"
                           maxLength={10}
-                          placeholder="10-digit mobile number"
+                          autoComplete="tel-national"
                           value={custPhone}
-                          onChange={e => { setCustPhone(e.target.value.replace(/\D/g, '').slice(0, 10)); setCustDetailsErr(''); }}
-                          style={{
-                            width: '100%',
-                            minHeight: 44,
-                            border: `1.5px solid ${custDetailsErr && (!custPhone.trim() || custPhone.length < 10) ? '#fca5a5' : '#e2e8f0'}`,
-                            borderRadius: 10,
-                            padding: '0 12px 0 74px',
-                            fontSize: 13.5,
-                            fontFamily: 'inherit',
-                            color: '#0f172a',
-                            background: '#fff',
-                            outline: 'none',
-                            boxSizing: 'border-box',
-                            transition: 'border-color 0.15s',
+                          onChange={(e) => {
+                            setCustPhone(e.target.value.replace(/\D/g, '').slice(0, 10));
+                            setCustDetailsErr('');
                           }}
-                          onFocus={e => { e.target.style.borderColor = '#6366f1'; }}
-                          onBlur={e => { e.target.style.borderColor = custDetailsErr && (!custPhone.trim() || custPhone.length < 10) ? '#fca5a5' : '#e2e8f0'; }}
+                          prefix="+91"
+                          error={Boolean(custDetailsErr && (!custPhone.trim() || custPhone.length < 10))}
+                          icon={(
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                          )}
                         />
-                      </div>
 
-                      {custDetailsErr && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, color: '#dc2626', fontSize: 11.5, fontWeight: 600 }}>
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                          <span>{custDetailsErr}</span>
-                        </div>
-                      )}
-                    </div>
+                        {/* Error message */}
+                        {custDetailsErr && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, padding: '7px 11px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, color: '#dc2626', fontSize: 12, fontWeight: 600 }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <span>{custDetailsErr}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Primary Pay Button (21st Micro-animation Ripple & Spring) */}
                     <button
@@ -3246,9 +3388,25 @@ export default function PayPage() {
 
           .scr {
             flex: 1;
+            display: flex;
+            flex-direction: column;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 4px 14px 80px;
+            padding: calc(env(safe-area-inset-top, 20px) + 16px) 16px max(24px, env(safe-area-inset-bottom, 24px));
+            box-sizing: border-box;
+          }
+
+          .hd ~ .scr,
+          .prog ~ .scr {
+            padding-top: 14px;
+          }
+
+          #vPay {
+            min-height: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
           }
 
           /* ── 21st Tactile Button Micro-animations & Ripple ── */
@@ -3287,9 +3445,11 @@ export default function PayPage() {
 
           /* ── Mobile Payment Method Overview Selection Styles ── */
           .mob-select-methods-wrap {
+            margin: auto 0;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
           }
 
           .mob-order-hero-card {
