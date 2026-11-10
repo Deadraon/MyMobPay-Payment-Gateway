@@ -1958,13 +1958,10 @@ function PayPageContent() {
                     {!isLinkPayment ? (
                       /* Vertical Stacked Layout for Redirect Payments to fill space naturally without double info */
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 16 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2px 2px' }}>
+                        <div style={{ padding: '0 2px 2px' }}>
                           <p style={{ margin: 0, fontSize: 11.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                             Select Payment Method
                           </p>
-                          <span style={{ fontSize: 10.5, fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '2px 7px', borderRadius: 6, border: '1px solid #a7f3d0' }}>
-                            Direct Transfer · 0% Fee
-                          </span>
                         </div>
 
                         {/* 1. QR / UPI Option */}
@@ -2054,9 +2051,9 @@ function PayPageContent() {
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                              <span style={{ fontSize: 14, fontWeight: 800, color: '#0f172a' }}>Direct Net Banking</span>
+                              <span style={{ fontSize: 14, fontWeight: 800, color: '#0f172a' }}>Net Banking</span>
                               <span style={{ fontSize: 9, fontWeight: 800, background: '#eef2ff', color: '#4338ca', padding: '1.5px 6px', borderRadius: 4, letterSpacing: '0.04em' }}>
-                                DIRECT
+                                ALL BANKS
                               </span>
                             </div>
                             <div style={{ fontSize: 11.5, color: '#64748b', marginTop: 2, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -2122,13 +2119,10 @@ function PayPageContent() {
                     ) : (
                       /* 3-Button Selector + Supported Apps Tray for Link Payments */
                       <>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                        <div style={{ marginBottom: 8, padding: '0 2px' }}>
                           <p style={{ margin: 0, fontSize: 11.5, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                             Select Payment Method
                           </p>
-                          <span style={{ fontSize: 10.5, fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '2px 6px', borderRadius: 6, border: '1px solid #a7f3d0' }}>
-                            Direct Transfer
-                          </span>
                         </div>
 
                         {/* 3-Button Selector: UPI, Net Banking, Crypto (USDT) */}
@@ -2298,7 +2292,7 @@ function PayPageContent() {
                         ) : selectedInlineMethod === 'bank' ? (
                           <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: 16, padding: '12px 14px', marginBottom: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Direct Net Banking (IMPS / NEFT)</span>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Net Banking (IMPS / NEFT)</span>
                               <span style={{ fontSize: 10, fontWeight: 700, color: '#4338ca', background: '#eef2ff', padding: '1px 6px', borderRadius: 6 }}>24x7 Settlement</span>
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -2310,7 +2304,7 @@ function PayPageContent() {
                             </div>
                             <div style={{ marginTop: 8, fontSize: 10.5, color: '#64748b', display: 'flex', alignItems: 'center', gap: 5 }}>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4338ca" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                              <span>Direct account-to-account transfer with zero platform fee</span>
+                              <span>Account-to-account bank transfer with zero platform fee</span>
                             </div>
                           </div>
                         ) : (

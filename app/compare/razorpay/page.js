@@ -105,9 +105,9 @@ export default function RazorpayComparePage() {
       win: "tie",
     },
     {
-      feature: "Developer SDKs",
-      razorpay: "Node, Python, PHP, Go, .NET",
-      mymobpay: "Node, Python, PHP, Flutter, React Native, Next.js",
+      feature: "Developer Integration",
+      razorpay: "Node, Python, PHP, Go, .NET SDKs",
+      mymobpay: "Standard REST API, Next.js / Node.js fetch, cURL & Webhooks",
       win: "tie",
     },
     {
@@ -374,7 +374,7 @@ export default function RazorpayComparePage() {
               },
               {
                 q: "Can I migrate from Razorpay to MyMobPay easily?",
-                a: "Yes. Both platforms offer REST APIs and SDKs. Most developers can switch in under an hour — MyMobPay provides migration guides and dedicated support to make the transition smooth.",
+                a: "Yes. Both platforms offer standard REST APIs and HTTP webhooks. Most developers can switch in under an hour — MyMobPay provides simple documentation and support to make the transition smooth.",
               },
               {
                 q: "What happens if my monthly volume is less than ₹1 Lakh?",
@@ -397,7 +397,7 @@ export default function RazorpayComparePage() {
             Stop paying 2% on every transaction
           </h2>
           <p className="text-slate-300 text-base leading-relaxed">
-            Join thousands of founders who switched from Razorpay to MyMobPay and now keep 100% of their revenue.
+            Engineered for Indian SaaS founders and developers looking to keep 100% of their revenue with direct UPI settlements.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link

@@ -444,8 +444,8 @@ export default function HomePage() {
                 <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Instant bank credit</p>
               </div>
               <div className="text-center sm:text-left">
-                <p className="text-slate-900 text-2xl sm:text-3xl font-bold tracking-tight">99.98%</p>
-                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Success rate</p>
+                <p className="text-slate-900 text-2xl sm:text-3xl font-bold tracking-tight">Direct</p>
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-normal leading-tight">Non-custodial rail</p>
               </div>
             </div>
 
@@ -578,43 +578,29 @@ export default function HomePage() {
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         TRUSTED BY FOUNDERS & STARTUPS TICKER (Razorpay-Style)
+         BUILT FOR INDIAN INDIE SAAS FOUNDERS & DEVELOPERS
          ──────────────────────────────────────────────────────── */}
       <section className="relative z-10 py-10 bg-slate-50 border-b border-slate-200/80">
         <div className="max-w-7xl mx-auto px-6 text-center space-y-5">
-          <p className="text-xs font-semibold text-slate-500 tracking-wide">
-            Powering 10,000+ modern founders, developers, and fast-growing businesses across India
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Engineered for Indian Indie SaaS Founders, Developers &amp; Digital Product Creators
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-75 grayscale hover:grayscale-0 transition-all duration-300">
-            {/* Startup Brand 1: KwickBill */}
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
-              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-black">K</div>
-              <span>KwickBill</span>
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs font-medium text-slate-600">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Direct Bank Account Credit (Non-Custodial)</span>
             </div>
-            {/* Startup Brand 2: ScaleLoop */}
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
-              <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-black">S</div>
-              <span>ScaleLoop</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span>Universal UPI QR (GPay, PhonePe, Paytm, BHIM, Cred)</span>
             </div>
-            {/* Startup Brand 3: DevStack */}
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
-              <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black">D</div>
-              <span>DevStack</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+              <span>Automated UTR Match via Bank Notification</span>
             </div>
-            {/* Startup Brand 4: NexaCart */}
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
-              <div className="w-7 h-7 rounded-lg bg-slate-800 text-white flex items-center justify-center text-xs font-black">N</div>
-              <span>NexaCart</span>
-            </div>
-            {/* Startup Brand 5: IndieFlow */}
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
-              <div className="w-7 h-7 rounded-lg bg-cyan-600 text-white flex items-center justify-center text-xs font-black">I</div>
-              <span>IndieFlow</span>
-            </div>
-            {/* Startup Brand 6: ZetaPay */}
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm sm:text-base tracking-tight select-none">
-              <div className="w-7 h-7 rounded-lg bg-violet-600 text-white flex items-center justify-center text-xs font-black">Z</div>
-              <span>ZetaPay</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-violet-500"></span>
+              <span>Cryptographic HMAC-SHA256 Webhooks</span>
             </div>
           </div>
         </div>
@@ -781,9 +767,9 @@ export default function HomePage() {
           {/* Bottom metric chips */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: 'Uptime SLA', value: '99.99%', icon: <ShieldCheck className="w-4 h-4" />, iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
-              { label: 'Webhook latency', value: '<200ms', icon: <Zap className="w-4 h-4" />, iconBg: 'bg-blue-50 text-[#533afd] border-blue-200' },
-              { label: 'Avg. settlement', value: '0 sec', icon: <RefreshCw className="w-4 h-4" />, iconBg: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
+              { label: 'Settlement Escrow', value: 'Non-Custodial', icon: <ShieldCheck className="w-4 h-4" />, iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
+              { label: 'Webhook Signing', value: 'HMAC-SHA256', icon: <Zap className="w-4 h-4" />, iconBg: 'bg-blue-50 text-[#533afd] border-blue-200' },
+              { label: 'Settlement Speed', value: 'T+0 Direct Bank', icon: <RefreshCw className="w-4 h-4" />, iconBg: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
             ].map(m => (
               <div key={m.label} className="bg-white border border-slate-200 rounded-2xl px-5 py-4 flex items-center gap-3.5 shadow-xs hover:border-slate-300 hover:shadow-md transition-all">
                 <div className={`w-9 h-9 rounded-xl border flex items-center justify-center flex-shrink-0 ${m.iconBg}`}>
@@ -813,10 +799,10 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-6 flex items-center justify-between text-xs font-mono text-slate-400 overflow-x-auto gap-6 scrollbar-none">
             <span className="flex items-center gap-2 text-[#b9b9f9] font-medium shrink-0">
               <Terminal className="w-3.5 h-3.5 text-[#533afd]" />
-              <span>OFFICIAL SDKs &amp; RUNTIMES:</span>
+              <span>SUPPORTED RUNTIMES &amp; PROTOCOLS:</span>
             </span>
             <div className="flex items-center gap-5 sm:gap-8 shrink-0">
-              {['TypeScript', 'Next.js 14/15', 'Node.js', 'Python', 'PHP', 'React Native', 'Flutter', 'cURL / REST'].map((item, idx) => (
+              {['Next.js 14/15', 'Node.js', 'Python', 'PHP', 'cURL / REST', 'HMAC Webhooks'].map((item, idx) => (
                 <span key={idx} className="flex items-center gap-2 hover:text-white transition-colors cursor-default">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#533afd]/60" />
                   <span>{item}</span>
@@ -837,34 +823,34 @@ export default function HomePage() {
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-light text-white tracking-[-1.4px] leading-[1.08] font-sohne">
               Embed direct UPI checkout<br />
-              <span className="text-[#b9b9f9] font-light">in under 3 lines of code.</span>
+              <span className="text-[#b9b9f9] font-light">with clean REST APIs &amp; webhooks.</span>
             </h2>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-light pt-1 max-w-2xl">
-              Integrate direct-to-bank settlements in under 15 minutes. Eliminate the 2% aggregator deduction with fully typed SDKs, deterministic REST endpoints, and signed HMAC-SHA256 webhooks.
+              Integrate direct-to-bank settlements in under 15 minutes. Eliminate the 2% aggregator deduction with standard HTTP REST endpoints, copy-paste snippets, and signed HMAC-SHA256 webhooks.
             </p>
           </div>
 
           {/* 3 Core Architecture Cards: SDKs, REST APIs, Webhooks */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            {/* Card 1: SDKs & Libraries */}
+            {/* Card 1: REST API & Integration */}
             <div className="p-6 rounded-2xl bg-[#161842] border border-white/10 hover:border-[#533afd]/60 transition-all duration-300 space-y-4 shadow-[0_16px_36px_rgba(0,0,0,0.2)] group">
               <div className="w-12 h-12 rounded-xl bg-[#533afd]/15 border border-[#533afd]/30 flex items-center justify-center text-[#b9b9f9] group-hover:scale-105 transition-transform">
                 <svg width="25" height="28" viewBox="0 0 25 28" fill="none" className="w-6 h-6 text-[#b9b9f9]">
                   <path d="M8.13325 15.3333L10.0666 13.4C10.3333 13.1333 10.4613 12.8222 10.4506 12.4666C10.4399 12.1111 10.3119 11.8 10.0666 11.5333C9.79992 11.2666 9.48303 11.1275 9.11592 11.116C8.74881 11.1044 8.43236 11.2324 8.16659 11.5L5.26659 14.4C4.99992 14.6666 4.86659 14.9777 4.86659 15.3333C4.86659 15.6888 4.99992 16 5.26659 16.2666L8.16659 19.1666C8.43325 19.4333 8.75014 19.5613 9.11725 19.5506C9.48436 19.54 9.80081 19.4008 10.0666 19.1333C10.311 18.8666 10.439 18.5555 10.4506 18.2C10.4621 17.8444 10.3341 17.5333 10.0666 17.2666L8.13325 15.3333ZM16.5332 15.3333L14.5999 17.2666C14.3332 17.5333 14.2052 17.8444 14.2159 18.2C14.2266 18.5555 14.3546 18.8666 14.5999 19.1333C14.8666 19.4 15.1835 19.5386 15.5506 19.5493C15.9177 19.56 16.2341 19.4324 16.4999 19.1666L19.3999 16.2666C19.6666 16 19.7999 15.6888 19.7999 15.3333C19.7999 14.9777 19.6666 14.6666 19.3999 14.4L16.4999 11.5C16.2332 11.2333 15.9164 11.1053 15.5492 11.116C15.1821 11.1266 14.8657 11.2657 14.5999 11.5333C14.3555 11.8 14.2279 12.1111 14.2173 12.4666C14.2066 12.8222 14.3341 13.1333 14.5999 13.4L16.5332 15.3333ZM2.99992 27.3333C2.26659 27.3333 1.63859 27.072 1.11592 26.5493C0.593254 26.0266 0.332365 25.3991 0.333254 24.6666V5.99996C0.333254 5.26663 0.594588 4.63863 1.11725 4.11596C1.63992 3.59329 2.26748 3.3324 2.99992 3.33329H8.59992C8.88881 2.53329 9.37236 1.88885 10.0506 1.39996C10.7288 0.91107 11.4897 0.666626 12.3333 0.666626C13.1777 0.666626 13.939 0.91107 14.6173 1.39996C15.2955 1.88885 15.7786 2.53329 16.0666 3.33329H21.6666C22.3999 3.33329 23.0279 3.59463 23.5506 4.11729C24.0732 4.63996 24.3341 5.26751 24.3332 5.99996V24.6666C24.3332 25.4 24.0719 26.028 23.5492 26.5506C23.0266 27.0733 22.399 27.3342 21.6666 27.3333H2.99992ZM2.99992 24.6666H21.6666V5.99996H2.99992V24.6666ZM12.3333 4.99996C12.6221 4.99996 12.8608 4.90529 13.0492 4.71596C13.2377 4.52663 13.3324 4.28796 13.3333 3.99996C13.3333 3.71107 13.2386 3.4724 13.0492 3.28396C12.8599 3.09551 12.6213 3.00085 12.3333 2.99996C12.0444 2.99996 11.8057 3.09463 11.6173 3.28396C11.4288 3.47329 11.3341 3.71196 11.3333 3.99996C11.3333 4.28885 11.4279 4.52751 11.6173 4.71596C11.8066 4.9044 12.0453 4.99907 12.3333 4.99996Z" fill="currentColor" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium text-white tracking-tight">SDKs &amp; Libraries</h3>
+              <h3 className="text-xl font-medium text-white tracking-tight">REST API</h3>
               <p className="text-sm text-[#e3e8ee]/80 leading-relaxed font-light">
-                Official typed libraries for Next.js, Node.js, Python, PHP, Flutter, and React Native with end-to-end type safety.
+                Standard HTTP JSON endpoints for order creation, dynamic UPI QR generation, and real-time status verification. No heavy proprietary SDK required.
               </p>
-              <Link
-                href="/login"
+              <a
+                href="#developer-section"
                 className="text-sm font-medium text-[#b9b9f9] hover:text-white inline-flex items-center gap-1.5 pt-1 transition-colors"
               >
-                <span>Explore SDKs</span>
+                <span>View API snippets</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+              </a>
             </div>
 
             {/* Card 2: REST APIs */}
@@ -998,46 +984,58 @@ export default function HomePage() {
               </div>
 
               {/* Syntax-Highlighted Code Body */}
-              <div className="p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto bg-[#0f1035] text-slate-200 min-h-[230px]">
+              <div id="dev-terminal-body" className="p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto bg-[#0f1035] text-slate-200 min-h-[230px]">
                 {productDevLang === 'curl' && (
                   <pre className="text-slate-200">
-                    <span className="text-[#b9b9f9] font-semibold">curl</span> -X POST https://api.mymobpay.tech/v1/orders \<br />
+                    <span className="text-[#b9b9f9] font-semibold">curl</span> -X POST https://api.mymobpay.tech/api/orders \<br />
                     {"  "}-H <span className="text-emerald-300">&quot;Authorization: Bearer sec_live_948a201...&quot;</span> \<br />
                     {"  "}-H <span className="text-emerald-300">&quot;Content-Type: application/json&quot;</span> \<br />
                     {"  "}-d <span className="text-slate-400">&#39;&#123;</span><br />
-                    {"    "}<span className="text-[#b9b9f9]">&quot;amount&quot;</span>: <span className="text-amber-300 font-semibold">149900</span>,<br />
-                    {"    "}<span className="text-[#b9b9f9]">&quot;currency&quot;</span>: <span className="text-emerald-300">&quot;INR&quot;</span>,<br />
-                    {"    "}<span className="text-[#b9b9f9]">&quot;orderId&quot;</span>: <span className="text-emerald-300">&quot;ORD_2026_9821&quot;</span>,<br />
-                    {"    "}<span className="text-[#b9b9f9]">&quot;customerVpa&quot;</span>: <span className="text-emerald-300">&quot;customer@okhdfcbank&quot;</span>,<br />
-                    {"    "}<span className="text-[#b9b9f9]">&quot;settlementRoute&quot;</span>: <span className="text-emerald-300">&quot;direct_bank&quot;</span><br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;amount&quot;</span>: <span className="text-amber-300 font-semibold">1499</span>,<br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;note&quot;</span>: <span className="text-emerald-300">&quot;Pro SaaS Monthly Plan&quot;</span>,<br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;customer_name&quot;</span>: <span className="text-emerald-300">&quot;Kunal Chauhan&quot;</span>,<br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;customer_phone&quot;</span>: <span className="text-emerald-300">&quot;9876543210&quot;</span>,<br />
+                    {"    "}<span className="text-[#b9b9f9]">&quot;callback_url&quot;</span>: <span className="text-emerald-300">&quot;https://yourapp.com/api/webhook&quot;</span><br />
                     {"  "}<span className="text-slate-400">&#125;&#39;</span>
                   </pre>
                 )}
 
                 {productDevLang === 'node' && (
                   <pre className="text-slate-200">
-                    <span className="text-[#665efd] font-semibold">import</span> &#123; <span className="text-[#b9b9f9]">MyMobPay</span> &#125; <span className="text-[#665efd] font-semibold">from</span> <span className="text-emerald-300">&#39;@mymobpay/node&#39;</span>;<br /><br />
-                    <span className="text-[#665efd] font-semibold">const</span> client = <span className="text-[#665efd] font-semibold">new</span> <span className="text-[#b9b9f9]">MyMobPay</span>(&#123; apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span> &#125;);<br /><br />
-                    <span className="text-slate-500 italic">{"//"} Initialize 0% commission direct bank order</span><br />
-                    <span className="text-[#665efd] font-semibold">const</span> order = <span className="text-[#665efd] font-semibold">await</span> client.orders.<span className="text-[#b9b9f9]">create</span>(&#123;<br />
-                    {"  "}amount: <span className="text-amber-300 font-semibold">149900</span>, <span className="text-slate-500 italic">{"//"} ₹1,499.00 in paise</span><br />
-                    {"  "}orderId: <span className="text-emerald-300">&#39;ORD_2026_9821&#39;</span>,<br />
-                    {"  "}customerVpa: <span className="text-emerald-300">&#39;customer@okhdfcbank&#39;</span>,<br />
-                    {"  "}settlementRoute: <span className="text-emerald-300">&#39;direct_bank&#39;</span><br />
-                    &#125;);
+                    <span className="text-slate-500 italic">{"//"} Native zero-dependency Node.js fetch (Node 18+)</span><br />
+                    <span className="text-[#665efd] font-semibold">const</span> response = <span className="text-[#665efd] font-semibold">await</span> <span className="text-[#b9b9f9]">fetch</span>(<span className="text-emerald-300">&#39;https://api.mymobpay.tech/api/orders&#39;</span>, &#123;<br />
+                    {"  "}method: <span className="text-emerald-300">&#39;POST&#39;</span>,<br />
+                    {"  "}headers: &#123;<br />
+                    {"    "}<span className="text-emerald-300">&#39;Authorization&#39;</span>: <span className="text-emerald-300">`Bearer $&#123;process.env.MYMOBPAY_API_KEY&#125;`</span>,<br />
+                    {"    "}<span className="text-emerald-300">&#39;Content-Type&#39;</span>: <span className="text-emerald-300">&#39;application/json&#39;</span><br />
+                    {"  "}&#125;,<br />
+                    {"  "}body: <span className="text-[#b9b9f9]">JSON</span>.<span className="text-[#b9b9f9]">stringify</span>(&#123;<br />
+                    {"    "}amount: <span className="text-amber-300 font-semibold">1499</span>, <span className="text-slate-500 italic">{"//"} ₹1,499.00 direct settlement</span><br />
+                    {"    "}note: <span className="text-emerald-300">&#39;Pro SaaS Monthly Plan&#39;</span>,<br />
+                    {"    "}customer_name: <span className="text-emerald-300">&#39;Kunal Chauhan&#39;</span>,<br />
+                    {"    "}callback_url: <span className="text-emerald-300">&#39;https://yourapp.com/api/webhook&#39;</span><br />
+                    {"  "}&#125;)<br />
+                    &#125;);<br /><br />
+                    <span className="text-[#665efd] font-semibold">const</span> &#123; orderId, paymentUrl, upiString &#125; = <span className="text-[#665efd] font-semibold">await</span> response.<span className="text-[#b9b9f9]">json</span>();
                   </pre>
                 )}
 
                 {productDevLang === 'nextjs' && (
                   <pre className="text-slate-200">
                     <span className="text-slate-500 italic">{"//"} Next.js App Router API Route (app/api/checkout/route.ts)</span><br />
-                    <span className="text-[#665efd] font-semibold">import</span> &#123; <span className="text-[#b9b9f9]">NextResponse</span> &#125; <span className="text-[#665efd] font-semibold">from</span> <span className="text-emerald-300">&#39;next/server&#39;</span>;<br />
-                    <span className="text-[#665efd] font-semibold">import</span> &#123; <span className="text-[#b9b9f9]">MyMobPay</span> &#125; <span className="text-[#665efd] font-semibold">from</span> <span className="text-emerald-300">&#39;@mymobpay/node&#39;</span>;<br /><br />
-                    <span className="text-[#665efd] font-semibold">const</span> gateway = <span className="text-[#665efd] font-semibold">new</span> <span className="text-[#b9b9f9]">MyMobPay</span>(&#123; apiKey: process.env.<span className="text-amber-300">MYMOBPAY_SECRET_KEY</span> &#125;);<br /><br />
+                    <span className="text-[#665efd] font-semibold">import</span> &#123; <span className="text-[#b9b9f9]">NextResponse</span> &#125; <span className="text-[#665efd] font-semibold">from</span> <span className="text-emerald-300">&#39;next/server&#39;</span>;<br /><br />
                     <span className="text-[#665efd] font-semibold">export async function</span> <span className="text-[#b9b9f9]">POST</span>(req: <span className="text-[#b9b9f9]">Request</span>) &#123;<br />
-                    {"  "}<span className="text-[#665efd] font-semibold">const</span> &#123; amount, orderId &#125; = <span className="text-[#665efd] font-semibold">await</span> req.<span className="text-[#b9b9f9]">json</span>();<br />
-                    {"  "}<span className="text-[#665efd] font-semibold">const</span> session = <span className="text-[#665efd] font-semibold">await</span> gateway.orders.<span className="text-[#b9b9f9]">create</span>(&#123; amount, orderId &#125;);<br />
-                    {"  "}<span className="text-[#665efd] font-semibold">return</span> <span className="text-[#b9b9f9]">NextResponse</span>.<span className="text-[#b9b9f9]">json</span>(&#123; qrString: session.qrString, intentUrl: session.intentUrl &#125;);<br />
+                    {"  "}<span className="text-[#665efd] font-semibold">const</span> &#123; amount, customerName, note &#125; = <span className="text-[#665efd] font-semibold">await</span> req.<span className="text-[#b9b9f9]">json</span>();<br /><br />
+                    {"  "}<span className="text-[#665efd] font-semibold">const</span> res = <span className="text-[#665efd] font-semibold">await</span> <span className="text-[#b9b9f9]">fetch</span>(<span className="text-emerald-300">&#39;https://api.mymobpay.tech/api/orders&#39;</span>, &#123;<br />
+                    {"    "}method: <span className="text-emerald-300">&#39;POST&#39;</span>,<br />
+                    {"    "}headers: &#123;<br />
+                    {"      "}<span className="text-emerald-300">&#39;Authorization&#39;</span>: <span className="text-emerald-300">`Bearer $&#123;process.env.MYMOBPAY_API_KEY&#125;`</span>,<br />
+                    {"      "}<span className="text-emerald-300">&#39;Content-Type&#39;</span>: <span className="text-emerald-300">&#39;application/json&#39;</span><br />
+                    {"    "}&#125;,<br />
+                    {"    "}body: <span className="text-[#b9b9f9]">JSON</span>.<span className="text-[#b9b9f9]">stringify</span>(&#123; amount, customer_name: customerName, note &#125;)<br />
+                    {"  "}&#125;);<br /><br />
+                    {"  "}<span className="text-[#665efd] font-semibold">const</span> order = <span className="text-[#665efd] font-semibold">await</span> res.<span className="text-[#b9b9f9]">json</span>();<br />
+                    {"  "}<span className="text-[#665efd] font-semibold">return</span> <span className="text-[#b9b9f9]">NextResponse</span>.<span className="text-[#b9b9f9]">json</span>(&#123; paymentUrl: order.paymentUrl, orderId: order.orderId &#125;);<br />
                     &#125;
                   </pre>
                 )}
@@ -1045,30 +1043,44 @@ export default function HomePage() {
                 {productDevLang === 'python' && (
                   <pre className="text-slate-200">
                     <span className="text-[#665efd] font-semibold">import</span> os<br />
-                    <span className="text-[#665efd] font-semibold">from</span> mymobpay <span className="text-[#665efd] font-semibold">import</span> <span className="text-[#b9b9f9]">MyMobPay</span><br /><br />
-                    client = <span className="text-[#b9b9f9]">MyMobPay</span>(api_key=os.environ[<span className="text-emerald-300">&quot;MYMOBPAY_SECRET_KEY&quot;</span>])<br /><br />
-                    <span className="text-slate-500 italic"># Create direct UPI intent order</span><br />
-                    order = client.orders.<span className="text-[#b9b9f9]">create</span>(<br />
-                    {"  "}amount=<span className="text-amber-300 font-semibold">149900</span>,<br />
-                    {"  "}order_id=<span className="text-emerald-300">&quot;ORD_2026_9821&quot;</span>,<br />
-                    {"  "}customer_vpa=<span className="text-emerald-300">&quot;customer@okhdfcbank&quot;</span>,<br />
-                    {"  "}settlement_route=<span className="text-emerald-300">&quot;direct_bank&quot;</span><br />
-                    )
+                    <span className="text-[#665efd] font-semibold">import</span> requests<br /><br />
+                    <span className="text-slate-500 italic"># Native Python REST call to MyMobPay Orders API</span><br />
+                    res = requests.post(<br />
+                    {"    "}<span className="text-emerald-300">&quot;https://api.mymobpay.tech/api/orders&quot;</span>,<br />
+                    {"    "}headers=&#123;<span className="text-emerald-300">&quot;Authorization&quot;</span>: f<span className="text-emerald-300">&quot;Bearer &#123;os.environ[&#39;MYMOBPAY_API_KEY&#39;]&#125;&quot;</span>&#125;,<br />
+                    {"    "}json=&#123;<br />
+                    {"        "}<span className="text-emerald-300">&quot;amount&quot;</span>: <span className="text-amber-300 font-semibold">1499</span>,<br />
+                    {"        "}<span className="text-emerald-300">&quot;note&quot;</span>: <span className="text-emerald-300">&quot;Pro SaaS Monthly Plan&quot;</span>,<br />
+                    {"        "}<span className="text-emerald-300">&quot;customer_name&quot;</span>: <span className="text-emerald-300">&quot;Kunal Chauhan&quot;</span>,<br />
+                    {"        "}<span className="text-emerald-300">&quot;callback_url&quot;</span>: <span className="text-emerald-300">&quot;https://yourapp.com/api/webhook&quot;</span><br />
+                    {"    "}&#125;<br />
+                    )<br />
+                    order = res.json()<br />
+                    print(<span className="text-emerald-300">&quot;Checkout Link:&quot;</span>, order.get(<span className="text-emerald-300">&quot;paymentUrl&quot;</span>))
                   </pre>
                 )}
 
                 {productDevLang === 'php' && (
                   <pre className="text-slate-200">
                     <span className="text-[#665efd] font-semibold">&lt;?php</span><br />
-                    <span className="text-[#665efd] font-semibold">use</span> MyMobPay\<span className="text-[#b9b9f9]">Client</span>;<br /><br />
-                    $client = <span className="text-[#665efd] font-semibold">new</span> <span className="text-[#b9b9f9]">Client</span>([<span className="text-emerald-300">&#39;api_key&#39;</span> =&gt; getenv(<span className="text-emerald-300">&#39;MYMOBPAY_SECRET_KEY&#39;</span>)]);<br /><br />
-                    <span className="text-slate-500 italic">{"//"} Create payment intent with zero fees</span><br />
-                    $order = $client-&gt;orders-&gt;<span className="text-[#b9b9f9]">create</span>([<br />
-                    {"  "}<span className="text-emerald-300">&#39;amount&#39;</span> =&gt; <span className="text-amber-300 font-semibold">149900</span>,<br />
-                    {"  "}<span className="text-emerald-300">&#39;order_id&#39;</span> =&gt; <span className="text-emerald-300">&#39;ORD_2026_9821&#39;</span>,<br />
-                    {"  "}<span className="text-emerald-300">&#39;customer_vpa&#39;</span> =&gt; <span className="text-emerald-300">&#39;customer@okhdfcbank&#39;</span>,<br />
-                    {"  "}<span className="text-emerald-300">&#39;settlement_route&#39;</span> =&gt; <span className="text-emerald-300">&#39;direct_bank&#39;</span><br />
-                    ]);
+                    <span className="text-slate-500 italic">{"//"} Direct REST call via standard PHP cURL</span><br />
+                    $ch = curl_init(<span className="text-emerald-300">&#39;https://api.mymobpay.tech/api/orders&#39;</span>);<br />
+                    curl_setopt_array($ch, [<br />
+                    {"  "}CURLOPT_RETURNTRANSFER =&gt; <span className="text-[#665efd] font-semibold">true</span>,<br />
+                    {"  "}CURLOPT_POST =&gt; <span className="text-[#665efd] font-semibold">true</span>,<br />
+                    {"  "}CURLOPT_HTTPHEADER =&gt; [<br />
+                    {"    "}<span className="text-emerald-300">&#39;Authorization: Bearer &#39;</span> . getenv(<span className="text-emerald-300">&#39;MYMOBPAY_API_KEY&#39;</span>),<br />
+                    {"    "}<span className="text-emerald-300">&#39;Content-Type: application/json&#39;</span><br />
+                    {"  "}],<br />
+                    {"  "}CURLOPT_POSTFIELDS =&gt; json_encode([<br />
+                    {"    "}<span className="text-emerald-300">&#39;amount&#39;</span> =&gt; <span className="text-amber-300 font-semibold">1499</span>,<br />
+                    {"    "}<span className="text-emerald-300">&#39;note&#39;</span> =&gt; <span className="text-emerald-300">&#39;Pro SaaS Monthly Plan&#39;</span>,<br />
+                    {"    "}<span className="text-emerald-300">&#39;customer_name&#39;</span> =&gt; <span className="text-emerald-300">&#39;Kunal Chauhan&#39;</span>,<br />
+                    {"    "}<span className="text-emerald-300">&#39;callback_url&#39;</span> =&gt; <span className="text-emerald-300">&#39;https://yourapp.com/api/webhook&#39;</span><br />
+                    {"  "}])<br />
+                    ]);<br />
+                    $order = json_decode(curl_exec($ch), <span className="text-[#665efd] font-semibold">true</span>);<br />
+                    curl_close($ch);
                   </pre>
                 )}
               </div>
@@ -1317,7 +1329,7 @@ export default function HomePage() {
               <div className="px-6 pb-6 pt-3 border-t border-[#e3e8ee] flex items-center justify-between text-xs text-[#64748d] font-mono">
                 <span>Universal UPI support</span>
                 <span className="text-emerald-600 font-medium flex items-center gap-1 font-sans">
-                  99.98% success rate <CheckCircle2 className="w-3.5 h-3.5" />
+                  Zero Aggregator Escrow <CheckCircle2 className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
