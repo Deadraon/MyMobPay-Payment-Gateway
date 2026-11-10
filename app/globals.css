@@ -2196,3 +2196,210 @@ html {
 
 
 
+
+/* ─── Scroll-reveal system (transitions.dev motion tokens) ─────────── */
+:root {
+  --duration-stagger: 40ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-slow: 400ms;
+  --duration-very-slow: 500ms;
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: ease-in-out;
+  --distance-medium: 12px;
+  --distance-reveal: 18px;
+  --blur-medium: 3px;
+  --reveal-dur: var(--duration-very-slow);
+  --reveal-ease: var(--ease-smooth-out);
+}
+
+/* Base reveal: element starts shifted down, blurred and invisible;
+   .is-shown (added by the scroll observer) eases it to rest. */
+.t-reveal {
+  opacity: 0;
+  transform: translateY(var(--distance-reveal));
+  filter: blur(var(--blur-medium));
+  transition:
+    opacity   var(--reveal-dur) var(--reveal-ease),
+    transform var(--reveal-dur) var(--reveal-ease),
+    filter    var(--reveal-dur) var(--reveal-ease);
+  will-change: transform, opacity, filter;
+}
+.t-reveal--left   { transform: translateX(calc(-1 * var(--distance-reveal))); }
+.t-reveal--right  { transform: translateX(var(--distance-reveal)); }
+.t-reveal--scale  { transform: scale(0.97); }
+
+.t-reveal.is-shown {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+  filter: blur(0);
+}
+
+/* Staggered group: direct children reveal one after another. */
+[data-reveal-stagger] > * {
+  opacity: 0;
+  transform: translateY(var(--distance-medium));
+  filter: blur(var(--blur-medium));
+  transition:
+    opacity   var(--reveal-dur) var(--reveal-ease),
+    transform var(--reveal-dur) var(--reveal-ease),
+    filter    var(--reveal-dur) var(--reveal-ease);
+  will-change: transform, opacity, filter;
+}
+[data-reveal-stagger].is-shown > * {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+[data-reveal-stagger].is-shown > *:nth-child(1) { transition-delay: calc(var(--duration-stagger) * 0); }
+[data-reveal-stagger].is-shown > *:nth-child(2) { transition-delay: calc(var(--duration-stagger) * 1); }
+[data-reveal-stagger].is-shown > *:nth-child(3) { transition-delay: calc(var(--duration-stagger) * 2); }
+[data-reveal-stagger].is-shown > *:nth-child(4) { transition-delay: calc(var(--duration-stagger) * 3); }
+[data-reveal-stagger].is-shown > *:nth-child(5) { transition-delay: calc(var(--duration-stagger) * 4); }
+[data-reveal-stagger].is-shown > *:nth-child(6) { transition-delay: calc(var(--duration-stagger) * 5); }
+[data-reveal-stagger].is-shown > *:nth-child(7) { transition-delay: calc(var(--duration-stagger) * 6); }
+[data-reveal-stagger].is-shown > *:nth-child(8) { transition-delay: calc(var(--duration-stagger) * 7); }
+
+@media (prefers-reduced-motion: reduce) {
+  .t-reveal,
+  [data-reveal-stagger] > * {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* ─── Homepage motion upgrade (transitions.dev) ─────────────────── */
+:root {
+  /* Card hover tilt (19) */
+  --tilt-perspective: 1000px;
+  --tilt-return: 1000ms;
+  --tilt-return-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --tilt-follow: 400ms;
+  --tilt-follow-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --tilt-glare-opacity: 0.22;
+  --tilt-glare-fade: 300ms;
+  --tilt-glare-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Spinning counter (26) */
+  --reel-dur: 1100ms;
+  --reel-stagger: 60ms;
+  --reel-spin-blur: 2px;
+  --reel-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Tabs sliding (16) */
+  --tabs-dur: 250ms;
+  --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Learn-more hover (24) */
+  --learn-shift: 2px;
+  --learn-spread: 8deg;
+  --learn-in: 350ms;
+  --learn-out: 350ms;
+  --learn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Smooth anchor scrolling (nav links + scrollIntoView targets) */
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 96px; }
+
+/* ── Card hover tilt: outer wrapper stays flat, inner card leans ── */
+.t-tilt { touch-action: pan-y; }
+.t-tilt-card {
+  position: relative;
+  transform:
+    perspective(var(--tilt-perspective))
+    rotateX(var(--tilt-rx, 0deg))
+    rotateY(var(--tilt-ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform var(--tilt-return) var(--tilt-return-ease);
+  will-change: transform;
+}
+.t-tilt-card.is-tilting {
+  transition: transform var(--tilt-follow) var(--tilt-follow-ease);
+}
+.t-tilt-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle 95px at var(--tilt-gx, 50%) var(--tilt-gy, 50%),
+      rgba(255,255,255,0.48), rgba(255,255,255,0.06) 52%, rgba(255,255,255,0) 84%),
+    radial-gradient(circle 200px at var(--tilt-gx, 50%) var(--tilt-gy, 50%),
+      rgba(255,255,255,0.22), rgba(255,255,255,0.04) 58%, rgba(255,255,255,0) 78%),
+    radial-gradient(circle 360px at var(--tilt-gx, 50%) var(--tilt-gy, 50%),
+      rgba(255,255,255,0.10), rgba(255,255,255,0) 88%);
+  transition: opacity var(--tilt-glare-fade) var(--tilt-glare-ease);
+}
+.t-tilt.is-hover .t-tilt-glare { opacity: var(--tilt-glare-opacity); }
+
+/* ── Spinning counter: each digit is a clipped vertical reel ── */
+.t-reel {
+  display: inline-flex;
+  align-items: center;
+  height: 1em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.t-reel-col {
+  position: relative;
+  height: 1em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
+}
+.t-reel-strip { display: flex; flex-direction: column; will-change: transform, filter; }
+.t-reel-digit {
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.t-reel-static { height: 1em; display: flex; align-items: center; }
+
+/* ── Tabs sliding: pill glides under the active language tab ── */
+.t-tabs { position: relative; }
+.t-tabs-pill {
+  position: absolute;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-radius: 10px;
+  background: #533afd;
+  box-shadow: 0 4px 12px rgba(83, 58, 253, 0.35);
+  transition:
+    transform var(--tabs-dur) var(--tabs-ease),
+    width     var(--tabs-dur) var(--tabs-ease),
+    top       var(--tabs-dur) var(--tabs-ease),
+    height    var(--tabs-dur) var(--tabs-ease);
+  will-change: transform, width;
+  z-index: 0;
+  pointer-events: none;
+}
+.t-tabs .t-tab { position: relative; z-index: 1; }
+
+/* ── Learn-more hover: chevron slides + arms spread into an arrow ── */
+.t-learn-chevron {
+  display: inline-flex;
+  transform: translateX(0);
+  transition: transform var(--learn-out) var(--learn-ease);
+}
+.t-learn-arm {
+  transform-box: view-box;
+  transform-origin: 10px 8px;
+  vector-effect: non-scaling-stroke;
+  transition: transform var(--learn-out) var(--learn-ease);
+}
+.t-learn:hover .t-learn-chevron { transform: translateX(var(--learn-shift)); transition-duration: var(--learn-in); }
+.t-learn:hover .t-learn-arm { transition-duration: var(--learn-in); }
+.t-learn:hover .t-learn-arm-top { transform: rotate(var(--learn-spread)); }
+.t-learn:hover .t-learn-arm-bot { transform: rotate(calc(var(--learn-spread) * -1)); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .t-tilt-card { transform: none !important; transition: none !important; }
+  .t-tilt-glare { display: none; }
+  .t-reel-strip { transition: none !important; filter: none !important; }
+  .t-tabs-pill, .t-tab { transition: none !important; }
+  .t-learn-chevron, .t-learn-arm { transition: none !important; }
+}

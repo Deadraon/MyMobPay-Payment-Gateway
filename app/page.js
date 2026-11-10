@@ -17,6 +17,10 @@ import QRCode from 'react-qr-code';
 import InteractiveBackground from '@/components/InteractiveBackground';
 import DiwaliOverlay from '@/components/DiwaliOverlay';
 import { useDropdownTransition } from '@/components/useDropdownTransition';
+import useScrollReveal from '@/components/useScrollReveal';
+import useTiltCards from '@/components/useTiltCards';
+import useSpinningCounter from '@/components/useSpinningCounter';
+import useTabsPill from '@/components/useTabsPill';
 import { supabase } from '@/lib/supabase';
 
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32, textSize = 'text-xl sm:text-2xl' }) => {
@@ -78,6 +82,11 @@ export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [heroTab, setHeroTab] = useState('checkout'); // 'checkout' | 'console'
   const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
+
+  useScrollReveal();
+  useTiltCards();
+  useSpinningCounter();
+  useTabsPill();
 
   // Seamless OAuth Callback Forwarder: If Google OAuth redirect lands on home page, forward immediately to login handler
   useEffect(() => {
@@ -455,15 +464,16 @@ export default function HomePage() {
           <div className="lg:col-span-5 relative flex items-center justify-center lg:justify-end animate-scale-up">
 
             {/* Premium Interactive Phone Frame */}
-            <div className="phone-glow-container w-full max-w-[340px] relative">
+            <div className="t-tilt w-full max-w-[340px] relative">
+              <div className="t-tilt-card phone-glow-container w-full relative rounded-[44px]">
 
-              {/* Premium Phone Frame displaying Actual MyMobPay checkout screen */}
-              <div className="relative w-full bg-slate-900 border-8 border-slate-800 rounded-[44px] premium-phone-shadow overflow-hidden aspect-[9/18.5] flex flex-col">
+                {/* Premium Phone Frame displaying Actual MyMobPay checkout screen */}
+                <div className="relative w-full bg-slate-900 border-8 border-slate-800 rounded-[44px] premium-phone-shadow overflow-hidden aspect-[9/18.5] flex flex-col">
 
-                {/* Speaker / Camera Notch (Dynamic Island) */}
-                <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
-                  <div className="bg-slate-800 w-28 h-4 rounded-b-2xl" />
-                </div>
+                  {/* Speaker / Camera Notch (Dynamic Island) */}
+                  <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-30">
+                    <div className="bg-slate-800 w-28 h-4 rounded-b-2xl" />
+                  </div>
 
                 {/* Internal Screen Content */}
                 <div className="flex-1 bg-[#0B192C] pt-8 px-5 pb-5 flex flex-col justify-between font-sans select-none text-white">
@@ -568,6 +578,8 @@ export default function HomePage() {
 
                 </div>
 
+                {/* Cursor-tracked glare overlay for the tilt effect */}
+                <div className="t-tilt-glare" aria-hidden="true" />
               </div>
 
             </div>
@@ -575,13 +587,15 @@ export default function HomePage() {
           </div>
 
         </div>
-      </section>
+
+      </div>
+    </section>
 
       {/* ────────────────────────────────────────────────────────
          BUILT FOR INDIAN INDIE SAAS FOUNDERS & DEVELOPERS
          ──────────────────────────────────────────────────────── */}
       <section className="relative z-10 py-10 bg-slate-50 border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-6 text-center space-y-5">
+        <div className="max-w-7xl mx-auto px-6 text-center space-y-5" data-reveal-stagger>
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
             Engineered for Indian Indie SaaS Founders, Developers &amp; Digital Product Creators
           </p>
@@ -612,7 +626,7 @@ export default function HomePage() {
       <section className="relative z-10 py-24 bg-[#f6f9fc] border-y border-[#e3e8ee] overflow-hidden font-sohne">
 
         <div className="max-w-7xl mx-auto px-6 space-y-14">
-          <div className="text-center space-y-3">
+          <div className="text-center space-y-3" data-reveal-stagger>
             <span className="text-xs font-semibold text-[#533afd] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
               Merchant console
             </span>
@@ -821,17 +835,17 @@ export default function HomePage() {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>DEVELOPER-FIRST INFRASTRUCTURE</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-light text-white tracking-[-1.4px] leading-[1.08] font-sohne">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-light text-white tracking-[-1.4px] leading-[1.08] font-sohne" data-reveal>
               Embed direct UPI checkout<br />
               <span className="text-[#b9b9f9] font-light">with clean REST APIs &amp; webhooks.</span>
             </h2>
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-light pt-1 max-w-2xl">
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-light pt-1 max-w-2xl" data-reveal>
               Integrate direct-to-bank settlements in under 15 minutes. Eliminate the 2% aggregator deduction with standard HTTP REST endpoints, copy-paste snippets, and signed HMAC-SHA256 webhooks.
             </p>
           </div>
 
           {/* 3 Core Architecture Cards: SDKs, REST APIs, Webhooks */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-reveal-stagger>
 
             {/* Card 1: REST API & Integration */}
             <div className="p-6 rounded-2xl bg-[#161842] border border-white/10 hover:border-[#533afd]/60 transition-all duration-300 space-y-4 shadow-[0_16px_36px_rgba(0,0,0,0.2)] group">
@@ -1127,7 +1141,7 @@ export default function HomePage() {
                   <Sparkles className="w-3.5 h-3.5 text-[#9b6829]" />
                   <span>TRANSPARENT REVENUE RETENTION</span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl md:text-[44px] font-light text-[#0d253d] tracking-[-1.4px] leading-[1.1] font-sohne">
+                <h2 className="text-3xl sm:text-4xl md:text-[44px] font-light text-[#0d253d] tracking-[-1.4px] leading-[1.1] font-sohne" data-reveal>
                   See how much revenue<br />
                   <span className="font-light text-[#9b6829]">you retain every month.</span>
                 </h2>
@@ -1225,7 +1239,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 space-y-16">
 
           {/* Header */}
-          <div className="text-center space-y-4 max-w-3xl mx-auto">
+          <div className="text-center space-y-4 max-w-3xl mx-auto" data-reveal-stagger>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#533afd]/10 border border-[#533afd]/20 text-[#533afd] text-xs font-mono font-medium tracking-wide">
               <span>REAL-WORLD DEPLOYMENTS</span>
             </span>
@@ -1238,7 +1252,7 @@ export default function HomePage() {
           </div>
 
           {/* 3 Visual In-Action Showcase Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8" data-reveal-stagger>
             
             {/* Card 1: Scanning MyMobPay QR */}
             <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl overflow-hidden shadow-[0_12px_32px_rgba(0,55,112,0.06)] hover:shadow-[0_20px_48px_rgba(0,55,112,0.12)] hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between">
@@ -1345,7 +1359,7 @@ export default function HomePage() {
       <section id="features-section" className="py-24 bg-white border-b border-[#e3e8ee] font-sohne">
         <div className="max-w-7xl mx-auto px-6 space-y-16">
 
-          <div className="text-center space-y-4 max-w-3xl mx-auto">
+          <div className="text-center space-y-4 max-w-3xl mx-auto" data-reveal-stagger>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#533afd]/10 border border-[#533afd]/20 text-[#533afd] text-xs font-mono font-medium tracking-wide">
               <span>CORE ARCHITECTURE</span>
             </span>
@@ -1357,7 +1371,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-reveal-stagger>
 
             {/* Feature 1 */}
             <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-6 space-y-4 hover:border-[#533afd]/40 shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:-translate-y-1 transition-all duration-300 group">
@@ -1415,7 +1429,7 @@ export default function HomePage() {
 
         <div className="max-w-6xl mx-auto px-6 text-center space-y-12">
 
-          <div className="space-y-4 max-w-2xl mx-auto">
+          <div className="space-y-4 max-w-2xl mx-auto" data-reveal-stagger>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#533afd]/10 border border-[#533afd]/20 text-[#533afd] text-xs font-mono font-medium tracking-wide">
               <span>SUBSCRIPTION TIERS</span>
             </span>
@@ -1427,7 +1441,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch text-left">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch text-left" data-reveal-stagger>
 
             {/* Developer Sandbox Card */}
             <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-7 flex flex-col justify-between shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:border-[#533afd]/40 transition-all duration-300">

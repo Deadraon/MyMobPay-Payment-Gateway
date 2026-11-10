@@ -228,6 +228,24 @@ export default function PaymentLinksRedesign({
   const [standeeShowSoundbox, setStandeeShowSoundbox] = useState(true);
   const [standeeShowLogo, setStandeeShowLogo] = useState(true);
 
+  // Subscription active status & Live Mode gating
+  const isSubExpired = useMemo(() => {
+    return Boolean(
+      profile?.subscription_expires_at &&
+      new Date(profile.subscription_expires_at).getTime() < Date.now()
+    );
+  }, [profile?.subscription_expires_at]);
+
+  const isLiveUnlocked = useMemo(() => {
+    return Boolean(
+      (profile?.subscription_status === 'active' && !isSubExpired) ||
+      profile?.id === '677d9312-a53f-4b96-815f-53e0eee1b292'
+    );
+  }, [profile?.subscription_status, isSubExpired, profile?.id]);
+
+  const isLiveMode = profile?.sandbox_mode === false && isLiveUnlocked;
+  const isSandbox = !isLiveMode;
+
   // Portal mount check
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -293,7 +311,7 @@ export default function PaymentLinksRedesign({
   const fetchDbLinks = async () => {
     if (!profile?.api_key && !profile?.id) return;
     try {
-      const apiKey = profile?.api_key ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key : '';
+      const apiKey = profile?.api_key ? (isSandbox ? 'test_' : 'live_') + profile.api_key : '';
       const res = await fetch('/api/payment-links?limit=100', {
         headers: { 'x-api-key': apiKey }
       });
@@ -417,7 +435,7 @@ export default function PaymentLinksRedesign({
       );
       if (!exists) {
         const host = typeof window !== 'undefined' ? window.location.origin : 'https://mymobpay.tech';
-        const apiKey = profile?.api_key ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key : '';
+        const apiKey = profile?.api_key ? (isSandbox ? 'test_' : 'live_') + profile.api_key : '';
         combined.push({
           id: linkId,
           merchantId: profile?.id,
@@ -638,8 +656,8 @@ export default function PaymentLinksRedesign({
     const effectivePurpose = purpose.trim() || 'Payment for Services';
     const finalCallbackUrl = redirectUrl.trim() || null;
     const apiKey = profile?.api_key
-      ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
-      : 'live_mymob_demo_key';
+      ? (isSandbox ? 'test_' : 'live_') + profile.api_key
+      : (isSandbox ? 'test_mymob_demo_key' : 'live_mymob_demo_key');
 
     let expireInVal = linkValidity;
     if (linkValidity === 'custom') {
@@ -712,7 +730,11 @@ export default function PaymentLinksRedesign({
         customerPhone: customerPhone.trim(),
       });
       setIsGenerating(false);
-      showToast('Payment link generated with expiry timer! Ready to dispatch.');
+      if (!isLiveMode && (profile?.subscription_status === 'expired' || isSubExpired)) {
+        showToast('Payment link generated in Test Mode (Live Mode locked — subscription expired).');
+      } else {
+        showToast('Payment link generated with expiry timer! Ready to dispatch.');
+      }
 
       // Update DOM preview element if present
       const prevUrl = document.getElementById('preview-url');
@@ -731,7 +753,7 @@ export default function PaymentLinksRedesign({
     setActionLoadingId(token);
     try {
       const apiKey = profile?.api_key
-        ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
+        ? (isSandbox ? 'test_' : 'live_') + profile.api_key
         : '';
       const res = await fetch('/api/payment-links/cancel', {
         method: 'POST',
@@ -762,7 +784,7 @@ export default function PaymentLinksRedesign({
     setActionLoadingId(token);
     try {
       const apiKey = profile?.api_key
-        ? (profile.sandbox_mode !== false ? 'test_' : 'live_') + profile.api_key
+        ? (isSandbox ? 'test_' : 'live_') + profile.api_key
         : '';
       const res = await fetch('/api/payment-links/regenerate', {
         method: 'POST',
@@ -1531,6 +1553,36 @@ export default function PaymentLinksRedesign({
               </div>
             </header>
 
+            {/* Subscription Expired / Locked Live Mode Alert Banner */}
+            {!isLiveUnlocked && (
+              <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-3 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
+                    <Lock className="w-4 h-4 text-amber-700" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                      <span>Live Mode Locked</span>
+                      <span className="text-[10px] bg-amber-200/70 text-amber-900 px-1.5 py-0.2 rounded font-semibold">
+                        Subscription Expired
+                      </span>
+                    </h4>
+                    <p className="text-[11px] text-amber-700">
+                      Live payments and live links are locked. You can still test links in Sandbox Mode or renew your subscription to accept real customer UPI payments.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab && setActiveTab('subscription')}
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0 cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Renew / Activate Plan</span>
+                </button>
+              </div>
+            )}
+
             {/* Mobile Studio Tab Selector (Visible only on lg:hidden) */}
             <div className="lg:hidden flex border-b border-slate-100 bg-slate-50/70 p-2 gap-2">
               <button
@@ -1883,16 +1935,25 @@ export default function PaymentLinksRedesign({
                     <button
                       onClick={handleCreateLink}
                       disabled={isGenerating}
-                      className={`flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-6 py-3.5 rounded-xl shadow-md shadow-blue-500/20 transition-colors focus:ring-2 focus:ring-blue-400 focus:outline-none active:scale-[0.98] cursor-pointer ${isGenerating ? 'opacity-80 cursor-wait' : ''}`}
+                      className={`flex-1 inline-flex items-center justify-center gap-2 ${
+                        !isLiveUnlocked && profile?.sandbox_mode === false
+                          ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/20'
+                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/20'
+                      } text-white font-bold px-6 py-3.5 rounded-xl shadow-md transition-colors focus:ring-2 focus:ring-blue-400 focus:outline-none active:scale-[0.98] cursor-pointer ${isGenerating ? 'opacity-80 cursor-wait' : ''}`}
                       type="button"
                       id="create-link-cta"
                     >
                       {isGenerating ? (
                         <><Loader2 className="w-4 h-4 animate-spin" /><span>Generating Payment Link...</span></>
+                      ) : !isLiveUnlocked && profile?.sandbox_mode === false ? (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          <span>Unlock Live Mode to Create Links</span>
+                        </>
                       ) : (
                         <>
                           <Zap className="w-4 h-4 fill-current" />
-                          <span>Create &amp; Share Payment Link</span>
+                          <span>{isSandbox ? 'Create Sandbox Payment Link' : 'Create & Share Payment Link'}</span>
                         </>
                       )}
                     </button>

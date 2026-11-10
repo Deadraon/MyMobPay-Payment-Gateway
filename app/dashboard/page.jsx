@@ -103,6 +103,24 @@ export default function DashboardPage() {
     return Boolean(isPlatformAdminId || isPlatformKey || (email && adminEmails.includes(email)));
   }, [user, profile]);
 
+  const isSubExpired = useMemo(() => {
+    return Boolean(
+      profile?.subscription_expires_at &&
+      new Date(profile.subscription_expires_at).getTime() < Date.now()
+    );
+  }, [profile?.subscription_expires_at]);
+
+  const isLiveUnlocked = useMemo(() => {
+    return Boolean(
+      (profile?.subscription_status === 'active' && !isSubExpired) || isAdminUser
+    );
+  }, [profile?.subscription_status, isSubExpired, isAdminUser]);
+
+  const effectiveSandboxMode = useMemo(() => {
+    if (!isLiveUnlocked) return true;
+    return profile?.sandbox_mode !== false;
+  }, [isLiveUnlocked, profile?.sandbox_mode]);
+
   const [loading, setLoading] = useState(true);
 
   const [saving, setSaving] = useState(false);
@@ -1053,7 +1071,8 @@ export default function DashboardPage() {
         const isExpired = new Date(data.subscription_expires_at) < new Date();
         if (isExpired) {
           data.subscription_status = 'expired';
-          await supabase.from('merchants').update({ subscription_status: 'expired' }).eq('id', userId);
+          data.sandbox_mode = true;
+          await supabase.from('merchants').update({ subscription_status: 'expired', sandbox_mode: true }).eq('id', userId);
         }
       }
 
@@ -1093,6 +1112,7 @@ export default function DashboardPage() {
           } else {
             data.subscription_status = 'expired';
             data.subscription_expires_at = expiryDate.toISOString();
+            data.sandbox_mode = true;
             const currProg = data.setup_progress || {};
             const updatedProg = {
               ...currProg,
@@ -1103,10 +1123,23 @@ export default function DashboardPage() {
             await supabase.from('merchants').update({
               subscription_status: 'expired',
               subscription_expires_at: expiryDate.toISOString(),
+              sandbox_mode: true,
               setup_progress: updatedProg
             }).eq('id', userId);
           }
         }
+      }
+
+      // If subscription is expired or inactive (and not platform admin), ensure sandbox_mode is forced to true
+      const isSubExpiredCheck = Boolean(
+        data.subscription_status !== 'active' ||
+        (data.subscription_expires_at && new Date(data.subscription_expires_at).getTime() < Date.now())
+      );
+      const isPlatformAdminMerchant = userId === '677d9312-a53f-4b96-815f-53e0eee1b292' || data.api_key === CONFIG.platformApiKey;
+
+      if (isSubExpiredCheck && !isPlatformAdminMerchant && data.sandbox_mode === false) {
+        data.sandbox_mode = true;
+        await supabase.from('merchants').update({ sandbox_mode: true }).eq('id', userId);
       }
 
       setProfile(data);
@@ -1391,20 +1424,14 @@ export default function DashboardPage() {
 
     if (!user || !profile) return;
 
-    const currentSandbox = profile.sandbox_mode !== false;
+    const currentSandbox = effectiveSandboxMode;
     const nextSandbox = !currentSandbox;
 
     // Lock Live Mode if subscription is not active
-    if (!nextSandbox) {
-      const isExpired = profile?.subscription_expires_at && new Date(profile.subscription_expires_at).getTime() < Date.now();
-      const isSubActive = profile?.subscription_status === 'active' && !isExpired;
-      const isAdmin = profile?.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || profile?.api_key === CONFIG.platformApiKey;
-
-      if (!isSubActive && !isAdmin) {
-        setActiveTab('subscription');
-        alert('🔒 Live Production Mode is locked.\n\nPlease activate a subscription plan to accept live customer payments and unlock your Live API Key!');
-        return;
-      }
+    if (!nextSandbox && !isLiveUnlocked) {
+      setActiveTab('subscription');
+      alert('🔒 Live Production Mode is locked.\n\nPlease activate or renew your subscription plan to accept live customer payments and unlock your Live API Key!');
+      return;
     }
 
     try {
@@ -2664,7 +2691,6 @@ echo "Order Created: " . $data['orderId'];
 
   const isAdminMerchant = profile?.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || profile?.api_key === CONFIG.platformApiKey;
 
-  const isSubExpired = profile?.subscription_expires_at && new Date(profile.subscription_expires_at).getTime() < Date.now();
   const isInactiveNow = profile?.subscription_status !== 'active' || isSubExpired;
 
   // Paywall blocker removed: Merchants have immediate access to dashboard with Test API key!
@@ -2976,23 +3002,27 @@ echo "Order Created: " . $data['orderId'];
             <div className="hidden sm:flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/70 shadow-inner">
               <button
                 onClick={() => {
-                  if (profile?.sandbox_mode !== false) toggleSandboxMode();
+                  if (!isLiveUnlocked) {
+                    setActiveTab('subscription');
+                    return;
+                  }
+                  if (effectiveSandboxMode) toggleSandboxMode();
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
-                  profile?.sandbox_mode === false
+                  !effectiveSandboxMode
                     ? 'bg-white text-blue-600 shadow-sm border border-slate-200/60'
                     : 'text-slate-500 hover:text-slate-900'
                 }`}
                 type="button"
-                title={profile?.subscription_status !== 'active' ? 'Live Mode locked - Subscribe to activate' : 'Live Mode'}
+                title={!isLiveUnlocked ? 'Live Mode locked — activate subscription to unlock' : 'Live Mode'}
               >
-                {profile?.subscription_status === 'active' ? (
+                {isLiveUnlocked ? (
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 ) : (
                   <Lock className="w-3.5 h-3.5 text-amber-600" />
                 )}
                 <span>Live Mode</span>
-                {profile?.subscription_status !== 'active' && (
+                {!isLiveUnlocked && (
                   <span className="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-200">
                     Locked
                   </span>
@@ -3000,16 +3030,17 @@ echo "Order Created: " . $data['orderId'];
               </button>
               <button
                 onClick={() => {
-                  if (profile?.sandbox_mode === false) toggleSandboxMode();
+                  if (!isLiveUnlocked) return;
+                  if (!effectiveSandboxMode) toggleSandboxMode();
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-2 cursor-pointer ${
-                  profile?.sandbox_mode !== false
+                  effectiveSandboxMode
                     ? 'bg-white text-amber-600 shadow-sm border border-slate-200/60 font-semibold'
                     : 'text-slate-500 hover:text-slate-900'
                 }`}
                 type="button"
               >
-                {profile?.sandbox_mode !== false && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>}
+                {effectiveSandboxMode && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>}
                 Test Mode
               </button>
             </div>
@@ -3060,18 +3091,31 @@ echo "Order Created: " . $data['orderId'];
 
             {/* Mobile Mode Switcher Pill (Compact & Uncluttered) */}
             <button
-              onClick={toggleSandboxMode}
+              onClick={() => {
+                if (!isLiveUnlocked) {
+                  setActiveTab('subscription');
+                  return;
+                }
+                toggleSandboxMode();
+              }}
               className={`sm:hidden h-8 px-2.5 rounded-lg text-[10px] font-bold border transition-colors flex items-center gap-1.5 shrink-0 ${
-                profile?.sandbox_mode === false
+                !effectiveSandboxMode
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80 shadow-2xs'
                   : 'bg-amber-50 text-amber-700 border-amber-200/80 shadow-2xs'
               }`}
               type="button"
-              title={profile?.sandbox_mode === false ? 'Live Production Mode Active (Tap to toggle)' : 'Sandbox Test Mode Active (Tap to toggle)'}
-              aria-label={profile?.sandbox_mode === false ? 'Live Mode' : 'Test Mode'}
+              title={
+                !isLiveUnlocked
+                  ? 'Live Mode locked — activate subscription to unlock'
+                  : !effectiveSandboxMode
+                  ? 'Live Production Mode Active (Tap to toggle)'
+                  : 'Sandbox Test Mode Active (Tap to toggle)'
+              }
+              aria-label={!effectiveSandboxMode ? 'Live Mode' : 'Test Mode'}
             >
-              <span className={`w-1.5 h-1.5 rounded-full ${profile?.sandbox_mode === false ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span>{profile?.sandbox_mode === false ? 'Live' : 'Test'}</span>
+              <span className={`w-1.5 h-1.5 rounded-full ${!effectiveSandboxMode ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span>{!effectiveSandboxMode ? 'Live' : 'Test'}</span>
+              {!isLiveUnlocked && <Lock className="w-2.5 h-2.5 text-amber-700" />}
             </button>
 
             <div className="flex items-center gap-1 sm:gap-2">
@@ -3356,19 +3400,29 @@ echo "Order Created: " . $data['orderId'];
                 {/* Mobile Mode Switcher inside Drawer */}
                 <div className="flex items-center justify-between p-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl shrink-0">
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${profile?.sandbox_mode === false ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                    <span className={`w-2 h-2 rounded-full ${!effectiveSandboxMode ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
                     <span className="text-[11px] font-bold text-slate-200">
-                      {profile?.sandbox_mode === false ? 'Live Production Mode' : 'Sandbox Test Mode'}
+                      {!effectiveSandboxMode ? 'Live Production Mode' : 'Sandbox Test Mode'}
                     </span>
+                    {!isLiveUnlocked && (
+                      <span className="text-[8px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-bold border border-amber-400/30">
+                        Locked
+                      </span>
+                    )}
                   </div>
                   <button
                     onClick={() => {
+                      if (!isLiveUnlocked) {
+                        setIsMobileMenuOpen(false);
+                        setActiveTab('subscription');
+                        return;
+                      }
                       toggleSandboxMode();
                     }}
                     type="button"
                     className="px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-colors cursor-pointer border border-white/10"
                   >
-                    Switch
+                    {!isLiveUnlocked ? 'Unlock' : 'Switch'}
                   </button>
                 </div>
 
@@ -3782,7 +3836,7 @@ echo "Order Created: " . $data['orderId'];
 
             {activeTab === 'payment-links' && (
               <PaymentLinksRedesign
-                profile={profile}
+                profile={profile ? { ...profile, sandbox_mode: effectiveSandboxMode } : profile}
                 orders={merchantOrders}
                 payLinkHistory={payLinkHistory}
                 setPayLinkHistory={setPayLinkHistory}

@@ -45,8 +45,37 @@ export async function POST(request) {
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: authStatus || 401 });
     }
 
-    // 1b. Enforce Phone Verification & Valid Settlement UPI ID
+    // 1a. Detect Live vs Test Mode
+    const authHeader = request.headers.get('authorization') || '';
+    const apiKeyHeader = request.headers.get('x-api-key') || '';
+    const url = new URL(request.url);
+    const queryApiKey = url.searchParams.get('api_key') || url.searchParams.get('key');
+    const bodyApiKey = body?.api_key || body?.apiKey;
+    const rawCandidateKey = apiKeyHeader || queryApiKey || bodyApiKey || (authHeader.startsWith('Bearer ') ? authHeader.replace('Bearer ', '').trim() : '');
+
+    const isTestKey = rawCandidateKey.startsWith('test_');
+    const isLiveKey = rawCandidateKey.startsWith('live_');
+    const isLiveMode = isLiveKey || (merchant.sandbox_mode === false && !isTestKey);
     const isPlatformAdmin = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292';
+
+    // 1b. Enforce Active Subscription for Live Mode
+    if (isLiveMode && !isPlatformAdmin) {
+      let isSubActive = merchant.subscription_status === 'active';
+      if (isSubActive && merchant.subscription_expires_at) {
+        if (new Date(merchant.subscription_expires_at).getTime() <= Date.now()) {
+          isSubActive = false;
+        }
+      }
+
+      if (!isSubActive) {
+        return NextResponse.json({
+          error: 'Your subscription has expired or is inactive. Live payment link generation is locked. Please renew or upgrade your plan in the Subscription tab.',
+          code: 'SUBSCRIPTION_EXPIRED'
+        }, { status: 403 });
+      }
+    }
+
+    // 1c. Enforce Phone Verification & Valid Settlement UPI ID
     if (!isPlatformAdmin) {
       if (!merchant.phone_verified) {
         return NextResponse.json({

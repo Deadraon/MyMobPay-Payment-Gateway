@@ -33,10 +33,12 @@ export default function PremiumTierBadge({
       <button
         onClick={onClick}
         type="button"
-        className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-colors border cursor-pointer bg-emerald-600 text-white shadow-md border-emerald-500 ring-2 ring-emerald-400/40 ${className}`}
+        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer bg-emerald-600 text-white shadow-md border-emerald-500 ring-2 ring-emerald-400/40 ${className}`}
         title={`Premium Subscription Active${daysLeftText} • Click to manage`}
       >
-        <Crown className="w-3.5 h-3.5 text-white shrink-0" strokeWidth={2.2} />
+        <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+          <Crown className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+        </div>
         <span className="flex-1 text-left font-semibold tracking-wide text-[11px] truncate">
           {isActive ? 'Premium Active' : 'Premium Plan'}
         </span>
@@ -54,10 +56,12 @@ export default function PremiumTierBadge({
       <button
         onClick={onClick}
         type="button"
-        className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-colors border cursor-pointer bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-200 border-emerald-500/30 hover:border-emerald-500/50 shadow-xs ${className}`}
+        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-200 border-emerald-500/25 hover:border-emerald-500/40 shadow-2xs ${className}`}
         title={`Premium Subscription Active${daysLeftText} • Click to manage`}
       >
-        <Crown className="w-3.5 h-3.5 text-emerald-400 shrink-0" strokeWidth={2.2} />
+        <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+          <Crown className="w-3.5 h-3.5 text-emerald-400" strokeWidth={2.2} />
+        </div>
         <span className="flex-1 text-left font-semibold tracking-wide text-[11px] truncate text-emerald-100">
           Premium Active
         </span>
@@ -74,14 +78,16 @@ export default function PremiumTierBadge({
     <button
       onClick={onClick}
       type="button"
-      className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-colors border cursor-pointer bg-slate-800/60 hover:bg-slate-800 text-slate-300 border-slate-700/60 hover:border-slate-600 shadow-xs ${className}`}
+      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all border cursor-pointer bg-slate-800/40 hover:bg-slate-800/70 text-slate-200 border-amber-500/15 hover:border-amber-500/35 shadow-2xs ${className}`}
       title="Upgrade to Premium Subscription"
     >
-      <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0" strokeWidth={2.2} />
+      <div className="w-6 h-6 rounded-lg bg-amber-400/10 flex items-center justify-center shrink-0">
+        <Crown className="w-3.5 h-3.5 text-amber-400" strokeWidth={2.2} />
+      </div>
       <span className="flex-1 text-left font-semibold tracking-wide text-[11px] truncate text-slate-200">
         Premium Plan
       </span>
-      <span className="text-[8px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded font-semibold shrink-0">
+      <span className="text-[9px] bg-amber-400/15 text-amber-300 font-bold px-2 py-0.5 rounded-md tracking-wide shrink-0">
         Upgrade
       </span>
     </button>

@@ -26,6 +26,31 @@ export async function POST(request) {
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: authStatus || 401 });
     }
 
+    // Enforce Active Subscription for Live Mode
+    const authHeader = request.headers.get('authorization') || '';
+    const apiKeyHeader = request.headers.get('x-api-key') || '';
+    const rawCandidateKey = apiKeyHeader || body?.api_key || body?.apiKey || (authHeader.startsWith('Bearer ') ? authHeader.replace('Bearer ', '').trim() : '');
+    const isTestKey = rawCandidateKey.startsWith('test_');
+    const isLiveKey = rawCandidateKey.startsWith('live_');
+    const isLiveMode = isLiveKey || (merchant.sandbox_mode === false && !isTestKey);
+    const isPlatformAdmin = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292';
+
+    if (isLiveMode && !isPlatformAdmin) {
+      let isSubActive = merchant.subscription_status === 'active';
+      if (isSubActive && merchant.subscription_expires_at) {
+        if (new Date(merchant.subscription_expires_at).getTime() <= Date.now()) {
+          isSubActive = false;
+        }
+      }
+
+      if (!isSubActive) {
+        return NextResponse.json({
+          error: 'Your subscription has expired or is inactive. Live payment link regeneration is locked. Please renew or upgrade your plan.',
+          code: 'SUBSCRIPTION_EXPIRED'
+        }, { status: 403 });
+      }
+    }
+
     // Regenerate link: generates a brand new token, keeps original link dead
     const result = await regeneratePaymentLink(token, merchant.id, expire_in);
 
