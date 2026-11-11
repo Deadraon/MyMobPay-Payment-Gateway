@@ -47,7 +47,10 @@ import {
   CheckCheck,
   Terminal,
   CornerDownLeft,
-  ArrowRight
+  ArrowRight,
+  Info,
+  CheckCircle,
+  HardDrive
 } from 'lucide-react';
 
 const SENDER_FORMAT_OPTIONS = [
@@ -92,7 +95,10 @@ const PROVIDER_OPTIONS = [
     shortName: 'Smart Auto',
     dailyLimit: 1500,
     badge: 'Failover Enabled',
-    desc: 'Dynamic circuit breaker failover across all 6 active email rails'
+    desc: 'Dynamic circuit breaker failover across all 6 active email rails',
+    host: 'Multi-Rail Failover',
+    protocol: 'Dynamic Engine',
+    port: 'Auto'
   },
   {
     id: 'emaillabs',
@@ -100,7 +106,10 @@ const PROVIDER_OPTIONS = [
     shortName: 'EmailLabs',
     dailyLimit: 300,
     badge: '300 / day',
-    desc: 'Dedicated SMTP relay via smtp-relay.emaillabs.net.pl (apex domain verified)'
+    desc: 'Dedicated SMTP relay via smtp-relay.emaillabs.net.pl (apex domain verified)',
+    host: 'smtp-relay.emaillabs.net.pl',
+    protocol: 'SMTP Relay',
+    port: '587'
   },
   {
     id: 'unitpost',
@@ -108,7 +117,10 @@ const PROVIDER_OPTIONS = [
     shortName: 'Unitpost',
     dailyLimit: 200,
     badge: '200 / day',
-    desc: 'Direct REST API & SMTP delivery on apex domain @mymobpay.tech'
+    desc: 'Direct REST API & SMTP delivery on apex domain @mymobpay.tech',
+    host: 'smtp.unitpost.com',
+    protocol: 'REST API + SMTP',
+    port: '587'
   },
   {
     id: 'maileroo',
@@ -116,7 +128,10 @@ const PROVIDER_OPTIONS = [
     shortName: 'Maileroo',
     dailyLimit: 100,
     badge: '100 / day',
-    desc: 'Reliable transactional tier (~3,000/mo buffer) on smtp.maileroo.com'
+    desc: 'Reliable transactional tier (~3,000/mo buffer) on smtp.maileroo.com',
+    host: 'smtp.maileroo.com',
+    protocol: 'SMTP Relay',
+    port: '587'
   },
   {
     id: 'sendpulse',
@@ -124,7 +139,10 @@ const PROVIDER_OPTIONS = [
     shortName: 'SendPulse',
     dailyLimit: 500,
     badge: '500 / day',
-    desc: 'High-volume statement & invoice relay via smtp-pulse.com'
+    desc: 'High-volume statement & invoice relay via smtp-pulse.com',
+    host: 'smtp-pulse.com',
+    protocol: 'SMTP SSL',
+    port: '465'
   },
   {
     id: 'brevo',
@@ -132,7 +150,10 @@ const PROVIDER_OPTIONS = [
     shortName: 'Brevo',
     dailyLimit: 300,
     badge: '300 / day',
-    desc: 'Direct relay via smtp-relay.brevo.com'
+    desc: 'Direct relay via smtp-relay.brevo.com',
+    host: 'smtp-relay.brevo.com',
+    protocol: 'SMTP Relay',
+    port: '587'
   },
   {
     id: 'resend',
@@ -140,7 +161,10 @@ const PROVIDER_OPTIONS = [
     shortName: 'Resend',
     dailyLimit: 100,
     badge: '100 / day',
-    desc: 'Developer API delivery on smtp.resend.com'
+    desc: 'Developer API delivery on smtp.resend.com',
+    host: 'smtp.resend.com',
+    protocol: 'REST API',
+    port: '465'
   }
 ];
 
@@ -270,6 +294,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   // Preview Mode
   const [previewDevice, setPreviewDevice] = useState('desktop'); // 'desktop' | 'mobile'
   const [previewTab, setPreviewTab] = useState('preview'); // 'preview' | 'headers'
+  const [interpolateTokens, setInterpolateTokens] = useState(true);
 
   // Loading & Data States
   const [sending, setSending] = useState(false);
@@ -380,6 +405,19 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const insertToken = (token) => {
     setMessage(prev => (prev ? `${prev} ${token}` : token));
   };
+
+  // Interpolated message for realistic live email preview
+  const interpolatedMessage = useMemo(() => {
+    if (!message) return '';
+    if (!interpolateTokens) return message;
+
+    const targetName = recipientName.trim() || 'Merchant Partner';
+    const targetVpa = (selectedMerchantId && merchants.find(m => m.id === selectedMerchantId)?.upi_id) || 'merchant@okaxis';
+
+    return message
+      .replace(/\{\{merchant_name\}\}/g, targetName)
+      .replace(/\{\{vpa\}\}/g, targetVpa);
+  }, [message, interpolateTokens, recipientName, selectedMerchantId, merchants]);
 
   // Keyboard shortcut (Cmd+Enter or Ctrl+Enter to send)
   const handleKeyDown = (e) => {
@@ -500,16 +538,16 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   return (
     <div className="space-y-5 animate-fadeIn font-sans">
       {/* ── Studio Top Navigation Bar (Linear / Resend Style) ─────────────── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 shadow-2xs">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-xs">
         {/* Left: View Tabs */}
-        <div className="flex items-center gap-1 bg-slate-100/90 rounded-xl p-1 border border-slate-200/50">
+        <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 border border-slate-200/80">
           <button
             type="button"
             onClick={() => setActiveView('studio')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeView === 'studio'
-                ? 'bg-white text-slate-900 shadow-2xs font-bold border border-slate-200/60'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
             }`}
           >
             <Mail className="w-3.5 h-3.5 text-blue-600" />
@@ -519,16 +557,16 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
           <button
             type="button"
             onClick={() => setActiveView('outbox')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeView === 'outbox'
-                ? 'bg-white text-slate-900 shadow-2xs font-bold border border-slate-200/60'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
             }`}
           >
-            <Clock className="w-3.5 h-3.5 text-slate-500" />
+            <Clock className="w-3.5 h-3.5 text-slate-600" />
             <span>Dispatch Ledger</span>
             {outbox.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-slate-200 text-slate-700">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-slate-200 text-slate-800">
                 {outbox.length}
               </span>
             )}
@@ -537,36 +575,38 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
           <button
             type="button"
             onClick={() => setActiveView('rails')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeView === 'rails'
-                ? 'bg-white text-slate-900 shadow-2xs font-bold border border-slate-200/60'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
             }`}
           >
             <Server className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Rails &amp; Quotas</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Rails Telemetry</span>
+            <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+              Info
+            </span>
           </button>
         </div>
 
         {/* Right: Live Telemetry Capsule & Quick Controls */}
-        <div className="flex items-center gap-2 justify-between lg:justify-end">
-          <div className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+        <div className="flex items-center gap-2.5 justify-between lg:justify-end">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-mono font-bold text-slate-900">
+            <span className="font-mono font-bold text-slate-900 text-sm">
               {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
             </span>
-            <span className="text-slate-400 text-[11px] font-medium">left today</span>
-            <span className="text-slate-200">|</span>
-            <span className="text-[10px] font-mono text-slate-500 font-medium">
-              {combinedQuota.activeProvidersCount || 6} Rails Active
+            <span className="text-slate-600 text-xs font-semibold">left today</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-xs font-mono font-bold text-emerald-700">
+              {combinedQuota.activeProvidersCount || 6} Rails Ready
             </span>
           </div>
 
           <button
             type="button"
             onClick={handleSetSendToMe}
-            className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 text-xs font-bold transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
             title="Populate your own admin email for a quick test preview"
           >
             <UserCheck className="w-3.5 h-3.5 text-blue-600" />
@@ -577,7 +617,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             type="button"
             onClick={fetchHistory}
             disabled={outboxLoading}
-            className="p-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-xs transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+            className="p-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
             title="Sync live quotas & logs"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${outboxLoading ? 'animate-spin text-blue-600' : ''}`} />
@@ -589,47 +629,47 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
       {activeView === 'studio' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
           {/* Left Column: Senior Dev Email Studio Canvas (7 cols) */}
-          <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col">
             {/* Top Toolbar / Configuration Strip */}
-            <div className="p-3.5 sm:p-4 bg-slate-50/70 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              {/* Audience Mode Switcher (Pill style) */}
-              <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
+            <div className="p-3.5 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              {/* Audience Mode Switcher (High Contrast Segmented Control) */}
+              <div className="flex items-center gap-1 bg-slate-200/80 p-1 rounded-xl border border-slate-300/80 shadow-2xs">
                 <button
                   type="button"
                   onClick={() => setRecipientMode('merchant')}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'merchant'
-                      ? 'bg-blue-600 text-white shadow-2xs font-bold'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-800 hover:text-slate-950 hover:bg-white/60'
                   }`}
                 >
-                  <Building2 className="w-3 h-3" />
+                  <Building2 className="w-3.5 h-3.5" />
                   <span>Merchant</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setRecipientMode('custom')}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'custom'
-                      ? 'bg-blue-600 text-white shadow-2xs font-bold'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-800 hover:text-slate-950 hover:bg-white/60'
                   }`}
                 >
-                  <AtSign className="w-3 h-3" />
+                  <AtSign className="w-3.5 h-3.5" />
                   <span>Direct Email</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setRecipientMode('broadcast')}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'broadcast'
-                      ? 'bg-rose-600 text-white shadow-2xs font-bold'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-rose-600 text-white shadow-xs'
+                      : 'text-slate-800 hover:text-slate-950 hover:bg-white/60'
                   }`}
                 >
-                  <Radio className="w-3 h-3" />
+                  <Radio className="w-3.5 h-3.5" />
                   <span>Broadcast ({eligibleMerchants.length})</span>
                 </button>
               </div>
@@ -641,7 +681,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                   <select
                     value={selectedTemplateId}
                     onChange={(e) => handleSelectTemplate(e.target.value)}
-                    className="text-xs bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 font-semibold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer shadow-2xs transition-colors"
+                    className="text-xs bg-white border border-slate-300 rounded-xl px-3 py-1.5 font-bold text-slate-800 focus:outline-none focus:border-blue-500 cursor-pointer shadow-2xs transition-colors"
                   >
                     {EMAIL_TEMPLATES.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -655,41 +695,45 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setShowConfigDrawer(!showConfigDrawer)}
-                  className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
                     showConfigDrawer
-                      ? 'bg-slate-900 text-white border-slate-900'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100'
                   }`}
                 >
-                  <SlidersHorizontal className="w-3 h-3" />
-                  <span>Routing</span>
-                  {showConfigDrawer ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                  <span>Transmission Routing</span>
+                  {showConfigDrawer ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>
 
-            {/* Collapsible Delivery Routing Drawer */}
+            {/* High-Contrast Transmission Routing Drawer */}
             {showConfigDrawer && (
-              <div className="p-4 bg-slate-900 text-white border-b border-slate-800 animate-fadeIn space-y-3">
-                <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-800 text-slate-300">
-                  <span className="font-bold flex items-center gap-1.5">
-                    <Server className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Transmission Infrastructure &amp; Persona</span>
-                  </span>
-                  <span className="text-[11px] font-mono text-slate-400">
+              <div className="p-4 bg-slate-900 text-white border-b border-slate-800 animate-fadeIn space-y-3.5">
+                <div className="flex items-center justify-between text-xs pb-2.5 border-b border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-md bg-blue-600 flex items-center justify-center text-white">
+                      <Server className="w-3 h-3" />
+                    </div>
+                    <span className="font-bold text-white text-xs">
+                      Delivery Rail Engine &amp; Sender Persona
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-950/80 text-emerald-400 border border-emerald-800/80">
                     Failover Active Across 6 Rails
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                   <div>
-                    <label className="text-[11px] font-bold text-slate-300 block mb-1">
-                      Provider Rail
+                    <label className="text-xs font-bold text-slate-100 block mb-1.5">
+                      Provider Rail Override
                     </label>
                     <select
                       value={selectedProvider}
                       onChange={(e) => setSelectedProvider(e.target.value)}
-                      className="w-full px-2.5 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl font-semibold text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                      className="w-full px-3 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl font-bold text-white focus:outline-none focus:border-blue-500 cursor-pointer shadow-inner"
                     >
                       {PROVIDER_OPTIONS.map((p) => {
                         const tele = quotaMap[p.id];
@@ -701,19 +745,19 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                         );
                       })}
                     </select>
-                    <p className="text-[10px] text-slate-400 mt-1">
-                      Auto dynamically fails over to next rail if daily limits are reached.
+                    <p className="text-[11px] font-medium text-slate-300 mt-1.5 leading-snug">
+                      Default: Smart Auto dynamically fails over to next relay if daily quota or circuit trips.
                     </p>
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                    <label className="text-xs font-bold text-slate-100 block mb-1.5">
                       Sender Persona &amp; Identity
                     </label>
                     <select
                       value={selectedSenderFormat}
                       onChange={(e) => setSelectedSenderFormat(e.target.value)}
-                      className="w-full px-2.5 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl font-semibold text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                      className="w-full px-3 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl font-bold text-white focus:outline-none focus:border-blue-500 cursor-pointer shadow-inner"
                     >
                       {SENDER_FORMAT_OPTIONS.map((f) => (
                         <option key={f.id} value={f.id}>
@@ -721,28 +765,28 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                         </option>
                       ))}
                     </select>
-                    <p className="text-[10px] text-slate-400 mt-1">
-                      DKIM &amp; SPF aligned address displayed in recipient inbox.
+                    <p className="text-[11px] font-medium text-slate-300 mt-1.5 leading-snug">
+                      DKIM &amp; SPF aligned apex domain address displayed in customer and merchant inboxes.
                     </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Recipient Input Row (macOS / Apple Mail Style) */}
-            <div className="px-5 py-3 border-b border-slate-100 bg-white">
+            {/* Recipient Input Row (macOS / Apple Mail Style with Strong Contrast) */}
+            <div className="px-5 py-3.5 border-b border-slate-200 bg-white">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-bold text-slate-400 w-10 shrink-0">To:</span>
+                <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider w-10 shrink-0">To:</span>
 
                 {recipientMode === 'merchant' && (
                   <div className="flex-1 min-w-0">
                     {customEmail ? (
-                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-xs">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs shadow-2xs">
                         <div className="w-5 h-5 rounded-full bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0">
                           {(recipientName || 'M').charAt(0).toUpperCase()}
                         </div>
                         <span className="font-bold text-slate-900 truncate">{recipientName}</span>
-                        <span className="text-blue-700 font-mono text-[11px]">&lt;{customEmail}&gt;</span>
+                        <span className="text-blue-700 font-mono text-[11px] font-semibold">&lt;{customEmail}&gt;</span>
                         <button
                           type="button"
                           onClick={() => {
@@ -750,7 +794,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                             setSelectedMerchantId('');
                             setRecipientName('');
                           }}
-                          className="text-slate-400 hover:text-rose-600 transition-colors ml-1 cursor-pointer"
+                          className="text-slate-400 hover:text-rose-600 transition-colors ml-1 cursor-pointer p-0.5 rounded"
                           title="Remove recipient"
                         >
                           <X className="w-3.5 h-3.5" />
@@ -763,13 +807,13 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                           placeholder="Search registered store name, owner, or email..."
                           value={merchantSearch}
                           onChange={(e) => setMerchantSearch(e.target.value)}
-                          className="w-full text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none font-medium bg-transparent"
+                          className="w-full text-xs text-slate-900 placeholder:text-slate-500 focus:outline-none font-semibold bg-transparent"
                         />
 
                         {/* Search Dropdown */}
                         {isSearchDropdownMounted && (
                           <div
-                            className={`absolute left-0 right-0 top-full mt-2 max-h-52 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl divide-y divide-slate-100 z-30 ${searchDropdownClass}`}
+                            className={`absolute left-0 right-0 top-full mt-2 max-h-56 overflow-y-auto rounded-xl border border-slate-300 bg-white shadow-xl divide-y divide-slate-100 z-30 ${searchDropdownClass}`}
                             data-origin="top-center"
                           >
                             {filteredMerchantsDropdown.map(m => (
@@ -779,21 +823,21 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                                 className="p-2.5 hover:bg-slate-50 cursor-pointer text-xs flex items-center justify-between transition-colors"
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
-                                  <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-[10px] shrink-0">
+                                  <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[10px] shrink-0">
                                     {(m.business_name || m.owner_name || 'M').charAt(0).toUpperCase()}
                                   </div>
                                   <div className="min-w-0">
                                     <p className="font-bold text-slate-900 truncate">{m.business_name || m.owner_name || 'Merchant'}</p>
-                                    <p className="text-[11px] font-mono text-slate-500 truncate">{m.email}</p>
+                                    <p className="text-[11px] font-mono text-slate-600 truncate">{m.email}</p>
                                   </div>
                                 </div>
-                                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0 ml-2">
+                                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 shrink-0 ml-2 border border-slate-200">
                                   {m.subscription_status || 'free'}
                                 </span>
                               </div>
                             ))}
                             {filteredMerchantsDropdown.length === 0 && (
-                              <div className="p-3 text-center text-xs text-slate-400">No matching merchants found.</div>
+                              <div className="p-4 text-center text-xs text-slate-500 font-medium">No matching merchants found.</div>
                             )}
                           </div>
                         )}
@@ -803,28 +847,28 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 )}
 
                 {recipientMode === 'custom' && (
-                  <div className="flex-1 flex flex-col sm:flex-row items-center gap-2">
+                  <div className="flex-1 flex flex-col sm:flex-row items-center gap-2.5">
                     <input
                       type="text"
                       placeholder="Recipient Name (optional)"
                       value={recipientName}
                       onChange={(e) => setRecipientName(e.target.value)}
-                      className="w-full sm:w-1/3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none font-medium bg-transparent"
+                      className="w-full sm:w-1/3 text-xs text-slate-900 placeholder:text-slate-500 focus:outline-none font-semibold bg-transparent"
                     />
-                    <span className="hidden sm:inline text-slate-300">•</span>
+                    <span className="hidden sm:inline text-slate-400 font-bold">•</span>
                     <input
                       type="email"
                       required
                       placeholder="Email address (e.g. merchant@example.com) *"
                       value={customEmail}
                       onChange={(e) => setCustomEmail(e.target.value)}
-                      className="w-full sm:w-2/3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none font-mono font-medium bg-transparent"
+                      className="w-full sm:w-2/3 text-xs text-slate-900 placeholder:text-slate-500 focus:outline-none font-mono font-semibold bg-transparent"
                     />
                   </div>
                 )}
 
                 {recipientMode === 'broadcast' && (
-                  <div className="flex-1 text-xs text-rose-700 font-semibold flex items-center gap-1.5">
+                  <div className="flex-1 text-xs text-rose-800 font-bold flex items-center gap-1.5">
                     <Radio className="w-3.5 h-3.5 text-rose-600" />
                     <span>Broadcasting to all {eligibleMerchants.length} registered merchant accounts</span>
                   </div>
@@ -832,26 +876,29 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               </div>
             </div>
 
-            {/* Subject Line (Clean Typography) */}
-            <div className="px-5 py-3 border-b border-slate-100">
+            {/* Subject Line (Clean High-Contrast Typography) */}
+            <div className="px-5 py-3.5 border-b border-slate-200">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block mb-1">
+                Subject Line *
+              </span>
               <input
                 type="text"
                 required
-                placeholder="Subject Line *"
+                placeholder="Write a clear, descriptive subject line..."
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full text-base sm:text-lg font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none bg-transparent tracking-tight"
+                className="w-full text-base sm:text-lg font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none bg-transparent tracking-tight"
               />
             </div>
 
             {/* Editorial Formatting Bar (Linear / Resend Style) */}
-            <div className="px-5 py-2 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Insert:</span>
+            <div className="px-5 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-extrabold text-slate-600 uppercase tracking-wider mr-1">Insert Token:</span>
                 <button
                   type="button"
                   onClick={() => insertToken('{{merchant_name}}')}
-                  className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-mono hover:bg-slate-50 cursor-pointer shadow-2xs"
+                  className="px-2.5 py-1 rounded-md bg-white border border-slate-300 text-slate-800 text-[11px] font-mono font-bold hover:bg-slate-100 cursor-pointer shadow-2xs"
                   title="Insert recipient name token"
                 >
                   &#123;&#123;merchant_name&#125;&#125;
@@ -859,7 +906,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => insertToken('{{vpa}}')}
-                  className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-mono hover:bg-slate-50 cursor-pointer shadow-2xs"
+                  className="px-2.5 py-1 rounded-md bg-white border border-slate-300 text-slate-800 text-[11px] font-mono font-bold hover:bg-slate-100 cursor-pointer shadow-2xs"
                   title="Insert settlement VPA token"
                 >
                   &#123;&#123;vpa&#125;&#125;
@@ -867,7 +914,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => insertToken('https://mymobpay.tech/dashboard')}
-                  className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-mono hover:bg-slate-50 cursor-pointer shadow-2xs"
+                  className="px-2.5 py-1 rounded-md bg-white border border-slate-300 text-slate-800 text-[11px] font-mono font-bold hover:bg-slate-100 cursor-pointer shadow-2xs"
                   title="Insert portal URL"
                 >
                   portal_url
@@ -879,14 +926,14 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setIncludeCta(!includeCta)}
-                  className={`px-2 py-1 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
                     includeCta
-                      ? 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
-                      : 'bg-white text-slate-500 border-slate-200 hover:text-slate-800'
+                      ? 'bg-blue-50 text-blue-800 border-blue-300 shadow-2xs'
+                      : 'bg-white text-slate-700 border-slate-300 hover:text-slate-900'
                   }`}
                 >
-                  <ExternalLink className="w-3 h-3" />
-                  <span>Action Button</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Call to Action Button</span>
                   <span className={`w-1.5 h-1.5 rounded-full ${includeCta ? 'bg-blue-600' : 'bg-slate-300'}`} />
                 </button>
               </div>
@@ -901,45 +948,45 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full text-xs sm:text-sm text-slate-800 placeholder:text-slate-300 border-0 focus:outline-none resize-none leading-relaxed font-sans bg-transparent min-h-[220px]"
+                className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 border-0 focus:outline-none resize-none leading-relaxed font-sans bg-transparent min-h-[220px]"
               />
 
               {/* Inline Action Button Editor Block */}
               {includeCta && (
-                <div className="mt-4 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 animate-fadeIn space-y-2.5">
+                <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 animate-fadeIn space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
                       <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
-                      <span>Call-to-Action Link Block</span>
+                      <span>Action Button Configuration</span>
                     </span>
                     <button
                       type="button"
                       onClick={() => setIncludeCta(false)}
-                      className="text-slate-400 hover:text-rose-600 transition-colors"
+                      className="text-slate-400 hover:text-rose-600 transition-colors p-1"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
-                      <span className="text-[10px] font-semibold text-slate-500 block mb-1">Button Label</span>
+                      <span className="text-[11px] font-bold text-slate-700 block mb-1">Button Label</span>
                       <input
                         type="text"
                         placeholder="e.g. Open Merchant Portal"
                         value={ctaText}
                         onChange={(e) => setCtaText(e.target.value)}
-                        className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-semibold text-slate-800"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-bold text-slate-900"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] font-semibold text-slate-500 block mb-1">Target URL</span>
+                      <span className="text-[11px] font-bold text-slate-700 block mb-1">Target URL</span>
                       <input
                         type="url"
                         placeholder="https://mymobpay.tech/dashboard"
                         value={ctaUrl}
                         onChange={(e) => setCtaUrl(e.target.value)}
-                        className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-mono text-slate-700"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-mono font-medium text-slate-800"
                       />
                     </div>
                   </div>
@@ -948,18 +995,18 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             </div>
 
             {/* Studio Bottom Command Bar */}
-            <div className="p-4 bg-slate-50/80 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-xs text-slate-500">
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-slate-700">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="font-medium">
+                <span className="font-bold text-slate-900">
                   {selectedProvider === 'auto' ? 'Auto Failover' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
                 </span>
                 <span className="text-slate-300">•</span>
-                <span className="font-mono text-[11px] text-slate-600">{currentSenderPreview.email}</span>
+                <span className="font-mono text-xs font-semibold text-slate-700">{currentSenderPreview.email}</span>
               </div>
 
               <div className="flex items-center gap-3 justify-end">
-                <span className="hidden sm:inline text-[11px] font-mono text-slate-400">
+                <span className="hidden sm:inline text-[11px] font-mono text-slate-500 font-semibold">
                   Ctrl + Enter to send
                 </span>
 
@@ -967,7 +1014,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                   type="button"
                   onClick={handleSendEmail}
                   disabled={sending}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:shadow"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:shadow"
                 >
                   {sending ? (
                     <>
@@ -986,28 +1033,28 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
           </div>
 
           {/* Right Column: Superhuman / Resend Live Email Inspector (5 cols) */}
-          <div className="lg:col-span-5 bg-slate-100/90 border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-3 sticky top-20">
+          <div className="lg:col-span-5 bg-slate-100 border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3 sticky top-20">
             {/* Inspector Header & Controls */}
             <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
-              <div className="flex items-center gap-1.5 bg-white p-0.5 rounded-lg border border-slate-200 shadow-2xs">
+              <div className="flex items-center gap-1.5 bg-white p-0.5 rounded-lg border border-slate-300 shadow-2xs">
                 <button
                   type="button"
                   onClick={() => setPreviewTab('preview')}
-                  className={`px-2 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
                     previewTab === 'preview'
-                      ? 'bg-blue-600 text-white font-bold'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-700 hover:text-slate-900'
                   }`}
                 >
-                  Preview
+                  Live Preview
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreviewTab('headers')}
-                  className={`px-2 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                     previewTab === 'headers'
-                      ? 'bg-blue-600 text-white font-bold'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-700 hover:text-slate-900'
                   }`}
                 >
                   <Terminal className="w-3 h-3" />
@@ -1015,78 +1062,93 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 </button>
               </div>
 
-              {/* Viewport Switcher */}
-              <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 shadow-2xs">
+              {/* Viewport Switcher & Token Interpolation Switch */}
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setPreviewDevice('desktop')}
-                  className={`p-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                    previewDevice === 'desktop'
-                      ? 'bg-slate-900 text-white'
-                      : 'text-slate-500 hover:text-slate-800'
+                  onClick={() => setInterpolateTokens(!interpolateTokens)}
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono transition-colors border ${
+                    interpolateTokens
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
                   }`}
-                  title="Desktop View"
+                  title="Toggle simulated token interpolation in preview"
                 >
-                  <Monitor className="w-3 h-3" />
+                  {interpolateTokens ? 'Tags: On' : 'Tags: Raw'}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setPreviewDevice('mobile')}
-                  className={`p-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                    previewDevice === 'mobile'
-                      ? 'bg-slate-900 text-white'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                  title="Mobile View"
-                >
-                  <Smartphone className="w-3 h-3" />
-                </button>
+
+                <div className="flex items-center bg-white border border-slate-300 rounded-lg p-0.5 shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewDevice('desktop')}
+                    className={`p-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                      previewDevice === 'desktop'
+                        ? 'bg-slate-900 text-white'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                    title="Desktop View"
+                  >
+                    <Monitor className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewDevice('mobile')}
+                    className={`p-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                      previewDevice === 'mobile'
+                        ? 'bg-slate-900 text-white'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                    title="Mobile View"
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Email Canvas Window */}
             {previewTab === 'preview' ? (
               <div className={`transition-all duration-300 ${previewDevice === 'mobile' ? 'max-w-[320px] mx-auto' : 'w-full'}`}>
-                <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+                <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden">
                   {/* Email Window Chrome */}
-                  <div className="bg-slate-50 px-3 py-2 border-b border-slate-200/80 flex items-center justify-between">
+                  <div className="bg-slate-100 px-3.5 py-2 border-b border-slate-200 flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
                       <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
                       <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
                     </div>
-                    <span className="text-[10px] font-mono font-medium text-slate-500">
+                    <span className="text-[11px] font-mono font-bold text-slate-700">
                       {currentSenderPreview.email}
                     </span>
-                    <span className="text-[9px] font-bold text-slate-600 bg-slate-200/80 px-1.5 py-0.5 rounded font-mono">
+                    <span className="text-[10px] font-bold text-slate-800 bg-slate-200 px-2 py-0.5 rounded font-mono border border-slate-300">
                       {selectedProvider === 'auto' ? 'Auto' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
                     </span>
                   </div>
 
                   {/* Email Content Frame */}
-                  <div className="p-4 space-y-3.5 max-h-[500px] overflow-y-auto text-xs">
+                  <div className="p-4 space-y-3.5 max-h-[520px] overflow-y-auto text-xs">
                     {/* Header Logo */}
-                    <div className="text-center pb-2 border-b border-slate-100 flex items-center justify-center gap-2">
+                    <div className="text-center pb-2.5 border-b border-slate-100 flex items-center justify-center gap-2">
                       <div className="w-6 h-6 rounded-md bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-2xs">
                         M
                       </div>
                       <div className="text-left">
-                        <span className="font-bold text-xs text-slate-900 tracking-tight block leading-tight">MyMobPay</span>
-                        <span className="text-[8px] text-slate-400 font-bold block">Direct Bank UPI Rails</span>
+                        <span className="font-extrabold text-xs text-slate-900 tracking-tight block leading-tight">MyMobPay</span>
+                        <span className="text-[8px] text-slate-500 font-bold block">Direct Bank UPI Rails</span>
                       </div>
                     </div>
 
-                    {/* Meta headers */}
-                    <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 space-y-1 text-[11px]">
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-slate-400 font-semibold text-[10px] w-8 shrink-0">From:</span>
-                        <span className="font-medium text-slate-800 truncate">
+                    {/* Meta headers (High Contrast) */}
+                    <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1 text-[11px]">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-slate-600 font-extrabold text-[10px] w-10 shrink-0">From:</span>
+                        <span className="font-bold text-slate-900 truncate">
                           {currentSenderPreview.name} &lt;{currentSenderPreview.email}&gt;
                         </span>
                       </div>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-slate-400 font-semibold text-[10px] w-8 shrink-0">To:</span>
-                        <span className="font-mono text-slate-700 truncate">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-slate-600 font-extrabold text-[10px] w-10 shrink-0">To:</span>
+                        <span className="font-mono font-bold text-slate-800 truncate">
                           {customEmail || 'merchant@example.com'}
                         </span>
                       </div>
@@ -1094,19 +1156,19 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
 
                     {/* Subject */}
                     <div>
-                      <h4 className="font-bold text-slate-900 text-sm leading-snug">
+                      <h4 className="font-extrabold text-slate-900 text-sm leading-snug">
                         {subject || 'Subject line will appear here...'}
                       </h4>
                     </div>
 
                     {/* Greeting */}
-                    <p className="font-semibold text-slate-800">
+                    <p className="font-bold text-slate-900">
                       Hello {recipientName.trim() || 'Merchant Partner'},
                     </p>
 
                     {/* Message Body */}
-                    <div className="text-slate-700 leading-relaxed space-y-2 whitespace-pre-line">
-                      {message || 'Type your email message on the left to see the instant live preview here.'}
+                    <div className="text-slate-800 leading-relaxed space-y-2 whitespace-pre-line text-xs font-normal">
+                      {interpolatedMessage || 'Type your email message on the left to see the instant live preview here.'}
                     </div>
 
                     {/* CTA Button Preview */}
@@ -1119,13 +1181,13 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                     )}
 
                     {/* Security Notice */}
-                    <div className="p-2.5 rounded-lg bg-slate-50 border-l-2 border-blue-600 text-[10px] text-slate-500 leading-relaxed">
-                      <strong>Zero-Commission Rails:</strong> Customer UPI checkouts settle directly into your verified bank account with 0% MDR.
+                    <div className="p-2.5 rounded-lg bg-slate-50 border-l-2 border-blue-600 text-[10px] text-slate-700 leading-relaxed font-medium">
+                      <strong className="text-slate-900 font-bold">Zero-Commission Rails:</strong> Customer UPI checkouts settle directly into your verified bank account with 0% MDR.
                     </div>
 
                     {/* Footer */}
-                    <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 text-center space-y-0.5">
-                      <p className="font-semibold text-slate-600">MyMobPay Merchant Operations</p>
+                    <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-500 text-center space-y-0.5">
+                      <p className="font-bold text-slate-700">MyMobPay Merchant Operations</p>
                       <p>&copy; 2026 MyMobPay Payments Private Limited</p>
                     </div>
                   </div>
@@ -1133,20 +1195,20 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               </div>
             ) : (
               /* Raw Headers / MIME Telemetry Inspector */
-              <div className="bg-slate-900 rounded-xl p-3.5 text-slate-300 font-mono text-[11px] space-y-2 max-h-[500px] overflow-y-auto">
-                <div className="text-emerald-400 font-bold border-b border-slate-800 pb-1 flex items-center justify-between">
+              <div className="bg-slate-950 rounded-xl p-4 text-slate-200 font-mono text-[11px] space-y-2 max-h-[520px] overflow-y-auto border border-slate-800 shadow-inner">
+                <div className="text-emerald-400 font-bold border-b border-slate-800 pb-1.5 flex items-center justify-between">
                   <span>MIME ENVELOPE INSPECTION</span>
-                  <span className="text-[9px] text-slate-500">RFC 5322</span>
+                  <span className="text-[10px] text-slate-400">RFC 5322</span>
                 </div>
-                <div className="space-y-1 text-slate-400">
-                  <p><span className="text-blue-400">From:</span> {currentSenderPreview.name} &lt;{currentSenderPreview.email}&gt;</p>
-                  <p><span className="text-blue-400">To:</span> {customEmail || 'merchant@example.com'}</p>
-                  <p><span className="text-blue-400">Subject:</span> {subject || '(no subject)'}</p>
-                  <p><span className="text-blue-400">Date:</span> {new Date().toUTCString()}</p>
-                  <p><span className="text-blue-400">X-Mailer-Rail:</span> {selectedProvider === 'auto' ? 'smart-router-failover' : selectedProvider}</p>
-                  <p><span className="text-blue-400">X-Sender-Format:</span> {selectedSenderFormat}</p>
-                  <p><span className="text-blue-400">Authentication-Results:</span> spf=pass; dkim=pass header.i=@mymobpay.tech</p>
-                  <p><span className="text-blue-400">Content-Type:</span> multipart/alternative; boundary=&quot;mmp_mime_part&quot;</p>
+                <div className="space-y-1.5 text-slate-300">
+                  <p><span className="text-blue-400 font-bold">From:</span> {currentSenderPreview.name} &lt;{currentSenderPreview.email}&gt;</p>
+                  <p><span className="text-blue-400 font-bold">To:</span> {customEmail || 'merchant@example.com'}</p>
+                  <p><span className="text-blue-400 font-bold">Subject:</span> {subject || '(no subject)'}</p>
+                  <p><span className="text-blue-400 font-bold">Date:</span> {new Date().toUTCString()}</p>
+                  <p><span className="text-blue-400 font-bold">X-Mailer-Rail:</span> {selectedProvider === 'auto' ? 'smart-router-failover' : selectedProvider}</p>
+                  <p><span className="text-blue-400 font-bold">X-Sender-Format:</span> {selectedSenderFormat}</p>
+                  <p><span className="text-emerald-400 font-bold">Authentication-Results:</span> spf=pass; dkim=pass header.i=@mymobpay.tech</p>
+                  <p><span className="text-blue-400 font-bold">Content-Type:</span> multipart/alternative; boundary=&quot;mmp_mime_part&quot;</p>
                 </div>
               </div>
             )}
@@ -1156,14 +1218,14 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
 
       {/* ── View 2: Dispatch Ledger (Outbox History) ──────────────────── */}
       {activeView === 'outbox' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
             <div>
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-blue-600" />
                 <span>Transmission Ledger &amp; Audit Trail</span>
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Complete delivery history with provider rail and sender persona tracking.
               </p>
             </div>
@@ -1173,7 +1235,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               <select
                 value={outboxStatusFilter}
                 onChange={(e) => setOutboxStatusFilter(e.target.value)}
-                className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 font-semibold text-slate-700 focus:outline-none cursor-pointer"
+                className="text-xs bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 font-bold text-slate-800 focus:outline-none cursor-pointer"
               >
                 <option value="all">All Status</option>
                 <option value="delivered">Delivered</option>
@@ -1188,77 +1250,77 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                   placeholder="Search outbox..."
                   value={outboxSearch}
                   onChange={(e) => setOutboxSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-blue-500 font-semibold text-slate-900 placeholder:text-slate-400"
                 />
               </div>
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-slate-200/80">
-            <table className="min-w-full divide-y divide-slate-100 text-xs">
-              <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <table className="min-w-full divide-y divide-slate-200 text-xs">
+              <thead className="bg-slate-50 text-slate-700 font-bold text-[10px] uppercase tracking-wider">
                 <tr>
-                  <th className="px-4 py-2.5 text-left">Recipient</th>
-                  <th className="px-4 py-2.5 text-left">Subject &amp; Body</th>
-                  <th className="px-4 py-2.5 text-left">Rail</th>
-                  <th className="px-4 py-2.5 text-left">Persona</th>
-                  <th className="px-4 py-2.5 text-left">Time (IST)</th>
-                  <th className="px-4 py-2.5 text-center">Status</th>
-                  <th className="px-4 py-2.5 text-right">Actions</th>
+                  <th className="px-4 py-3 text-left">Recipient</th>
+                  <th className="px-4 py-3 text-left">Subject &amp; Body</th>
+                  <th className="px-4 py-3 text-left">Rail</th>
+                  <th className="px-4 py-3 text-left">Persona</th>
+                  <th className="px-4 py-3 text-left">Time (IST)</th>
+                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
                 {outboxLoading ? (
                   <tr>
-                    <td colSpan="7" className="py-8 text-center text-slate-400">
-                      <RefreshCw className="w-4 h-4 animate-spin inline-block mr-2" />
+                    <td colSpan="7" className="py-8 text-center text-slate-500 font-medium">
+                      <RefreshCw className="w-4 h-4 animate-spin inline-block mr-2 text-blue-600" />
                       Loading outbox records...
                     </td>
                   </tr>
                 ) : filteredOutbox.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="py-12 text-center text-slate-400">
+                    <td colSpan="7" className="py-12 text-center text-slate-500 font-medium">
                       No dispatched emails found in outbox history.
                     </td>
                   </tr>
                 ) : (
                   filteredOutbox.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-4 py-2.5">
+                      <td className="px-4 py-3">
                         <span className="font-bold text-slate-900 block">{item.recipient_name || 'Recipient'}</span>
-                        <span className="font-mono text-[11px] text-slate-500">{item.to}</span>
+                        <span className="font-mono text-[11px] text-slate-600">{item.to}</span>
                       </td>
-                      <td className="px-4 py-2.5 max-w-xs">
+                      <td className="px-4 py-3 max-w-xs">
                         <span className="font-bold text-slate-800 block truncate">{item.subject}</span>
-                        <span className="text-[11px] text-slate-400 block truncate">{item.snippet || 'No message content'}</span>
+                        <span className="text-[11px] text-slate-500 block truncate">{item.snippet || 'No message content'}</span>
                       </td>
-                      <td className="px-4 py-2.5 font-mono text-[11px]">
-                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60 text-[10px] font-bold capitalize">
+                      <td className="px-4 py-3 font-mono text-[11px]">
+                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold capitalize">
                           {item.provider || 'smart-router'}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5 font-mono text-[11px] text-slate-600">
-                        <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
+                      <td className="px-4 py-3 font-mono text-[11px]">
+                        <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-[10px] font-bold">
                           {item.sender_format ? `${item.sender_format}@` : 'auto@'}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                      <td className="px-4 py-3 font-mono text-[11px] text-slate-700 whitespace-nowrap">
                         {item.sent_at ? new Date(item.sent_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Just now'}
                       </td>
-                      <td className="px-4 py-2.5 text-center">
+                      <td className="px-4 py-3 text-center">
                         {item.status === 'delivered' ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                             <Check className="w-3 h-3 text-emerald-600" />
                             Delivered
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200">
                             <AlertCircle className="w-3 h-3 text-rose-600" />
                             Failed
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-2.5 text-right">
+                      <td className="px-4 py-3 text-right">
                         <button
                           type="button"
                           onClick={() => {
@@ -1276,7 +1338,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                             setActiveView('studio');
                             if (showToast) showToast('Loaded into studio composer', 'info');
                           }}
-                          className="text-xs text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded hover:bg-blue-50 cursor-pointer"
+                          className="text-xs text-blue-600 hover:text-blue-800 font-bold px-2.5 py-1 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"
                         >
                           Load Draft
                         </button>
@@ -1290,35 +1352,62 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
         </div>
       )}
 
-      {/* ── View 3: Rails & Infrastructure Telemetry ───────────────────── */}
+      {/* ── View 3: Rails & Infrastructure Telemetry (Informational Dashboard Only) ───────────────────── */}
       {activeView === 'rails' && (
         <div className="space-y-4">
-          {/* Capacity Hero Card */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs bg-gradient-to-br from-slate-50/80 via-white to-blue-50/30">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Header Status & Live Telemetry Strip */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40">
+                <Activity className="w-4 h-4" />
+              </div>
               <div>
-                <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md">
-                  Active Multi-Rail Capacity
-                </span>
-                <div className="flex items-baseline gap-3 mt-1.5 flex-wrap">
-                  <h3 className="text-3xl font-extrabold font-mono text-slate-900">
-                    {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
-                  </h3>
-                  <span className="text-xs font-bold text-slate-600">
-                    emails remaining today out of {(combinedQuota.totalLimit ?? 1500).toLocaleString()} capacity
+                <div className="flex items-center gap-2">
+                  <h4 className="text-xs font-bold text-white">Live Multi-Rail Telemetry Matrix</h4>
+                  <span className="text-[10px] font-mono px-2 py-0.2 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold">
+                    Read-Only Monitoring
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  Transmissions reset every 24 hours at 00:00 IST. Automatic circuit breakers isolate rate-limited providers.
+                <p className="text-[11px] text-slate-300">
+                  Real-time transmission counters and circuit breaker status. Select active rails in the Studio Composer.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs font-mono">
+              <span className="text-slate-400">Timezone:</span>
+              <span className="text-white font-bold bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Asia/Kolkata (IST)</span>
+              <span className="text-slate-400 ml-1">Reset:</span>
+              <span className="text-emerald-400 font-bold">00:00 IST</span>
+            </div>
+          </div>
+
+          {/* Capacity Hero Card */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs bg-gradient-to-br from-slate-50 via-white to-blue-50/40">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-blue-800 bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-md">
+                  Aggregated Daily Transmission Capacity
+                </span>
+                <div className="flex items-baseline gap-3 mt-2 flex-wrap">
+                  <h3 className="text-4xl font-extrabold font-mono text-slate-900 tracking-tight">
+                    {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
+                  </h3>
+                  <span className="text-xs font-bold text-slate-700">
+                    emails remaining today out of {(combinedQuota.totalLimit ?? 1500).toLocaleString()} daily ceiling
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mt-1 font-medium">
+                  Dynamic multi-rail dispatcher auto-routes transactional traffic with sub-second failover and DKIM/SPF alignment.
                 </p>
               </div>
 
-              <div className="sm:w-64 space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+              <div className="sm:w-72 space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-800">
                   <span>Daily Utilization</span>
-                  <span className="font-mono">{combinedQuota.totalSentToday || 0} sent</span>
+                  <span className="font-mono text-blue-600">{combinedQuota.totalSentToday || 0} sent today</span>
                 </div>
-                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                     style={{
@@ -1326,18 +1415,21 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                     }}
                   />
                 </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
+                  <span>0% MDR Rail</span>
+                  <span>100% In-House Capacity</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* 6 Individual Rails Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* 6 Informational Telemetry Cards (Purely Info, Not Clickable) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {PROVIDER_OPTIONS.filter(p => p.id !== 'auto').map((p) => {
               const tele = quotaMap[p.id] || {};
               const limit = tele.dailyLimit || p.dailyLimit;
               const sent = tele.sentToday || 0;
               const remaining = tele.remaining != null ? tele.remaining : Math.max(0, limit - sent);
-              const isSelected = selectedProvider === p.id;
               const isConfigured = tele.isConfigured !== false;
               const isCircuitLimited = tele.circuit ? tele.circuit.isLimited : false;
               const percentLeft = limit > 0 ? Math.round((remaining / limit) * 100) : 0;
@@ -1345,38 +1437,65 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               return (
                 <div
                   key={p.id}
-                  onClick={() => {
-                    setSelectedProvider(isSelected ? 'auto' : p.id);
-                    setActiveView('studio');
-                    if (showToast) {
-                      showToast(isSelected ? 'Provider set to Smart Auto' : `Provider locked to ${p.name}`, 'info');
-                    }
-                  }}
-                  className={`p-4 rounded-xl border transition-all cursor-pointer relative ${
-                    isSelected
-                      ? 'bg-blue-50/90 border-blue-400 ring-2 ring-blue-500/20 shadow-xs'
-                      : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs'
-                  }`}
+                  className="p-4 rounded-2xl border border-slate-200 bg-white shadow-2xs space-y-3"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-slate-900">{p.name}</span>
-                    <span className={`w-2 h-2 rounded-full ${!isConfigured ? 'bg-slate-300' : isCircuitLimited ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                        <HardDrive className="w-3.5 h-3.5 text-blue-600" />
+                        <span>{p.name}</span>
+                      </h4>
+                      <span className="text-[10px] font-mono text-slate-500 font-semibold">{p.protocol} • Port {p.port}</span>
+                    </div>
+
+                    {/* Operational Badge */}
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border">
+                      {isCircuitLimited ? (
+                        <span className="bg-amber-50 text-amber-800 border-amber-200 flex items-center gap-1 px-1.5 py-0.5 rounded-full">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                          Cooldown
+                        </span>
+                      ) : !isConfigured ? (
+                        <span className="bg-slate-50 text-slate-600 border-slate-200 flex items-center gap-1 px-1.5 py-0.5 rounded-full">
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                          Unconfigured
+                        </span>
+                      ) : (
+                        <span className="bg-emerald-50 text-emerald-800 border-emerald-200 flex items-center gap-1 px-1.5 py-0.5 rounded-full">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          Operational
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <p className="text-[11px] text-slate-500 leading-snug line-clamp-2 mb-3">
-                    {p.desc}
-                  </p>
+                  {/* Relay Endpoint */}
+                  <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 text-[11px] font-mono text-slate-700 truncate">
+                    <span className="text-slate-400 mr-1">Host:</span>
+                    <span className="font-semibold">{p.host}</span>
+                  </div>
 
+                  {/* Quota Numbers */}
                   <div className="flex items-baseline justify-between text-xs font-mono">
-                    <span className="text-base font-extrabold text-slate-900">{remaining} left</span>
-                    <span className="text-slate-500">{sent} / {limit} sent</span>
+                    <span className="text-lg font-black text-slate-900 tracking-tight">{remaining} left</span>
+                    <span className="text-slate-600 font-bold">{sent} / {limit} sent</span>
                   </div>
 
-                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                  {/* Progress Bar */}
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full ${percentLeft < 20 ? 'bg-rose-500' : percentLeft < 50 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        percentLeft < 20 ? 'bg-rose-500' : percentLeft < 50 ? 'bg-amber-500' : 'bg-emerald-500'
+                      }`}
                       style={{ width: `${Math.min(100, Math.max(0, percentLeft))}%` }}
                     />
+                  </div>
+
+                  {/* Footer Meta */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                    <span>SPF &amp; DKIM: Aligned</span>
+                    <span className="font-mono text-slate-600">Daily: {limit} cap</span>
                   </div>
                 </div>
               );
