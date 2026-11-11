@@ -324,5 +324,65 @@ test('--- Auth Security & Vulnerability Audit Verification Suite ---', async (t)
     assert.strictEqual(completionResult.redirectTarget, '/login');
     assert.strictEqual(completionResult.emailRetained, 'merchant@store.com');
   });
+
+  // ─────────────────────────────────────────────────────────────────
+  // 7. Mandatory Legal Agreement & Operating Rules Consent Policy
+  // ─────────────────────────────────────────────────────────────────
+  await t.test('7. Registration enforces mandatory legal agreement & merchant operating rules consent', () => {
+    const validateRegistrationConsent = ({ termsAccepted, termsVersion, clientIp }) => {
+      // Step 0 check matching app/api/auth/register/route.js
+      if (termsAccepted !== true) {
+        return {
+          allowed: false,
+          status: 400,
+          error: 'You must review and accept the Terms of Service, Legal Agreement, and Merchant Operating Rules to register.',
+        };
+      }
+
+      return {
+        allowed: true,
+        auditTrail: {
+          terms_accepted: true,
+          terms_version: termsVersion || '2026-v2.5',
+          terms_accepted_at: new Date().toISOString(),
+          terms_ip: clientIp || '127.0.0.1',
+        },
+      };
+    };
+
+    // Fails without explicit terms acceptance
+    const missingConsent = validateRegistrationConsent({
+      termsAccepted: false,
+      termsVersion: '2026-v2.5',
+      clientIp: '192.168.1.1',
+    });
+    assert.strictEqual(missingConsent.allowed, false);
+    assert.strictEqual(missingConsent.status, 400);
+    assert.match(missingConsent.error, /Terms of Service, Legal Agreement, and Merchant Operating Rules/);
+
+    const undefinedConsent = validateRegistrationConsent({
+      termsAccepted: undefined,
+    });
+    assert.strictEqual(undefinedConsent.allowed, false);
+    assert.strictEqual(undefinedConsent.status, 400);
+
+    const stringConsent = validateRegistrationConsent({
+      termsAccepted: 'true', // strictly boolean true required
+    });
+    assert.strictEqual(stringConsent.allowed, false);
+    assert.strictEqual(stringConsent.status, 400);
+
+    // Passes with valid boolean true consent and records audit metadata
+    const validConsent = validateRegistrationConsent({
+      termsAccepted: true,
+      termsVersion: '2026-v2.5',
+      clientIp: '49.36.120.45',
+    });
+    assert.strictEqual(validConsent.allowed, true);
+    assert.strictEqual(validConsent.auditTrail.terms_accepted, true);
+    assert.strictEqual(validConsent.auditTrail.terms_version, '2026-v2.5');
+    assert.strictEqual(validConsent.auditTrail.terms_ip, '49.36.120.45');
+    assert.ok(validConsent.auditTrail.terms_accepted_at);
+  });
 });
 

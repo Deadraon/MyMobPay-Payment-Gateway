@@ -3,17 +3,19 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { 
-  Loader2, Lock, Mail, ArrowRight, ShieldCheck, 
+import {
+  Loader2, Lock, Mail, ArrowRight, ShieldCheck,
   CheckCircle2, Building2, QrCode, Phone, Smartphone,
   Zap, Eye, EyeOff, AlertCircle, X, RefreshCw, MessageCircle,
-  Link2, Check, UserPlus, ShieldAlert, ChevronLeft, Globe
+  Link2, Check, UserPlus, ShieldAlert, ChevronLeft, Globe,
+  Scale, FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
 
 import { useModalTransition } from '@/components/useModalTransition';
 import { validateStrongPassword, getPasswordCriteria } from '@/lib/passwordValidation';
+import LegalAgreementModal from '@/components/LegalAgreementModal';
 
 // ── Helper: Detect Bank Name & Styling from UPI ID ──
 const getBankFromUpi = (upi) => {
@@ -343,6 +345,11 @@ export default function LoginPage() {
   const [qrTimer, setQrTimer] = useState(45);
   const [qrChallenge, setQrChallenge] = useState('mymob-auth-session');
   const { isMounted: isQrModalMounted, modalClass: qrModalClass, overlayClass: qrOverlayClass } = useModalTransition(showQrModal);
+
+  // Legal Agreement & Operational Guidelines Acceptance (Mandatory for new merchants)
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showLegalModal, setShowLegalModal] = useState(false);
+  const [legalModalTab, setLegalModalTab] = useState('overview');
 
   // Refs to allow onAuthStateChange callback to access current UI state synchronously
   const modeRef = useRef(mode);
@@ -1204,6 +1211,13 @@ export default function LoginPage() {
         return;
       }
 
+      // ── Enforce Mandatory Legal Agreement & Guidelines Acceptance ──
+      if (!termsAccepted) {
+        isRegistrationSubmittedRef.current = false;
+        setError('Please review and accept the Terms of Service, Legal Agreement, and Merchant Operating Rules to continue.');
+        return;
+      }
+
       // ── Pre-check all registration details before proceeding ──
       try {
         const checkRes = await fetch('/api/auth/check-details', {
@@ -1267,6 +1281,9 @@ export default function LoginPage() {
             phone: phone.trim(),
             websiteUrl: noWebsite ? '' : websiteUrl.trim(),
             userId: oauthUserId || null,
+            termsAccepted: true,
+            termsVersion: '2026-v2.5',
+            termsAcceptedAt: new Date().toISOString(),
           }),
         });
 
@@ -2433,6 +2450,44 @@ export default function LoginPage() {
                                   <span className="font-semibold text-[#0d253d] font-sans">{upiId || '—'}</span>
                                 </div>
                               </div>
+
+                              {/* Legal Agreement & Operating Rules Acceptance */}
+                              <div className="p-3.5 rounded-2xl bg-white border border-[#e2e8f0] space-y-2 shadow-2xs">
+                                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                                  <input
+                                    type="checkbox"
+                                    checked={termsAccepted}
+                                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                                    className="mt-0.5 w-4 h-4 rounded text-[#0EA5E9] focus:ring-[#0EA5E9] border-[#cbd5e1] cursor-pointer"
+                                  />
+                                  <span className="text-[11px] sm:text-xs text-[#0d253d] leading-snug">
+                                    I have read and agree to the{' '}
+                                    <button
+                                      type="button"
+                                      onClick={() => { setLegalModalTab('overview'); setShowLegalModal(true); }}
+                                      className="font-bold text-[#0284C7] hover:underline cursor-pointer"
+                                    >
+                                      Terms &amp; Legal Agreement
+                                    </button>
+                                    , and confirm my business complies with the{' '}
+                                    <button
+                                      type="button"
+                                      onClick={() => { setLegalModalTab('prohibited'); setShowLegalModal(true); }}
+                                      className="font-bold text-[#0284C7] hover:underline cursor-pointer"
+                                    >
+                                      Acceptable Use Rules
+                                    </button>
+                                    .
+                                  </span>
+                                </label>
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pl-6 text-[10px] text-[#64748d] font-medium">
+                                  <span>Non-Custodial (RBI PSS Act 2007)</span>
+                                  <span>•</span>
+                                  <span>0% Escrow</span>
+                                  <span>•</span>
+                                  <span>Direct Bank Settlements</span>
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -2474,7 +2529,7 @@ export default function LoginPage() {
                               (oauthStep === 2 && businessName.trim().length < 2) ||
                               (oauthStep === 3 && !noWebsite && websiteUrl.trim().length > 0 && !/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/.test(websiteUrl.trim())) ||
                               (oauthStep === 4 && (!upiId.trim().includes('@') || upiId.trim().length < 5)) ||
-                              (oauthStep === 5 && (phone.trim().length !== 10 || !/^[6-9]\d{9}$/.test(phone.trim())))
+                              (oauthStep === 5 && (phone.trim().length !== 10 || !/^[6-9]\d{9}$/.test(phone.trim()) || !termsAccepted))
                             }
                             className="flex-1 h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
                           >
@@ -2484,6 +2539,18 @@ export default function LoginPage() {
                                 <span>{oauthStep === 5 ? 'Creating Merchant Account...' : 'Verifying...'}</span>
                               </>
                             ) : oauthStep === 5 ? (
+                              !termsAccepted ? (
+                                <>
+                                  <Scale className="w-4 h-4" />
+                                  <span>Accept Agreement to Continue</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>Complete Setup &amp; Launch Dashboard</span>
+                                  <ArrowRight className="w-4 h-4" />
+                                </>
+                              )
+                            ) : (
                               <>
                                 <span>Complete Setup &amp; Launch Dashboard</span>
                                 <ArrowRight className="w-4 h-4" />
@@ -2784,12 +2851,50 @@ export default function LoginPage() {
                         </p>
                       </div>
 
+                      {/* Legal Agreement & Operating Rules Acceptance */}
+                      <div className="p-3.5 rounded-2xl bg-[#f8fafc] border border-[#e2e8f0] space-y-2 shadow-2xs">
+                        <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={termsAccepted}
+                            onChange={(e) => setTermsAccepted(e.target.checked)}
+                            className="mt-0.5 w-4 h-4 rounded text-[#0EA5E9] focus:ring-[#0EA5E9] border-[#cbd5e1] cursor-pointer"
+                          />
+                          <span className="text-[11px] sm:text-xs text-[#0d253d] leading-snug">
+                            I have read and agree to the{' '}
+                            <button
+                              type="button"
+                              onClick={() => { setLegalModalTab('overview'); setShowLegalModal(true); }}
+                              className="font-bold text-[#0284C7] hover:underline cursor-pointer"
+                            >
+                              Terms of Service &amp; Legal Agreement
+                            </button>
+                            , and confirm compliance with{' '}
+                            <button
+                              type="button"
+                              onClick={() => { setLegalModalTab('prohibited'); setShowLegalModal(true); }}
+                              className="font-bold text-[#0284C7] hover:underline cursor-pointer"
+                            >
+                              Acceptable Use Rules
+                            </button>
+                            .
+                          </span>
+                        </label>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pl-6 text-[10px] text-[#64748d] font-medium">
+                          <span>RBI PSS Act 2007 (Non-Custodial)</span>
+                          <span>•</span>
+                          <span>0% Escrow</span>
+                          <span>•</span>
+                          <span>Direct Settlement</span>
+                        </div>
+                      </div>
+
                       {/* Submit Button */}
                       <button
                         type="submit"
-                        disabled={loading || !isEmailVerified || !(passwordCriteria?.isValid || passwordCriteria?.allMet) || !businessName.trim() || !upiId.trim() || phone.replace(/\D/g, '').length !== 10}
+                        disabled={loading || !isEmailVerified || !(passwordCriteria?.isValid || passwordCriteria?.allMet) || !businessName.trim() || !upiId.trim() || phone.replace(/\D/g, '').length !== 10 || !termsAccepted}
                         className={`w-full h-11 rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors duration-200 mt-2 cursor-pointer disabled:cursor-not-allowed ${
-                          isEmailVerified && (passwordCriteria?.isValid || passwordCriteria?.allMet) && businessName.trim() && upiId.trim() && phone.replace(/\D/g, '').length === 10
+                          isEmailVerified && (passwordCriteria?.isValid || passwordCriteria?.allMet) && businessName.trim() && upiId.trim() && phone.replace(/\D/g, '').length === 10 && termsAccepted
                             ? 'bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white shadow-sm'
                             : 'bg-slate-100 text-[#64748d] border border-[#e3e8ee] opacity-80'
                         }`}
@@ -2800,6 +2905,11 @@ export default function LoginPage() {
                           <>
                             <Mail className="w-4 h-4 text-slate-400" />
                             <span>Verify Email to Continue</span>
+                          </>
+                        ) : !termsAccepted ? (
+                          <>
+                            <Scale className="w-4 h-4 text-slate-500" />
+                            <span>Accept Agreement to Continue</span>
                           </>
                         ) : (
                           <>
@@ -2992,14 +3102,33 @@ export default function LoginPage() {
             <div className="mt-3.5 text-center">
               <p className="text-xs text-[#64748d] flex items-center justify-center gap-1.5 flex-wrap">
                 <span>Need assistance? Contact support:</span>
-                <a 
-                  className="font-semibold text-[#0284C7] hover:underline inline-flex items-center gap-1" 
+                <a
+                  className="font-semibold text-[#0284C7] hover:underline inline-flex items-center gap-1"
                   href="mailto:support@mymobpay.tech"
                 >
                   <Mail className="w-3.5 h-3.5" />
                   support@mymobpay.tech
                 </a>
               </p>
+            </div>
+
+            {/* Legal Links Strip */}
+            <div className="mt-2 text-center text-[11px] text-[#64748d] flex items-center justify-center gap-3">
+              <Link href="/terms" className="hover:text-[#0d253d] transition-colors underline-offset-2 hover:underline">
+                Terms of Service
+              </Link>
+              <span>•</span>
+              <Link href="/privacy" className="hover:text-[#0d253d] transition-colors underline-offset-2 hover:underline">
+                Privacy Policy
+              </Link>
+              <span>•</span>
+              <button
+                type="button"
+                onClick={() => { setLegalModalTab('prohibited'); setShowLegalModal(true); }}
+                className="hover:text-[#0d253d] transition-colors underline-offset-2 hover:underline cursor-pointer"
+              >
+                Acceptable Use Rules
+              </button>
             </div>
 
           </div>
@@ -3055,6 +3184,17 @@ export default function LoginPage() {
           </div>
         </div>
       )}
+
+      {/* ── Merchant Legal Agreement & Guidelines Modal ── */}
+      <LegalAgreementModal
+        isOpen={showLegalModal}
+        onClose={() => setShowLegalModal(false)}
+        onAccept={() => {
+          setTermsAccepted(true);
+          setShowLegalModal(false);
+        }}
+        initialTab={legalModalTab}
+      />
 
     </div>
   );

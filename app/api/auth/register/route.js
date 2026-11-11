@@ -17,10 +17,17 @@ export async function POST(req) {
   }
 
   try {
-    const { email, password, businessName, upiId, phone, websiteUrl, website, userId: requestUserId } = await req.json();
+    const { email, password, businessName, upiId, phone, websiteUrl, website, userId: requestUserId, termsAccepted, termsVersion } = await req.json();
     let finalWebsiteUrl = (websiteUrl || website || '').toString().trim();
     if (finalWebsiteUrl && !/^https?:\/\//i.test(finalWebsiteUrl)) {
       finalWebsiteUrl = `https://${finalWebsiteUrl}`;
+    }
+
+    // ── 0. Enforce Mandatory Legal Agreement & Operating Rules ──────
+    if (termsAccepted !== true) {
+      return NextResponse.json({
+        error: 'You must review and accept the Terms of Service, Legal Agreement, and Merchant Operating Rules to register.'
+      }, { status: 400 });
     }
 
     // ── 1. Validate Email & Strong Password format ───────────────────
@@ -170,6 +177,10 @@ export async function POST(req) {
         website_url: finalWebsiteUrl || '',
         phone_verified: true,
         email_verified: true,
+        terms_accepted: true,
+        terms_version: termsVersion || '2026-v2.5',
+        terms_accepted_at: new Date().toISOString(),
+        terms_ip: clientIp,
       },
     });
 
@@ -190,6 +201,10 @@ export async function POST(req) {
       onboarding_completed_at: new Date().toISOString(),
       admin_signup_notified: true,
       admin_signup_notified_at: existingProgress.admin_signup_notified_at || new Date().toISOString(),
+      terms_accepted: true,
+      terms_version: termsVersion || '2026-v2.5',
+      terms_accepted_at: new Date().toISOString(),
+      terms_ip: clientIp,
     };
 
     const { error: merchantError } = await supabaseAdmin
