@@ -17,7 +17,7 @@ import {
   Copy,
   ChevronRight,
   ShieldCheck,
-  Building,
+  Building2,
   Phone,
   Radio,
   Eye,
@@ -34,13 +34,26 @@ import {
   Monitor,
   ChevronDown,
   ChevronUp,
-  X
+  X,
+  Bold,
+  Italic,
+  List,
+  Code2,
+  AtSign,
+  ArrowUpRight,
+  FileText,
+  SlidersHorizontal,
+  Filter,
+  CheckCheck,
+  Terminal,
+  CornerDownLeft,
+  ArrowRight
 } from 'lucide-react';
 
 const SENDER_FORMAT_OPTIONS = [
   {
     id: 'auto',
-    name: 'Auto (Contextual)',
+    name: 'Auto Contextual',
     email: 'Dynamic Auto-Detection',
     displayName: 'Contextual Dispatch',
     badge: 'Recommended',
@@ -75,10 +88,10 @@ const SENDER_FORMAT_OPTIONS = [
 const PROVIDER_OPTIONS = [
   {
     id: 'auto',
-    name: 'Auto (Smart Multi-Rail)',
+    name: 'Smart Multi-Rail',
     shortName: 'Smart Auto',
     dailyLimit: 1500,
-    badge: 'Recommended',
+    badge: 'Failover Enabled',
     desc: 'Dynamic circuit breaker failover across all 6 active email rails'
   },
   {
@@ -86,7 +99,7 @@ const PROVIDER_OPTIONS = [
     name: 'EmailLabs SMTP',
     shortName: 'EmailLabs',
     dailyLimit: 300,
-    badge: '300/day',
+    badge: '300 / day',
     desc: 'Dedicated SMTP relay via smtp-relay.emaillabs.net.pl (apex domain verified)'
   },
   {
@@ -94,7 +107,7 @@ const PROVIDER_OPTIONS = [
     name: 'Unitpost API / SMTP',
     shortName: 'Unitpost',
     dailyLimit: 200,
-    badge: '200/day',
+    badge: '200 / day',
     desc: 'Direct REST API & SMTP delivery on apex domain @mymobpay.tech'
   },
   {
@@ -102,7 +115,7 @@ const PROVIDER_OPTIONS = [
     name: 'Maileroo SMTP',
     shortName: 'Maileroo',
     dailyLimit: 100,
-    badge: '100/day',
+    badge: '100 / day',
     desc: 'Reliable transactional tier (~3,000/mo buffer) on smtp.maileroo.com'
   },
   {
@@ -110,7 +123,7 @@ const PROVIDER_OPTIONS = [
     name: 'SendPulse SMTP',
     shortName: 'SendPulse',
     dailyLimit: 500,
-    badge: '500/day',
+    badge: '500 / day',
     desc: 'High-volume statement & invoice relay via smtp-pulse.com'
   },
   {
@@ -118,7 +131,7 @@ const PROVIDER_OPTIONS = [
     name: 'Brevo SMTP',
     shortName: 'Brevo',
     dailyLimit: 300,
-    badge: '300/day',
+    badge: '300 / day',
     desc: 'Direct relay via smtp-relay.brevo.com'
   },
   {
@@ -126,7 +139,7 @@ const PROVIDER_OPTIONS = [
     name: 'Resend API / SMTP',
     shortName: 'Resend',
     dailyLimit: 100,
-    badge: '100/day',
+    badge: '100 / day',
     desc: 'Developer API delivery on smtp.resend.com'
   }
 ];
@@ -134,7 +147,8 @@ const PROVIDER_OPTIONS = [
 const EMAIL_TEMPLATES = [
   {
     id: 'custom',
-    name: 'Blank Custom Email',
+    name: 'Blank Custom Draft',
+    category: 'General',
     badge: 'Custom',
     subject: '',
     message: '',
@@ -144,7 +158,8 @@ const EMAIL_TEMPLATES = [
   {
     id: 'onboarding_phone',
     name: 'Onboarding: Request Contact Number',
-    badge: 'Onboarding',
+    category: 'Onboarding',
+    badge: 'Setup',
     subject: 'Complete your MyMobPay merchant registration - Contact details required',
     message: `Thank you for signing up on MyMobPay (mymobpay.tech)!
 
@@ -161,7 +176,8 @@ Once we have your contact details, our team will get in touch to verify your UPI
   {
     id: 'vpa_setup',
     name: 'Settlement: Connect UPI VPA',
-    badge: 'Rails Setup',
+    category: 'Banking',
+    badge: 'Rails',
     subject: 'Action Required: Connect your UPI VPA for Direct 0% Settlements',
     message: `Your MyMobPay merchant account is active and ready to accept payments!
 
@@ -169,7 +185,7 @@ To ensure customer payments land directly in your bank account in real-time with
 
 Steps to complete setup:
 1. Log in to your merchant console at mymobpay.tech/dashboard.
-2. Navigate to Settings &gt; Banking &amp; Settlement VPA.
+2. Navigate to Settings > Banking & Settlement VPA.
 3. Enter your verified bank UPI ID (e.g. yourname@okaxis or store@okhdfcbank).
 
 Customer payments will credit directly to your account immediately with zero commission.`,
@@ -178,8 +194,9 @@ Customer payments will credit directly to your account immediately with zero com
   },
   {
     id: 'payment_verification',
-    name: 'Payment Support: Transaction Verification',
-    badge: 'Operations',
+    name: 'Support: Transaction Verification',
+    category: 'Operations',
+    badge: 'Audit',
     subject: 'Payment Inquiry & Transaction Verification Update',
     message: `We are writing to provide an operational update regarding a customer payment inquiry for your store.
 
@@ -191,8 +208,9 @@ Remember: MyMobPay never holds, pools, or delays merchant funds. All successful 
   },
   {
     id: 'platform_update',
-    name: 'Platform Update: New Features & Upgrades',
-    badge: 'Announcement',
+    name: 'Announcement: Platform Upgrade',
+    category: 'Notices',
+    badge: 'Product',
     subject: 'MyMobPay Upgrade: Faster UPI Intent & Instant Telemetry Rails',
     message: `We are thrilled to announce a major upgrade to the MyMobPay UPI payment infrastructure!
 
@@ -207,8 +225,9 @@ Thank you for partnering with MyMobPay as your primary payments infrastructure.`
   },
   {
     id: 'subscription_notice',
-    name: 'Subscription: Plan Active & Welcome',
-    badge: 'Monetization',
+    name: 'Subscription: Welcome & Active Plan',
+    category: 'Billing',
+    badge: 'Active',
     subject: 'Welcome to MyMobPay Premium - 0% Commission Rails Activated',
     message: `Welcome to MyMobPay! Your flat-fee subscription is active and operational.
 
@@ -224,7 +243,10 @@ Log in anytime to generate payment links, integrate dynamic checkout APIs, or re
 ];
 
 export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] }) {
-  // Mode: 'merchant' | 'custom' | 'broadcast'
+  // Navigation View: 'studio' | 'outbox' | 'rails'
+  const [activeView, setActiveView] = useState('studio');
+
+  // Recipient Target Mode: 'merchant' | 'custom' | 'broadcast'
   const [recipientMode, setRecipientMode] = useState('merchant');
   const [selectedMerchantId, setSelectedMerchantId] = useState('');
   const [merchantSearch, setMerchantSearch] = useState('');
@@ -232,7 +254,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const [customEmail, setCustomEmail] = useState('');
   const [recipientName, setRecipientName] = useState('');
 
-  // Email Content
+  // Email Content & Styling
   const [selectedTemplateId, setSelectedTemplateId] = useState('custom');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
@@ -240,19 +262,21 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const [ctaText, setCtaText] = useState('Open Merchant Portal');
   const [ctaUrl, setCtaUrl] = useState('https://mymobpay.tech/dashboard');
 
-  // Loading & States
+  // Delivery & Routing Configuration
+  const [selectedProvider, setSelectedProvider] = useState('auto');
+  const [selectedSenderFormat, setSelectedSenderFormat] = useState('auto');
+  const [showConfigDrawer, setShowConfigDrawer] = useState(false);
+
+  // Preview Mode
+  const [previewDevice, setPreviewDevice] = useState('desktop'); // 'desktop' | 'mobile'
+  const [previewTab, setPreviewTab] = useState('preview'); // 'preview' | 'headers'
+
+  // Loading & Data States
   const [sending, setSending] = useState(false);
   const [outbox, setOutbox] = useState([]);
   const [outboxLoading, setOutboxLoading] = useState(false);
-  const [providerInfo, setProviderInfo] = useState({ primary: 'Brevo SMTP (Active)', brevo: true });
-  const [viewingEmailModal, setViewingEmailModal] = useState(null);
   const [outboxSearch, setOutboxSearch] = useState('');
-
-  // Provider & Sender Format Administration
-  const [selectedProvider, setSelectedProvider] = useState('auto');
-  const [selectedSenderFormat, setSelectedSenderFormat] = useState('auto');
-  const [showDeliverySettings, setShowDeliverySettings] = useState(false);
-  const [previewDevice, setPreviewDevice] = useState('desktop'); // 'desktop' | 'mobile'
+  const [outboxStatusFilter, setOutboxStatusFilter] = useState('all');
   const [providerQuotas, setProviderQuotas] = useState([]);
   const [combinedQuota, setCombinedQuota] = useState({
     totalLimit: 1500,
@@ -271,7 +295,6 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
       if (res.ok) {
         const data = await res.json();
         setOutbox(data.outbox || []);
-        if (data.provider) setProviderInfo(data.provider);
         if (data.providers) setProviderQuotas(data.providers);
         if (data.combined) setCombinedQuota(data.combined);
         if (data.date) setTelemetryDate(data.date);
@@ -299,7 +322,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
     }
   };
 
-  // When a merchant is picked from dropdown
+  // Pick merchant from dropdown
   const handleSelectMerchant = (merchant) => {
     setSelectedMerchantId(merchant.id);
     setRecipientName(merchant.business_name || merchant.owner_name || 'Merchant Partner');
@@ -323,26 +346,13 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const filteredMerchantsDropdown = useMemo(() => {
     if (!merchantSearch.trim()) return eligibleMerchants.slice(0, 8);
     const q = merchantSearch.toLowerCase();
-    return eligibleMerchants.filter(m => 
+    return eligibleMerchants.filter(m =>
       (m.email && m.email.toLowerCase().includes(q)) ||
       (m.business_name && m.business_name.toLowerCase().includes(q)) ||
       (m.owner_name && m.owner_name.toLowerCase().includes(q)) ||
       (m.phone_number && m.phone_number.includes(q))
     ).slice(0, 10);
   }, [eligibleMerchants, merchantSearch]);
-
-  // Filtered Outbox
-  const filteredOutbox = useMemo(() => {
-    if (!outboxSearch.trim()) return outbox;
-    const q = outboxSearch.toLowerCase();
-    return outbox.filter(item =>
-      (item.to && item.to.toLowerCase().includes(q)) ||
-      (item.subject && item.subject.toLowerCase().includes(q)) ||
-      (item.recipient_name && item.recipient_name.toLowerCase().includes(q)) ||
-      (item.provider && item.provider.toLowerCase().includes(q)) ||
-      (item.sender_format && item.sender_format.toLowerCase().includes(q))
-    );
-  }, [outbox, outboxSearch]);
 
   const quotaMap = useMemo(() => {
     const map = {};
@@ -355,20 +365,50 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const currentSenderPreview = useMemo(() => {
     switch (selectedSenderFormat) {
       case 'auth':
-        return { name: 'MyMobPay Security', email: 'auth@mymobpay.tech', badge: 'Security & 2FA' };
+        return { name: 'MyMobPay Security', email: 'auth@mymobpay.tech', label: 'Security & Auth', desc: 'Protected 2FA & Auth Channel' };
       case 'trx':
-        return { name: 'MyMobPay Billing', email: 'trx@mymobpay.tech', badge: 'Statements & Tax' };
+        return { name: 'MyMobPay Billing', email: 'trx@mymobpay.tech', label: 'Billing & Invoices', desc: 'Financial Statements & Ledgers' };
       case 'noreply':
-        return { name: 'MyMobPay Support', email: 'noreply@mymobpay.tech', badge: 'Announcements' };
+        return { name: 'MyMobPay Support', email: 'noreply@mymobpay.tech', label: 'Platform Notices', desc: 'System Updates & Broadcasts' };
       case 'auto':
       default:
-        return { name: 'MyMobPay Operations', email: 'noreply@mymobpay.tech', badge: 'Smart Contextual' };
+        return { name: 'MyMobPay Operations', email: 'noreply@mymobpay.tech', label: 'Contextual Dispatch', desc: 'Smart Routing by Intent' };
     }
   }, [selectedSenderFormat]);
 
+  // Insert helper token into message body
+  const insertToken = (token) => {
+    setMessage(prev => (prev ? `${prev} ${token}` : token));
+  };
+
+  // Keyboard shortcut (Cmd+Enter or Ctrl+Enter to send)
+  const handleKeyDown = (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleSendEmail(e);
+    }
+  };
+
+  // Filtered Outbox
+  const filteredOutbox = useMemo(() => {
+    let list = outbox;
+    if (outboxStatusFilter !== 'all') {
+      list = list.filter(item => item.status === outboxStatusFilter);
+    }
+    if (!outboxSearch.trim()) return list;
+    const q = outboxSearch.toLowerCase();
+    return list.filter(item =>
+      (item.to && item.to.toLowerCase().includes(q)) ||
+      (item.subject && item.subject.toLowerCase().includes(q)) ||
+      (item.recipient_name && item.recipient_name.toLowerCase().includes(q)) ||
+      (item.provider && item.provider.toLowerCase().includes(q)) ||
+      (item.sender_format && item.sender_format.toLowerCase().includes(q))
+    );
+  }, [outbox, outboxSearch, outboxStatusFilter]);
+
   // Send Direct Email Handler
   const handleSendEmail = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
 
     let targetEmails = [];
     let targetName = recipientName.trim() || 'Merchant Partner';
@@ -458,533 +498,198 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      {/* ── Top Header & Actions ───────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-blue-600/10 text-blue-600 flex items-center justify-center font-bold">
-              <Mail className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
-                <span>Direct Email Communications &amp; Broadcast</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-800">
-                  Smart Failover (6 Providers)
-                </span>
-              </h2>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Send custom official announcements, onboarding verification emails, and settlement reminders.
-              </p>
-            </div>
-          </div>
+    <div className="space-y-5 animate-fadeIn font-sans">
+      {/* ── Studio Top Navigation Bar (Linear / Resend Style) ─────────────── */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 shadow-2xs">
+        {/* Left: View Tabs */}
+        <div className="flex items-center gap-1 bg-slate-100/90 rounded-xl p-1 border border-slate-200/50">
+          <button
+            type="button"
+            onClick={() => setActiveView('studio')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+              activeView === 'studio'
+                ? 'bg-white text-slate-900 shadow-2xs font-bold border border-slate-200/60'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <Mail className="w-3.5 h-3.5 text-blue-600" />
+            <span>Studio Composer</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveView('outbox')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+              activeView === 'outbox'
+                ? 'bg-white text-slate-900 shadow-2xs font-bold border border-slate-200/60'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5 text-slate-500" />
+            <span>Dispatch Ledger</span>
+            {outbox.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-slate-200 text-slate-700">
+                {outbox.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveView('rails')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+              activeView === 'rails'
+                ? 'bg-white text-slate-900 shadow-2xs font-bold border border-slate-200/60'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <Server className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Rails &amp; Quotas</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          </button>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        {/* Right: Live Telemetry Capsule & Quick Controls */}
+        <div className="flex items-center gap-2 justify-between lg:justify-end">
+          <div className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-mono font-bold text-slate-900">
+              {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
+            </span>
+            <span className="text-slate-400 text-[11px] font-medium">left today</span>
+            <span className="text-slate-200">|</span>
+            <span className="text-[10px] font-mono text-slate-500 font-medium">
+              {combinedQuota.activeProvidersCount || 6} Rails Active
+            </span>
+          </div>
+
           <button
+            type="button"
             onClick={handleSetSendToMe}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+            className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer"
             title="Populate your own admin email for a quick test preview"
           >
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>Send Test to Me</span>
+            <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden sm:inline">Test to Admin</span>
           </button>
 
           <button
+            type="button"
             onClick={fetchHistory}
             disabled={outboxLoading}
-            className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-            title="Refresh outbox logs & quota telemetry"
+            className="p-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-xs transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+            title="Sync live quotas & logs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${outboxLoading ? 'animate-spin text-blue-600' : ''}`} />
-            <span className="hidden sm:inline">Sync Quotas &amp; Outbox</span>
+            <RefreshCw className={`w-3.5 h-3.5 ${outboxLoading ? 'animate-spin text-blue-600' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* ── 1. Combined Left Emails & Delivery Capacity Banner ─────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-200/90 p-5 sm:p-6 shadow-xs bg-gradient-to-br from-slate-50/80 via-white to-blue-50/30">
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold font-mono tracking-wider uppercase bg-blue-100 text-blue-700 border border-blue-200/80 flex items-center gap-1.5 shadow-2xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Live Daily Telemetry &bull; IST
-              </span>
-              <span className="text-[11px] text-slate-500 font-mono font-medium">
-                {telemetryDate || new Date().toISOString().slice(0, 10)}
-              </span>
-            </div>
-
-            <div>
-              <div className="flex items-baseline gap-3 flex-wrap">
-                <h3 className="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-slate-900">
-                  {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
-                </h3>
-                <span className="text-sm font-bold text-slate-700">
-                  emails left today
-                </span>
-                <span className="text-xs font-mono font-semibold text-slate-400">
-                  / {(combinedQuota.totalLimit ?? 1500).toLocaleString()} daily capacity
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-1.5 max-w-xl leading-relaxed">
-                Aggregated 24-hour transmission allowance across {combinedQuota.activeProvidersCount || 6} active delivery rails. Resets automatically at 00:00 IST.
-              </p>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-80 bg-slate-50/90 border border-slate-200 rounded-2xl p-4 space-y-3 shadow-2xs">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-600 font-semibold">Daily Utilization</span>
-              <span className="font-mono font-bold text-slate-900">
-                {combinedQuota.totalSentToday || 0} sent today
-              </span>
-            </div>
-
-            {/* Capacity Progress Bar */}
-            <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden p-0.5 border border-slate-300/50">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${
-                  (combinedQuota.totalRemaining ?? 1500) < 200
-                    ? 'bg-rose-500'
-                    : (combinedQuota.totalRemaining ?? 1500) < 600
-                    ? 'bg-amber-500'
-                    : 'bg-emerald-500'
-                }`}
-                style={{
-                  width: `${Math.min(100, Math.max(3, Math.round(((combinedQuota.totalRemaining ?? 1500) / (combinedQuota.totalLimit || 1500)) * 100)))}%`
-                }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between text-[11px] font-medium">
-              <span className="text-slate-600 font-semibold">
-                {Math.round(((combinedQuota.totalRemaining ?? 1500) / (combinedQuota.totalLimit || 1500)) * 100)}% Available
-              </span>
-              <span className="text-emerald-700 font-bold flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                {combinedQuota.activeProvidersCount || 6} Rails Ready
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── 2. Per-Provider Daily Quota Cards (6 Active Rails) ─────────── */}
-      <div>
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-2">
-            <Server className="w-4 h-4 text-blue-600" />
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-              Individual Rail Daily Limits &amp; Health
-            </h3>
-          </div>
-          <span className="text-[11px] text-slate-400 font-medium">
-            Click any rail to lock as manual provider
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {PROVIDER_OPTIONS.filter(p => p.id !== 'auto').map((p) => {
-            const tele = quotaMap[p.id] || {};
-            const limit = tele.dailyLimit || p.dailyLimit;
-            const sent = tele.sentToday || 0;
-            const remaining = tele.remaining != null ? tele.remaining : Math.max(0, limit - sent);
-            const isSelected = selectedProvider === p.id;
-            const isConfigured = tele.isConfigured !== false;
-            const isCircuitLimited = tele.circuit ? tele.circuit.isLimited : false;
-            const percentLeft = limit > 0 ? Math.round((remaining / limit) * 100) : 0;
-
-            return (
-              <div
-                key={p.id}
-                onClick={() => setSelectedProvider(isSelected ? 'auto' : p.id)}
-                className={`p-3.5 rounded-2xl border transition-all cursor-pointer relative ${
-                  isSelected
-                    ? 'bg-blue-50/90 border-blue-400 ring-2 ring-blue-500/20 shadow-xs'
-                    : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] font-bold text-slate-800 truncate" title={p.name}>
-                    {p.shortName}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    {!isConfigured && (
-                      <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 px-1 py-0.5 rounded">
-                        Not Set
-                      </span>
-                    )}
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        !isConfigured
-                          ? 'bg-slate-300'
-                          : isCircuitLimited
-                          ? 'bg-amber-500 animate-pulse'
-                          : 'bg-emerald-500'
-                      }`}
-                      title={!isConfigured ? 'Provider credentials not configured' : isCircuitLimited ? 'In cooldown' : 'Operational'}
-                    />
-                  </div>
-                </div>
-
-                <div className="text-lg font-extrabold font-mono text-slate-900 leading-tight">
-                  {remaining}
-                  <span className="text-[11px] font-medium text-slate-500 ml-1">left</span>
-                </div>
-
-                <div className="text-[11px] font-mono text-slate-600 mt-1 flex items-center justify-between font-medium">
-                  <span>{sent} sent</span>
-                  <span className="text-slate-400">/{limit}</span>
-                </div>
-
-                {/* Micro Progress Bar */}
-                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2 border border-slate-200/50">
-                  <div
-                    className={`h-full rounded-full transition-all duration-300 ${
-                      !isConfigured
-                        ? 'bg-slate-300'
-                        : percentLeft < 20
-                        ? 'bg-rose-500'
-                        : percentLeft < 50
-                        ? 'bg-amber-400'
-                        : 'bg-emerald-500'
-                    }`}
-                    style={{ width: `${Math.min(100, Math.max(0, percentLeft))}%` }}
-                  />
-                </div>
-
-                {isSelected && (
-                  <span className="mt-2 block text-center text-[9px] font-bold text-blue-700 bg-blue-100/90 rounded-md py-0.5 uppercase tracking-wider">
-                    Selected
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ── Main Composer & Real-Time Preview Workspace ────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Email Compose Form (7 cols) */}
-        <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-6 shadow-xs space-y-5">
-          {/* Header with Title & Quick Preset Dropdown */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Send className="w-4 h-4 text-blue-600" />
-                <span>Compose Direct Email</span>
-              </h3>
-              <p className="text-xs text-slate-400 mt-0.5">Draft an official notification or broadcast to merchants.</p>
-            </div>
-
-            {/* Clean Template Preset Dropdown */}
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span>Template:</span>
-              </span>
-              <select
-                value={selectedTemplateId}
-                onChange={(e) => handleSelectTemplate(e.target.value)}
-                className="text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 font-semibold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer transition-colors"
-              >
-                {EMAIL_TEMPLATES.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <form onSubmit={handleSendEmail} className="space-y-4">
-            {/* 1. Recipient Mode Selector */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 block">
-                Send To
-              </label>
-              <div className="grid grid-cols-3 gap-2">
+      {/* ── View 1: Studio Composer (Primary Workspace) ────────────────── */}
+      {activeView === 'studio' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* Left Column: Senior Dev Email Studio Canvas (7 cols) */}
+          <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            {/* Top Toolbar / Configuration Strip */}
+            <div className="p-3.5 sm:p-4 bg-slate-50/70 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              {/* Audience Mode Switcher (Pill style) */}
+              <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
                 <button
                   type="button"
                   onClick={() => setRecipientMode('merchant')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'merchant'
-                      ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-500/10 shadow-2xs'
-                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      ? 'bg-blue-600 text-white shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <UserCheck className="w-3.5 h-3.5" />
+                  <Building2 className="w-3 h-3" />
                   <span>Merchant</span>
                 </button>
+
                 <button
                   type="button"
                   onClick={() => setRecipientMode('custom')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'custom'
-                      ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-500/10 shadow-2xs'
-                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      ? 'bg-blue-600 text-white shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>Custom Email</span>
+                  <AtSign className="w-3 h-3" />
+                  <span>Direct Email</span>
                 </button>
+
                 <button
                   type="button"
                   onClick={() => setRecipientMode('broadcast')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'broadcast'
-                      ? 'bg-rose-50 text-rose-700 border-rose-300 ring-2 ring-rose-500/10 shadow-2xs'
-                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      ? 'bg-rose-600 text-white shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <Users className="w-3.5 h-3.5" />
-                  <span>Broadcast All ({eligibleMerchants.length})</span>
+                  <Radio className="w-3 h-3" />
+                  <span>Broadcast ({eligibleMerchants.length})</span>
                 </button>
               </div>
 
-              {/* Recipient Details based on mode */}
-              {recipientMode === 'merchant' && (
-                <div className="pt-1 space-y-2">
-                  {customEmail ? (
-                    <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200/90 text-xs flex items-center justify-between shadow-2xs">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
-                          {(recipientName || 'M').charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-slate-900 font-bold text-xs">{recipientName || 'Selected Merchant'}</span>
-                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-blue-100 text-blue-700 font-semibold">
-                              Verified
-                            </span>
-                          </div>
-                          <span className="text-blue-800 font-mono text-[11px] block">{customEmail}</span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCustomEmail('');
-                          setSelectedMerchantId('');
-                          setRecipientName('');
-                        }}
-                        className="text-xs text-slate-500 hover:text-rose-600 font-bold px-2 py-1 rounded-lg hover:bg-white/80 transition-colors cursor-pointer flex items-center gap-1"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                        <span>Change</span>
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="space-y-1.5">
-                      <div className="relative">
-                        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                        <input
-                          type="text"
-                          placeholder="Search registered store name, owner, email or phone..."
-                          value={merchantSearch}
-                          onChange={(e) => setMerchantSearch(e.target.value)}
-                          className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium transition-colors"
-                        />
-                      </div>
-
-                      {/* Dropdown Suggestions */}
-                      {isSearchDropdownMounted && (
-                        <div
-                          className={`max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg divide-y divide-slate-100 ${searchDropdownClass}`}
-                          data-origin="top-center"
-                        >
-                          {filteredMerchantsDropdown.map(m => (
-                            <div
-                              key={m.id}
-                              onClick={() => handleSelectMerchant(m)}
-                              className="p-2.5 hover:bg-blue-50/70 cursor-pointer text-xs flex items-center justify-between transition-colors"
-                            >
-                              <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-[11px] shrink-0">
-                                  {(m.business_name || m.owner_name || 'M').charAt(0).toUpperCase()}
-                                </div>
-                                <div>
-                                  <p className="font-bold text-slate-900">{m.business_name || m.owner_name || 'Merchant'}</p>
-                                  <p className="text-[11px] font-mono text-slate-500">{m.email} {m.phone_number ? `• ${m.phone_number}` : ''}</p>
-                                </div>
-                              </div>
-                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                                {m.subscription_status || 'free'}
-                              </span>
-                            </div>
-                          ))}
-                          {filteredMerchantsDropdown.length === 0 && (
-                            <div className="p-3 text-center text-xs text-slate-400">No merchants matching query.</div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
+              {/* Template & Delivery Drawer Buttons */}
+              <div className="flex items-center gap-2">
+                {/* Template Selector Dropdown */}
+                <div className="relative">
+                  <select
+                    value={selectedTemplateId}
+                    onChange={(e) => handleSelectTemplate(e.target.value)}
+                    className="text-xs bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 font-semibold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer shadow-2xs transition-colors"
+                  >
+                    {EMAIL_TEMPLATES.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              )}
 
-              {recipientMode === 'custom' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-600 block mb-1">Recipient Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Kunal Chauhan"
-                      value={recipientName}
-                      onChange={(e) => setRecipientName(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-600 block mb-1">Email Address *</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="merchant@example.com"
-                      value={customEmail}
-                      onChange={(e) => setCustomEmail(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-mono font-medium"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {recipientMode === 'broadcast' && (
-                <div className="p-3 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
-                  <Users className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                  <div>
-                    <strong>Mass Broadcast:</strong> An individual email will be delivered to each of the <strong>{eligibleMerchants.length}</strong> active registered merchants on your platform.
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 2. Subject Line */}
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
-                Subject Line *
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Action Required: Connect your UPI VPA for Direct 0% Settlements"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-bold text-slate-900 transition-colors"
-              />
-            </div>
-
-            {/* 3. Message Body */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold text-slate-700">
-                  Message Body *
-                </label>
-                <span className="text-[10px] text-slate-400">Supports paragraphs &amp; **bold**</span>
-              </div>
-              <textarea
-                required
-                rows={7}
-                placeholder="Write your email message here..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="w-full p-3.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 leading-relaxed font-sans text-slate-800 transition-colors resize-y"
-              />
-            </div>
-
-            {/* 4. Action Button (CTA) Toggle */}
-            <div className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200/80 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ExternalLink className="w-4 h-4 text-slate-500" />
-                  <div>
-                    <span className="text-xs font-bold text-slate-800 block">Call-to-Action Button</span>
-                    <span className="text-[11px] text-slate-400">Include a direct button link inside the email</span>
-                  </div>
-                </div>
+                {/* Routing Drawer Toggle */}
                 <button
                   type="button"
-                  onClick={() => setIncludeCta(!includeCta)}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    includeCta ? 'bg-blue-600' : 'bg-slate-300'
+                  onClick={() => setShowConfigDrawer(!showConfigDrawer)}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
+                    showConfigDrawer
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                   }`}
-                  role="switch"
-                  aria-checked={includeCta}
                 >
-                  <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                      includeCta ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
+                  <SlidersHorizontal className="w-3 h-3" />
+                  <span>Routing</span>
+                  {showConfigDrawer ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 </button>
               </div>
-
-              {includeCta && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t border-slate-200/60 animate-fadeIn">
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-600 block mb-1">Button Label</span>
-                    <input
-                      type="text"
-                      placeholder="e.g. Open Merchant Portal"
-                      value={ctaText}
-                      onChange={(e) => setCtaText(e.target.value)}
-                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-600 block mb-1">Button Target URL</span>
-                    <input
-                      type="url"
-                      placeholder="https://mymobpay.tech/dashboard"
-                      value={ctaUrl}
-                      onChange={(e) => setCtaUrl(e.target.value)}
-                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-mono text-[11px]"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* 5. Minimal Collapsible Delivery & Sender Routing */}
-            <div className="rounded-2xl border border-slate-200/90 bg-slate-50/70 p-3.5 transition-all">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs flex-wrap">
-                  <Sliders className="w-3.5 h-3.5 text-blue-600" />
-                  <span className="font-bold text-slate-700">Delivery Route:</span>
-                  <span className="font-bold text-blue-700 bg-blue-100/90 px-2 py-0.5 rounded-md text-[11px] font-mono">
-                    {selectedProvider === 'auto'
-                      ? '⚡ Auto (Smart Multi-Rail)'
-                      : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName || selectedProvider}
+            {/* Collapsible Delivery Routing Drawer */}
+            {showConfigDrawer && (
+              <div className="p-4 bg-slate-900 text-white border-b border-slate-800 animate-fadeIn space-y-3">
+                <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-800 text-slate-300">
+                  <span className="font-bold flex items-center gap-1.5">
+                    <Server className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Transmission Infrastructure &amp; Persona</span>
                   </span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-slate-600 font-mono text-[11px] font-semibold">
-                    {currentSenderPreview.email}
+                  <span className="text-[11px] font-mono text-slate-400">
+                    Failover Active Across 6 Rails
                   </span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowDeliverySettings(!showDeliverySettings)}
-                  className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer ml-auto"
-                >
-                  <span>{showDeliverySettings ? 'Hide' : 'Configure'}</span>
-                  {showDeliverySettings ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-
-              {showDeliverySettings && (
-                <div className="mt-3 pt-3 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs animate-fadeIn">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">
-                      Email Provider Rail
+                    <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                      Provider Rail
                     </label>
                     <select
                       value={selectedProvider}
                       onChange={(e) => setSelectedProvider(e.target.value)}
-                      className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-blue-500 cursor-pointer"
+                      className="w-full px-2.5 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl font-semibold text-white focus:outline-none focus:border-blue-500 cursor-pointer"
                     >
                       {PROVIDER_OPTIONS.map((p) => {
                         const tele = quotaMap[p.id];
@@ -997,18 +702,18 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                       })}
                     </select>
                     <p className="text-[10px] text-slate-400 mt-1">
-                      Auto dynamically fails over across all 6 rails if a provider hits its limit.
+                      Auto dynamically fails over to next rail if daily limits are reached.
                     </p>
                   </div>
 
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">
-                      From Sender Address
+                    <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                      Sender Persona &amp; Identity
                     </label>
                     <select
                       value={selectedSenderFormat}
                       onChange={(e) => setSelectedSenderFormat(e.target.value)}
-                      className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-blue-500 cursor-pointer"
+                      className="w-full px-2.5 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl font-semibold text-white focus:outline-none focus:border-blue-500 cursor-pointer"
                     >
                       {SENDER_FORMAT_OPTIONS.map((f) => (
                         <option key={f.id} value={f.id}>
@@ -1017,294 +722,668 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                       ))}
                     </select>
                     <p className="text-[10px] text-slate-400 mt-1">
-                      Official MyMobPay identity displayed on the recipient&apos;s email.
+                      DKIM &amp; SPF aligned address displayed in recipient inbox.
                     </p>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
-            {/* 6. Send Button & Delivery Status */}
-            <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <span className="text-[11px] text-slate-500 font-medium">
-                {recipientMode === 'broadcast'
-                  ? `Delivering to ${eligibleMerchants.length} merchants`
-                  : `Delivering to: ${customEmail || 'No recipient specified'}`}
-              </span>
+            {/* Recipient Input Row (macOS / Apple Mail Style) */}
+            <div className="px-5 py-3 border-b border-slate-100 bg-white">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-slate-400 w-10 shrink-0">To:</span>
 
-              <button
-                type="submit"
-                disabled={sending}
-                className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:shadow-md"
-              >
-                {sending ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>
-                      {selectedProvider === 'auto'
-                        ? 'Dispatching via Smart Multi-Rail...'
-                        : `Dispatching via ${PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName || selectedProvider}...`}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4" />
-                    <span>Send Direct Email Now</span>
-                  </>
+                {recipientMode === 'merchant' && (
+                  <div className="flex-1 min-w-0">
+                    {customEmail ? (
+                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-xs">
+                        <div className="w-5 h-5 rounded-full bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0">
+                          {(recipientName || 'M').charAt(0).toUpperCase()}
+                        </div>
+                        <span className="font-bold text-slate-900 truncate">{recipientName}</span>
+                        <span className="text-blue-700 font-mono text-[11px]">&lt;{customEmail}&gt;</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomEmail('');
+                            setSelectedMerchantId('');
+                            setRecipientName('');
+                          }}
+                          className="text-slate-400 hover:text-rose-600 transition-colors ml-1 cursor-pointer"
+                          title="Remove recipient"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Search registered store name, owner, or email..."
+                          value={merchantSearch}
+                          onChange={(e) => setMerchantSearch(e.target.value)}
+                          className="w-full text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none font-medium bg-transparent"
+                        />
+
+                        {/* Search Dropdown */}
+                        {isSearchDropdownMounted && (
+                          <div
+                            className={`absolute left-0 right-0 top-full mt-2 max-h-52 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl divide-y divide-slate-100 z-30 ${searchDropdownClass}`}
+                            data-origin="top-center"
+                          >
+                            {filteredMerchantsDropdown.map(m => (
+                              <div
+                                key={m.id}
+                                onClick={() => handleSelectMerchant(m)}
+                                className="p-2.5 hover:bg-slate-50 cursor-pointer text-xs flex items-center justify-between transition-colors"
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-[10px] shrink-0">
+                                    {(m.business_name || m.owner_name || 'M').charAt(0).toUpperCase()}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <p className="font-bold text-slate-900 truncate">{m.business_name || m.owner_name || 'Merchant'}</p>
+                                    <p className="text-[11px] font-mono text-slate-500 truncate">{m.email}</p>
+                                  </div>
+                                </div>
+                                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0 ml-2">
+                                  {m.subscription_status || 'free'}
+                                </span>
+                              </div>
+                            ))}
+                            {filteredMerchantsDropdown.length === 0 && (
+                              <div className="p-3 text-center text-xs text-slate-400">No matching merchants found.</div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
-              </button>
-            </div>
-          </form>
-        </div>
 
-        {/* Right Column: Live Visual Email Preview (5 cols) */}
-        <div className="lg:col-span-5 bg-slate-50 border border-slate-200/90 rounded-3xl p-5 shadow-xs space-y-3 sticky top-20">
-          <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4 text-blue-600" />
-              <span className="text-xs font-bold text-slate-800">Live Recipient Preview</span>
+                {recipientMode === 'custom' && (
+                  <div className="flex-1 flex flex-col sm:flex-row items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Recipient Name (optional)"
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                      className="w-full sm:w-1/3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none font-medium bg-transparent"
+                    />
+                    <span className="hidden sm:inline text-slate-300">•</span>
+                    <input
+                      type="email"
+                      required
+                      placeholder="Email address (e.g. merchant@example.com) *"
+                      value={customEmail}
+                      onChange={(e) => setCustomEmail(e.target.value)}
+                      className="w-full sm:w-2/3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none font-mono font-medium bg-transparent"
+                    />
+                  </div>
+                )}
+
+                {recipientMode === 'broadcast' && (
+                  <div className="flex-1 text-xs text-rose-700 font-semibold flex items-center gap-1.5">
+                    <Radio className="w-3.5 h-3.5 text-rose-600" />
+                    <span>Broadcasting to all {eligibleMerchants.length} registered merchant accounts</span>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Interactive Device Viewport Switcher */}
-            <div className="flex items-center bg-white border border-slate-200 rounded-xl p-0.5 shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setPreviewDevice('desktop')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                  previewDevice === 'desktop'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-                title="Desktop View"
-              >
-                <Monitor className="w-3 h-3" />
-                <span>Desktop</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setPreviewDevice('mobile')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                  previewDevice === 'mobile'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-                title="Mobile View"
-              >
-                <Smartphone className="w-3 h-3" />
-                <span>Mobile</span>
-              </button>
+            {/* Subject Line (Clean Typography) */}
+            <div className="px-5 py-3 border-b border-slate-100">
+              <input
+                type="text"
+                required
+                placeholder="Subject Line *"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="w-full text-base sm:text-lg font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none bg-transparent tracking-tight"
+              />
             </div>
-          </div>
 
-          {/* Email Visual Mockup Window */}
-          <div className={`transition-all duration-300 ${previewDevice === 'mobile' ? 'max-w-[340px] mx-auto' : 'w-full'}`}>
-            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
-              {/* Email Client Window Bar */}
-              <div className="bg-slate-100/90 px-3.5 py-2 border-b border-slate-200/80 flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-400/80" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
-                </div>
-                <span className="text-[10px] font-mono font-medium text-slate-400">
-                  {currentSenderPreview.email}
-                </span>
-                <span className="text-[9px] font-bold text-blue-700 bg-blue-100/80 px-1.5 py-0.5 rounded font-mono">
-                  {selectedProvider === 'auto' ? 'Auto Rail' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
-                </span>
+            {/* Editorial Formatting Bar (Linear / Resend Style) */}
+            <div className="px-5 py-2 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Insert:</span>
+                <button
+                  type="button"
+                  onClick={() => insertToken('{{merchant_name}}')}
+                  className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-mono hover:bg-slate-50 cursor-pointer shadow-2xs"
+                  title="Insert recipient name token"
+                >
+                  &#123;&#123;merchant_name&#125;&#125;
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertToken('{{vpa}}')}
+                  className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-mono hover:bg-slate-50 cursor-pointer shadow-2xs"
+                  title="Insert settlement VPA token"
+                >
+                  &#123;&#123;vpa&#125;&#125;
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertToken('https://mymobpay.tech/dashboard')}
+                  className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-mono hover:bg-slate-50 cursor-pointer shadow-2xs"
+                  title="Insert portal URL"
+                >
+                  portal_url
+                </button>
               </div>
 
-              {/* Email Content Body */}
-              <div className="p-4 sm:p-5 space-y-4 max-h-[540px] overflow-y-auto">
-                {/* Brand Header */}
-                <div className="text-center pb-3 border-b border-slate-100 flex items-center justify-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-semibold flex items-center justify-center text-xs shadow-2xs">
-                    M
-                  </div>
-                  <div className="text-left">
-                    <span className="font-bold text-sm text-[#0c2340] tracking-tight block leading-tight">MyMobPay</span>
-                    <span className="text-[9px] text-slate-400 font-bold block">Direct Bank UPI Rails</span>
-                  </div>
-                </div>
+              {/* Action Button Toggle */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIncludeCta(!includeCta)}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    includeCta
+                      ? 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
+                      : 'bg-white text-slate-500 border-slate-200 hover:text-slate-800'
+                  }`}
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  <span>Action Button</span>
+                  <span className={`w-1.5 h-1.5 rounded-full ${includeCta ? 'bg-blue-600' : 'bg-slate-300'}`} />
+                </button>
+              </div>
+            </div>
 
-                {/* Email Metadata */}
-                <div className="text-[11px] space-y-1 text-slate-600 bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-slate-400 font-bold text-[10px] w-10 shrink-0">From:</span>
-                    <span className="font-semibold text-slate-800 truncate">
-                      {currentSenderPreview.name} &lt;{currentSenderPreview.email}&gt;
+            {/* Email Message Canvas */}
+            <div className="p-5 flex-1 flex flex-col">
+              <textarea
+                required
+                rows={9}
+                placeholder="Write your email notification here..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full text-xs sm:text-sm text-slate-800 placeholder:text-slate-300 border-0 focus:outline-none resize-none leading-relaxed font-sans bg-transparent min-h-[220px]"
+              />
+
+              {/* Inline Action Button Editor Block */}
+              {includeCta && (
+                <div className="mt-4 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 animate-fadeIn space-y-2.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                      <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Call-to-Action Link Block</span>
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => setIncludeCta(false)}
+                      className="text-slate-400 hover:text-rose-600 transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-slate-400 font-bold text-[10px] w-10 shrink-0">To:</span>
-                    <span className="font-mono text-slate-700 truncate">
-                      {customEmail || 'merchant@example.com'}
-                    </span>
-                  </div>
-                </div>
 
-                {/* Subject Heading */}
-                <div className="space-y-1">
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-bold">
-                    Official Communication
-                  </span>
-                  <h4 className="font-bold text-slate-900 text-sm leading-snug">
-                    {subject || 'Subject line will appear here...'}
-                  </h4>
-                </div>
-
-                {/* Greeting */}
-                <p className="text-xs font-bold text-slate-800">
-                  Hello {recipientName.trim() || 'Merchant Partner'},
-                </p>
-
-                {/* Message Body */}
-                <div className="text-xs text-slate-600 leading-relaxed space-y-2 whitespace-pre-line font-sans">
-                  {message || 'Type your email message on the left to see the instant live preview here.'}
-                </div>
-
-                {/* Action Button Preview */}
-                {includeCta && ctaText && (
-                  <div className="text-center py-2">
-                    <div className="inline-block px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 cursor-default">
-                      {ctaText} &rarr;
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-[10px] font-semibold text-slate-500 block mb-1">Button Label</span>
+                      <input
+                        type="text"
+                        placeholder="e.g. Open Merchant Portal"
+                        value={ctaText}
+                        onChange={(e) => setCtaText(e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-semibold text-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-semibold text-slate-500 block mb-1">Target URL</span>
+                      <input
+                        type="url"
+                        placeholder="https://mymobpay.tech/dashboard"
+                        value={ctaUrl}
+                        onChange={(e) => setCtaUrl(e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-mono text-slate-700"
+                      />
                     </div>
                   </div>
-                )}
-
-                {/* Security Pill */}
-                <div className="p-2.5 rounded-xl bg-slate-50 border-l-4 border-blue-600 text-[10px] text-slate-500 leading-relaxed">
-                  <strong>Zero-Commission Rails:</strong> MyMobPay delivers customer UPI payments directly to your linked bank account with 0% transaction fees.
                 </div>
+              )}
+            </div>
 
-                {/* Footer */}
-                <div className="pt-3 border-t border-slate-100 text-[10px] text-slate-400 text-center space-y-1">
-                  <p className="font-bold text-slate-700">MyMobPay Merchant Operations Team</p>
-                  <p>&copy; 2026 MyMobPay Payments Private Limited &bull; mymobpay.tech</p>
+            {/* Studio Bottom Command Bar */}
+            <div className="p-4 bg-slate-50/80 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="font-medium">
+                  {selectedProvider === 'auto' ? 'Auto Failover' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
+                </span>
+                <span className="text-slate-300">•</span>
+                <span className="font-mono text-[11px] text-slate-600">{currentSenderPreview.email}</span>
+              </div>
+
+              <div className="flex items-center gap-3 justify-end">
+                <span className="hidden sm:inline text-[11px] font-mono text-slate-400">
+                  Ctrl + Enter to send
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleSendEmail}
+                  disabled={sending}
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:shadow"
+                >
+                  {sending ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Dispatching...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Email</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Superhuman / Resend Live Email Inspector (5 cols) */}
+          <div className="lg:col-span-5 bg-slate-100/90 border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-3 sticky top-20">
+            {/* Inspector Header & Controls */}
+            <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
+              <div className="flex items-center gap-1.5 bg-white p-0.5 rounded-lg border border-slate-200 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setPreviewTab('preview')}
+                  className={`px-2 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
+                    previewTab === 'preview'
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Preview
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewTab('headers')}
+                  className={`px-2 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                    previewTab === 'headers'
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <Terminal className="w-3 h-3" />
+                  <span>Headers</span>
+                </button>
+              </div>
+
+              {/* Viewport Switcher */}
+              <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setPreviewDevice('desktop')}
+                  className={`p-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    previewDevice === 'desktop'
+                      ? 'bg-slate-900 text-white'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Desktop View"
+                >
+                  <Monitor className="w-3 h-3" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewDevice('mobile')}
+                  className={`p-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    previewDevice === 'mobile'
+                      ? 'bg-slate-900 text-white'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Mobile View"
+                >
+                  <Smartphone className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+
+            {/* Email Canvas Window */}
+            {previewTab === 'preview' ? (
+              <div className={`transition-all duration-300 ${previewDevice === 'mobile' ? 'max-w-[320px] mx-auto' : 'w-full'}`}>
+                <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+                  {/* Email Window Chrome */}
+                  <div className="bg-slate-50 px-3 py-2 border-b border-slate-200/80 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+                    </div>
+                    <span className="text-[10px] font-mono font-medium text-slate-500">
+                      {currentSenderPreview.email}
+                    </span>
+                    <span className="text-[9px] font-bold text-slate-600 bg-slate-200/80 px-1.5 py-0.5 rounded font-mono">
+                      {selectedProvider === 'auto' ? 'Auto' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
+                    </span>
+                  </div>
+
+                  {/* Email Content Frame */}
+                  <div className="p-4 space-y-3.5 max-h-[500px] overflow-y-auto text-xs">
+                    {/* Header Logo */}
+                    <div className="text-center pb-2 border-b border-slate-100 flex items-center justify-center gap-2">
+                      <div className="w-6 h-6 rounded-md bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-2xs">
+                        M
+                      </div>
+                      <div className="text-left">
+                        <span className="font-bold text-xs text-slate-900 tracking-tight block leading-tight">MyMobPay</span>
+                        <span className="text-[8px] text-slate-400 font-bold block">Direct Bank UPI Rails</span>
+                      </div>
+                    </div>
+
+                    {/* Meta headers */}
+                    <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 space-y-1 text-[11px]">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-slate-400 font-semibold text-[10px] w-8 shrink-0">From:</span>
+                        <span className="font-medium text-slate-800 truncate">
+                          {currentSenderPreview.name} &lt;{currentSenderPreview.email}&gt;
+                        </span>
+                      </div>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-slate-400 font-semibold text-[10px] w-8 shrink-0">To:</span>
+                        <span className="font-mono text-slate-700 truncate">
+                          {customEmail || 'merchant@example.com'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Subject */}
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-sm leading-snug">
+                        {subject || 'Subject line will appear here...'}
+                      </h4>
+                    </div>
+
+                    {/* Greeting */}
+                    <p className="font-semibold text-slate-800">
+                      Hello {recipientName.trim() || 'Merchant Partner'},
+                    </p>
+
+                    {/* Message Body */}
+                    <div className="text-slate-700 leading-relaxed space-y-2 whitespace-pre-line">
+                      {message || 'Type your email message on the left to see the instant live preview here.'}
+                    </div>
+
+                    {/* CTA Button Preview */}
+                    {includeCta && ctaText && (
+                      <div className="text-center py-2">
+                        <div className="inline-block px-4 py-2 rounded-lg bg-blue-600 text-white font-bold text-xs shadow-2xs cursor-default">
+                          {ctaText} &rarr;
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Security Notice */}
+                    <div className="p-2.5 rounded-lg bg-slate-50 border-l-2 border-blue-600 text-[10px] text-slate-500 leading-relaxed">
+                      <strong>Zero-Commission Rails:</strong> Customer UPI checkouts settle directly into your verified bank account with 0% MDR.
+                    </div>
+
+                    {/* Footer */}
+                    <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 text-center space-y-0.5">
+                      <p className="font-semibold text-slate-600">MyMobPay Merchant Operations</p>
+                      <p>&copy; 2026 MyMobPay Payments Private Limited</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Raw Headers / MIME Telemetry Inspector */
+              <div className="bg-slate-900 rounded-xl p-3.5 text-slate-300 font-mono text-[11px] space-y-2 max-h-[500px] overflow-y-auto">
+                <div className="text-emerald-400 font-bold border-b border-slate-800 pb-1 flex items-center justify-between">
+                  <span>MIME ENVELOPE INSPECTION</span>
+                  <span className="text-[9px] text-slate-500">RFC 5322</span>
+                </div>
+                <div className="space-y-1 text-slate-400">
+                  <p><span className="text-blue-400">From:</span> {currentSenderPreview.name} &lt;{currentSenderPreview.email}&gt;</p>
+                  <p><span className="text-blue-400">To:</span> {customEmail || 'merchant@example.com'}</p>
+                  <p><span className="text-blue-400">Subject:</span> {subject || '(no subject)'}</p>
+                  <p><span className="text-blue-400">Date:</span> {new Date().toUTCString()}</p>
+                  <p><span className="text-blue-400">X-Mailer-Rail:</span> {selectedProvider === 'auto' ? 'smart-router-failover' : selectedProvider}</p>
+                  <p><span className="text-blue-400">X-Sender-Format:</span> {selectedSenderFormat}</p>
+                  <p><span className="text-blue-400">Authentication-Results:</span> spf=pass; dkim=pass header.i=@mymobpay.tech</p>
+                  <p><span className="text-blue-400">Content-Type:</span> multipart/alternative; boundary=&quot;mmp_mime_part&quot;</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── View 2: Dispatch Ledger (Outbox History) ──────────────────── */}
+      {activeView === 'outbox' && (
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-blue-600" />
+                <span>Transmission Ledger &amp; Audit Trail</span>
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Complete delivery history with provider rail and sender persona tracking.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Filter */}
+              <select
+                value={outboxStatusFilter}
+                onChange={(e) => setOutboxStatusFilter(e.target.value)}
+                className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 font-semibold text-slate-700 focus:outline-none cursor-pointer"
+              >
+                <option value="all">All Status</option>
+                <option value="delivered">Delivered</option>
+                <option value="failed">Failed</option>
+              </select>
+
+              {/* Search */}
+              <div className="relative w-full sm:w-56">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search outbox..."
+                  value={outboxSearch}
+                  onChange={(e) => setOutboxSearch(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-slate-200/80">
+            <table className="min-w-full divide-y divide-slate-100 text-xs">
+              <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
+                <tr>
+                  <th className="px-4 py-2.5 text-left">Recipient</th>
+                  <th className="px-4 py-2.5 text-left">Subject &amp; Body</th>
+                  <th className="px-4 py-2.5 text-left">Rail</th>
+                  <th className="px-4 py-2.5 text-left">Persona</th>
+                  <th className="px-4 py-2.5 text-left">Time (IST)</th>
+                  <th className="px-4 py-2.5 text-center">Status</th>
+                  <th className="px-4 py-2.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {outboxLoading ? (
+                  <tr>
+                    <td colSpan="7" className="py-8 text-center text-slate-400">
+                      <RefreshCw className="w-4 h-4 animate-spin inline-block mr-2" />
+                      Loading outbox records...
+                    </td>
+                  </tr>
+                ) : filteredOutbox.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="py-12 text-center text-slate-400">
+                      No dispatched emails found in outbox history.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredOutbox.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-4 py-2.5">
+                        <span className="font-bold text-slate-900 block">{item.recipient_name || 'Recipient'}</span>
+                        <span className="font-mono text-[11px] text-slate-500">{item.to}</span>
+                      </td>
+                      <td className="px-4 py-2.5 max-w-xs">
+                        <span className="font-bold text-slate-800 block truncate">{item.subject}</span>
+                        <span className="text-[11px] text-slate-400 block truncate">{item.snippet || 'No message content'}</span>
+                      </td>
+                      <td className="px-4 py-2.5 font-mono text-[11px]">
+                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60 text-[10px] font-bold capitalize">
+                          {item.provider || 'smart-router'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 font-mono text-[11px] text-slate-600">
+                        <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
+                          {item.sender_format ? `${item.sender_format}@` : 'auto@'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                        {item.sent_at ? new Date(item.sent_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Just now'}
+                      </td>
+                      <td className="px-4 py-2.5 text-center">
+                        {item.status === 'delivered' ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <Check className="w-3 h-3 text-emerald-600" />
+                            Delivered
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            <AlertCircle className="w-3 h-3 text-rose-600" />
+                            Failed
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2.5 text-right">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSubject(item.subject);
+                            setMessage(item.snippet || '');
+                            setCustomEmail(item.to);
+                            setRecipientName(item.recipient_name || '');
+                            setRecipientMode('custom');
+                            if (item.provider && item.provider !== 'smart-router') {
+                              setSelectedProvider(item.provider);
+                            }
+                            if (item.sender_format) {
+                              setSelectedSenderFormat(item.sender_format);
+                            }
+                            setActiveView('studio');
+                            if (showToast) showToast('Loaded into studio composer', 'info');
+                          }}
+                          className="text-xs text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded hover:bg-blue-50 cursor-pointer"
+                        >
+                          Load Draft
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── View 3: Rails & Infrastructure Telemetry ───────────────────── */}
+      {activeView === 'rails' && (
+        <div className="space-y-4">
+          {/* Capacity Hero Card */}
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs bg-gradient-to-br from-slate-50/80 via-white to-blue-50/30">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md">
+                  Active Multi-Rail Capacity
+                </span>
+                <div className="flex items-baseline gap-3 mt-1.5 flex-wrap">
+                  <h3 className="text-3xl font-extrabold font-mono text-slate-900">
+                    {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
+                  </h3>
+                  <span className="text-xs font-bold text-slate-600">
+                    emails remaining today out of {(combinedQuota.totalLimit ?? 1500).toLocaleString()} capacity
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  Transmissions reset every 24 hours at 00:00 IST. Automatic circuit breakers isolate rate-limited providers.
+                </p>
+              </div>
+
+              <div className="sm:w-64 space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+                  <span>Daily Utilization</span>
+                  <span className="font-mono">{combinedQuota.totalSentToday || 0} sent</span>
+                </div>
+                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${Math.min(100, Math.max(3, Math.round(((combinedQuota.totalRemaining ?? 1500) / (combinedQuota.totalLimit || 1500)) * 100)))}%`
+                    }}
+                  />
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* ── Bottom Section: Outbox History Log ─────────────────────────── */}
-      <div className="bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-          <div>
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-blue-600" />
-              <span>Direct Email Dispatch Ledger (Outbox)</span>
-            </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Live audit record of all emails sent from the admin dashboard with provider rail tracking.
-            </p>
+          {/* 6 Individual Rails Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {PROVIDER_OPTIONS.filter(p => p.id !== 'auto').map((p) => {
+              const tele = quotaMap[p.id] || {};
+              const limit = tele.dailyLimit || p.dailyLimit;
+              const sent = tele.sentToday || 0;
+              const remaining = tele.remaining != null ? tele.remaining : Math.max(0, limit - sent);
+              const isSelected = selectedProvider === p.id;
+              const isConfigured = tele.isConfigured !== false;
+              const isCircuitLimited = tele.circuit ? tele.circuit.isLimited : false;
+              const percentLeft = limit > 0 ? Math.round((remaining / limit) * 100) : 0;
+
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => {
+                    setSelectedProvider(isSelected ? 'auto' : p.id);
+                    setActiveView('studio');
+                    if (showToast) {
+                      showToast(isSelected ? 'Provider set to Smart Auto' : `Provider locked to ${p.name}`, 'info');
+                    }
+                  }}
+                  className={`p-4 rounded-xl border transition-all cursor-pointer relative ${
+                    isSelected
+                      ? 'bg-blue-50/90 border-blue-400 ring-2 ring-blue-500/20 shadow-xs'
+                      : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-slate-900">{p.name}</span>
+                    <span className={`w-2 h-2 rounded-full ${!isConfigured ? 'bg-slate-300' : isCircuitLimited ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
+                  </div>
+
+                  <p className="text-[11px] text-slate-500 leading-snug line-clamp-2 mb-3">
+                    {p.desc}
+                  </p>
+
+                  <div className="flex items-baseline justify-between text-xs font-mono">
+                    <span className="text-base font-extrabold text-slate-900">{remaining} left</span>
+                    <span className="text-slate-500">{sent} / {limit} sent</span>
+                  </div>
+
+                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                    <div
+                      className={`h-full rounded-full ${percentLeft < 20 ? 'bg-rose-500' : percentLeft < 50 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                      style={{ width: `${Math.min(100, Math.max(0, percentLeft))}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-
-          <div className="relative w-full sm:w-64">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search outbox, provider, or persona..."
-              value={outboxSearch}
-              onChange={(e) => setOutboxSearch(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
-            />
-          </div>
         </div>
-
-        <div className="overflow-x-auto rounded-2xl border border-slate-200/80">
-          <table className="min-w-full divide-y divide-slate-100 text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-bold text-[10px]">
-              <tr>
-                <th className="px-4 py-3 text-left">Recipient</th>
-                <th className="px-4 py-3 text-left">Subject &amp; Snippet</th>
-                <th className="px-4 py-3 text-left">Provider Rail</th>
-                <th className="px-4 py-3 text-left">Sender Identity</th>
-                <th className="px-4 py-3 text-left">Sent Time (IST)</th>
-                <th className="px-4 py-3 text-center">Status</th>
-                <th className="px-4 py-3 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 bg-white">
-              {outboxLoading ? (
-                <tr>
-                  <td colSpan="7" className="py-8 text-center text-slate-400">
-                    <RefreshCw className="w-4 h-4 animate-spin inline-block mr-2" />
-                    Loading outbox records...
-                  </td>
-                </tr>
-              ) : filteredOutbox.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="py-12 text-center text-slate-400">
-                    No dispatched emails found in outbox history.
-                  </td>
-                </tr>
-              ) : (
-                filteredOutbox.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="font-bold text-slate-900 block">{item.recipient_name || 'Recipient'}</span>
-                      <span className="font-mono text-[11px] text-slate-500">{item.to}</span>
-                    </td>
-                    <td className="px-4 py-3 max-w-xs">
-                      <span className="font-bold text-slate-800 block truncate">{item.subject}</span>
-                      <span className="text-[11px] text-slate-400 block truncate mt-0.5">{item.snippet || 'No snippet'}</span>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-[11px]">
-                      <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60 text-[10px] font-bold capitalize">
-                        {item.provider || 'smart-router'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-[11px] text-slate-600">
-                      <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
-                        {item.sender_format ? `${item.sender_format}@` : 'auto@'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-[11px] text-slate-600 whitespace-nowrap">
-                      {item.sent_at ? new Date(item.sent_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Just now'}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {item.status === 'delivered' ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <Check className="w-3 h-3 text-emerald-600" />
-                          Delivered
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                          <AlertCircle className="w-3 h-3 text-rose-600" />
-                          Failed
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => {
-                          setSubject(item.subject);
-                          setMessage(item.snippet || '');
-                          setCustomEmail(item.to);
-                          setRecipientName(item.recipient_name || '');
-                          setRecipientMode('custom');
-                          if (item.provider && item.provider !== 'smart-router') {
-                            setSelectedProvider(item.provider);
-                          }
-                          if (item.sender_format) {
-                            setSelectedSenderFormat(item.sender_format);
-                          }
-                          if (showToast) showToast('Loaded into composer', 'info');
-                        }}
-                        className="text-xs text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded hover:bg-blue-50 cursor-pointer"
-                      >
-                        Reuse Draft
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
