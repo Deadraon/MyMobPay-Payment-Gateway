@@ -628,19 +628,19 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
       {/* ── View 1: Studio Composer (Primary Workspace) ────────────────── */}
       {activeView === 'studio' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-          {/* Left Column: Senior Dev Email Studio Canvas (7 cols) */}
-          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col">
+          {/* Left Column: Email Studio Canvas (7 cols) */}
+          <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden flex flex-col">
             {/* Top Toolbar / Configuration Strip */}
-            <div className="p-3.5 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              {/* Audience Mode Switcher (High Contrast Segmented Control) */}
-              <div className="flex items-center gap-1 bg-slate-200/80 p-1 rounded-xl border border-slate-300/80 shadow-2xs">
+            <div className="p-3 sm:p-4 bg-slate-50/70 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2.5">
+              {/* Audience Mode Switcher (Clean Segmented Control) */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/70">
                 <button
                   type="button"
                   onClick={() => setRecipientMode('merchant')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'merchant'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-800 hover:text-slate-950 hover:bg-white/60'
+                      ? 'bg-white text-blue-600 font-bold shadow-2xs border border-slate-200/70'
+                      : 'text-slate-600 hover:text-slate-900 font-medium'
                   }`}
                 >
                   <Building2 className="w-3.5 h-3.5" />
@@ -650,10 +650,10 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setRecipientMode('custom')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'custom'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-800 hover:text-slate-950 hover:bg-white/60'
+                      ? 'bg-white text-blue-600 font-bold shadow-2xs border border-slate-200/70'
+                      : 'text-slate-600 hover:text-slate-900 font-medium'
                   }`}
                 >
                   <AtSign className="w-3.5 h-3.5" />
@@ -663,10 +663,10 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setRecipientMode('broadcast')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
                     recipientMode === 'broadcast'
-                      ? 'bg-rose-600 text-white shadow-xs'
-                      : 'text-slate-800 hover:text-slate-950 hover:bg-white/60'
+                      ? 'bg-rose-50 text-rose-700 font-bold shadow-2xs border border-rose-200'
+                      : 'text-slate-600 hover:text-slate-900 font-medium'
                   }`}
                 >
                   <Radio className="w-3.5 h-3.5" />
@@ -675,13 +675,13 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               </div>
 
               {/* Template & Delivery Drawer Buttons */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {/* Template Selector Dropdown */}
                 <div className="relative">
                   <select
                     value={selectedTemplateId}
                     onChange={(e) => handleSelectTemplate(e.target.value)}
-                    className="text-xs bg-white border border-slate-300 rounded-xl px-3 py-1.5 font-bold text-slate-800 focus:outline-none focus:border-blue-500 cursor-pointer shadow-2xs transition-colors"
+                    className="text-xs bg-white border border-slate-200 hover:border-slate-300 rounded-xl px-3 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer shadow-2xs transition-colors"
                   >
                     {EMAIL_TEMPLATES.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -695,10 +695,10 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setShowConfigDrawer(!showConfigDrawer)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
                     showConfigDrawer
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                      : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100'
+                      ? 'bg-blue-50 text-blue-700 border-blue-200 font-semibold'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                   }`}
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -708,32 +708,32 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               </div>
             </div>
 
-            {/* High-Contrast Transmission Routing Drawer */}
+            {/* Clean Light Transmission Routing Drawer */}
             {showConfigDrawer && (
-              <div className="p-4 bg-slate-900 text-white border-b border-slate-800 animate-fadeIn space-y-3.5">
-                <div className="flex items-center justify-between text-xs pb-2.5 border-b border-slate-800">
+              <div className="p-4 bg-slate-50/80 border-b border-slate-200/80 animate-fadeIn space-y-3.5">
+                <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-200/70">
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-md bg-blue-600 flex items-center justify-center text-white">
-                      <Server className="w-3 h-3" />
+                    <div className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                      <Server className="w-3.5 h-3.5" />
                     </div>
-                    <span className="font-bold text-white text-xs">
+                    <span className="font-bold text-slate-800 text-xs">
                       Delivery Rail Engine &amp; Sender Persona
                     </span>
                   </div>
-                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-950/80 text-emerald-400 border border-emerald-800/80">
+                  <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Failover Active Across 6 Rails
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                   <div>
-                    <label className="text-xs font-bold text-slate-100 block mb-1.5">
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
                       Provider Rail Override
                     </label>
                     <select
                       value={selectedProvider}
                       onChange={(e) => setSelectedProvider(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl font-bold text-white focus:outline-none focus:border-blue-500 cursor-pointer shadow-inner"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 cursor-pointer shadow-2xs"
                     >
                       {PROVIDER_OPTIONS.map((p) => {
                         const tele = quotaMap[p.id];
@@ -745,19 +745,19 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                         );
                       })}
                     </select>
-                    <p className="text-[11px] font-medium text-slate-300 mt-1.5 leading-snug">
+                    <p className="text-[11px] text-slate-500 mt-1 leading-snug">
                       Default: Smart Auto dynamically fails over to next relay if daily quota or circuit trips.
                     </p>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-100 block mb-1.5">
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
                       Sender Persona &amp; Identity
                     </label>
                     <select
                       value={selectedSenderFormat}
                       onChange={(e) => setSelectedSenderFormat(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl font-bold text-white focus:outline-none focus:border-blue-500 cursor-pointer shadow-inner"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 cursor-pointer shadow-2xs"
                     >
                       {SENDER_FORMAT_OPTIONS.map((f) => (
                         <option key={f.id} value={f.id}>
@@ -765,7 +765,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                         </option>
                       ))}
                     </select>
-                    <p className="text-[11px] font-medium text-slate-300 mt-1.5 leading-snug">
+                    <p className="text-[11px] text-slate-500 mt-1 leading-snug">
                       DKIM &amp; SPF aligned apex domain address displayed in customer and merchant inboxes.
                     </p>
                   </div>
@@ -773,20 +773,20 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               </div>
             )}
 
-            {/* Recipient Input Row (macOS / Apple Mail Style with Strong Contrast) */}
-            <div className="px-5 py-3.5 border-b border-slate-200 bg-white">
+            {/* Recipient Input Row (Clean High-Contrast Typography) */}
+            <div className="px-5 py-3.5 border-b border-slate-100 bg-white">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider w-10 shrink-0">To:</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider w-10 shrink-0">To:</span>
 
                 {recipientMode === 'merchant' && (
                   <div className="flex-1 min-w-0">
                     {customEmail ? (
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs shadow-2xs">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50/80 border border-blue-200/80 text-xs shadow-2xs">
                         <div className="w-5 h-5 rounded-full bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0">
                           {(recipientName || 'M').charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-bold text-slate-900 truncate">{recipientName}</span>
-                        <span className="text-blue-700 font-mono text-[11px] font-semibold">&lt;{customEmail}&gt;</span>
+                        <span className="font-semibold text-slate-900 truncate">{recipientName}</span>
+                        <span className="text-blue-700 font-mono text-[11px] font-medium">&lt;{customEmail}&gt;</span>
                         <button
                           type="button"
                           onClick={() => {
@@ -807,13 +807,13 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                           placeholder="Search registered store name, owner, or email..."
                           value={merchantSearch}
                           onChange={(e) => setMerchantSearch(e.target.value)}
-                          className="w-full text-xs text-slate-900 placeholder:text-slate-500 focus:outline-none font-semibold bg-transparent"
+                          className="w-full text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none font-medium bg-transparent"
                         />
 
                         {/* Search Dropdown */}
                         {isSearchDropdownMounted && (
                           <div
-                            className={`absolute left-0 right-0 top-full mt-2 max-h-56 overflow-y-auto rounded-xl border border-slate-300 bg-white shadow-xl divide-y divide-slate-100 z-30 ${searchDropdownClass}`}
+                            className={`absolute left-0 right-0 top-full mt-2 max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl divide-y divide-slate-100 z-30 ${searchDropdownClass}`}
                             data-origin="top-center"
                           >
                             {filteredMerchantsDropdown.map(m => (
@@ -827,17 +827,17 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                                     {(m.business_name || m.owner_name || 'M').charAt(0).toUpperCase()}
                                   </div>
                                   <div className="min-w-0">
-                                    <p className="font-bold text-slate-900 truncate">{m.business_name || m.owner_name || 'Merchant'}</p>
-                                    <p className="text-[11px] font-mono text-slate-600 truncate">{m.email}</p>
+                                    <p className="font-semibold text-slate-900 truncate">{m.business_name || m.owner_name || 'Merchant'}</p>
+                                    <p className="text-[11px] font-mono text-slate-500 truncate">{m.email}</p>
                                   </div>
                                 </div>
-                                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 shrink-0 ml-2 border border-slate-200">
+                                <span className="text-[9px] font-mono font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 shrink-0 ml-2 border border-slate-200">
                                   {m.subscription_status || 'free'}
                                 </span>
                               </div>
                             ))}
                             {filteredMerchantsDropdown.length === 0 && (
-                              <div className="p-4 text-center text-xs text-slate-500 font-medium">No matching merchants found.</div>
+                              <div className="p-4 text-center text-xs text-slate-400 font-medium">No matching merchants found.</div>
                             )}
                           </div>
                         )}
@@ -853,22 +853,22 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                       placeholder="Recipient Name (optional)"
                       value={recipientName}
                       onChange={(e) => setRecipientName(e.target.value)}
-                      className="w-full sm:w-1/3 text-xs text-slate-900 placeholder:text-slate-500 focus:outline-none font-semibold bg-transparent"
+                      className="w-full sm:w-1/3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none font-medium bg-transparent"
                     />
-                    <span className="hidden sm:inline text-slate-400 font-bold">•</span>
+                    <span className="hidden sm:inline text-slate-300 font-bold">•</span>
                     <input
                       type="email"
                       required
                       placeholder="Email address (e.g. merchant@example.com) *"
                       value={customEmail}
                       onChange={(e) => setCustomEmail(e.target.value)}
-                      className="w-full sm:w-2/3 text-xs text-slate-900 placeholder:text-slate-500 focus:outline-none font-mono font-semibold bg-transparent"
+                      className="w-full sm:w-2/3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none font-mono font-medium bg-transparent"
                     />
                   </div>
                 )}
 
                 {recipientMode === 'broadcast' && (
-                  <div className="flex-1 text-xs text-rose-800 font-bold flex items-center gap-1.5">
+                  <div className="flex-1 text-xs text-rose-700 font-semibold flex items-center gap-1.5">
                     <Radio className="w-3.5 h-3.5 text-rose-600" />
                     <span>Broadcasting to all {eligibleMerchants.length} registered merchant accounts</span>
                   </div>
@@ -876,9 +876,9 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               </div>
             </div>
 
-            {/* Subject Line (Clean High-Contrast Typography) */}
-            <div className="px-5 py-3.5 border-b border-slate-200">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block mb-1">
+            {/* Subject Line */}
+            <div className="px-5 py-3.5 border-b border-slate-100">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 Subject Line *
               </span>
               <input
@@ -887,18 +887,18 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 placeholder="Write a clear, descriptive subject line..."
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full text-base sm:text-lg font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none bg-transparent tracking-tight"
+                className="w-full text-base sm:text-lg font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none bg-transparent tracking-tight"
               />
             </div>
 
-            {/* Editorial Formatting Bar (Linear / Resend Style) */}
-            <div className="px-5 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap">
+            {/* Editorial Formatting Bar */}
+            <div className="px-5 py-2.5 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-extrabold text-slate-600 uppercase tracking-wider mr-1">Insert Token:</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mr-1">Insert Token:</span>
                 <button
                   type="button"
                   onClick={() => insertToken('{{merchant_name}}')}
-                  className="px-2.5 py-1 rounded-md bg-white border border-slate-300 text-slate-800 text-[11px] font-mono font-bold hover:bg-slate-100 cursor-pointer shadow-2xs"
+                  className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-650 text-[11px] font-mono font-medium hover:border-blue-300 hover:text-blue-600 transition-colors cursor-pointer shadow-2xs"
                   title="Insert recipient name token"
                 >
                   &#123;&#123;merchant_name&#125;&#125;
@@ -906,7 +906,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => insertToken('{{vpa}}')}
-                  className="px-2.5 py-1 rounded-md bg-white border border-slate-300 text-slate-800 text-[11px] font-mono font-bold hover:bg-slate-100 cursor-pointer shadow-2xs"
+                  className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-650 text-[11px] font-mono font-medium hover:border-blue-300 hover:text-blue-600 transition-colors cursor-pointer shadow-2xs"
                   title="Insert settlement VPA token"
                 >
                   &#123;&#123;vpa&#125;&#125;
@@ -914,7 +914,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => insertToken('https://mymobpay.tech/dashboard')}
-                  className="px-2.5 py-1 rounded-md bg-white border border-slate-300 text-slate-800 text-[11px] font-mono font-bold hover:bg-slate-100 cursor-pointer shadow-2xs"
+                  className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-650 text-[11px] font-mono font-medium hover:border-blue-300 hover:text-blue-600 transition-colors cursor-pointer shadow-2xs"
                   title="Insert portal URL"
                 >
                   portal_url
@@ -926,10 +926,10 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setIncludeCta(!includeCta)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
                     includeCta
-                      ? 'bg-blue-50 text-blue-800 border-blue-300 shadow-2xs'
-                      : 'bg-white text-slate-700 border-slate-300 hover:text-slate-900'
+                      ? 'bg-blue-50 text-blue-700 border-blue-200 shadow-2xs'
+                      : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                   }`}
                 >
                   <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
@@ -953,9 +953,9 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
 
               {/* Inline Action Button Editor Block */}
               {includeCta && (
-                <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 animate-fadeIn space-y-3">
+                <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80 animate-fadeIn space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <span className="font-semibold text-slate-800 flex items-center gap-1.5">
                       <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
                       <span>Action Button Configuration</span>
                     </span>
@@ -970,23 +970,23 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
-                      <span className="text-[11px] font-bold text-slate-700 block mb-1">Button Label</span>
+                      <span className="text-[11px] font-semibold text-slate-700 block mb-1">Button Label</span>
                       <input
                         type="text"
                         placeholder="e.g. Open Merchant Portal"
                         value={ctaText}
                         onChange={(e) => setCtaText(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-bold text-slate-900"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-semibold text-slate-900"
                       />
                     </div>
                     <div>
-                      <span className="text-[11px] font-bold text-slate-700 block mb-1">Target URL</span>
+                      <span className="text-[11px] font-semibold text-slate-700 block mb-1">Target URL</span>
                       <input
                         type="url"
                         placeholder="https://mymobpay.tech/dashboard"
                         value={ctaUrl}
                         onChange={(e) => setCtaUrl(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-mono font-medium text-slate-800"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs font-mono font-medium text-slate-800"
                       />
                     </div>
                   </div>
@@ -995,18 +995,18 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             </div>
 
             {/* Studio Bottom Command Bar */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-xs text-slate-700">
+            <div className="p-4 bg-slate-50/70 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-slate-600">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="font-bold text-slate-900">
+                <span className="font-semibold text-slate-900">
                   {selectedProvider === 'auto' ? 'Auto Failover' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
                 </span>
                 <span className="text-slate-300">•</span>
-                <span className="font-mono text-xs font-semibold text-slate-700">{currentSenderPreview.email}</span>
+                <span className="font-mono text-xs font-medium text-slate-600">{currentSenderPreview.email}</span>
               </div>
 
               <div className="flex items-center gap-3 justify-end">
-                <span className="hidden sm:inline text-[11px] font-mono text-slate-500 font-semibold">
+                <span className="hidden sm:inline text-[11px] font-mono text-slate-400">
                   Ctrl + Enter to send
                 </span>
 
@@ -1014,7 +1014,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                   type="button"
                   onClick={handleSendEmail}
                   disabled={sending}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:shadow"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {sending ? (
                     <>
@@ -1032,18 +1032,18 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             </div>
           </div>
 
-          {/* Right Column: Superhuman / Resend Live Email Inspector (5 cols) */}
-          <div className="lg:col-span-5 bg-slate-100 border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3 sticky top-20">
+          {/* Right Column: Live Email Inspector (5 cols) */}
+          <div className="lg:col-span-5 bg-slate-50/60 border border-slate-200/80 rounded-2xl p-4 shadow-xs space-y-3 sticky top-20">
             {/* Inspector Header & Controls */}
-            <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
-              <div className="flex items-center gap-1.5 bg-white p-0.5 rounded-lg border border-slate-300 shadow-2xs">
+            <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
+              <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200/80">
                 <button
                   type="button"
                   onClick={() => setPreviewTab('preview')}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                     previewTab === 'preview'
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-700 hover:text-slate-900'
+                      ? 'bg-white text-blue-600 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   Live Preview
@@ -1051,10 +1051,10 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setPreviewTab('headers')}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer flex items-center gap-1 ${
                     previewTab === 'headers'
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-700 hover:text-slate-900'
+                      ? 'bg-white text-blue-600 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <Terminal className="w-3 h-3" />
@@ -1067,24 +1067,24 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 <button
                   type="button"
                   onClick={() => setInterpolateTokens(!interpolateTokens)}
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono transition-colors border ${
+                  className={`px-2 py-0.5 rounded text-[10px] font-semibold font-mono transition-colors border ${
                     interpolateTokens
-                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                      : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                   }`}
                   title="Toggle simulated token interpolation in preview"
                 >
                   {interpolateTokens ? 'Tags: On' : 'Tags: Raw'}
                 </button>
 
-                <div className="flex items-center bg-white border border-slate-300 rounded-lg p-0.5 shadow-2xs">
+                <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 shadow-2xs">
                   <button
                     type="button"
                     onClick={() => setPreviewDevice('desktop')}
-                    className={`p-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    className={`p-1.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer ${
                       previewDevice === 'desktop'
-                        ? 'bg-slate-900 text-white'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-500 hover:text-slate-800'
                     }`}
                     title="Desktop View"
                   >
@@ -1093,10 +1093,10 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                   <button
                     type="button"
                     onClick={() => setPreviewDevice('mobile')}
-                    className={`p-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    className={`p-1.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer ${
                       previewDevice === 'mobile'
-                        ? 'bg-slate-900 text-white'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-500 hover:text-slate-800'
                     }`}
                     title="Mobile View"
                   >
@@ -1109,18 +1109,18 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             {/* Email Canvas Window */}
             {previewTab === 'preview' ? (
               <div className={`transition-all duration-300 ${previewDevice === 'mobile' ? 'max-w-[320px] mx-auto' : 'w-full'}`}>
-                <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
                   {/* Email Window Chrome */}
-                  <div className="bg-slate-100 px-3.5 py-2 border-b border-slate-200 flex items-center justify-between">
+                  <div className="bg-slate-50/90 px-3.5 py-2 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+                      <span className="w-2 h-2 rounded-full bg-slate-300/80" />
+                      <span className="w-2 h-2 rounded-full bg-slate-300/80" />
+                      <span className="w-2 h-2 rounded-full bg-slate-300/80" />
                     </div>
-                    <span className="text-[11px] font-mono font-bold text-slate-700">
+                    <span className="text-[11px] font-mono font-medium text-slate-600">
                       {currentSenderPreview.email}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-800 bg-slate-200 px-2 py-0.5 rounded font-mono border border-slate-300">
+                    <span className="text-[10px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md font-mono border border-slate-200/80">
                       {selectedProvider === 'auto' ? 'Auto' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
                     </span>
                   </div>
@@ -1235,7 +1235,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               <select
                 value={outboxStatusFilter}
                 onChange={(e) => setOutboxStatusFilter(e.target.value)}
-                className="text-xs bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 font-bold text-slate-800 focus:outline-none cursor-pointer"
+                className="text-xs bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer shadow-2xs"
               >
                 <option value="all">All Status</option>
                 <option value="delivered">Delivered</option>
@@ -1250,7 +1250,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                   placeholder="Search outbox..."
                   value={outboxSearch}
                   onChange={(e) => setOutboxSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-blue-500 font-semibold text-slate-900 placeholder:text-slate-400"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-slate-900 placeholder:text-slate-400 shadow-2xs"
                 />
               </div>
             </div>
@@ -1356,29 +1356,29 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
       {activeView === 'rails' && (
         <div className="space-y-4">
           {/* Header Status & Live Telemetry Strip */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-white rounded-2xl border border-blue-100/80 shadow-2xs">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40">
+              <div className="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-2xs">
                 <Activity className="w-4 h-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-xs font-bold text-white">Live Multi-Rail Telemetry Matrix</h4>
-                  <span className="text-[10px] font-mono px-2 py-0.2 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold">
+                  <h4 className="text-xs font-bold text-slate-900">Live Multi-Rail Telemetry Matrix</h4>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
                     Read-Only Monitoring
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-300">
+                <p className="text-[11px] text-slate-500 font-medium">
                   Real-time transmission counters and circuit breaker status. Select active rails in the Studio Composer.
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 text-xs font-mono">
-              <span className="text-slate-400">Timezone:</span>
-              <span className="text-white font-bold bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Asia/Kolkata (IST)</span>
+              <span className="text-slate-500">Timezone:</span>
+              <span className="text-slate-800 font-semibold bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">Asia/Kolkata (IST)</span>
               <span className="text-slate-400 ml-1">Reset:</span>
-              <span className="text-emerald-400 font-bold">00:00 IST</span>
+              <span className="text-emerald-700 font-bold">00:00 IST</span>
             </div>
           </div>
 
