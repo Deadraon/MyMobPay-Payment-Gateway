@@ -495,55 +495,54 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
       </div>
 
       {/* ── 1. Combined Left Emails & Delivery Capacity Banner ─────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-blue-950 to-slate-900 border border-slate-800 text-white p-5 sm:p-6 shadow-xl">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-200/90 p-5 sm:p-6 shadow-xs bg-gradient-to-br from-slate-50/80 via-white to-blue-50/30">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold font-mono tracking-wider uppercase bg-blue-500/20 text-blue-300 border border-blue-400/30 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold font-mono tracking-wider uppercase bg-blue-100 text-blue-700 border border-blue-200/80 flex items-center gap-1.5 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live Daily Telemetry &bull; IST
               </span>
-              <span className="text-[11px] text-slate-400 font-mono">
+              <span className="text-[11px] text-slate-500 font-mono font-medium">
                 {telemetryDate || new Date().toISOString().slice(0, 10)}
               </span>
             </div>
 
             <div>
-              <div className="flex items-baseline gap-3">
-                <h3 className="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <h3 className="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-slate-900">
                   {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
                 </h3>
-                <span className="text-sm font-semibold text-slate-300">
+                <span className="text-sm font-bold text-slate-700">
                   emails left today
                 </span>
-                <span className="text-xs font-mono text-slate-400">
+                <span className="text-xs font-mono font-semibold text-slate-400">
                   / {(combinedQuota.totalLimit ?? 1500).toLocaleString()} daily capacity
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1.5 max-w-xl leading-relaxed">
                 Aggregated 24-hour transmission allowance across {combinedQuota.activeProvidersCount || 6} active delivery rails. Resets automatically at 00:00 IST.
               </p>
             </div>
           </div>
 
-          <div className="w-full lg:w-80 bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-xs space-y-3">
+          <div className="w-full lg:w-80 bg-slate-50/90 border border-slate-200 rounded-2xl p-4 space-y-3 shadow-2xs">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-300 font-medium">Daily Utilization</span>
-              <span className="font-mono font-bold text-white">
+              <span className="text-slate-600 font-semibold">Daily Utilization</span>
+              <span className="font-mono font-bold text-slate-900">
                 {combinedQuota.totalSentToday || 0} sent today
               </span>
             </div>
 
             {/* Capacity Progress Bar */}
-            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/5">
+            <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden p-0.5 border border-slate-300/50">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
                   (combinedQuota.totalRemaining ?? 1500) < 200
                     ? 'bg-rose-500'
                     : (combinedQuota.totalRemaining ?? 1500) < 600
-                    ? 'bg-amber-400'
-                    : 'bg-emerald-400'
+                    ? 'bg-amber-500'
+                    : 'bg-emerald-500'
                 }`}
                 style={{
                   width: `${Math.min(100, Math.max(3, Math.round(((combinedQuota.totalRemaining ?? 1500) / (combinedQuota.totalLimit || 1500)) * 100)))}%`
@@ -551,11 +550,13 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               />
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-slate-400">
-              <span>{Math.round(((combinedQuota.totalRemaining ?? 1500) / (combinedQuota.totalLimit || 1500)) * 100)}% Available</span>
-              <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                6 Rails Ready
+            <div className="flex items-center justify-between text-[11px] font-medium">
+              <span className="text-slate-600 font-semibold">
+                {Math.round(((combinedQuota.totalRemaining ?? 1500) / (combinedQuota.totalLimit || 1500)) * 100)}% Available
+              </span>
+              <span className="text-emerald-700 font-bold flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                {combinedQuota.activeProvidersCount || 6} Rails Ready
               </span>
             </div>
           </div>
@@ -583,8 +584,9 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             const sent = tele.sentToday || 0;
             const remaining = tele.remaining != null ? tele.remaining : Math.max(0, limit - sent);
             const isSelected = selectedProvider === p.id;
-            const isHealthy = tele.circuitBreaker ? tele.circuitBreaker.status === 'healthy' : true;
-            const percentLeft = Math.round((remaining / limit) * 100);
+            const isConfigured = tele.isConfigured !== false;
+            const isCircuitLimited = tele.circuit ? tele.circuit.isLimited : false;
+            const percentLeft = limit > 0 ? Math.round((remaining / limit) * 100) : 0;
 
             return (
               <div
@@ -592,39 +594,61 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 onClick={() => setSelectedProvider(isSelected ? 'auto' : p.id)}
                 className={`p-3.5 rounded-2xl border transition-all cursor-pointer relative ${
                   isSelected
-                    ? 'bg-blue-50/80 border-blue-400 ring-2 ring-blue-500/20 shadow-xs'
-                    : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-2xs'
+                    ? 'bg-blue-50/90 border-blue-400 ring-2 ring-blue-500/20 shadow-xs'
+                    : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[11px] font-bold text-slate-800 truncate" title={p.name}>
                     {p.shortName}
                   </span>
-                  <span className={`w-2 h-2 rounded-full ${isHealthy ? 'bg-emerald-500' : 'bg-amber-500 animate-ping'}`} />
+                  <div className="flex items-center gap-1">
+                    {!isConfigured && (
+                      <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 px-1 py-0.5 rounded">
+                        Not Set
+                      </span>
+                    )}
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        !isConfigured
+                          ? 'bg-slate-300'
+                          : isCircuitLimited
+                          ? 'bg-amber-500 animate-pulse'
+                          : 'bg-emerald-500'
+                      }`}
+                      title={!isConfigured ? 'Provider credentials not configured' : isCircuitLimited ? 'In cooldown' : 'Operational'}
+                    />
+                  </div>
                 </div>
 
                 <div className="text-lg font-extrabold font-mono text-slate-900 leading-tight">
                   {remaining}
-                  <span className="text-[10px] font-normal text-slate-400 ml-0.5">left</span>
+                  <span className="text-[11px] font-medium text-slate-500 ml-1">left</span>
                 </div>
 
-                <div className="text-[10px] font-mono text-slate-500 mt-0.5 flex items-center justify-between">
+                <div className="text-[11px] font-mono text-slate-600 mt-1 flex items-center justify-between font-medium">
                   <span>{sent} sent</span>
                   <span className="text-slate-400">/{limit}</span>
                 </div>
 
                 {/* Micro Progress Bar */}
-                <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden mt-2">
+                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2 border border-slate-200/50">
                   <div
-                    className={`h-full ${
-                      percentLeft < 20 ? 'bg-rose-500' : percentLeft < 50 ? 'bg-amber-400' : 'bg-emerald-500'
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      !isConfigured
+                        ? 'bg-slate-300'
+                        : percentLeft < 20
+                        ? 'bg-rose-500'
+                        : percentLeft < 50
+                        ? 'bg-amber-400'
+                        : 'bg-emerald-500'
                     }`}
                     style={{ width: `${Math.min(100, Math.max(0, percentLeft))}%` }}
                   />
                 </div>
 
                 {isSelected && (
-                  <span className="mt-2 block text-center text-[9px] font-bold text-blue-700 bg-blue-100 rounded-md py-0.5 uppercase tracking-wider">
+                  <span className="mt-2 block text-center text-[9px] font-bold text-blue-700 bg-blue-100/90 rounded-md py-0.5 uppercase tracking-wider">
                     Selected
                   </span>
                 )}
