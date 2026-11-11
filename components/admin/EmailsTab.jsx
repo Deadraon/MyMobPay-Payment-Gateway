@@ -28,7 +28,13 @@ import {
   Layers,
   Gauge,
   Activity,
-  Shield
+  Shield,
+  Sliders,
+  Smartphone,
+  Monitor,
+  ChevronDown,
+  ChevronUp,
+  X
 } from 'lucide-react';
 
 const SENDER_FORMAT_OPTIONS = [
@@ -245,6 +251,8 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   // Provider & Sender Format Administration
   const [selectedProvider, setSelectedProvider] = useState('auto');
   const [selectedSenderFormat, setSelectedSenderFormat] = useState('auto');
+  const [showDeliverySettings, setShowDeliverySettings] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState('desktop'); // 'desktop' | 'mobile'
   const [providerQuotas, setProviderQuotas] = useState([]);
   const [combinedQuota, setCombinedQuota] = useState({
     totalLimit: 1500,
@@ -662,254 +670,199 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Email Compose Form (7 cols) */}
         <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-6 shadow-xs space-y-5">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+          {/* Header with Title & Quick Preset Dropdown */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
             <div>
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Send className="w-4 h-4 text-blue-600" />
                 <span>Compose Direct Email</span>
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">Choose your recipient, select a quick preset, and customize.</p>
+              <p className="text-xs text-slate-400 mt-0.5">Draft an official notification or broadcast to merchants.</p>
             </div>
-            <span className="text-[11px] font-mono text-slate-400 font-medium">UTF-8 HTML</span>
+
+            {/* Clean Template Preset Dropdown */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                <span>Template:</span>
+              </span>
+              <select
+                value={selectedTemplateId}
+                onChange={(e) => handleSelectTemplate(e.target.value)}
+                className="text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 font-semibold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer transition-colors"
+              >
+                {EMAIL_TEMPLATES.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <form onSubmit={handleSendEmail} className="space-y-4">
             {/* 1. Recipient Mode Selector */}
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                Target Audience / Recipient Mode
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 block">
+                Send To
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => setRecipientMode('merchant')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                     recipientMode === 'merchant'
-                      ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-500/10'
+                      ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-500/10 shadow-2xs'
                       : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                   }`}
                 >
-                  Select Merchant
+                  <UserCheck className="w-3.5 h-3.5" />
+                  <span>Merchant</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setRecipientMode('custom')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                     recipientMode === 'custom'
-                      ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-500/10'
+                      ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-500/10 shadow-2xs'
                       : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                   }`}
                 >
-                  Custom Email
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>Custom Email</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setRecipientMode('broadcast')}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                     recipientMode === 'broadcast'
-                      ? 'bg-rose-50 text-rose-700 border-rose-300 ring-2 ring-rose-500/10'
+                      ? 'bg-rose-50 text-rose-700 border-rose-300 ring-2 ring-rose-500/10 shadow-2xs'
                       : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                   }`}
                 >
-                  Broadcast All ({eligibleMerchants.length})
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Broadcast All ({eligibleMerchants.length})</span>
                 </button>
               </div>
-            </div>
 
-            {/* Recipient Details based on mode */}
-            {recipientMode === 'merchant' && (
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Search &amp; Pick Registered Merchant
-                </label>
-                <div className="relative">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    placeholder="Search by store name, email or phone..."
-                    value={merchantSearch}
-                    onChange={(e) => setMerchantSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
-                  />
-                </div>
-
-                {/* Dropdown Suggestions (transitions-dev: 05-menu-dropdown.md) */}
-                {isSearchDropdownMounted && (
-                  <div 
-                    className={`max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg divide-y divide-slate-100 ${searchDropdownClass}`}
-                    data-origin="top-center"
-                  >
-                    {filteredMerchantsDropdown.map(m => (
-                      <div
-                        key={m.id}
-                        onClick={() => handleSelectMerchant(m)}
-                        className="p-2.5 hover:bg-blue-50/60 cursor-pointer text-xs flex items-center justify-between"
-                      >
-                        <div>
-                          <p className="font-bold text-slate-800">{m.business_name || m.owner_name || 'Merchant'}</p>
-                          <p className="text-[11px] font-mono text-slate-500">{m.email} {m.phone_number ? `• ${m.phone_number}` : ''}</p>
+              {/* Recipient Details based on mode */}
+              {recipientMode === 'merchant' && (
+                <div className="pt-1 space-y-2">
+                  {customEmail ? (
+                    <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200/90 text-xs flex items-center justify-between shadow-2xs">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
+                          {(recipientName || 'M').charAt(0).toUpperCase()}
                         </div>
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                          {m.subscription_status || 'free'}
-                        </span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-slate-900 font-bold text-xs">{recipientName || 'Selected Merchant'}</span>
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-blue-100 text-blue-700 font-semibold">
+                              Verified
+                            </span>
+                          </div>
+                          <span className="text-blue-800 font-mono text-[11px] block">{customEmail}</span>
+                        </div>
                       </div>
-                    ))}
-                    {filteredMerchantsDropdown.length === 0 && (
-                      <div className="p-3 text-center text-xs text-slate-400">No merchants matching query.</div>
-                    )}
-                  </div>
-                )}
-
-                {/* Selected merchant indicator */}
-                {customEmail && (
-                  <div className="p-2.5 rounded-xl bg-blue-50/70 border border-blue-200 text-xs flex items-center justify-between">
-                    <div>
-                      <span className="text-blue-900 font-bold block">{recipientName || 'Selected Merchant'}</span>
-                      <span className="text-blue-700 font-mono text-[11px]">{customEmail}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCustomEmail('');
-                        setSelectedMerchantId('');
-                        setRecipientName('');
-                      }}
-                      className="text-xs text-rose-600 hover:text-rose-800 font-bold p-1 cursor-pointer"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {recipientMode === 'custom' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Recipient Name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Kunal Chauhan"
-                    value={recipientName}
-                    onChange={(e) => setRecipientName(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Recipient Email Address *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="merchant@example.com"
-                    value={customEmail}
-                    onChange={(e) => setCustomEmail(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-mono font-medium"
-                  />
-                </div>
-              </div>
-            )}
-
-            {recipientMode === 'broadcast' && (
-              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
-                <strong>Broadcast Notice:</strong> This message will be individually delivered via <strong>{selectedProvider === 'auto' ? 'Smart Multi-Rail (Auto Failover)' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.name || selectedProvider}</strong> to all <strong>{eligibleMerchants.length}</strong> active registered merchants in your system.
-              </div>
-            )}
-
-            {/* ── Email Provider & Sender Persona Controls ────────────── */}
-            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Provider Rail Selector */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                      <Server className="w-3.5 h-3.5 text-blue-600" />
-                      <span>Email Provider Rail</span>
-                    </label>
-                    {selectedProvider === 'auto' ? (
-                      <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-1.5 py-0.2 rounded">
-                        Auto (Smart)
-                      </span>
-                    ) : (
                       <button
                         type="button"
-                        onClick={() => setSelectedProvider('auto')}
-                        className="text-[10px] font-bold text-slate-500 hover:text-blue-600 cursor-pointer"
+                        onClick={() => {
+                          setCustomEmail('');
+                          setSelectedMerchantId('');
+                          setRecipientName('');
+                        }}
+                        className="text-xs text-slate-500 hover:text-rose-600 font-bold px-2 py-1 rounded-lg hover:bg-white/80 transition-colors cursor-pointer flex items-center gap-1"
                       >
-                        Reset to Auto
+                        <X className="w-3.5 h-3.5" />
+                        <span>Change</span>
                       </button>
-                    )}
-                  </div>
-                  <select
-                    value={selectedProvider}
-                    onChange={(e) => setSelectedProvider(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-semibold text-slate-800"
-                  >
-                    {PROVIDER_OPTIONS.map((p) => {
-                      const tele = quotaMap[p.id];
-                      const leftStr = tele ? ` (${tele.remaining} left)` : ` (${p.badge})`;
-                      return (
-                        <option key={p.id} value={p.id}>
-                          {p.name} {p.id !== 'auto' ? leftStr : ''}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <p className="text-[10px] text-slate-400 mt-1 truncate">
-                    {PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.desc}
-                  </p>
-                </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      <div className="relative">
+                        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                        <input
+                          type="text"
+                          placeholder="Search registered store name, owner, email or phone..."
+                          value={merchantSearch}
+                          onChange={(e) => setMerchantSearch(e.target.value)}
+                          className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium transition-colors"
+                        />
+                      </div>
 
-                {/* Sender Identity / Format Selector */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Sender Persona &amp; Format</span>
-                    </label>
-                    <span className="text-[10px] font-mono text-slate-400">@mymobpay.tech</span>
-                  </div>
-                  <select
-                    value={selectedSenderFormat}
-                    onChange={(e) => setSelectedSenderFormat(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-semibold text-slate-800"
-                  >
-                    {SENDER_FORMAT_OPTIONS.map((f) => (
-                      <option key={f.id} value={f.id}>
-                        {f.name} &bull; {f.email}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-[10px] text-slate-400 mt-1 truncate">
-                    {SENDER_FORMAT_OPTIONS.find(f => f.id === selectedSenderFormat)?.description}
-                  </p>
+                      {/* Dropdown Suggestions */}
+                      {isSearchDropdownMounted && (
+                        <div
+                          className={`max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg divide-y divide-slate-100 ${searchDropdownClass}`}
+                          data-origin="top-center"
+                        >
+                          {filteredMerchantsDropdown.map(m => (
+                            <div
+                              key={m.id}
+                              onClick={() => handleSelectMerchant(m)}
+                              className="p-2.5 hover:bg-blue-50/70 cursor-pointer text-xs flex items-center justify-between transition-colors"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-[11px] shrink-0">
+                                  {(m.business_name || m.owner_name || 'M').charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-slate-900">{m.business_name || m.owner_name || 'Merchant'}</p>
+                                  <p className="text-[11px] font-mono text-slate-500">{m.email} {m.phone_number ? `• ${m.phone_number}` : ''}</p>
+                                </div>
+                              </div>
+                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                {m.subscription_status || 'free'}
+                              </span>
+                            </div>
+                          ))}
+                          {filteredMerchantsDropdown.length === 0 && (
+                            <div className="p-3 text-center text-xs text-slate-400">No merchants matching query.</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
+
+              {recipientMode === 'custom' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 block mb-1">Recipient Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Kunal Chauhan"
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                      className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 block mb-1">Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="merchant@example.com"
+                      value={customEmail}
+                      onChange={(e) => setCustomEmail(e.target.value)}
+                      className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-mono font-medium"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {recipientMode === 'broadcast' && (
+                <div className="p-3 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
+                  <Users className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <strong>Mass Broadcast:</strong> An individual email will be delivered to each of the <strong>{eligibleMerchants.length}</strong> active registered merchants on your platform.
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* 2. Quick Template Selector */}
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                Quick Template Preset
-              </label>
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                {EMAIL_TEMPLATES.map(t => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => handleSelectTemplate(t.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 cursor-pointer ${
-                      selectedTemplateId === t.id
-                        ? 'bg-blue-600 text-white shadow-xs'
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                    }`}
-                  >
-                    {t.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. Subject Line */}
+            {/* 2. Subject Line */}
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">
                 Subject Line *
@@ -920,78 +873,169 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                 placeholder="e.g. Action Required: Connect your UPI VPA for Direct 0% Settlements"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-bold text-slate-900"
+                className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-bold text-slate-900 transition-colors"
               />
             </div>
 
-            {/* 4. Message Body */}
+            {/* 3. Message Body */}
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-bold text-slate-700">
-                  Message Body (HTML / Markdown Supported) *
+                  Message Body *
                 </label>
                 <span className="text-[10px] text-slate-400">Supports paragraphs &amp; **bold**</span>
               </div>
               <textarea
                 required
                 rows={7}
-                placeholder="Write your direct email message here..."
+                placeholder="Write your email message here..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 leading-relaxed font-sans text-slate-800"
+                className="w-full p-3.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 leading-relaxed font-sans text-slate-800 transition-colors resize-y"
               />
             </div>
 
-            {/* 5. Call to Action Button Toggle */}
-            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-slate-800">
-                <input
-                  type="checkbox"
-                  checked={includeCta}
-                  onChange={(e) => setIncludeCta(e.target.checked)}
-                  className="rounded text-blue-600 focus:ring-0"
-                />
-                <span>Include Official Call-to-Action Button</span>
-              </label>
+            {/* 4. Action Button (CTA) Toggle */}
+            <div className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200/80 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ExternalLink className="w-4 h-4 text-slate-500" />
+                  <div>
+                    <span className="text-xs font-bold text-slate-800 block">Call-to-Action Button</span>
+                    <span className="text-[11px] text-slate-400">Include a direct button link inside the email</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIncludeCta(!includeCta)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    includeCta ? 'bg-blue-600' : 'bg-slate-300'
+                  }`}
+                  role="switch"
+                  aria-checked={includeCta}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      includeCta ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
 
               {includeCta && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t border-slate-200/60 animate-fadeIn">
                   <div>
-                    <span className="text-[10px] font-bold text-slate-500 block mb-0.5">Button Label</span>
+                    <span className="text-[10px] font-bold text-slate-600 block mb-1">Button Label</span>
                     <input
                       type="text"
                       placeholder="e.g. Open Merchant Portal"
                       value={ctaText}
                       onChange={(e) => setCtaText(e.target.value)}
-                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-slate-500 block mb-0.5">Button Target URL</span>
+                    <span className="text-[10px] font-bold text-slate-600 block mb-1">Button Target URL</span>
                     <input
                       type="url"
                       placeholder="https://mymobpay.tech/dashboard"
                       value={ctaUrl}
                       onChange={(e) => setCtaUrl(e.target.value)}
-                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 font-mono"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-mono text-[11px]"
                     />
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 6. Send Button */}
-            <div className="pt-2 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400 font-medium">
+            {/* 5. Minimal Collapsible Delivery & Sender Routing */}
+            <div className="rounded-2xl border border-slate-200/90 bg-slate-50/70 p-3.5 transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs flex-wrap">
+                  <Sliders className="w-3.5 h-3.5 text-blue-600" />
+                  <span className="font-bold text-slate-700">Delivery Route:</span>
+                  <span className="font-bold text-blue-700 bg-blue-100/90 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                    {selectedProvider === 'auto'
+                      ? '⚡ Auto (Smart Multi-Rail)'
+                      : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName || selectedProvider}
+                  </span>
+                  <span className="text-slate-300">•</span>
+                  <span className="text-slate-600 font-mono text-[11px] font-semibold">
+                    {currentSenderPreview.email}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowDeliverySettings(!showDeliverySettings)}
+                  className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer ml-auto"
+                >
+                  <span>{showDeliverySettings ? 'Hide' : 'Configure'}</span>
+                  {showDeliverySettings ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+
+              {showDeliverySettings && (
+                <div className="mt-3 pt-3 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs animate-fadeIn">
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">
+                      Email Provider Rail
+                    </label>
+                    <select
+                      value={selectedProvider}
+                      onChange={(e) => setSelectedProvider(e.target.value)}
+                      className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
+                      {PROVIDER_OPTIONS.map((p) => {
+                        const tele = quotaMap[p.id];
+                        const leftStr = tele ? ` (${tele.remaining} left)` : ` (${p.badge})`;
+                        return (
+                          <option key={p.id} value={p.id}>
+                            {p.name} {p.id !== 'auto' ? leftStr : ''}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Auto dynamically fails over across all 6 rails if a provider hits its limit.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">
+                      From Sender Address
+                    </label>
+                    <select
+                      value={selectedSenderFormat}
+                      onChange={(e) => setSelectedSenderFormat(e.target.value)}
+                      className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl font-semibold text-slate-800 focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
+                      {SENDER_FORMAT_OPTIONS.map((f) => (
+                        <option key={f.id} value={f.id}>
+                          {f.email} ({f.displayName})
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Official MyMobPay identity displayed on the recipient&apos;s email.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 6. Send Button & Delivery Status */}
+            <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span className="text-[11px] text-slate-500 font-medium">
                 {recipientMode === 'broadcast'
                   ? `Delivering to ${eligibleMerchants.length} merchants`
-                  : `Delivering to ${customEmail || 'recipient'}`}
+                  : `Delivering to: ${customEmail || 'No recipient specified'}`}
               </span>
 
               <button
                 type="submit"
                 disabled={sending}
-                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:shadow-md"
               >
                 {sending ? (
                   <>
@@ -1014,84 +1058,131 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
         </div>
 
         {/* Right Column: Live Visual Email Preview (5 cols) */}
-        <div className="lg:col-span-5 bg-slate-100/90 border border-slate-200/90 rounded-3xl p-5 shadow-xs space-y-3 sticky top-20">
-          <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
-            <div className="flex items-center gap-1.5">
+        <div className="lg:col-span-5 bg-slate-50 border border-slate-200/90 rounded-3xl p-5 shadow-xs space-y-3 sticky top-20">
+          <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
+            <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-blue-600" />
               <span className="text-xs font-bold text-slate-800">Live Recipient Preview</span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white text-slate-500 border border-slate-200">
-              Desktop &bull; Mobile
-            </span>
+
+            {/* Interactive Device Viewport Switcher */}
+            <div className="flex items-center bg-white border border-slate-200 rounded-xl p-0.5 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setPreviewDevice('desktop')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                  previewDevice === 'desktop'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+                title="Desktop View"
+              >
+                <Monitor className="w-3 h-3" />
+                <span>Desktop</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewDevice('mobile')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                  previewDevice === 'mobile'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+                title="Mobile View"
+              >
+                <Smartphone className="w-3 h-3" />
+                <span>Mobile</span>
+              </button>
+            </div>
           </div>
 
-          {/* Email Visual Card Mockup */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 max-h-[560px] overflow-y-auto">
-            {/* Header with MyMobPay Mark */}
-            <div className="text-center pb-3 border-b border-slate-100 flex items-center justify-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-semibold flex items-center justify-center text-xs">
-                M
-              </div>
-              <div className="text-left">
-                <span className="font-semibold text-sm text-[#0c2340] tracking-tight block leading-tight">MyMobPay</span>
-                <span className="text-[8.5px] text-slate-400 font-bold block">Direct Bank UPI Rails</span>
-              </div>
-            </div>
-
-            {/* Sender & Delivery Metadata Header */}
-            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-[11px] space-y-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-slate-400 font-medium shrink-0">From:</span>
-                <span className="font-semibold text-slate-800 truncate text-right">
-                  &quot;{currentSenderPreview.name}&quot; &lt;{currentSenderPreview.email}&gt;
+          {/* Email Visual Mockup Window */}
+          <div className={`transition-all duration-300 ${previewDevice === 'mobile' ? 'max-w-[340px] mx-auto' : 'w-full'}`}>
+            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+              {/* Email Client Window Bar */}
+              <div className="bg-slate-100/90 px-3.5 py-2 border-b border-slate-200/80 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
+                </div>
+                <span className="text-[10px] font-mono font-medium text-slate-400">
+                  {currentSenderPreview.email}
+                </span>
+                <span className="text-[9px] font-bold text-blue-700 bg-blue-100/80 px-1.5 py-0.5 rounded font-mono">
+                  {selectedProvider === 'auto' ? 'Auto Rail' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-2 text-[10px]">
-                <span className="text-slate-400 font-medium shrink-0">Delivery Rail:</span>
-                <span className="font-mono font-bold text-blue-700 bg-blue-100/70 px-2 py-0.5 rounded-md truncate">
-                  {PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.name || 'Smart Multi-Rail'}
-                </span>
-              </div>
-            </div>
 
-            {/* Subject Badge */}
-            <div className="space-y-1">
-              <span className="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-bold">
-                Official Communication
-              </span>
-              <h4 className="font-bold text-slate-900 text-sm leading-snug">
-                {subject || 'Subject line will appear here...'}
-              </h4>
-            </div>
+              {/* Email Content Body */}
+              <div className="p-4 sm:p-5 space-y-4 max-h-[540px] overflow-y-auto">
+                {/* Brand Header */}
+                <div className="text-center pb-3 border-b border-slate-100 flex items-center justify-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-semibold flex items-center justify-center text-xs shadow-2xs">
+                    M
+                  </div>
+                  <div className="text-left">
+                    <span className="font-bold text-sm text-[#0c2340] tracking-tight block leading-tight">MyMobPay</span>
+                    <span className="text-[9px] text-slate-400 font-bold block">Direct Bank UPI Rails</span>
+                  </div>
+                </div>
 
-            {/* Greeting */}
-            <p className="text-xs font-bold text-slate-800">
-              Hello {recipientName.trim() || 'Merchant Partner'},
-            </p>
+                {/* Email Metadata */}
+                <div className="text-[11px] space-y-1 text-slate-600 bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-slate-400 font-bold text-[10px] w-10 shrink-0">From:</span>
+                    <span className="font-semibold text-slate-800 truncate">
+                      {currentSenderPreview.name} &lt;{currentSenderPreview.email}&gt;
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-slate-400 font-bold text-[10px] w-10 shrink-0">To:</span>
+                    <span className="font-mono text-slate-700 truncate">
+                      {customEmail || 'merchant@example.com'}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Message Body */}
-            <div className="text-xs text-slate-600 leading-relaxed space-y-2 whitespace-pre-line">
-              {message || 'Type your email message on the left to see the instant live preview here.'}
-            </div>
+                {/* Subject Heading */}
+                <div className="space-y-1">
+                  <span className="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-bold">
+                    Official Communication
+                  </span>
+                  <h4 className="font-bold text-slate-900 text-sm leading-snug">
+                    {subject || 'Subject line will appear here...'}
+                  </h4>
+                </div>
 
-            {/* Action Button Preview */}
-            {includeCta && ctaText && (
-              <div className="text-center py-2">
-                <div className="inline-block px-5 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs">
-                  {ctaText} &rarr;
+                {/* Greeting */}
+                <p className="text-xs font-bold text-slate-800">
+                  Hello {recipientName.trim() || 'Merchant Partner'},
+                </p>
+
+                {/* Message Body */}
+                <div className="text-xs text-slate-600 leading-relaxed space-y-2 whitespace-pre-line font-sans">
+                  {message || 'Type your email message on the left to see the instant live preview here.'}
+                </div>
+
+                {/* Action Button Preview */}
+                {includeCta && ctaText && (
+                  <div className="text-center py-2">
+                    <div className="inline-block px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 cursor-default">
+                      {ctaText} &rarr;
+                    </div>
+                  </div>
+                )}
+
+                {/* Security Pill */}
+                <div className="p-2.5 rounded-xl bg-slate-50 border-l-4 border-blue-600 text-[10px] text-slate-500 leading-relaxed">
+                  <strong>Zero-Commission Rails:</strong> MyMobPay delivers customer UPI payments directly to your linked bank account with 0% transaction fees.
+                </div>
+
+                {/* Footer */}
+                <div className="pt-3 border-t border-slate-100 text-[10px] text-slate-400 text-center space-y-1">
+                  <p className="font-bold text-slate-700">MyMobPay Merchant Operations Team</p>
+                  <p>&copy; 2026 MyMobPay Payments Private Limited &bull; mymobpay.tech</p>
                 </div>
               </div>
-            )}
-
-            {/* Security Pill */}
-            <div className="p-2.5 rounded-xl bg-slate-50 border-l-4 border-blue-600 text-[10px] text-slate-500 leading-relaxed">
-              <strong>Zero-Commission Rails:</strong> MyMobPay delivers customer UPI payments directly to your linked bank account with 0% transaction fees.
-            </div>
-
-            {/* Footer */}
-            <div className="pt-3 border-t border-slate-100 text-[10px] text-slate-400 text-center space-y-1">
-              <p className="font-bold text-slate-700">MyMobPay Merchant Operations Team</p>
-              <p>&copy; 2026 MyMobPay Payments Private Limited &bull; mymobpay.tech</p>
             </div>
           </div>
         </div>
