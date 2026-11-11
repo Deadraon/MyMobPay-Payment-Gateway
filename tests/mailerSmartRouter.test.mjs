@@ -13,12 +13,20 @@ import {
   isSendpulseConfigured,
   isBrevoConfigured,
   isResendConfigured,
+  PROVIDER_DAILY_LIMITS,
+  trackProviderSent,
+  getProviderDailySentCounts,
+  getProviderQuotaTelemetry,
+  getSenderForPurpose,
 } from '../lib/mailer.js';
 
 describe('--- Mailer Smart Router Multi-Provider Configuration & Circuit Breaker Suite ---', () => {
   const origEnv = { ...process.env };
 
   beforeEach(() => {
+    // Reset process.env to ensure isolated test runs
+    process.env = { ...origEnv };
+
     // Reset circuit breakers
     resetProviderLimit('emaillabs');
     resetProviderLimit('unitpost');
@@ -104,5 +112,58 @@ describe('--- Mailer Smart Router Multi-Provider Configuration & Circuit Breaker
     process.env.MAILEROO_SMTP_USER = 'maileroo_user';
     process.env.MAILEROO_SMTP_PASS = 'maileroo_pass';
     assert.strictEqual(isMailerooConfigured(), true);
+  });
+
+  test('6. PROVIDER_DAILY_LIMITS matches exact configured capacities', () => {
+    assert.strictEqual(PROVIDER_DAILY_LIMITS.sendpulse, 500);
+    assert.strictEqual(PROVIDER_DAILY_LIMITS.emaillabs, 300);
+    assert.strictEqual(PROVIDER_DAILY_LIMITS.brevo, 300);
+    assert.strictEqual(PROVIDER_DAILY_LIMITS.unitpost, 200);
+    assert.strictEqual(PROVIDER_DAILY_LIMITS.maileroo, 100);
+    assert.strictEqual(PROVIDER_DAILY_LIMITS.resend, 100);
+  });
+
+  test('7. Sender format selector returns proper addresses and personas', () => {
+    // Explicit 'auth' format
+    const authSender = getSenderForPurpose('general', 'emaillabs', 'auth');
+    assert.match(authSender, /auth@mymobpay\.tech/);
+    assert.match(authSender, /MyMobPay Security/);
+
+    // Explicit 'trx' format
+    const trxSender = getSenderForPurpose('general', 'emaillabs', 'trx');
+    assert.match(trxSender, /trx@mymobpay\.tech/);
+    assert.match(trxSender, /MyMobPay Billing/);
+
+    // Explicit 'noreply' format
+    const noreplySender = getSenderForPurpose('general', 'emaillabs', 'noreply');
+    assert.match(noreplySender, /noreply@mymobpay\.tech/);
+    assert.match(noreplySender, /MyMobPay/);
+  });
+
+  test('8. Quota telemetry aggregates daily sent counts and remaining allowance', () => {
+    trackProviderSent('emaillabs');
+    trackProviderSent('emaillabs');
+    trackProviderSent('unitpost');
+
+    const counts = getProviderDailySentCounts();
+    assert.strictEqual(counts.emaillabs >= 2, true);
+    assert.strictEqual(counts.unitpost >= 1, true);
+
+    const telemetry = getProviderQuotaTelemetry([]);
+    assert.ok(telemetry.combined);
+    assert.ok(telemetry.providers);
+    assert.strictEqual(Array.isArray(telemetry.providers), true);
+    assert.strictEqual(telemetry.providers.length, 6);
+
+    const emailLabsData = telemetry.providers.find(p => p.id === 'emaillabs');
+    assert.ok(emailLabsData);
+    assert.strictEqual(emailLabsData.dailyLimit, 300);
+    assert.strictEqual(emailLabsData.sentToday >= 2, true);
+    assert.strictEqual(emailLabsData.remaining <= 298, true);
+
+    assert.strictEqual(telemetry.combined.allProvidersLimit, 1500);
+    assert.strictEqual(typeof telemetry.combined.totalLimit, 'number');
+    assert.strictEqual(typeof telemetry.combined.totalRemaining, 'number');
+    assert.strictEqual(telemetry.combined.allProvidersLimit >= telemetry.combined.totalLimit, true);
   });
 });

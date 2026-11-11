@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { verifyAdminAuth, ensureAdminMerchant } from '@/lib/adminSettings';
-import { isBrevoConfigured, isSendpulseConfigured } from '@/lib/mailer';
+import { isBrevoConfigured, isSendpulseConfigured, getProviderQuotaTelemetry } from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,13 +23,17 @@ export async function GET(request) {
       console.warn('Failed to fetch outbox history:', err);
     }
 
-    // Provider status
+    // Provider status & quota telemetry
     const brevoReady = isBrevoConfigured();
     const sendpulseReady = isSendpulseConfigured();
+    const quotaTelemetry = getProviderQuotaTelemetry(outbox);
 
     return NextResponse.json({
       success: true,
       outbox,
+      providers: quotaTelemetry.providers,
+      combined: quotaTelemetry.combined,
+      date: quotaTelemetry.date,
       provider: {
         primary: brevoReady ? 'Brevo SMTP (Active)' : 'Default SMTP',
         brevo: brevoReady,

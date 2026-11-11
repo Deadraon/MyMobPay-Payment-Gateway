@@ -161,16 +161,18 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { 
-      to, 
-      recipientName = 'Merchant Partner', 
-      subject, 
-      message, 
+    const {
+      to,
+      recipientName = 'Merchant Partner',
+      subject,
+      message,
       templateType = 'custom',
       callToActionText = '',
       callToActionUrl = '',
       includeBrandedTemplate = true,
-      merchantId = null
+      merchantId = null,
+      provider = 'auto',
+      senderFormat = 'auto'
     } = body;
 
     if (!to || !subject || !message) {
@@ -202,7 +204,7 @@ export async function POST(request) {
 
     const text = `Subject: ${subject}\n\nHi ${recipientName},\n\n${message}\n\n${callToActionText ? `${callToActionText}: ${callToActionUrl}\n\n` : ''}Warm regards,\nMyMobPay Merchant Operations\nhttps://mymobpay.tech`;
 
-    // Dispatch using Multi-Provider Smart Router with automatic failover
+    // Dispatch using Multi-Provider Smart Router with automatic failover or direct manual override
     const dispatchResults = [];
     for (const recipient of recipientEmails) {
       try {
@@ -212,13 +214,16 @@ export async function POST(request) {
           html,
           text,
           purpose: 'general',
+          provider: provider !== 'auto' ? provider : null,
+          senderFormat: senderFormat !== 'auto' ? senderFormat : null,
         });
 
         dispatchResults.push({
           email: recipient,
           success: true,
           messageId: result.id || result.messageId || 'sent',
-          provider: result.provider || 'smart-router',
+          provider: result.provider || provider || 'smart-router',
+          senderFormat: senderFormat || 'auto',
           timestamp: new Date().toISOString()
         });
       } catch (sendErr) {
@@ -227,6 +232,8 @@ export async function POST(request) {
           email: recipient,
           success: false,
           error: sendErr.message,
+          provider: provider || 'smart-router',
+          senderFormat: senderFormat || 'auto',
           timestamp: new Date().toISOString()
         });
       }
@@ -250,6 +257,8 @@ export async function POST(request) {
             status: res.success ? 'delivered' : 'failed',
             message_id: res.messageId || null,
             error: res.error || null,
+            provider: res.provider || 'smart-router',
+            sender_format: res.senderFormat || 'auto',
             sent_at: res.timestamp,
             merchant_id: merchantId,
             snippet: message.slice(0, 140)
