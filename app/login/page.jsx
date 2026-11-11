@@ -2552,11 +2552,6 @@ export default function LoginPage() {
                               )
                             ) : (
                               <>
-                                <span>Complete Setup &amp; Launch Dashboard</span>
-                                <ArrowRight className="w-4 h-4" />
-                              </>
-                            ) : (
-                              <>
                                 <span>Continue</span>
                                 <ArrowRight className="w-4 h-4" />
                               </>
