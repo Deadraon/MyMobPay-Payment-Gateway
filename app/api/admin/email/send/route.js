@@ -2,7 +2,12 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { verifyAdminAuth, ensureAdminMerchant } from '@/lib/adminSettings';
 import { logAdminAction } from '@/lib/adminAudit';
-import { getBrevoTransporter, getTransporter, getSendpulseTransporter } from '@/lib/mailer';
+import {
+  getBrevoTransporter,
+  getTransporter,
+  getSendpulseTransporter,
+  sendRawEmail
+} from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
 
@@ -197,33 +202,23 @@ export async function POST(request) {
 
     const text = `Subject: ${subject}\n\nHi ${recipientName},\n\n${message}\n\n${callToActionText ? `${callToActionText}: ${callToActionUrl}\n\n` : ''}Warm regards,\nMyMobPay Merchant Operations\nhttps://mymobpay.tech`;
 
-    // Dispatch using Brevo SMTP (primary transactional) or Fallback Default SMTP
-    const transporter = getBrevoTransporter() || getTransporter();
-    if (!transporter) {
-      return NextResponse.json({ 
-        error: 'No active email transporter configured on server. Please verify BREVO_SMTP credentials in environment.' 
-      }, { status: 500 });
-    }
-
-    const fromAddress = process.env.SMTP_FROM || process.env.EMAIL_FROM || '"MyMobPay Operations" <noreply@mymobpay.tech>';
-    const replyToAddress = 'chauhankunal695@gmail.com, support@mymobpay.tech';
-
+    // Dispatch using Multi-Provider Smart Router with automatic failover
     const dispatchResults = [];
     for (const recipient of recipientEmails) {
       try {
-        const info = await transporter.sendMail({
-          from: fromAddress,
+        const result = await sendRawEmail({
           to: recipient,
-          replyTo: replyToAddress,
           subject,
           html,
-          text
+          text,
+          purpose: 'general',
         });
 
         dispatchResults.push({
           email: recipient,
           success: true,
-          messageId: info.messageId,
+          messageId: result.id || result.messageId || 'sent',
+          provider: result.provider || 'smart-router',
           timestamp: new Date().toISOString()
         });
       } catch (sendErr) {

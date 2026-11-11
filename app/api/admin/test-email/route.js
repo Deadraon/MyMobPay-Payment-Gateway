@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { 
-  sendOtpEmail, 
-  sendSubscriptionInvoiceEmail, 
-  isSendpulseConfigured, 
-  isResendConfigured, 
-  isBrevoConfigured 
+import {
+  sendOtpEmail,
+  sendSubscriptionInvoiceEmail,
+  isSendpulseConfigured,
+  isResendConfigured,
+  isBrevoConfigured,
+  isEmailLabsConfigured,
+  isMailerooConfigured,
+  isUnitpostConfigured,
+  getEmailLabsTransporter,
+  getMailerooTransporter,
+  getUnitpostTransporter
 } from '@/lib/mailer';
 import { verifyAdminAuth } from '@/lib/adminSettings';
 
@@ -44,6 +50,29 @@ async function handleDiagnostic(req) {
       port: process.env.SENDPULSE_SMTP_PORT || '465 (default)',
       isConfigured: isSendpulseConfigured(),
     },
+    emaillabs: {
+      user: mask(process.env.EMAILLABS_SMTP_USER),
+      passSet: Boolean(process.env.EMAILLABS_SMTP_PASS),
+      host: process.env.EMAILLABS_SMTP_HOST || 'smtp-relay.emaillabs.net.pl (default)',
+      port: process.env.EMAILLABS_SMTP_PORT || '587 (default)',
+      isConfigured: isEmailLabsConfigured(),
+    },
+    maileroo: {
+      user: mask(process.env.MAILEROO_SMTP_USER),
+      passSet: Boolean(process.env.MAILEROO_SMTP_PASS),
+      apiKeySet: Boolean(process.env.MAILEROO_API_KEY),
+      host: process.env.MAILEROO_SMTP_HOST || 'smtp.maileroo.com (default)',
+      port: process.env.MAILEROO_SMTP_PORT || '587 (default)',
+      isConfigured: isMailerooConfigured(),
+    },
+    unitpost: {
+      user: mask(process.env.UNITPOST_SMTP_USER || 'unitpost'),
+      passSet: Boolean(process.env.UNITPOST_SMTP_PASS || process.env.UNITPOST_API_KEY),
+      apiKeySet: Boolean(process.env.UNITPOST_API_KEY),
+      host: process.env.UNITPOST_SMTP_HOST || 'smtp.unitpost.com (default)',
+      port: process.env.UNITPOST_SMTP_PORT || '587 (default)',
+      isConfigured: isUnitpostConfigured(),
+    },
     resend: {
       apiKey: mask(process.env.RESEND_API_KEY || (process.env.SMTP_PASS?.startsWith('re_') ? process.env.SMTP_PASS : null)),
       isConfigured: isResendConfigured(),
@@ -58,8 +87,11 @@ async function handleDiagnostic(req) {
   };
 
   const testResults = {
-    brevo: { status: 'PENDING', message: '' },
     sendpulse: { status: 'PENDING', message: '' },
+    emaillabs: { status: 'PENDING', message: '' },
+    maileroo: { status: 'PENDING', message: '' },
+    unitpost: { status: 'PENDING', message: '' },
+    brevo: { status: 'PENDING', message: '' },
     resend: { status: 'PENDING', message: '' },
   };
 
@@ -143,7 +175,150 @@ async function handleDiagnostic(req) {
     };
   }
 
-  // 3. Test Resend
+  // 3. Test EmailLabs
+  if (isEmailLabsConfigured()) {
+    try {
+      const transporter = getEmailLabsTransporter();
+      await transporter.verify();
+      const info = await transporter.sendMail({
+        from: process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>',
+        to: targetEmail,
+        subject: `🌐 MyMobPay Vercel Server Test: EmailLabs [${new Date().toLocaleTimeString('en-IN')}]`,
+        html: `<p>This email verifies that EmailLabs SMTP is working on the live Vercel cloud server.</p>`,
+      });
+      testResults.emaillabs = {
+        status: 'SUCCESS',
+        messageId: info.messageId,
+        message: 'Handshake verified & email delivered successfully from Vercel via EmailLabs.',
+      };
+    } catch (err) {
+      testResults.emaillabs = {
+        status: 'FAILED',
+        error: err.message,
+      };
+    }
+  } else {
+    testResults.emaillabs = {
+      status: 'NOT_CONFIGURED',
+      message: 'EMAILLABS_SMTP_USER or EMAILLABS_SMTP_PASS is not defined in Vercel environment.',
+    };
+  }
+
+  // 4. Test Maileroo
+  if (isMailerooConfigured()) {
+    try {
+      const transporter = getMailerooTransporter();
+      if (transporter) {
+        await transporter.verify();
+        const info = await transporter.sendMail({
+          from: process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>',
+          to: targetEmail,
+          subject: `🦘 MyMobPay Vercel Server Test: Maileroo [${new Date().toLocaleTimeString('en-IN')}]`,
+          html: `<p>This email verifies that Maileroo SMTP is working on the live Vercel cloud server.</p>`,
+        });
+        testResults.maileroo = {
+          status: 'SUCCESS',
+          messageId: info.messageId,
+          message: 'Handshake verified & email delivered successfully from Vercel via Maileroo SMTP.',
+        };
+      } else if (process.env.MAILEROO_API_KEY) {
+        const from = process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>';
+        const res = await fetch('https://smtp.maileroo.com/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': process.env.MAILEROO_API_KEY,
+          },
+          body: JSON.stringify({
+            from,
+            to: targetEmail,
+            subject: `🦘 MyMobPay Vercel Server Test: Maileroo API [${new Date().toLocaleTimeString('en-IN')}]`,
+            html: `<p>This email verifies that Maileroo REST API is working on the live Vercel cloud server.</p>`,
+          }),
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(`Maileroo API Error HTTP ${res.status}: ${errData.message || res.statusText}`);
+        }
+        const data = await res.json();
+        testResults.maileroo = {
+          status: 'SUCCESS',
+          messageId: data.id || data.message_id,
+          message: 'Maileroo API authenticated & email dispatched successfully from Vercel.',
+        };
+      }
+    } catch (err) {
+      testResults.maileroo = {
+        status: 'FAILED',
+        error: err.message,
+      };
+    }
+  } else {
+    testResults.maileroo = {
+      status: 'NOT_CONFIGURED',
+      message: 'MAILEROO_SMTP_USER/PASS or MAILEROO_API_KEY is not defined in Vercel environment.',
+    };
+  }
+
+  // 5. Test Unitpost
+  if (isUnitpostConfigured()) {
+    try {
+      const apiKey = process.env.UNITPOST_API_KEY;
+      const from = process.env.AUTH_FROM || 'MyMobPay Security <auth@mymobpay.tech>';
+
+      if (apiKey) {
+        const res = await fetch('https://www.unitpost.com/api/v1/email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            from,
+            to: [targetEmail],
+            subject: `📮 MyMobPay Vercel Server Test: Unitpost [${new Date().toLocaleTimeString('en-IN')}]`,
+            html: `<p>This email verifies that Unitpost API is working on the live Vercel cloud server.</p>`,
+          }),
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(`Unitpost API Error HTTP ${res.status}: ${errData.message || res.statusText}`);
+        }
+        const data = await res.json().catch(() => ({}));
+        testResults.unitpost = {
+          status: 'SUCCESS',
+          messageId: data.id || data.message_id || 'unitpost-test-ok',
+          message: 'Unitpost API authenticated & email dispatched successfully from Vercel.',
+        };
+      } else {
+        const transporter = getUnitpostTransporter();
+        await transporter.verify();
+        const info = await transporter.sendMail({
+          from,
+          to: targetEmail,
+          subject: `📮 MyMobPay Vercel Server Test: Unitpost SMTP [${new Date().toLocaleTimeString('en-IN')}]`,
+          html: `<p>This email verifies that Unitpost SMTP is working on the live Vercel cloud server.</p>`,
+        });
+        testResults.unitpost = {
+          status: 'SUCCESS',
+          messageId: info.messageId,
+          message: 'Handshake verified & email delivered successfully from Vercel via Unitpost SMTP.',
+        };
+      }
+    } catch (err) {
+      testResults.unitpost = {
+        status: 'FAILED',
+        error: err.message,
+      };
+    }
+  } else {
+    testResults.unitpost = {
+      status: 'NOT_CONFIGURED',
+      message: 'UNITPOST_API_KEY or UNITPOST_SMTP_PASS is not defined in Vercel environment.',
+    };
+  }
+
+  // 6. Test Resend
   const resendApiKey = process.env.RESEND_API_KEY || (process.env.SMTP_PASS?.startsWith('re_') ? process.env.SMTP_PASS : null);
   if (resendApiKey) {
     try {

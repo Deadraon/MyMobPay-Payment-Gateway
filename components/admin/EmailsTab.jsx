@@ -322,7 +322,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               <h2 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
                 <span>Direct Email Communications &amp; Broadcast</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-800">
-                  Brevo SMTP
+                  Smart Failover (6 Providers)
                 </span>
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -370,10 +370,10 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             <span className="text-xs font-bold text-emerald-600">Active Delivery Rail</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-base font-bold text-slate-800 truncate">Brevo SMTP Relay</div>
+          <div className="text-base font-bold text-slate-800 truncate">Multi-Rail Smart Router</div>
           <div className="text-[11px] text-emerald-600 font-medium mt-0.5 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Connected &amp; Verified
+            EmailLabs &bull; Unitpost &bull; Maileroo
           </div>
         </div>
 
