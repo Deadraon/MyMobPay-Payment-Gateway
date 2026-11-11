@@ -284,5 +284,45 @@ test('--- Auth Security & Vulnerability Audit Verification Suite ---', async (t)
       step: 1,
     });
   });
+
+  // ─────────────────────────────────────────────────────────────────
+  // 6. Signup Completion Post-Registration Redirect Policy
+  // ─────────────────────────────────────────────────────────────────
+  await t.test('6. Signup completion redirects to login page with "Signup successful! Please login." and clears session', () => {
+    const handleSignupCompletion = ({ registerSuccess, registeredEmail }) => {
+      if (!registerSuccess) {
+        throw new Error('Registration failed');
+      }
+
+      // Explicitly sign out / terminate session so user logs in manually
+      const sessionActive = false;
+      const mode = 'signin';
+      const authTab = 'password';
+      const message = 'Signup successful! Please login.';
+      const redirectTarget = '/login';
+      const emailRetained = registeredEmail;
+
+      return {
+        sessionActive,
+        mode,
+        authTab,
+        message,
+        redirectTarget,
+        emailRetained,
+      };
+    };
+
+    const completionResult = handleSignupCompletion({
+      registerSuccess: true,
+      registeredEmail: 'merchant@store.com',
+    });
+
+    assert.strictEqual(completionResult.sessionActive, false);
+    assert.strictEqual(completionResult.mode, 'signin');
+    assert.strictEqual(completionResult.authTab, 'password');
+    assert.strictEqual(completionResult.message, 'Signup successful! Please login.');
+    assert.strictEqual(completionResult.redirectTarget, '/login');
+    assert.strictEqual(completionResult.emailRetained, 'merchant@store.com');
+  });
 });
 

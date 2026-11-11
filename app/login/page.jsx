@@ -1281,68 +1281,45 @@ export default function LoginPage() {
           throw new Error(data.error || `Registration failed (HTTP ${res.status})`);
         }
 
-        // Ensure fresh, authenticated session with newly set credentials
-        isRedirectingRef.current = true;
-        isRegistrationSubmittedRef.current = true;
-
-        let sessionActive = false;
-
-        // 1. If register API provided a tokenHash, verify it to instantly establish session
-        if (data?.tokenHash) {
-          try {
-            const { error: otpError } = await supabase.auth.verifyOtp({
-              token_hash: data.tokenHash,
-              type: 'magiclink',
-            });
-            if (!otpError) {
-              sessionActive = true;
-            } else {
-              console.warn('[REGISTER] verifyOtp notice:', otpError?.message);
-            }
-          } catch (otpEx) {
-            console.warn('[REGISTER] verifyOtp exception:', otpEx);
-          }
+        // Clean up any active session so the user must explicitly enter their credentials to log in
+        try {
+          await supabase.auth.signOut();
+        } catch (signOutErr) {
+          console.warn('[REGISTER] Signout notice after registration:', signOutErr);
         }
 
-        // 2. If session not yet active and password was provided, try signInWithPassword
-        if (!sessionActive && password) {
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email: email.trim(),
-            password: password,
-          });
+        isRedirectingRef.current = false;
+        isRegistrationSubmittedRef.current = false;
+        setIsOAuthSignup(false);
+        setOauthStep(1);
+        setOauthUserId(null);
 
-          if (!signInError) {
-            sessionActive = true;
-          } else {
-            console.warn('[REGISTER] Re-auth password notice:', signInError?.message);
-          }
-        }
+        // Clear password & wizard inputs while retaining email for convenience
+        setPassword('');
+        setConfirmPassword('');
+        setBusinessName('');
+        setWebsiteUrl('');
+        setPhone('');
+        setUpiId('');
+        setNoWebsite(false);
+        setIsEmailVerified(false);
+        setEmailOtp('');
+        setEmailOtpSent(false);
 
-        // 3. Fallback: Check if session is already present (e.g. from Google OAuth session)
-        if (!sessionActive) {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            sessionActive = true;
-          }
-        }
+        // Switch view to Sign In (password tab) and display confirmation message
+        setMode('signin');
+        setAuthTab('password');
+        setError('');
+        setMessage('Signup successful! Please login.');
 
-        if (!sessionActive) {
-          isRedirectingRef.current = false;
-          isRegistrationSubmittedRef.current = false;
-          setMessage('Account registered! Please sign in with your credentials.');
-          setMode('signin');
-          return;
-        }
-
-        setMessage('Account created successfully! Launching your merchant console...');
-        let target = '/dashboard';
+        // Clean URL to ensure no residual parameters (e.g. googleAuth=true or mode=signup)
         if (typeof window !== 'undefined') {
-          const params = new URLSearchParams(window.location.search);
-          target = getSafeRedirectUrl(params.get('redirect'), '/dashboard');
-          window.location.href = target;
-        } else {
-          router.replace(target);
+          window.history.replaceState({}, '', '/login');
         }
+        try {
+          router.replace('/login');
+        } catch (rErr) {}
+        return;
 
       } else if (action === 'signin') {
         let loginEmail = email.trim();
