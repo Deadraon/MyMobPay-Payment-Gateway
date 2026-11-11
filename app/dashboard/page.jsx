@@ -1141,6 +1141,24 @@ export default function DashboardPage() {
         await supabase.from('merchants').update({ sandbox_mode: true }).eq('id', userId);
       }
 
+      // Guard against incomplete profile (mandatory phone & onboarding completion)
+      const adminEmails = ['chauhankunal695@gmail.com', 'deadraon@gmail.com', 'deadraon1@gmail.com'];
+      const isAdm = userId === 'dd45279e-7a2c-413c-9e24-24d88011b680' || (user?.email && adminEmails.includes(user.email.toLowerCase().trim()));
+      const cleanPhone = (data?.phone_number || '').trim().replace(/\D/g, '').slice(-10);
+      const hasValidPhone = cleanPhone.length === 10 && /^[6-9]\d{9}$/.test(cleanPhone) && !/^(\d)\1{9}$/.test(cleanPhone);
+      const isProfileIncomplete = !isAdm && (
+        !hasValidPhone ||
+        !data?.upi_id ||
+        data.upi_id === 'pending@upi' ||
+        data.setup_progress?.onboarding_needed === true ||
+        data.setup_progress?.phone_needed === true
+      );
+
+      if (isProfileIncomplete && data?.subscription_status !== 'active') {
+        router.replace('/login?googleAuth=true');
+        return;
+      }
+
       setProfile(data);
 
       // Pre-fill wizard webhook URL from saved profile
@@ -1158,17 +1176,26 @@ export default function DashboardPage() {
       console.error('Error fetching profile:', error);
 
       if (error.code === 'PGRST116') {
+        const adminEmails = ['chauhankunal695@gmail.com', 'deadraon@gmail.com', 'deadraon1@gmail.com'];
+        const isAdm = userId === 'dd45279e-7a2c-413c-9e24-24d88011b680' || (user?.email && adminEmails.includes(user.email.toLowerCase().trim()));
+
+        // Check if user has metadata with valid onboarding data before defaulting to dummy values
+        const metaBusiness = user?.user_metadata?.business_name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'My Business';
+        const metaUpi = user?.user_metadata?.upi_id || 'pending@upi';
+        const metaPhone = (user?.user_metadata?.phone || '').toString().trim().replace(/\D/g, '');
+        const hasMetaComplete = Boolean(
+          metaUpi !== 'pending@upi' &&
+          metaUpi.includes('@') &&
+          metaBusiness !== 'My Business' &&
+          metaPhone.length >= 10
+        );
+
+        if (!hasMetaComplete && !isAdm) {
+          router.replace('/login?googleAuth=true');
+          return;
+        }
+
         try {
-          // Check if user has metadata with valid onboarding data before defaulting to dummy values
-          const metaBusiness = user?.user_metadata?.business_name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'My Business';
-          const metaUpi = user?.user_metadata?.upi_id || 'pending@upi';
-          const metaPhone = (user?.user_metadata?.phone || '').toString().trim().replace(/\D/g, '');
-          const hasMetaComplete = Boolean(
-            metaUpi !== 'pending@upi' &&
-            metaUpi.includes('@') &&
-            metaBusiness !== 'My Business' &&
-            metaPhone.length >= 10
-          );
 
           const newKey = generateUUID();
           const newProfile = {
