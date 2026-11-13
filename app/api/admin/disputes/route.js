@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { verifyAdminAuth, ensureAdminMerchant } from '@/lib/adminSettings';
 import { logAdminAction } from '@/lib/adminAudit';
-import { getBrevoTransporter, getTransporter } from '@/lib/mailer';
+import { sendRawEmail } from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
 
@@ -88,18 +88,17 @@ export async function POST(request) {
 
       await saveDisputes(disputes);
 
-      // Notify merchant if requested via Brevo email
+      // Notify merchant if requested via Smart Router (support@mymobpay.tech)
       if (notifyMerchant && target.merchant_email) {
         try {
-          const transporter = getBrevoTransporter() || getTransporter();
-          if (transporter) {
-            const currentYear = new Date().getFullYear();
-            const statusLabel = status.toUpperCase().replace('_', ' ');
-            await transporter.sendMail({
-              from: '"MyMobPay Operations" <support@mymobpay.tech>',
-              to: target.merchant_email,
-              subject: `Action Required: Payment Inquiry #${target.id} Update`,
-              html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+          const currentYear = new Date().getFullYear();
+          const statusLabel = status.toUpperCase().replace('_', ' ');
+          await sendRawEmail({
+            to: target.merchant_email,
+            subject: `Action Required: Payment Inquiry #${target.id} Update`,
+            purpose: 'support',
+            senderFormat: 'support',
+            html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -233,8 +232,7 @@ export async function POST(request) {
   </table>
 </body>
 </html>`
-            });
-          }
+          });
         } catch (e) {
           console.warn('Failed to send dispute email:', e);
         }

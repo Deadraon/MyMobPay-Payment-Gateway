@@ -79,10 +79,18 @@ const SENDER_FORMAT_OPTIONS = [
     description: 'Dedicated financial sender for invoices, tax receipts & settlement ledgers'
   },
   {
+    id: 'support',
+    name: 'Customer & Merchant Support',
+    email: 'support@mymobpay.tech',
+    displayName: 'Support team MyMobPay',
+    badge: 'Support Mailbox',
+    description: 'Dedicated support channel for customer inquiries, merchant questions & dispute resolutions'
+  },
+  {
     id: 'noreply',
     name: 'Platform Announcements',
     email: 'noreply@mymobpay.tech',
-    displayName: 'MyMobPay Support',
+    displayName: 'MyMobPay',
     badge: 'Broadcast & Notices',
     description: 'General system sender for onboarding guides, updates & maintenance alerts'
   }
