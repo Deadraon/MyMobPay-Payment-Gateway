@@ -17,7 +17,7 @@ export async function POST(request) {
       );
     }
 
-    const { order_id, utr } = await request.json();
+    const { order_id, utr, customer_name, customer_phone, customer_email } = await request.json();
 
     if (!order_id || !utr) {
       return NextResponse.json({ error: 'Order ID and UTR / Reference No. are required.' }, { status: 400 });
@@ -85,6 +85,9 @@ export async function POST(request) {
                   amount: amountInRupees,
                   method: 'UPI',
                   note: pl.title || 'Payment Link Checkout',
+                  customer_name: customer_name || pl.customer_name || '',
+                  customer_phone: customer_phone || pl.customer_phone || '',
+                  customer_email: (customer_email || pl.metadata?.customer_email || '').trim().toLowerCase() || null,
                   customer_utr: cleanUtr,
                   external_ref: `pl_${pl.token.slice(0, 12)}`,
                   status: 'pending',
@@ -216,14 +219,19 @@ export async function POST(request) {
 
     // 4. In test mode OR if bank alert has already matched, verify the order
     if (order.mode === 'test' || isBankConfirmed) {
+      const updatePayload = {
+        status: 'verified',
+        utr: cleanUtr,
+        customer_utr: cleanUtr,
+        verified_at: new Date().toISOString()
+      };
+      if (customer_name && !order.customer_name) updatePayload.customer_name = customer_name.trim();
+      if (customer_phone && !order.customer_phone) updatePayload.customer_phone = customer_phone.trim();
+      if (customer_email && !order.customer_email) updatePayload.customer_email = customer_email.trim().toLowerCase();
+
       const { data: updatedOrder, error: updateErr } = await supabaseAdmin
         .from('orders')
-        .update({
-          status: 'verified',
-          utr: cleanUtr,
-          customer_utr: cleanUtr,
-          verified_at: new Date().toISOString()
-        })
+        .update(updatePayload)
         .eq('id', order.id)
         .select()
         .single();

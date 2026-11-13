@@ -260,6 +260,7 @@ function PayPageContent() {
   const paramCallback = (rawParamCallback && !rawParamCallback.includes('/webhook') && !rawParamCallback.includes('webhook_url')) ? rawParamCallback : '';
   const paramName     = searchParams.get('name')     || '';
   const paramPhone    = searchParams.get('phone')    || '';
+  const paramEmail    = searchParams.get('email')    || searchParams.get('customer_email') || '';
   const paramRef      = searchParams.get('ref')      || '';
   const paramNote     = searchParams.get('note')     || '';
   const paramLid      = searchParams.get('lid')      || '';
@@ -288,6 +289,7 @@ function PayPageContent() {
   const [amount,       setAmount]       = useState(paramAmount);
   const [custName,     setCustName]     = useState(paramName);
   const [custPhone,    setCustPhone]    = useState(paramPhone);
+  const [custEmail,    setCustEmail]    = useState(paramEmail);
 
   /* Desktop method selection: null (choose first) | 'upi' | 'card' | 'bank' | 'crypto' */
   const [activeOpt,    setActiveOpt]    = useState(cleanParamMethod);
@@ -758,6 +760,7 @@ function PayPageContent() {
           if (data.title) setOrderNote(data.title);
           if (data.customer_name) setCustName(data.customer_name);
           if (data.customer_phone) setCustPhone(data.customer_phone);
+          if (data.customer_email || data.metadata?.customer_email) setCustEmail(data.customer_email || data.metadata?.customer_email);
           setIsLinkPayment(true);
 
           if (data.merchant) {
@@ -1098,6 +1101,7 @@ function PayPageContent() {
           amount: amt,
           customer_name: name,
           customer_phone: phone,
+          customer_email: (custEmail || '').trim().toLowerCase() || undefined,
           external_ref: ref,
           note,
           callback_url: callback,
@@ -1184,7 +1188,13 @@ function PayPageContent() {
       const r = await fetch('/api/orders/verify-utr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: targetId, utr: utr.trim() })
+        body: JSON.stringify({
+          order_id: targetId,
+          utr: utr.trim(),
+          customer_name: (custName || '').trim() || undefined,
+          customer_phone: (custPhone || '').trim() || undefined,
+          customer_email: (custEmail || '').trim().toLowerCase() || undefined
+        })
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Failed');
@@ -2389,6 +2399,26 @@ function PayPageContent() {
                           )}
                         />
 
+                        {/* Floating Email Address (Optional for instant digital receipt) */}
+                        <FloatingInputField
+                          id="mmp-cust-email"
+                          label="Email Address (for instant receipt)"
+                          type="email"
+                          inputMode="email"
+                          autoComplete="email"
+                          value={custEmail}
+                          onChange={(e) => {
+                            setCustEmail(e.target.value);
+                            setCustDetailsErr('');
+                          }}
+                          icon={(
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                              <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                          )}
+                        />
+
                         {/* Error message */}
                         {custDetailsErr && (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, padding: '7px 11px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, color: '#dc2626', fontSize: 12, fontWeight: 600 }}>
@@ -2408,6 +2438,19 @@ function PayPageContent() {
                         if (!validateCustomerDetails()) return;
                         setSelectedMethod(selectedInlineMethod);
                         setActiveOpt(selectedInlineMethod);
+
+                        // Asynchronously persist customer contact details for receipt dispatch
+                        if (routeToken && (custName.trim() || custPhone.trim() || custEmail.trim())) {
+                          fetch(`/api/pay/${encodeURIComponent(routeToken)}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              customer_name: custName.trim(),
+                              customer_phone: custPhone.trim(),
+                              customer_email: custEmail.trim().toLowerCase(),
+                            })
+                          }).catch(() => {});
+                        }
                       }}
                       style={{
                         width: '100%',

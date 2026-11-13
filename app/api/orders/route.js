@@ -37,7 +37,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { api_key, amount, method, note, customer_name, customer_phone, project, callback_url, external_ref } = body;
+    const { api_key, amount, method, note, customer_name, customer_phone, customer_email, email, project, callback_url, external_ref } = body;
 
     const effectiveApiKey = api_key || request.headers.get('x-api-key') || request.headers.get('X-MyMobPay-API-Key') || request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
     if (!effectiveApiKey) {
@@ -242,6 +242,7 @@ export async function POST(request) {
           note: note || '',
           customer_name: customer_name || '',
           customer_phone: customer_phone || '',
+          customer_email: (customer_email || email || '').trim().toLowerCase() || null,
           project: project || merchant.business_name,
           callback_url: callback_url || null,
           external_ref: external_ref || null,

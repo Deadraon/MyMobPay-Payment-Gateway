@@ -261,6 +261,11 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Payment link not found.' }, { status: 404 });
     }
 
+    const body = await request.json().catch(() => ({}));
+    const clientCustName = (body.customer_name || body.name || '').trim();
+    const clientCustPhone = (body.customer_phone || body.phone || '').trim();
+    const clientCustEmail = (body.customer_email || body.email || '').trim().toLowerCase();
+
     // 1. Fetch link
     const { data: link, error: linkErr } = await supabaseAdmin
       .from('payment_links')
@@ -271,6 +276,10 @@ export async function POST(request, { params }) {
     if (linkErr || !link) {
       return NextResponse.json({ error: 'Payment link not found.' }, { status: 404 });
     }
+
+    const finalCustName = clientCustName || link.customer_name || '';
+    const finalCustPhone = clientCustPhone || link.customer_phone || '';
+    const finalCustEmail = clientCustEmail || link.metadata?.customer_email || '';
 
     // 2. Central usability check
     const usability = isLinkUsable(link);
@@ -307,6 +316,18 @@ export async function POST(request, { params }) {
       );
     }
 
+    if (existingOrder && !existingOrder.customer_email && finalCustEmail) {
+      await supabaseAdmin
+        .from('orders')
+        .update({
+          customer_name: finalCustName || existingOrder.customer_name,
+          customer_phone: finalCustPhone || existingOrder.customer_phone,
+          customer_email: finalCustEmail,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existingOrder.id);
+    }
+
     if (!existingOrder) {
       const { error: insertErr } = await supabaseAdmin
         .from('orders')
@@ -317,8 +338,9 @@ export async function POST(request, { params }) {
             amount: amountInRupees,
             method: 'UPI',
             note: link.title || 'Payment Link Checkout',
-            customer_name: link.customer_name || '',
-            customer_phone: link.customer_phone || '',
+            customer_name: finalCustName,
+            customer_phone: finalCustPhone,
+            customer_email: finalCustEmail || null,
             external_ref: `pl_${link.token.slice(0, 12)}`,
             status: 'pending',
             mode: 'live'
@@ -349,6 +371,12 @@ export async function POST(request, { params }) {
         .from('payment_links')
         .update({
           order_id: orderId,
+          customer_name: finalCustName || link.customer_name,
+          customer_phone: finalCustPhone || link.customer_phone,
+          metadata: {
+            ...(link.metadata || {}),
+            ...(finalCustEmail ? { customer_email: finalCustEmail } : {})
+          },
           updated_at: new Date().toISOString()
         })
         .eq('token', token);
