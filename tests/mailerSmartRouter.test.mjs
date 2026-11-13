@@ -115,6 +115,7 @@ describe('--- Mailer Smart Router Multi-Provider Configuration & Circuit Breaker
   });
 
   test('6. PROVIDER_DAILY_LIMITS matches exact configured capacities', () => {
+    assert.strictEqual(PROVIDER_DAILY_LIMITS.mailflare, 10000);
     assert.strictEqual(PROVIDER_DAILY_LIMITS.sendpulse, 500);
     assert.strictEqual(PROVIDER_DAILY_LIMITS.emaillabs, 300);
     assert.strictEqual(PROVIDER_DAILY_LIMITS.brevo, 300);
@@ -153,7 +154,7 @@ describe('--- Mailer Smart Router Multi-Provider Configuration & Circuit Breaker
     assert.ok(telemetry.combined);
     assert.ok(telemetry.providers);
     assert.strictEqual(Array.isArray(telemetry.providers), true);
-    assert.strictEqual(telemetry.providers.length, 6);
+    assert.strictEqual(telemetry.providers.length, 7);
 
     const emailLabsData = telemetry.providers.find(p => p.id === 'emaillabs');
     assert.ok(emailLabsData);
@@ -161,7 +162,7 @@ describe('--- Mailer Smart Router Multi-Provider Configuration & Circuit Breaker
     assert.strictEqual(emailLabsData.sentToday >= 2, true);
     assert.strictEqual(emailLabsData.remaining <= 298, true);
 
-    assert.strictEqual(telemetry.combined.allProvidersLimit, 1500);
+    assert.strictEqual(telemetry.combined.allProvidersLimit, 11500);
     assert.strictEqual(typeof telemetry.combined.totalLimit, 'number');
     assert.strictEqual(typeof telemetry.combined.totalRemaining, 'number');
     assert.strictEqual(telemetry.combined.allProvidersLimit >= telemetry.combined.totalLimit, true);

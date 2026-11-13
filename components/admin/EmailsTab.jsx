@@ -104,9 +104,9 @@ const PROVIDER_OPTIONS = [
     id: 'mailflare',
     name: 'Mailflare (Self-Hosted)',
     shortName: 'Mailflare',
-    dailyLimit: 99999,
-    badge: 'Primary Rail',
-    desc: 'Self-hosted email server on email.mymobpay.tech — unlimited own-domain sending',
+    dailyLimit: 10000,
+    badge: '10,000 / day',
+    desc: 'Self-hosted email engine on email.mymobpay.tech (Cloudflare Workers Rail)',
     host: 'email.mymobpay.tech',
     protocol: 'REST API / SMTP',
     port: '443 / 587'
@@ -315,9 +315,9 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const [outboxStatusFilter, setOutboxStatusFilter] = useState('all');
   const [providerQuotas, setProviderQuotas] = useState([]);
   const [combinedQuota, setCombinedQuota] = useState({
-    totalLimit: 99999,
+    totalLimit: 11500,
     totalSentToday: 0,
-    totalRemaining: 99999,
+    totalRemaining: 11500,
     activeProvidersCount: 7
   });
   const [telemetryDate, setTelemetryDate] = useState('');
@@ -605,7 +605,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-mono font-bold text-slate-900 text-sm">
-              {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
+              {(combinedQuota.totalRemaining ?? 11500).toLocaleString()}
             </span>
             <span className="text-slate-600 text-xs font-semibold">left today</span>
             <span className="text-slate-300">|</span>
@@ -1367,74 +1367,83 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
       {activeView === 'rails' && (
         <div className="space-y-4">
           {/* Header Status & Live Telemetry Strip */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-white rounded-2xl border border-blue-100/80 shadow-2xs">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-2xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-slate-900 text-emerald-400 flex items-center justify-center shadow-2xs">
                 <Activity className="w-4 h-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-xs font-bold text-slate-900">Live Multi-Rail Telemetry Matrix</h4>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
-                    Read-Only Monitoring
+                  <h4 className="text-xs font-bold text-slate-900 tracking-tight">Live Multi-Rail Telemetry Matrix</h4>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-bold">
+                    Active Telemetry
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 font-medium">
-                  Real-time transmission counters and circuit breaker status. Select active rails in the Studio Composer.
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                  Real-time transmission counters and circuit breaker status across all 7 operational rails.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-mono">
-              <span className="text-slate-500">Timezone:</span>
-              <span className="text-slate-800 font-semibold bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">Asia/Kolkata (IST)</span>
-              <span className="text-slate-400 ml-1">Reset:</span>
+            <div className="flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/80">
+              <span className="text-slate-400">Timezone:</span>
+              <span className="text-slate-800 font-semibold">Asia/Kolkata (IST)</span>
+              <span className="text-slate-300">|</span>
+              <span className="text-slate-400">Reset:</span>
               <span className="text-emerald-700 font-bold">00:00 IST</span>
             </div>
           </div>
 
           {/* Capacity Hero Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs bg-gradient-to-br from-slate-50 via-white to-blue-50/40">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-blue-800 bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-md">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[10px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Aggregated Daily Transmission Capacity
-                </span>
+                </div>
                 <div className="flex items-baseline gap-3 mt-2 flex-wrap">
                   <h3 className="text-4xl font-extrabold font-mono text-slate-900 tracking-tight">
-                    {(combinedQuota.totalRemaining ?? 1500).toLocaleString()}
+                    {(combinedQuota.totalRemaining ?? 11500).toLocaleString()}
                   </h3>
-                  <span className="text-xs font-bold text-slate-700">
-                    emails remaining today out of {(combinedQuota.totalLimit ?? 1500).toLocaleString()} daily ceiling
+                  <span className="text-xs font-bold text-slate-600">
+                    emails remaining today out of {(combinedQuota.totalLimit ?? 11500).toLocaleString()} daily ceiling
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 mt-1 font-medium">
+                <p className="text-xs text-slate-500 mt-1 font-medium">
                   Dynamic multi-rail dispatcher auto-routes transactional traffic with sub-second failover and DKIM/SPF alignment.
                 </p>
               </div>
 
-              <div className="sm:w-72 space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <div className="sm:w-72 space-y-2 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/80">
                 <div className="flex items-center justify-between text-xs font-bold text-slate-800">
                   <span>Daily Utilization</span>
-                  <span className="font-mono text-blue-600">{combinedQuota.totalSentToday || 0} sent today</span>
+                  <span className="font-mono text-slate-900">
+                    {(combinedQuota.totalSentToday || 0).toLocaleString()} sent today
+                  </span>
                 </div>
-                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                {/* Real Utilization Bar (Sent / Limit) */}
+                <div className="w-full h-2.5 bg-slate-200/80 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                    className="h-full bg-slate-900 rounded-full transition-all duration-500"
                     style={{
-                      width: `${Math.min(100, Math.max(3, Math.round(((combinedQuota.totalRemaining ?? 1500) / (combinedQuota.totalLimit || 1500)) * 100)))}%`
+                      width: `${Math.min(100, Math.max(0, Math.round(((combinedQuota.totalSentToday || 0) / (combinedQuota.totalLimit || 11500)) * 100)))}%`
                     }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
-                  <span>0% MDR Rail</span>
-                  <span>100% In-House Capacity</span>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-medium">
+                  <span>
+                    {Math.round(((combinedQuota.totalSentToday || 0) / (combinedQuota.totalLimit || 11500)) * 100)}% Consumed
+                  </span>
+                  <span className="text-emerald-700 font-bold">
+                    {(combinedQuota.totalRemaining ?? 11500).toLocaleString()} Available
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 6 Informational Telemetry Cards (Purely Info, Not Clickable) */}
+          {/* 7 Operational Telemetry Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {PROVIDER_OPTIONS.filter(p => p.id !== 'auto').map((p) => {
               const tele = quotaMap[p.id] || {};
@@ -1448,32 +1457,32 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               return (
                 <div
                   key={p.id}
-                  className="p-4 rounded-2xl border border-slate-200 bg-white shadow-2xs space-y-3"
+                  className="p-4 rounded-2xl border border-slate-200/90 bg-white shadow-2xs hover:border-slate-300 transition-colors space-y-3"
                 >
                   {/* Card Header */}
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                        <HardDrive className="w-3.5 h-3.5 text-blue-600" />
+                        <Server className="w-3.5 h-3.5 text-slate-700" />
                         <span>{p.name}</span>
                       </h4>
-                      <span className="text-[10px] font-mono text-slate-500 font-semibold">{p.protocol} • Port {p.port}</span>
+                      <span className="text-[10px] font-mono text-slate-500 font-medium">{p.protocol} • Port {p.port}</span>
                     </div>
 
                     {/* Operational Badge */}
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border">
+                    <div className="flex items-center gap-1 text-[10px] font-bold">
                       {isCircuitLimited ? (
-                        <span className="bg-amber-50 text-amber-800 border-amber-200 flex items-center gap-1 px-1.5 py-0.5 rounded-full">
+                        <span className="bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1 px-2 py-0.5 rounded-full font-mono">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                           Cooldown
                         </span>
                       ) : !isConfigured ? (
-                        <span className="bg-slate-50 text-slate-600 border-slate-200 flex items-center gap-1 px-1.5 py-0.5 rounded-full">
+                        <span className="bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1 px-2 py-0.5 rounded-full font-mono">
                           <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
                           Unconfigured
                         </span>
                       ) : (
-                        <span className="bg-emerald-50 text-emerald-800 border-emerald-200 flex items-center gap-1 px-1.5 py-0.5 rounded-full">
+                        <span className="bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center gap-1 px-2 py-0.5 rounded-full font-mono">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                           Operational
                         </span>
@@ -1484,13 +1493,17 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
                   {/* Relay Endpoint */}
                   <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 text-[11px] font-mono text-slate-700 truncate">
                     <span className="text-slate-400 mr-1">Host:</span>
-                    <span className="font-semibold">{p.host}</span>
+                    <span className="font-semibold text-slate-800">{p.host}</span>
                   </div>
 
                   {/* Quota Numbers */}
                   <div className="flex items-baseline justify-between text-xs font-mono">
-                    <span className="text-lg font-black text-slate-900 tracking-tight">{remaining} left</span>
-                    <span className="text-slate-600 font-bold">{sent} / {limit} sent</span>
+                    <span className="text-lg font-black text-slate-900 tracking-tight">
+                      {remaining.toLocaleString()} left
+                    </span>
+                    <span className="text-slate-600 font-semibold">
+                      {sent.toLocaleString()} / {limit.toLocaleString()} sent
+                    </span>
                   </div>
 
                   {/* Progress Bar */}
@@ -1505,8 +1518,11 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
 
                   {/* Footer Meta */}
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-                    <span>SPF &amp; DKIM: Aligned</span>
-                    <span className="font-mono text-slate-600">Daily: {limit} cap</span>
+                    <span className="flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                      <span>SPF &amp; DKIM: Aligned</span>
+                    </span>
+                    <span className="font-mono text-slate-700 font-bold">Daily: {limit.toLocaleString()} cap</span>
                   </div>
                 </div>
               );
