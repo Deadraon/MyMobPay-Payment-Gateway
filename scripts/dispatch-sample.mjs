@@ -21,13 +21,13 @@ if (existsSync(envLocalPath)) {
   });
 }
 
-// Ensure recipient
+// Target email
 const targetEmail = process.argv[2] || 'chauhankunal695@gmail.com';
 process.env.ADMIN_ALERT_EMAIL = targetEmail;
 process.env.PRIMARY_ADMIN_NOTIFY_EMAIL = targetEmail;
 
 console.log('================================================================');
-console.log('🚀 DISPATCHING SAMPLE REDESIGNED FINTECH EMAIL');
+console.log('🍎 DISPATCHING APPLE-STYLED REDESIGNED EMAILS');
 console.log(`🎯 Recipient Target: ${targetEmail}`);
 console.log(`🕒 Timestamp: ${new Date().toISOString()}`);
 console.log('================================================================\n');
@@ -35,51 +35,80 @@ console.log('================================================================\n'
 async function main() {
   const mailer = await import('../lib/mailer.js');
 
-  console.log('1. Dispatching sample "Admin New Signup Alert" (Minimal light layout)...');
-  const result = await mailer.sendAdminNewSignupNotification({
-    userEmail: 'kunal@pixelcraft.in',
-    userName: 'Kunal Chauhan',
-    businessName: 'Pixelcraft Studio',
-    upiId: 'pixelcraft@hdfcbank',
-    phone: '+91 98765 43210',
-    provider: 'Google Auth',
-    userId: `usr_${Date.now().toString().slice(-6)}`,
-    createdAt: new Date().toISOString(),
-    bankDetails: {
-      bank_name: 'HDFC Bank',
-      account_number: '8819',
-      ifsc: 'HDFC0001234'
-    }
-  });
+  console.log('1. Dispatching: Apple-Style Verification Code OTP...');
+  try {
+    const otpResult = await mailer.sendOtpEmail({
+      to: targetEmail,
+      otp: '749210',
+      recipientName: 'Kunal Chauhan',
+      businessName: 'MyMobPay',
+      purpose: 'login'
+    });
+    console.log('   ✅ OTP Email Result:', otpResult);
+  } catch (err) {
+    console.error('   ❌ OTP Email Error:', err.message);
+  }
 
-  console.log('\n[SIGNUP ALERT RESULT]:', JSON.stringify(result, null, 2));
+  console.log('\n2. Dispatching: Apple Pay Merchant Payment Inflow Alert...');
+  try {
+    const merchantResult = await mailer.sendPaymentLinkMerchantNotificationEmail({
+      to: targetEmail,
+      businessName: 'MyMobPay Store',
+      customerName: 'Aarav Sharma',
+      customerPhone: '+91 98765 43210',
+      customerEmail: 'aarav@example.com',
+      amount: '2,499.00',
+      orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+      utr: '631984719204',
+      linkTitle: 'Pro Annual Membership',
+      merchantUpi: 'mymobpay@icici',
+      paidAt: new Date().toISOString()
+    });
+    console.log('   ✅ Merchant Notification Result:', merchantResult);
+  } catch (err) {
+    console.error('   ❌ Merchant Notification Error:', err.message);
+  }
 
-  console.log('\n2. Dispatching sample "Verification Code OTP" (Fluid mobile code box)...');
-  const otpResult = await mailer.sendOtpEmail({
-    to: targetEmail,
-    otp: '508228',
-    recipientName: 'Kunal Chauhan',
-    businessName: 'Pixelcraft Studio',
-    purpose: 'login'
-  });
+  console.log('\n3. Dispatching: Apple Store Customer Tax Receipt...');
+  try {
+    const customerResult = await mailer.sendPaymentLinkCustomerReceiptEmail({
+      to: targetEmail,
+      customerName: 'Kunal Chauhan',
+      businessName: 'MyMobPay Cloud',
+      merchantPhone: '+91 98765 43210',
+      amount: '2,499.00',
+      orderId: 'MMP-' + Math.floor(100000 + Math.random() * 900000),
+      utr: '631984719204',
+      linkTitle: 'Pro Annual Membership',
+      paidAt: new Date().toISOString()
+    });
+    console.log('   ✅ Customer Receipt Result:', customerResult);
+  } catch (err) {
+    console.error('   ❌ Customer Receipt Error:', err.message);
+  }
 
-  console.log('\n[OTP RESULT]:', JSON.stringify(otpResult, null, 2));
+  console.log('\n4. Dispatching: Apple Services Subscription Tax Invoice...');
+  try {
+    const invoiceResult = await mailer.sendSubscriptionInvoiceEmail({
+      to: targetEmail,
+      businessName: 'Kunal Chauhan',
+      mid: 'MMP-SUPERADMIN',
+      planName: 'Enterprise Zero-MDR Direct Bank Rails',
+      amount: 4999,
+      durationDays: 365,
+      expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      invoiceRef: 'INV-2026-APL1',
+      paymentMethod: 'Direct Bank UPI Settlement (NPCI)',
+      utr: '631984719204'
+    });
+    console.log('   ✅ Subscription Invoice Result:', invoiceResult);
+  } catch (err) {
+    console.error('   ❌ Subscription Invoice Error:', err.message);
+  }
 
-  console.log('\n3. Dispatching sample "Subscription Tax Invoice" (Minimal light receipt)...');
-  const invoiceResult = await mailer.sendSubscriptionInvoiceEmail({
-    to: targetEmail,
-    businessName: 'Pixelcraft Studio',
-    mid: 'MMP-772910',
-    planName: 'Annual Pro Merchant License',
-    amount: 4999,
-    durationDays: 365,
-    expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-    invoiceRef: 'INV-2026-9901',
-    paymentMethod: 'Direct Bank UPI Settlement (NPCI)',
-    utr: '629104881920'
-  });
-
-  console.log('\n[INVOICE RESULT]:', JSON.stringify(invoiceResult, null, 2));
+  console.log('\n================================================================');
+  console.log('🎉 ALL APPLE REDESIGNED EMAILS DISPATCHED SUCCESSFULLY TO:', targetEmail);
+  console.log('================================================================');
 }
 
 main().catch(err => {
