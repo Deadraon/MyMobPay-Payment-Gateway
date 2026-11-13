@@ -21,6 +21,8 @@ import useScrollReveal from '@/components/useScrollReveal';
 import useTiltCards from '@/components/useTiltCards';
 import useSpinningCounter from '@/components/useSpinningCounter';
 import useTabsPill from '@/components/useTabsPill';
+import WarpCarousel from '@/components/WarpCarousel';
+import ContainerScroll from '@/components/ContainerScroll';
 import { supabase } from '@/lib/supabase';
 
 const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32, textSize = 'text-xl sm:text-2xl' }) => {
@@ -621,164 +623,160 @@ export default function HomePage() {
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         CODED DASHBOARD SHOWCASE (Clean Light Theme)
+         CODED DASHBOARD SHOWCASE (Clean Light Theme with 3D Container Scroll)
          ──────────────────────────────────────────────────────── */}
-      <section className="relative z-10 py-24 bg-[#f6f9fc] border-y border-[#e3e8ee] overflow-hidden font-sohne">
+      <section className="relative z-10 py-12 sm:py-16 md:py-20 bg-[#f6f9fc] border-y border-[#e3e8ee] overflow-hidden font-sohne">
+        <ContainerScroll
+          titleComponent={
+            <div className="space-y-3.5">
+              <span className="text-xs font-semibold text-[#533afd] bg-blue-50 border border-blue-200/80 px-3.5 py-1 rounded-full inline-block">
+                Merchant console
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
+                Full visibility into payments and settlements
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-slate-600 font-normal leading-relaxed max-w-xl mx-auto">
+                Monitor real-time payments, webhook delivery logs, and bank reconciliations from a single console.
+              </p>
+            </div>
+          }
+        >
+          {/* Real Coded Dashboard Mockup Content with Browser Frame */}
+          <div className="relative bg-white w-full overflow-hidden">
+            {/* Window chrome header (URL bar removed) */}
+            <div className="flex items-center justify-between px-5 py-3.5 bg-slate-50/90 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+                <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+                <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+              </div>
+              <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs text-emerald-700 font-semibold font-mono">Live</span>
+              </div>
+            </div>
 
-        <div className="max-w-7xl mx-auto px-6 space-y-14">
-          <div className="text-center space-y-3" data-reveal-stagger>
-            <span className="text-xs font-semibold text-[#533afd] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full inline-block">
-              Merchant console
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Full visibility into payments and settlements
-            </h2>
-            <p className="text-base text-slate-600 font-normal leading-relaxed max-w-lg mx-auto">
-              Monitor real-time payments, webhook delivery logs, and bank reconciliations from a single console.
-            </p>
-          </div>
-
-          {/* === CODED DASHBOARD MOCKUP (LIGHT THEME) === */}
-          <div className="relative">
-
-            {/* Browser frame */}
-            <div className="relative bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
-
-              {/* Window chrome header (URL bar removed) */}
-              <div className="flex items-center justify-between px-5 py-3.5 bg-slate-50/90 border-b border-slate-200">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-                  <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-                  <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+            {/* Dashboard content */}
+            <div className="flex min-h-[460px]">
+              {/* Sidebar */}
+              <div className="hidden md:flex w-[200px] bg-slate-50 border-r border-slate-200 flex-col py-6 px-3 gap-1 flex-shrink-0">
+                <div className="px-2 pb-4">
+                  <MyMobPayLogo markSize={24} textSize="text-base" textColor="#0F172A" />
                 </div>
-                <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs text-emerald-700 font-semibold font-mono">Live</span>
-                </div>
+                {[
+                  { label: 'Dashboard', active: true, dot: 'bg-blue-500' },
+                  { label: 'Orders', active: false, dot: null },
+                  { label: 'Analytics', active: false, dot: null },
+                  { label: 'Settlements', active: false, dot: null },
+                  { label: 'Webhooks', active: false, dot: 'bg-amber-400' },
+                  { label: 'API Keys', active: false, dot: null },
+                  { label: 'Sandbox', active: false, dot: null },
+                ].map(item => (
+                  <div key={item.label} className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
+                    item.active
+                      ? 'bg-blue-50 text-[#533afd] border border-blue-200 shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}>
+                    <span>{item.label}</span>
+                    {item.dot && <span className={`w-1.5 h-1.5 rounded-full ${item.dot}`} />}
+                  </div>
+                ))}
               </div>
 
-              {/* Dashboard content */}
-              <div className="flex min-h-[480px]">
-
-                {/* Sidebar */}
-                <div className="hidden md:flex w-[200px] bg-slate-50 border-r border-slate-200 flex-col py-6 px-3 gap-1 flex-shrink-0">
-                  <div className="px-2 pb-4">
-                    <MyMobPayLogo markSize={24} textSize="text-base" textColor="#0F172A" />
-                  </div>
+              {/* Main panel */}
+              <div className="flex-1 p-4 sm:p-6 space-y-4 sm:space-y-5 bg-white overflow-hidden">
+                {/* Top stat cards */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
                   {[
-                    { label: 'Dashboard', active: true, dot: 'bg-blue-500' },
-                    { label: 'Orders', active: false, dot: null },
-                    { label: 'Analytics', active: false, dot: null },
-                    { label: 'Settlements', active: false, dot: null },
-                    { label: 'Webhooks', active: false, dot: 'bg-amber-400' },
-                    { label: 'API Keys', active: false, dot: null },
-                    { label: 'Sandbox', active: false, dot: null },
-                  ].map(item => (
-                    <div key={item.label} className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
-                      item.active
-                        ? 'bg-blue-50 text-[#533afd] border border-blue-200 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}>
-                      <span>{item.label}</span>
-                      {item.dot && <span className={`w-1.5 h-1.5 rounded-full ${item.dot}`} />}
+                    { label: 'Total revenue', value: '₹4,82,500', change: '+12.4%', color: 'text-emerald-700', bg: 'bg-slate-50 border-slate-200' },
+                    { label: 'Transactions', value: '1,842', change: '+8.1%', color: 'text-[#4434d4]', bg: 'bg-slate-50 border-slate-200' },
+                    { label: 'Success rate', value: '99.98%', change: '+0.02%', color: 'text-emerald-700', bg: 'bg-slate-50 border-slate-200' },
+                    { label: 'Avg. settlement', value: '0.0s', change: 'Real-time', color: 'text-indigo-700', bg: 'bg-slate-50 border-slate-200' },
+                  ].map(stat => (
+                    <div key={stat.label} className={`${stat.bg} border rounded-xl p-3 sm:p-3.5 space-y-1 shadow-xs hover:border-slate-300 transition-all`}>
+                      <p className="text-[11px] font-medium text-slate-500">{stat.label}</p>
+                      <p className="text-sm sm:text-base md:text-lg font-bold text-slate-900">{stat.value}</p>
+                      <p className={`text-[10px] font-medium ${stat.color}`}>{stat.change}</p>
                     </div>
                   ))}
                 </div>
 
-                {/* Main panel */}
-                <div className="flex-1 p-5 sm:p-6 space-y-5 bg-white overflow-hidden">
-
-                  {/* Top stat cards */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    {[
-                      { label: 'Total revenue', value: '₹4,82,500', change: '+12.4%', color: 'text-emerald-700', bg: 'bg-slate-50 border-slate-200' },
-                      { label: 'Transactions', value: '1,842', change: '+8.1%', color: 'text-[#4434d4]', bg: 'bg-slate-50 border-slate-200' },
-                      { label: 'Success rate', value: '99.98%', change: '+0.02%', color: 'text-emerald-700', bg: 'bg-slate-50 border-slate-200' },
-                      { label: 'Avg. settlement', value: '0.0s', change: 'Real-time', color: 'text-indigo-700', bg: 'bg-slate-50 border-slate-200' },
-                    ].map(stat => (
-                      <div key={stat.label} className={`${stat.bg} border rounded-xl p-3.5 space-y-1 shadow-xs hover:border-slate-300 transition-all`}>
-                        <p className="text-[11px] font-medium text-slate-500">{stat.label}</p>
-                        <p className="text-base sm:text-lg font-bold text-slate-900">{stat.value}</p>
-                        <p className={`text-[10px] font-medium ${stat.color}`}>{stat.change}</p>
-                      </div>
-                    ))}
+                {/* Chart + Recent Transactions */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4">
+                  {/* Chart */}
+                  <div className="lg:col-span-2 bg-slate-50/60 border border-slate-200 rounded-xl p-3.5 sm:p-4 space-y-3 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-slate-900">Revenue (last 30 days)</p>
+                      <span className="text-[9px] bg-blue-50 text-[#533afd] border border-blue-200 px-2 py-0.5 rounded font-semibold">Live</span>
+                    </div>
+                    {/* SVG Sparkline chart */}
+                    <svg viewBox="0 0 400 80" className="w-full h-20" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.25" />
+                          <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+                        </linearGradient>
+                      </defs>
+                      {/* Area fill */}
+                      <path d="M0,65 C20,60 40,50 60,45 C80,40 100,55 120,48 C140,41 160,30 180,25 C200,20 220,35 240,28 C260,21 280,15 300,18 C320,21 340,10 360,8 C380,6 400,12 400,12 L400,80 L0,80 Z" fill="url(#chartGrad)" />
+                      {/* Line */}
+                      <path d="M0,65 C20,60 40,50 60,45 C80,40 100,55 120,48 C140,41 160,30 180,25 C200,20 220,35 240,28 C260,21 280,15 300,18 C320,21 340,10 360,8 C380,6 400,12 400,12" fill="none" stroke="#2563EB" strokeWidth="2.5" />
+                      {/* Grid lines */}
+                      {[20, 40, 60].map(y => (
+                        <line key={y} x1="0" y1={y} x2="400" y2={y} stroke="#E2E8F0" strokeWidth="0.75" strokeDasharray="4" />
+                      ))}
+                      {/* Dot on peak */}
+                      <circle cx="360" cy="8" r="4" fill="#2563EB" />
+                      <circle cx="360" cy="8" r="8" fill="#2563EB" opacity="0.25" />
+                    </svg>
+                    <div className="flex justify-between text-[8px] text-slate-400 font-medium">
+                      {['Aug 1','Aug 7','Aug 14','Aug 21','Aug 26'].map(d => <span key={d}>{d}</span>)}
+                    </div>
                   </div>
 
-                  {/* Chart + Recent Transactions */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    {/* Chart */}
-                    <div className="lg:col-span-2 bg-slate-50/60 border border-slate-200 rounded-xl p-4 space-y-3 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-semibold text-slate-900">Revenue (last 30 days)</p>
-                        <span className="text-[9px] bg-blue-50 text-[#533afd] border border-blue-200 px-2 py-0.5 rounded font-semibold">Live</span>
-                      </div>
-                      {/* SVG Sparkline chart */}
-                      <svg viewBox="0 0 400 80" className="w-full h-20" preserveAspectRatio="none">
-                        <defs>
-                          <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.25" />
-                            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
-                          </linearGradient>
-                        </defs>
-                        {/* Area fill */}
-                        <path d="M0,65 C20,60 40,50 60,45 C80,40 100,55 120,48 C140,41 160,30 180,25 C200,20 220,35 240,28 C260,21 280,15 300,18 C320,21 340,10 360,8 C380,6 400,12 400,12 L400,80 L0,80 Z" fill="url(#chartGrad)" />
-                        {/* Line */}
-                        <path d="M0,65 C20,60 40,50 60,45 C80,40 100,55 120,48 C140,41 160,30 180,25 C200,20 220,35 240,28 C260,21 280,15 300,18 C320,21 340,10 360,8 C380,6 400,12 400,12" fill="none" stroke="#2563EB" strokeWidth="2.5" />
-                        {/* Grid lines */}
-                        {[20, 40, 60].map(y => (
-                          <line key={y} x1="0" y1={y} x2="400" y2={y} stroke="#E2E8F0" strokeWidth="0.75" strokeDasharray="4" />
-                        ))}
-                        {/* Dot on peak */}
-                        <circle cx="360" cy="8" r="4" fill="#2563EB" />
-                        <circle cx="360" cy="8" r="8" fill="#2563EB" opacity="0.25" />
-                      </svg>
-                      <div className="flex justify-between text-[8px] text-slate-400 font-medium">
-                        {['Aug 1','Aug 7','Aug 14','Aug 21','Aug 26'].map(d => <span key={d}>{d}</span>)}
-                      </div>
+                  {/* Recent transactions */}
+                  <div className="bg-slate-50/60 border border-slate-200 rounded-xl p-3.5 sm:p-4 space-y-3 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-slate-900">Recent settlements</p>
+                      <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        T+0 IMPS
+                      </span>
                     </div>
-
-                    {/* Recent transactions */}
-                    <div className="bg-slate-50/60 border border-slate-200 rounded-xl p-4 space-y-3 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-semibold text-slate-900">Recent settlements</p>
-                        <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          T+0 IMPS
-                        </span>
-                      </div>
-                      <div className="space-y-2">
-                        {[
-                          { id: 'ORD_9821', upi: 'kunal@okhdfcbank', amt: '₹1,499', status: 'Settled', time: '12s ago' },
-                          { id: 'ORD_9820', upi: 'aarav@okaxis', amt: '₹4,999', status: 'Settled', time: '1m ago' },
-                          { id: 'ORD_9819', upi: 'priya@ybl', amt: '₹2,499', status: 'Settled', time: '3m ago' },
-                          { id: 'ORD_9818', upi: 'rohit@paytm', amt: '₹999', status: 'Settled', time: '6m ago' },
-                        ].map(tx => (
-                          <div key={tx.id} className="flex items-center justify-between py-1.5 border-b border-slate-200/60 last:border-0">
-                            <div>
-                              <div className="flex items-center gap-1.5">
-                                <p className="text-[10px] font-semibold text-[#533afd] font-mono">{tx.id}</p>
-                                <span className="text-[9px] text-slate-400 font-mono">({tx.time})</span>
-                              </div>
-                              <p className="text-[9px] text-slate-500 font-mono">{tx.upi}</p>
+                    <div className="space-y-2">
+                      {[
+                        { id: 'ORD_9821', upi: 'kunal@okhdfcbank', amt: '₹1,499', status: 'Settled', time: '12s ago' },
+                        { id: 'ORD_9820', upi: 'aarav@okaxis', amt: '₹4,999', status: 'Settled', time: '1m ago' },
+                        { id: 'ORD_9819', upi: 'priya@ybl', amt: '₹2,499', status: 'Settled', time: '3m ago' },
+                        { id: 'ORD_9818', upi: 'rohit@paytm', amt: '₹999', status: 'Settled', time: '6m ago' },
+                      ].map(tx => (
+                        <div key={tx.id} className="flex items-center justify-between py-1.5 border-b border-slate-200/60 last:border-0">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <p className="text-[10px] font-semibold text-[#533afd] font-mono">{tx.id}</p>
+                              <span className="text-[9px] text-slate-400 font-mono">({tx.time})</span>
                             </div>
-                            <div className="text-right">
-                              <p className="text-[10px] font-bold text-slate-900">{tx.amt}</p>
-                              <span className="text-[8px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                {tx.status} (0% fee)
-                              </span>
-                            </div>
+                            <p className="text-[9px] text-slate-500 font-mono truncate max-w-[120px]">{tx.upi}</p>
                           </div>
-                        ))}
-                      </div>
+                          <div className="text-right">
+                            <p className="text-[10px] font-bold text-slate-900">{tx.amt}</p>
+                            <span className="text-[8px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              {tx.status} (0% fee)
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-
                 </div>
+
               </div>
             </div>
           </div>
+        </ContainerScroll>
 
-          {/* Bottom metric chips */}
+        {/* Bottom metric chips */}
+        <div className="max-w-7xl mx-auto px-6 -mt-4 sm:-mt-8 relative z-20">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { label: 'Settlement Escrow', value: 'Non-Custodial', icon: <ShieldCheck className="w-4 h-4" />, iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
@@ -1423,13 +1421,11 @@ export default function HomePage() {
       </section>
 
       {/* ────────────────────────────────────────────────────────
-         PRICING SUBSCRIPTION CALLOUT (STRIPE TIERS SPEC)
+         PRICING SUBSCRIPTION SECTION (WARP CAROUSEL)
          ──────────────────────────────────────────────────────── */}
       <section id="pricing-section" className="py-24 bg-[#f6f9fc] border-b border-[#e3e8ee] relative overflow-hidden font-sohne">
-
-        <div className="max-w-6xl mx-auto px-6 text-center space-y-12">
-
-          <div className="space-y-4 max-w-2xl mx-auto" data-reveal-stagger>
+        <div className="max-w-6xl mx-auto px-6 text-center space-y-10">
+          <div className="space-y-4 max-w-2xl mx-auto">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#533afd]/10 border border-[#533afd]/20 text-[#533afd] text-xs font-mono font-medium tracking-wide">
               <span>SUBSCRIPTION TIERS</span>
             </span>
@@ -1441,103 +1437,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch text-left" data-reveal-stagger>
-
-            {/* Developer Sandbox Card */}
-            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-7 flex flex-col justify-between shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:border-[#533afd]/40 transition-all duration-300">
-              <div className="space-y-6">
-                <div>
-                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#64748d]">Sandbox environment</span>
-                  <h3 className="text-xl font-medium text-[#0d253d] mt-1">Developer Free</h3>
-                  <p className="text-xs text-[#64748d] font-light mt-1.5 leading-relaxed">
-                    Perfect for prototyping, testing API signatures, and staging your UI callback dispatches.
-                  </p>
-                </div>
-                <div className="flex items-baseline">
-                  <span className="text-2xl font-light text-[#64748d] mr-1">₹</span>
-                  <span className="text-4xl font-light text-[#0d253d] tabular-nums">0</span>
-                  <span className="text-xs font-light text-[#64748d] ml-1.5">/ month</span>
-                </div>
-                <div className="border-t border-[#e3e8ee] pt-6 space-y-3.5 text-xs text-[#273951] font-light">
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Isolated sandbox testing API key</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Interactive dynamic checkout screen</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Automated webhook event delivery stream</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Live order status verification logs</p>
-                </div>
-              </div>
-              <Link
-                href="/login"
-                className="mt-8 block w-full py-3 bg-[#f6f9fc] hover:bg-[#e3e8ee] text-[#0d253d] font-medium rounded-full border border-[#e3e8ee] transition-all text-center text-xs tracking-wide"
-              >
-                Launch Sandbox Console
-              </Link>
-            </div>
-
-            {/* Standard Plan (Highlighted Stripe Navy) */}
-            <div className="bg-[#1c1e54] text-white border border-[#533afd]/40 rounded-2xl p-7 flex flex-col justify-between shadow-[0_24px_54px_rgba(28,30,84,0.35),0_4px_16px_rgba(83,58,253,0.2)] relative md:scale-[1.03] scale-100 overflow-hidden">
-              <div className="absolute top-4 right-4 bg-[#533afd] text-white text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-full">
-                Most popular
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#b9b9f9]">Production Pass</span>
-                  </div>
-                  <h3 className="text-2xl font-light text-white mt-1">Standard Pro Plan</h3>
-                  <p className="text-xs text-[#b9b9f9]/80 font-light mt-1.5 leading-relaxed">
-                    For active SaaS founders and builders who want to stop giving away 2% on transaction cuts.
-                  </p>
-                </div>
-                <div className="flex items-baseline">
-                  <span className="text-2xl font-light text-[#b9b9f9] mr-1">₹</span>
-                  <span className="text-4xl font-light text-white tabular-nums">{subscriptionFee}</span>
-                  <span className="text-xs font-light text-[#b9b9f9] ml-1.5">/ month</span>
-                </div>
-                <div className="border-t border-white/10 pt-6 space-y-3.5 text-xs text-[#e3e8ee] font-light">
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> 100% direct-to-bank UPI transfers</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> 0% transaction gateway fees</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> HMAC-SHA256 signed webhooks</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0" /> Automated bank email reconciliation</p>
-                </div>
-              </div>
-              <Link
-                href="/login"
-                className="mt-8 block w-full py-3 bg-[#533afd] hover:bg-[#4434d4] active:bg-[#2e2b8c] text-white font-medium rounded-full transition-all text-center text-xs shadow-[0_4px_14px_rgba(83,58,253,0.35)] tracking-wide"
-              >
-                Activate Pro License &rarr;
-              </Link>
-            </div>
-
-            {/* Enterprise Card */}
-            <div className="bg-[#ffffff] border border-[#e3e8ee] rounded-2xl p-7 flex flex-col justify-between shadow-[0_4px_16px_rgba(0,55,112,0.04)] hover:shadow-[0_16px_36px_rgba(0,55,112,0.08)] hover:border-[#533afd]/40 transition-all duration-300">
-              <div className="space-y-6">
-                <div>
-                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#64748d]">Enterprise scale</span>
-                  <h3 className="text-xl font-medium text-[#0d253d] mt-1">Enterprise Custom</h3>
-                  <p className="text-xs text-[#64748d] font-light mt-1.5 leading-relaxed">
-                    For high-throughput organizations needing custom webhook routing architectures and dedicated workers.
-                  </p>
-                </div>
-                <div className="flex items-baseline">
-                  <span className="text-2xl font-light text-[#0d253d] tracking-tight">Custom volume</span>
-                </div>
-                <div className="border-t border-[#e3e8ee] pt-6 space-y-3.5 text-xs text-[#273951] font-light">
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Dedicated secure matching worker instances</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Customized retry webhook schedules</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Sub-merchant console access controls</p>
-                  <p className="flex items-center gap-2.5"><CheckCircle2 className="w-4 h-4 text-[#533afd] shrink-0" /> Dedicated SLA support with uptime assurances</p>
-                </div>
-              </div>
-              <Link
-                href="/login"
-                className="mt-8 block w-full py-3 bg-[#f6f9fc] hover:bg-[#e3e8ee] text-[#0d253d] font-medium rounded-full border border-[#e3e8ee] transition-all text-center text-xs tracking-wide"
-              >
-                Contact Enterprise Sales
-              </Link>
-            </div>
-
+          <div className="w-full max-w-4xl mx-auto">
+            <WarpCarousel background="#f6f9fc" />
           </div>
-
         </div>
       </section>
 
