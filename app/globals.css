@@ -74,8 +74,57 @@ input:not([type="checkbox"]):not([type="radio"]) {
 
 html { scroll-behavior: smooth; }
 
-html, body, h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select {
+html, body, button, input, textarea, select {
   font-family: var(--font-sans);
+}
+
+/* Explicit pure white utilities to fix Tailwind var(--bg-card) opacity syntax bugs */
+.bg-white\/95 { background-color: rgba(255, 255, 255, 0.95) !important; }
+.bg-white\/90 { background-color: rgba(255, 255, 255, 0.90) !important; }
+.bg-white\/80 { background-color: rgba(255, 255, 255, 0.80) !important; }
+.bg-white\/25 { background-color: rgba(255, 255, 255, 0.25) !important; }
+.bg-white\/20 { background-color: rgba(255, 255, 255, 0.20) !important; }
+.bg-white\/15 { background-color: rgba(255, 255, 255, 0.15) !important; }
+.bg-white\/10 { background-color: rgba(255, 255, 255, 0.10) !important; }
+.bg-white\/5  { background-color: rgba(255, 255, 255, 0.05) !important; }
+
+.text-white\/90 { color: rgba(255, 255, 255, 0.90) !important; }
+.text-white\/85 { color: rgba(255, 255, 255, 0.85) !important; }
+.text-white\/80 { color: rgba(255, 255, 255, 0.80) !important; }
+.text-white\/75 { color: rgba(255, 255, 255, 0.75) !important; }
+.text-white\/70 { color: rgba(255, 255, 255, 0.70) !important; }
+
+.border-white\/10 { border-color: rgba(255, 255, 255, 0.10) !important; }
+.border-white\/15 { border-color: rgba(255, 255, 255, 0.15) !important; }
+.border-white\/20 { border-color: rgba(255, 255, 255, 0.20) !important; }
+
+/* Force Anton font on headlines, display titles, and typewriter words */
+.hero-display-title,
+.hero-display-title *,
+.headline-anton,
+.headline-anton *,
+.headline-anton-white,
+.headline-anton-white *,
+.font-display,
+.font-display *,
+#hero-typewriter-word {
+  font-family: 'Anton', 'Barlow Condensed', Impact, sans-serif !important;
+}
+
+/* Force Barlow Condensed on stats */
+.tabular-nums-stat,
+.tabular-nums-stat *,
+.font-condensed,
+.font-condensed * {
+  font-family: 'Barlow Condensed', 'Anton', sans-serif !important;
+}
+
+/* Force JetBrains Mono on monospace code & tokens */
+.font-mono,
+.font-mono *,
+code,
+pre {
+  font-family: 'JetBrains Mono', monospace !important;
 }
 
 body {
