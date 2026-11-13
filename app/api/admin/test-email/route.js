@@ -3,12 +3,14 @@ import nodemailer from 'nodemailer';
 import {
   sendOtpEmail,
   sendSubscriptionInvoiceEmail,
+  isMailflareConfigured,
   isSendpulseConfigured,
   isResendConfigured,
   isBrevoConfigured,
   isEmailLabsConfigured,
   isMailerooConfigured,
   isUnitpostConfigured,
+  getMailflareTransporter,
   getEmailLabsTransporter,
   getMailerooTransporter,
   getUnitpostTransporter
@@ -43,6 +45,14 @@ async function handleDiagnostic(req) {
   const timestamp = new Date().toISOString();
 
   const envAudit = {
+    mailflare: {
+      user: mask(process.env.MAILFLARE_SMTP_USER),
+      passSet: Boolean(process.env.MAILFLARE_SMTP_PASS || process.env.MAILFLARE_API_KEY),
+      mailboxIdSet: Boolean(process.env.MAILFLARE_MAILBOX_ID),
+      host: process.env.MAILFLARE_SMTP_HOST || 'email.mymobpay.tech (default)',
+      port: process.env.MAILFLARE_SMTP_PORT || '587 (default)',
+      isConfigured: isMailflareConfigured(),
+    },
     sendpulse: {
       user: mask(process.env.SENDPULSE_SMTP_USER),
       passSet: Boolean(process.env.SENDPULSE_SMTP_PASS),
@@ -87,6 +97,7 @@ async function handleDiagnostic(req) {
   };
 
   const testResults = {
+    mailflare: { status: 'PENDING', message: '' },
     sendpulse: { status: 'PENDING', message: '' },
     emaillabs: { status: 'PENDING', message: '' },
     maileroo: { status: 'PENDING', message: '' },
@@ -94,6 +105,104 @@ async function handleDiagnostic(req) {
     brevo: { status: 'PENDING', message: '' },
     resend: { status: 'PENDING', message: '' },
   };
+
+  // 0. Test Mailflare
+  if (isMailflareConfigured()) {
+    const apiKey = process.env.MAILFLARE_API_KEY || process.env.MAILFLARE_SMTP_PASS;
+    const mailboxId = process.env.MAILFLARE_MAILBOX_ID;
+    const rawHost = process.env.MAILFLARE_SMTP_HOST || 'email.mymobpay.tech';
+    const baseUrl = process.env.MAILFLARE_BASE_URL || (rawHost.startsWith('http') ? rawHost : `https://${rawHost}`);
+    const cleanBase = baseUrl.replace(/\/$/, '');
+
+    if (apiKey && mailboxId) {
+      try {
+        const from = process.env.MAILFLARE_FROM || 'MyMobPay <noreply@mymobpay.tech>';
+        const res = await fetch(`${cleanBase}/api/v1/send`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            mailboxId,
+            from,
+            to: [targetEmail],
+            subject: `🚀 MyMobPay Server Test: Mailflare [${new Date().toLocaleTimeString('en-IN')}]`,
+            html: `<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+              <h2 style="color: #0f172a; margin-top: 0;">🎉 Mailflare Connected Successfully!</h2>
+              <p style="color: #334155;">This email verifies that your self-hosted Mailflare instance (<strong>${cleanBase}</strong>) is transmitting emails cleanly for <strong>MyMobPay</strong> via REST API (Port 443).</p>
+              <ul style="color: #64748b; font-size: 13px;">
+                <li><strong>Provider:</strong> Mailflare REST API</li>
+                <li><strong>Mailbox ID:</strong> ${mailboxId}</li>
+                <li><strong>Recipient:</strong> ${targetEmail}</li>
+              </ul>
+            </div>`,
+            text: `This email verifies that your Mailflare instance (${cleanBase}) is functioning correctly for MyMobPay.`,
+          }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          const errMsg = errData.error?.message || (typeof errData.error === 'string' ? errData.error : JSON.stringify(errData.error || errData));
+          testResults.mailflare = {
+            status: 'FAILED',
+            error: `Mailflare REST error (HTTP ${res.status}): ${errMsg || res.statusText}`,
+          };
+        } else {
+          const data = await res.json().catch(() => ({}));
+          testResults.mailflare = {
+            status: 'SUCCESS',
+            messageId: data.id || data.messageId || 'mf-verified',
+            message: 'Authenticated & test email dispatched successfully via Mailflare REST API.',
+          };
+        }
+      } catch (err) {
+        testResults.mailflare = {
+          status: 'FAILED',
+          error: `Mailflare connection error: ${err.message}`,
+        };
+      }
+    } else if (apiKey && !mailboxId) {
+      // Validate the API key against /api/v1/send
+      try {
+        const probeRes = await fetch(`${cleanBase}/api/v1/send`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (probeRes.status === 400) {
+          testResults.mailflare = {
+            status: 'ACTION_REQUIRED',
+            message: 'API Key is authenticated and valid! Add MAILFLARE_MAILBOX_ID to .env.local to dispatch emails (Cloudflare blocks raw SMTP port 587).',
+          };
+        } else if (probeRes.status === 401) {
+          testResults.mailflare = {
+            status: 'FAILED',
+            error: 'Mailflare rejected the API key (HTTP 401 Unauthorized). Please check MAILFLARE_SMTP_PASS.',
+          };
+        } else {
+          testResults.mailflare = {
+            status: 'ACTION_REQUIRED',
+            message: `Mailflare responded with HTTP ${probeRes.status}. Set MAILFLARE_MAILBOX_ID to send emails.`,
+          };
+        }
+      } catch (err) {
+        testResults.mailflare = {
+          status: 'FAILED',
+          error: `Could not reach ${cleanBase}: ${err.message}`,
+        };
+      }
+    }
+  } else {
+    testResults.mailflare = {
+      status: 'NOT_CONFIGURED',
+      message: 'MAILFLARE_SMTP_PASS (API Key) or MAILFLARE_SMTP_USER is not defined.',
+    };
+  }
 
   // 1. Test Brevo
   if (isBrevoConfigured()) {

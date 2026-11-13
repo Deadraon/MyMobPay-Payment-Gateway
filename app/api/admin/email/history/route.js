@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { verifyAdminAuth, ensureAdminMerchant } from '@/lib/adminSettings';
-import { isBrevoConfigured, isSendpulseConfigured, getProviderQuotaTelemetry } from '@/lib/mailer';
+import { isMailflareConfigured, isBrevoConfigured, isSendpulseConfigured, getProviderQuotaTelemetry } from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +24,7 @@ export async function GET(request) {
     }
 
     // Provider status & quota telemetry
+    const mailflareReady = isMailflareConfigured();
     const brevoReady = isBrevoConfigured();
     const sendpulseReady = isSendpulseConfigured();
     const quotaTelemetry = getProviderQuotaTelemetry(outbox);
@@ -35,7 +36,8 @@ export async function GET(request) {
       combined: quotaTelemetry.combined,
       date: quotaTelemetry.date,
       provider: {
-        primary: brevoReady ? 'Brevo SMTP (Active)' : 'Default SMTP',
+        primary: mailflareReady ? 'Mailflare REST (Primary)' : (brevoReady ? 'Brevo SMTP (Active)' : 'Multi-Rail Failover'),
+        mailflare: mailflareReady,
         brevo: brevoReady,
         sendpulse: sendpulseReady
       }

@@ -93,12 +93,23 @@ const PROVIDER_OPTIONS = [
     id: 'auto',
     name: 'Smart Multi-Rail',
     shortName: 'Smart Auto',
-    dailyLimit: 1500,
+    dailyLimit: 99999,
     badge: 'Failover Enabled',
-    desc: 'Dynamic circuit breaker failover across all 6 active email rails',
+    desc: 'Dynamic circuit breaker failover across all 7 active email rails (Mailflare primary)',
     host: 'Multi-Rail Failover',
     protocol: 'Dynamic Engine',
     port: 'Auto'
+  },
+  {
+    id: 'mailflare',
+    name: 'Mailflare (Self-Hosted)',
+    shortName: 'Mailflare',
+    dailyLimit: 99999,
+    badge: 'Primary Rail',
+    desc: 'Self-hosted email server on email.mymobpay.tech — unlimited own-domain sending',
+    host: 'email.mymobpay.tech',
+    protocol: 'REST API / SMTP',
+    port: '443 / 587'
   },
   {
     id: 'emaillabs',
@@ -304,10 +315,10 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
   const [outboxStatusFilter, setOutboxStatusFilter] = useState('all');
   const [providerQuotas, setProviderQuotas] = useState([]);
   const [combinedQuota, setCombinedQuota] = useState({
-    totalLimit: 1500,
+    totalLimit: 99999,
     totalSentToday: 0,
-    totalRemaining: 1500,
-    activeProvidersCount: 6
+    totalRemaining: 99999,
+    activeProvidersCount: 7
   });
   const [telemetryDate, setTelemetryDate] = useState('');
 
@@ -599,7 +610,7 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
             <span className="text-slate-600 text-xs font-semibold">left today</span>
             <span className="text-slate-300">|</span>
             <span className="text-xs font-mono font-bold text-emerald-700">
-              {combinedQuota.activeProvidersCount || 6} Rails Ready
+              {combinedQuota.activeProvidersCount || 7} Rails Ready
             </span>
           </div>
 
