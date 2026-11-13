@@ -13,15 +13,15 @@ export const dynamic = 'force-dynamic';
 
 function formatMessageToHtml(rawMessage) {
   if (!rawMessage) return '';
-  // Convert newlines to paragraphs/breaks and preserve markdown-like bold
+  // Convert newlines to paragraphs/breaks and preserve markdown-like bold/italic in Apple SF style
   const formatted = rawMessage
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #1d1d1f; font-weight: 600;">$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em style="color: #424245;">$1</em>')
     .split(/\n\s*\n/)
-    .map(paragraph => `<p style="margin: 0 0 16px 0; font-size: 14.5px; line-height: 1.65; color: #334155;">${paragraph.replace(/\n/g, '<br/>')}</p>`)
+    .map(paragraph => `<p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #424245; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${paragraph.replace(/\n/g, '<br/>')}</p>`)
     .join('');
   return formatted;
 }
@@ -48,44 +48,44 @@ function buildAdminBrandedEmailHtml({
     body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
     table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
     img { -ms-interpolation-mode: bicubic; border: 0; outline: none; }
-    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1d1d1f; }
     @media only screen and (max-width: 480px) {
-      .outer-cell { padding: 16px 10px !important; }
-      .card-pad { padding: 20px 16px !important; }
-      .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
+      .outer-cell { padding: 24px 12px 32px 12px !important; }
+      .card-pad { padding: 28px 20px !important; }
+      .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; text-align: center !important; }
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; -webkit-font-smoothing: antialiased;">
-  <div style="display: none; font-size: 1px; color: #f8fafc; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
+<body style="margin: 0; padding: 0; background-color: #f5f5f7; -webkit-font-smoothing: antialiased;">
+  <div style="display: none; font-size: 1px; color: #f5f5f7; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
     ${subject} &bull; MyMobPay official update.
   </div>
 
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #f5f5f7;">
     <tr>
-      <td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="max-width: 540px; margin: 0 auto;">
+      <td align="center" class="outer-cell" style="padding: 40px 16px 48px 16px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="max-width: 560px; margin: 0 auto;">
           
-          <!-- BRAND TOP BAR -->
+          <!-- APPLE MINIMAL BRAND HEADER -->
           <tr>
-            <td style="padding-bottom: 16px;">
+            <td style="padding-bottom: 20px;">
               <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
                 <tr>
                   <td align="left" style="vertical-align: middle;">
                     <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
                         <td style="vertical-align: middle; padding-right: 10px;">
-                          <img src="https://mymobpay.tech/icon.png" width="32" height="32" alt="MyMobPay" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;" />
+                          <img src="https://mymobpay.tech/icon.png" width="28" height="28" alt="MyMobPay" style="width: 28px; height: 28px; border-radius: 7px; display: block; border: 1px solid #e5e5ea;" />
                         </td>
                         <td style="vertical-align: middle;">
-                          <span style="font-size: 16px; font-weight: 700; color: #0f172a; display: block; line-height: 1.2;">MyMobPay</span>
+                          <span style="font-size: 15px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.015em; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;">MyMobPay</span>
                         </td>
                       </tr>
                     </table>
                   </td>
                   <td align="right" style="vertical-align: middle;">
-                    <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0;">
-                      Notice
+                    <span style="font-size: 11px; font-weight: 500; color: #86868b; text-transform: uppercase; letter-spacing: 0.08em; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Arial, sans-serif;">
+                      ${templateType ? templateType.replace(/_/g, ' ') : 'Official'}
                     </span>
                   </td>
                 </tr>
@@ -93,40 +93,41 @@ function buildAdminBrandedEmailHtml({
             </td>
           </tr>
 
-          <!-- MAIN CARD -->
+          <!-- MAIN CARD (APPLE PURE WHITE WITH HAIRLINE BORDER) -->
           <tr>
             <td>
-              <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #ffffff; border: 1px solid #e5e5ea; border-radius: 18px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);">
                 <tr>
-                  <td class="card-pad" style="padding: 24px 20px;">
-                    <h1 style="margin: 0 0 16px 0; font-size: 19px; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                  <td class="card-pad" style="padding: 36px 32px;">
+                    
+                    <h1 style="margin: 0 0 16px 0; font-size: 24px; font-weight: 600; color: #1d1d1f; line-height: 1.25; letter-spacing: -0.02em; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;">
                       ${subject}
                     </h1>
 
-                    <p style="margin: 0 0 14px 0; font-size: 14px; font-weight: 600; color: #1e293b;">
+                    <p style="margin: 0 0 18px 0; font-size: 15px; font-weight: 500; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Arial, sans-serif;">
                       Hello ${recipientName},
                     </p>
 
-                    <div style="color: #334155; font-size: 14px; line-height: 1.6;">
+                    <div style="color: #424245; font-size: 15px; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Arial, sans-serif;">
                       ${formattedBody}
                     </div>
 
                     ${callToActionText && callToActionUrl ? `
-                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin: 22px 0 16px 0;">
+                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin: 28px 0 16px 0;">
                         <tr>
-                          <td align="center">
-                            <a href="${callToActionUrl}" target="_blank" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">
-                              ${callToActionText} &rarr;
+                          <td align="left">
+                            <a href="${callToActionUrl}" target="_blank" class="cta-btn" style="display: inline-block; background-color: #0071e3; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 500; padding: 12px 26px; border-radius: 980px; letter-spacing: -0.01em; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Arial, sans-serif; box-sizing: border-box;">
+                              ${callToActionText}
                             </a>
                           </td>
                         </tr>
                       </table>
                     ` : ''}
 
-                    <div style="border-top: 1px solid #f1f5f9; padding-top: 16px; margin-top: 20px;">
-                      <p style="margin: 0; font-size: 12.5px; line-height: 1.5; color: #64748b;">
+                    <div style="border-top: 1px solid #e5e5ea; padding-top: 20px; margin-top: 28px;">
+                      <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #86868b; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Arial, sans-serif;">
                         Warm regards,<br />
-                        <strong style="color: #0f172a;">MyMobPay Operations Team</strong>
+                        <strong style="color: #1d1d1f; font-weight: 500;">MyMobPay Team</strong>
                       </p>
                     </div>
 
@@ -136,11 +137,14 @@ function buildAdminBrandedEmailHtml({
             </td>
           </tr>
 
-          <!-- FOOTER -->
+          <!-- APPLE MINIMALIST FOOTER -->
           <tr>
-            <td align="center" style="padding-top: 20px; text-align: center;">
-              <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">
-                MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymobpay.tech" style="color: #64748b; text-decoration: none;">mymobpay.tech</a>
+            <td align="center" style="padding-top: 28px; text-align: center;">
+              <p style="margin: 0 0 6px 0; font-size: 11px; line-height: 1.6; color: #86868b; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Arial, sans-serif;">
+                MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymobpay.tech" style="color: #0071e3; text-decoration: none;">mymobpay.tech</a>
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #aeaeb2; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Arial, sans-serif;">
+                Copyright &copy; ${currentYear} MyMobPay Inc. All rights reserved.
               </p>
             </td>
           </tr>

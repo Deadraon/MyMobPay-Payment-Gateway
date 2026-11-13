@@ -110,45 +110,45 @@ export async function POST(request) {
     body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
     table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
     img { -ms-interpolation-mode: bicubic; border: 0; outline: none; }
-    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1d1d1f; }
     @media only screen and (max-width: 480px) {
-      .outer-cell { padding: 16px 10px !important; }
-      .card-pad { padding: 20px 16px !important; }
-      .k-col { width: 36% !important; font-size: 12px !important; }
+      .outer-cell { padding: 20px 12px !important; }
+      .card-pad { padding: 24px 20px !important; }
+      .k-col { width: 38% !important; font-size: 12px !important; }
       .v-col { font-size: 12px !important; }
       .cta-btn { width: 100% !important; display: block !important; box-sizing: border-box !important; }
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; -webkit-font-smoothing: antialiased;">
-  <div style="display: none; font-size: 1px; color: #f8fafc; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
+<body style="margin: 0; padding: 0; background-color: #f5f5f7; -webkit-font-smoothing: antialiased;">
+  <div style="display: none; font-size: 1px; color: #f5f5f7; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
     Payment inquiry #${target.id} update: ${statusLabel}. Amount: ₹${target.amount}.
   </div>
 
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #f8fafc;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #f5f5f7;">
     <tr>
-      <td align="center" class="outer-cell" style="padding: 28px 14px 40px 14px;">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="max-width: 540px; margin: 0 auto;">
+      <td align="center" class="outer-cell" style="padding: 40px 16px 48px 16px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="max-width: 520px; margin: 0 auto;">
           
           <!-- BRAND TOP BAR -->
           <tr>
-            <td style="padding-bottom: 16px;">
+            <td style="padding-bottom: 20px;">
               <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
                 <tr>
                   <td align="left" style="vertical-align: middle;">
                     <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
                         <td style="vertical-align: middle; padding-right: 10px;">
-                          <img src="https://mymobpay.tech/icon.png" width="32" height="32" alt="MyMobPay" style="width: 32px; height: 32px; border-radius: 8px; display: block; border: 1px solid #e2e8f0;" />
+                          <img src="https://mymobpay.tech/icon.png" width="28" height="28" alt="MyMobPay" style="width: 28px; height: 28px; border-radius: 7px; display: block; border: 1px solid #e5e5ea;" />
                         </td>
                         <td style="vertical-align: middle;">
-                          <span style="font-size: 16px; font-weight: 700; color: #0f172a; display: block; line-height: 1.2;">MyMobPay</span>
+                          <span style="font-size: 15px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.01em;">MyMobPay</span>
                         </td>
                       </tr>
                     </table>
                   </td>
                   <td align="right" style="vertical-align: middle;">
-                    <span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #fde68a;">
+                    <span style="font-size: 11px; font-weight: 600; color: #86868b; text-transform: uppercase; letter-spacing: 0.04em;">
                       ${statusLabel}
                     </span>
                   </td>
@@ -160,50 +160,50 @@ export async function POST(request) {
           <!-- MAIN CARD -->
           <tr>
             <td>
-              <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #ffffff; border: 1px solid #e5e5ea; border-radius: 18px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);">
                 <tr>
-                  <td class="card-pad" style="padding: 24px 20px;">
-                    <h1 style="margin: 0 0 4px 0; font-size: 19px; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                  <td class="card-pad" style="padding: 32px 28px;">
+                    <h1 style="margin: 0 0 6px 0; font-size: 22px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.02em; line-height: 1.25;">
                       Payment inquiry update
                     </h1>
-                    <p style="margin: 0 0 18px 0; font-size: 13.5px; color: #64748b; line-height: 1.5;">
-                      Ticket #${target.id} &bull; ${target.merchant_name}
+                    <p style="margin: 0 0 24px 0; font-size: 14px; color: #424245; line-height: 1.5;">
+                      Case #${target.id} &bull; ${target.merchant_name}
                     </p>
 
-                    <!-- SPEC TABLE -->
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; border-collapse: separate;">
+                    <!-- SPEC TABLE (HAIRLINE ROWS) -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="border-top: 1px solid #e5e5ea; border-bottom: 1px solid #e5e5ea; margin-bottom: 24px;">
                       <tr>
-                        <td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0; width: 36%;">Order ID</td>
-                        <td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0; word-break: break-all;">${target.order_id}</td>
+                        <td class="k-col" style="padding: 10px 0; font-size: 13px; color: #86868b; border-bottom: 1px solid #f2f2f7; width: 38%;">Order ID</td>
+                        <td class="v-col" align="right" style="padding: 10px 0; font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #1d1d1f; font-weight: 500; border-bottom: 1px solid #f2f2f7; word-break: break-all;">${target.order_id}</td>
                       </tr>
                       <tr>
-                        <td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Bank UTR</td>
-                        <td class="v-col" style="padding: 9px 12px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #0f172a; font-weight: 600; border-bottom: 1px solid #e2e8f0; word-break: break-all;">${target.utr}</td>
+                        <td class="k-col" style="padding: 10px 0; font-size: 13px; color: #86868b; border-bottom: 1px solid #f2f2f7;">Bank UTR</td>
+                        <td class="v-col" align="right" style="padding: 10px 0; font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #1d1d1f; font-weight: 500; border-bottom: 1px solid #f2f2f7; word-break: break-all;">${target.utr}</td>
                       </tr>
                       <tr>
-                        <td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500; border-bottom: 1px solid #e2e8f0;">Amount</td>
-                        <td class="v-col" style="padding: 9px 12px; font-size: 13px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0;">&#8377;${target.amount}</td>
+                        <td class="k-col" style="padding: 10px 0; font-size: 13px; color: #86868b; border-bottom: 1px solid #f2f2f7;">Amount</td>
+                        <td class="v-col" align="right" style="padding: 10px 0; font-size: 13px; font-weight: 600; color: #1d1d1f; border-bottom: 1px solid #f2f2f7;">&#8377;${target.amount}</td>
                       </tr>
                       <tr>
-                        <td class="k-col" style="padding: 9px 12px; font-size: 12.5px; color: #64748b; font-weight: 500;">Status</td>
-                        <td class="v-col" style="padding: 9px 12px; font-size: 12.5px; font-weight: 600; color: #0f172a;">${statusLabel}</td>
+                        <td class="k-col" style="padding: 10px 0; font-size: 13px; color: #86868b;">Status</td>
+                        <td class="v-col" align="right" style="padding: 10px 0; font-size: 13px; font-weight: 600; color: #0071e3;">${statusLabel}</td>
                       </tr>
                     </table>
 
-                    <!-- NOTE BOX -->
-                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 20px;">
-                      <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Operations Note</div>
-                      <div style="font-size: 13px; line-height: 1.5; color: #1e293b;">
+                    <!-- NOTE CALLOUT -->
+                    <div style="background-color: #f5f5f7; border-radius: 12px; padding: 14px 16px; margin-bottom: 24px;">
+                      <div style="font-size: 11px; font-weight: 600; color: #86868b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Resolution Note</div>
+                      <div style="font-size: 13px; line-height: 1.5; color: #1d1d1f;">
                         ${note || 'Please review this transaction with your customer and verify in your bank statement.'}
                       </div>
                     </div>
 
-                    <!-- CTA BUTTON -->
+                    <!-- APPLE PILL CTA -->
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
                       <tr>
                         <td align="center">
-                          <a href="https://mymobpay.tech/dashboard" target="_blank" class="cta-btn" style="display: inline-block; width: 100%; max-width: 260px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 8px; text-align: center; box-sizing: border-box;">
-                            Open Merchant Console &rarr;
+                          <a href="https://mymobpay.tech/dashboard" target="_blank" class="cta-btn" style="display: inline-block; background-color: #0071e3; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 500; padding: 12px 32px; border-radius: 980px; text-align: center;">
+                            Open Merchant Console
                           </a>
                         </td>
                       </tr>
@@ -215,11 +215,14 @@ export async function POST(request) {
             </td>
           </tr>
 
-          <!-- FOOTER -->
+          <!-- APPLE FOOTER -->
           <tr>
-            <td align="center" style="padding-top: 20px; text-align: center;">
-              <p style="margin: 0; font-size: 11.5px; color: #94a3b8;">
-                MyMobPay &bull; Direct UPI Rails &bull; <a href="https://mymobpay.tech" style="color: #64748b; text-decoration: none;">mymobpay.tech</a>
+            <td align="center" style="padding-top: 24px; text-align: center;">
+              <p style="margin: 0 0 4px 0; font-size: 11px; color: #86868b;">
+                MyMobPay &bull; Direct Bank UPI Rails &bull; <a href="https://mymobpay.tech" style="color: #0071e3; text-decoration: none;">mymobpay.tech</a>
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #aeaeb2;">
+                &copy; 2026 MyMobPay Payments Inc. All rights reserved.
               </p>
             </td>
           </tr>

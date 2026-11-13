@@ -1117,49 +1117,58 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
               </div>
             </div>
 
-            {/* Email Canvas Window */}
+            {/* Email Canvas Window (Apple Style Minimal & Clean) */}
             {previewTab === 'preview' ? (
-              <div className={`transition-all duration-300 ${previewDevice === 'mobile' ? 'max-w-[320px] mx-auto' : 'w-full'}`}>
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-                  {/* Email Window Chrome */}
-                  <div className="bg-slate-50/90 px-3.5 py-2 border-b border-slate-100 flex items-center justify-between">
+              <div className={`transition-all duration-300 ${previewDevice === 'mobile' ? 'max-w-[340px] mx-auto' : 'w-full'}`}>
+                <div className="bg-[#f5f5f7] rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden p-3 sm:p-5">
+                  {/* Window Chrome Pill */}
+                  <div className="bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-200/80 mb-3 flex items-center justify-between shadow-2xs">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-slate-300/80" />
-                      <span className="w-2 h-2 rounded-full bg-slate-300/80" />
-                      <span className="w-2 h-2 rounded-full bg-slate-300/80" />
+                      <span className="w-2 h-2 rounded-full bg-slate-300" />
+                      <span className="w-2 h-2 rounded-full bg-slate-300" />
+                      <span className="w-2 h-2 rounded-full bg-slate-300" />
                     </div>
-                    <span className="text-[11px] font-mono font-medium text-slate-600">
+                    <span className="text-[11px] font-mono font-medium text-slate-600 truncate max-w-[200px]">
                       {currentSenderPreview.email}
                     </span>
-                    <span className="text-[10px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md font-mono border border-slate-200/80">
-                      {selectedProvider === 'auto' ? 'Auto' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
+                    <span className="text-[10px] font-mono font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                      {selectedProvider === 'auto' ? 'Auto Router' : PROVIDER_OPTIONS.find(p => p.id === selectedProvider)?.shortName}
                     </span>
                   </div>
 
-                  {/* Email Content Frame */}
-                  <div className="p-4 space-y-3.5 max-h-[520px] overflow-y-auto text-xs">
-                    {/* Header Logo */}
-                    <div className="text-center pb-2.5 border-b border-slate-100 flex items-center justify-center gap-2">
-                      <div className="w-6 h-6 rounded-md bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-2xs">
-                        M
+                  {/* Main Apple Card Canvas */}
+                  <div className="bg-white rounded-2xl border border-[#e5e5ea] shadow-xs p-5 sm:p-7 space-y-4 max-h-[540px] overflow-y-auto">
+                    {/* Apple Header */}
+                    <div className="flex items-center justify-between pb-3 border-b border-[#f2f2f7]">
+                      <div className="flex items-center gap-2">
+                        <img
+                          src="/icon.png"
+                          alt="MyMobPay"
+                          className="w-6 h-6 rounded-[6px] border border-[#e5e5ea] object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                        <span className="text-[14px] font-semibold text-[#1d1d1f] tracking-tight font-sans">
+                          MyMobPay
+                        </span>
                       </div>
-                      <div className="text-left">
-                        <span className="font-extrabold text-xs text-slate-900 tracking-tight block leading-tight">MyMobPay</span>
-                        <span className="text-[8px] text-slate-500 font-bold block">Direct Bank UPI Rails</span>
-                      </div>
+                      <span className="text-[10px] font-medium text-[#86868b] tracking-wider uppercase font-sans">
+                        Official Notice
+                      </span>
                     </div>
 
-                    {/* Meta headers (High Contrast) */}
-                    <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1 text-[11px]">
+                    {/* From / To Minimal Headers */}
+                    <div className="py-2 border-b border-[#f2f2f7] space-y-1 text-[11px] font-sans">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-slate-600 font-extrabold text-[10px] w-10 shrink-0">From:</span>
-                        <span className="font-bold text-slate-900 truncate">
+                        <span className="text-[#86868b] font-medium w-10 shrink-0">From:</span>
+                        <span className="font-semibold text-[#1d1d1f] truncate">
                           {currentSenderPreview.name} &lt;{currentSenderPreview.email}&gt;
                         </span>
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-slate-600 font-extrabold text-[10px] w-10 shrink-0">To:</span>
-                        <span className="font-mono font-bold text-slate-800 truncate">
+                        <span className="text-[#86868b] font-medium w-10 shrink-0">To:</span>
+                        <span className="font-semibold text-[#1d1d1f] truncate">
                           {customEmail || 'merchant@example.com'}
                         </span>
                       </div>
@@ -1167,39 +1176,46 @@ export default function EmailsTab({ showToast, getAuthHeaders, merchants = [] })
 
                     {/* Subject */}
                     <div>
-                      <h4 className="font-extrabold text-slate-900 text-sm leading-snug">
+                      <h3 className="font-semibold text-[#1d1d1f] text-base sm:text-lg tracking-tight leading-snug font-sans">
                         {subject || 'Subject line will appear here...'}
-                      </h4>
+                      </h3>
                     </div>
 
                     {/* Greeting */}
-                    <p className="font-bold text-slate-900">
+                    <p className="font-medium text-[#1d1d1f] text-[13px] font-sans">
                       Hello {recipientName.trim() || 'Merchant Partner'},
                     </p>
 
                     {/* Message Body */}
-                    <div className="text-slate-800 leading-relaxed space-y-2 whitespace-pre-line text-xs font-normal">
+                    <div className="text-[#424245] leading-relaxed space-y-2.5 whitespace-pre-line text-[13px] font-normal font-sans">
                       {interpolatedMessage || 'Type your email message on the left to see the instant live preview here.'}
                     </div>
 
-                    {/* CTA Button Preview */}
+                    {/* Apple Style Pill CTA */}
                     {includeCta && ctaText && (
-                      <div className="text-center py-2">
-                        <div className="inline-block px-4 py-2 rounded-lg bg-blue-600 text-white font-bold text-xs shadow-2xs cursor-default">
-                          {ctaText} &rarr;
+                      <div className="pt-2">
+                        <div className="inline-block px-5 py-2.5 rounded-full bg-[#0071e3] text-white font-medium text-[13px] tracking-tight shadow-2xs cursor-default">
+                          {ctaText}
                         </div>
                       </div>
                     )}
 
-                    {/* Security Notice */}
-                    <div className="p-2.5 rounded-lg bg-slate-50 border-l-2 border-blue-600 text-[10px] text-slate-700 leading-relaxed font-medium">
-                      <strong className="text-slate-900 font-bold">Zero-Commission Rails:</strong> Customer UPI checkouts settle directly into your verified bank account with 0% MDR.
+                    {/* Apple Style Sign-Off */}
+                    <div className="pt-4 border-t border-[#e5e5ea] text-[12px] text-[#86868b] font-sans">
+                      <p className="leading-relaxed">
+                        Warm regards,<br />
+                        <strong className="text-[#1d1d1f] font-medium">MyMobPay Team</strong>
+                      </p>
                     </div>
 
-                    {/* Footer */}
-                    <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-500 text-center space-y-0.5">
-                      <p className="font-bold text-slate-700">MyMobPay Merchant Operations</p>
-                      <p>&copy; 2026 MyMobPay Payments Private Limited</p>
+                    {/* Apple Minimalist Footer */}
+                    <div className="pt-3 border-t border-[#f2f2f7] text-[10px] text-[#86868b] text-center space-y-1 font-sans">
+                      <p>
+                        MyMobPay &bull; Direct Bank UPI Rails &bull; <span className="text-[#0071e3]">mymobpay.tech</span>
+                      </p>
+                      <p className="text-[#aeaeb2]">
+                        &copy; 2026 MyMobPay Payments Inc. All rights reserved.
+                      </p>
                     </div>
                   </div>
                 </div>
