@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 
 // Dedicated crisp vector 3D ribbon mark with unique SVG gradient scopes
 function MyMobPayLogoMark({ className = "w-5 h-5", id = "mmp" }) {
@@ -1130,38 +1131,6 @@ export default function HomePage() {
     document.body.removeChild(ta);
   }
 
-  function openAuthModal(mode) {
-    if (typeof document === 'undefined') return;
-    var modal = document.getElementById('auth-modal');
-    var title = document.getElementById('auth-modal-title');
-    var btn = document.getElementById('auth-submit-btn');
-    var fb = document.getElementById('auth-feedback');
-    if (fb) fb.classList.add('hidden');
-    if (mode === 'login') {
-      if (title) title.textContent = 'MERCHANT LOG IN';
-      if (btn) btn.textContent = 'Log In to Dashboard';
-    } else {
-      if (title) title.textContent = 'GET STARTED FREE';
-      if (btn) btn.textContent = 'Create Merchant Account';
-    }
-    if (modal) modal.classList.remove('hidden');
-  }
-
-  function closeAuthModal() {
-    if (typeof document === 'undefined') return;
-    var modal = document.getElementById('auth-modal');
-    if (modal) modal.classList.add('hidden');
-  }
-
-  function handleAuthSubmit() {
-    if (typeof document === 'undefined') return;
-    var fb = document.getElementById('auth-feedback');
-    if (fb) {
-      fb.textContent = 'Session verified. Redirecting to mymob.tech merchant console...';
-      fb.classList.remove('hidden');
-    }
-  }
-
   // 15. Interactive 3D Hover Tilt & Ambient Live Activity Across All 4 Phones
   function initPhoneAnimations() {
     if (typeof document === 'undefined') return () => {};
@@ -1231,9 +1200,6 @@ export default function HomePage() {
     window.closeApiDrawer = closeApiDrawer;
     window.switchDrawerEndpoint = switchDrawerEndpoint;
     window.copyDrawerCode = copyDrawerCode;
-    window.openAuthModal = openAuthModal;
-    window.closeAuthModal = closeAuthModal;
-    window.handleAuthSubmit = handleAuthSubmit;
 
     var savedTheme = null;
     try { savedTheme = localStorage.getItem('mymobpay_theme'); } catch (e) {}
@@ -1320,32 +1286,14 @@ export default function HomePage() {
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => openAuthModal('login')}
-          className="text-[13px] font-bold theme-link hover:underline px-2 py-1"
-        >
-          Log in
-        </button>
+        <Link href="/login" className="text-[13px] font-bold theme-link hover:underline px-2 py-1">Log in</Link>
 
-        <button
-          type="button"
-          onClick={() => openAuthModal('signup')}
-          className="btn-editorial bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[12.5px] font-bold px-4 py-2 rounded-full"
-        >
-          Get started
-        </button>
+        <Link href="/login?mode=signup" className="btn-editorial bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[12.5px] font-bold px-4 py-2 rounded-full">Get started</Link>
       </div>
 
       {/* Mobile Right Controls */}
       <div className="flex md:hidden items-center gap-2">
-        <button
-          type="button"
-          onClick={() => openAuthModal('signup')}
-          className="bg-[#0F2BFF] text-white text-[11.5px] font-bold px-3 py-1.5 rounded-full"
-        >
-          Start free
-        </button>
+        <Link href="/login?mode=signup" className="bg-[#0F2BFF] text-white text-[11.5px] font-bold px-3 py-1.5 rounded-full">Start free</Link>
         <button
           type="button"
           onClick={toggleMobileNav}
@@ -1379,8 +1327,8 @@ export default function HomePage() {
       </div>
 
       <div className="grid grid-cols-2 gap-2.5 pt-1">
-        <button type="button" onClick={() => { toggleMobileNav(); openAuthModal('login'); }} className="py-2.5 rounded-lg border border-[#0F2BFF] theme-link text-xs font-bold">Log in</button>
-        <button type="button" onClick={() => { toggleMobileNav(); openAuthModal('signup'); }} className="py-2.5 rounded-lg bg-[#0F2BFF] text-white text-xs font-bold">Get started free</button>
+        <Link href="/login" onClick={toggleMobileNav} className="py-2.5 rounded-lg border border-[#0F2BFF] theme-link text-xs font-bold text-center block">Log in</Link>
+        <Link href="/login?mode=signup" onClick={toggleMobileNav} className="py-2.5 rounded-lg bg-[#0F2BFF] text-white text-xs font-bold text-center block">Get started free</Link>
       </div>
     </div>
   </header>
@@ -1429,14 +1377,7 @@ export default function HomePage() {
 
             {/* Primary & Secondary CTA Buttons */}
             <div className="mt-7 flex flex-wrap items-center gap-3.5">
-              <button
-                type="button"
-                onClick={() => openAuthModal('signup')}
-                className="btn-editorial bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[13.5px] font-bold px-6 py-3.5 rounded-lg inline-flex items-center gap-2"
-              >
-                <span>Get started free</span>
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </button>
+              <Link href="/login?mode=signup" className="btn-editorial bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[13.5px] font-bold px-6 py-3.5 rounded-lg inline-flex items-center gap-2"><span>Get started free</span><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></Link>
 
               <a
                 href="#own-your-money"
@@ -2218,13 +2159,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => openAuthModal('signup')}
-              className="mt-6 w-full py-3 rounded-lg bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold transition-colors"
-            >
-              Get Started with 0% Commission
-            </button>
+            <Link href="/login?mode=signup" className="mt-6 w-full py-3 rounded-lg bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold transition-colors text-center block">Get Started with 0% Commission</Link>
           </div>
         </div>
 
@@ -2385,8 +2320,8 @@ export default function HomePage() {
         {/* 3 Iconic Square Graphic Poster Cards (330px x 330px) */}
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center">
           {/* Square Card 1: Acid Lime (#D8FF66) + 3D Stepped Magenta Bars */}
-          <div
-            onClick={() => openAuthModal('signup')}
+          <Link
+            href="/login?mode=signup"
             className="cursor-pointer group relative w-full max-w-[330px] h-[330px] bg-[#D8FF66] rounded-xl overflow-hidden p-6 flex flex-col justify-between text-left shadow-xs hover:-translate-y-1.5 transition-transform"
           >
             <div>
@@ -2414,7 +2349,7 @@ export default function HomePage() {
               <polygon points="252,58 270,42 270,220 252,220" fill="#090A10"/>
               <text x="206" y="82" fill="#090A10" fontFamily="JetBrains Mono" fontSize="9" fontWeight="700">100% KEPT</text>
             </svg>
-          </div>
+          </Link>
 
           {/* Square Card 2: Royal Cobalt (#0B28D8) + Centered Crisp White Floating Modal */}
           <div className="relative w-full max-w-[330px] h-[330px] bg-[#0B28D8] rounded-xl overflow-hidden p-6 flex items-center justify-center shadow-xs hover:-translate-y-1.5 transition-transform">
@@ -2441,19 +2376,13 @@ export default function HomePage() {
                 Growth Plan — <strong>0% commission</strong> UPI & IMPS collections + real-time webhooks.
               </p>
 
-              <button
-                type="button"
-                onClick={() => openAuthModal('signup')}
-                className="mt-3.5 w-full py-2 rounded-lg bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[11px] font-bold text-center transition-colors"
-              >
-                Explore Growth Plan
-              </button>
+              <Link href="/login?mode=signup" className="mt-3.5 w-full py-2 rounded-lg bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[11px] font-bold text-center transition-colors block">Explore Growth Plan</Link>
             </div>
           </div>
 
           {/* Square Card 3: Solid Deep Crimson/Aubergine (#521828) Poster Card */}
-          <div
-            onClick={() => openAuthModal('signup')}
+          <Link
+            href="/login?mode=signup"
             className="cursor-pointer relative w-full max-w-[330px] h-[330px] bg-[#521828] rounded-xl overflow-hidden p-6 flex flex-col items-center justify-center text-center shadow-xs hover:-translate-y-1.5 transition-transform"
           >
             <div className="font-mono text-[9.5px] uppercase tracking-widest text-white/75 mb-3">
@@ -2478,7 +2407,7 @@ export default function HomePage() {
             <div className="mt-4 text-[11px] font-semibold text-white/85 underline">
               View plans in Merchant Portal
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </section>
@@ -2699,13 +2628,7 @@ export default function HomePage() {
           0% transaction commission under active subscription plans.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => openAuthModal('signup')}
-            className="btn-editorial bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[13px] font-bold px-8 py-3.5 rounded-lg"
-          >
-            Get started free
-          </button>
+          <Link href="/login?mode=signup" className="btn-editorial bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[13px] font-bold px-8 py-3.5 rounded-lg inline-flex items-center justify-center">Get started free</Link>
           <button
             type="button"
             onClick={() => openApiDrawer('create')}
@@ -2760,9 +2683,9 @@ export default function HomePage() {
         <div>
           <h3 className="font-bold theme-text-primary mb-3">Merchant Portal</h3>
           <ul className="space-y-2">
-            <li><a href="https://mymob.tech/login" target="_blank" rel="noopener noreferrer" className="hover:underline">Merchant Login (/login)</a></li>
-            <li><a href="https://mymob.tech/signup" target="_blank" rel="noopener noreferrer" className="hover:underline">Get Started (/signup)</a></li>
-            <li><a href="https://mymob.tech/dashboard" target="_blank" rel="noopener noreferrer" className="hover:underline">Dashboard (/dashboard)</a></li>
+            <li><Link href="/login" className="hover:underline">Merchant Login (/login)</Link></li>
+            <li><Link href="/login?mode=signup" className="hover:underline">Get Started (/signup)</Link></li>
+            <li><Link href="/dashboard" className="hover:underline">Dashboard (/dashboard)</Link></li>
           </ul>
         </div>
       </div>
@@ -2784,13 +2707,7 @@ export default function HomePage() {
         <div className="font-mono text-[9.5px] text-[#10B981] mt-0.5">0% Commission • UPI & IMPS</div>
       </div>
     </div>
-    <button
-      type="button"
-      onClick={() => openAuthModal('signup')}
-      className="bg-[#0F2BFF] text-white text-xs font-bold px-4 py-2 rounded-lg shrink-0"
-    >
-      Get Started Free
-    </button>
+    <Link href="/login?mode=signup" className="bg-[#0F2BFF] text-white text-xs font-bold px-4 py-2 rounded-lg shrink-0">Get Started Free</Link>
   </div>
 
   {/* ===================================================================== */}
@@ -2833,78 +2750,7 @@ export default function HomePage() {
 
       <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/70">
         <span>0% Commission Subscription API</span>
-        <button type="button" onClick={() => { closeApiDrawer(); openAuthModal('signup'); }} className="bg-[#0F2BFF] text-white font-bold px-4 py-2 rounded">
-          Get API Keys
-        </button>
-      </div>
-    </div>
-  </div>
-
-  {/* ===================================================================== */}
-  {/* MERCHANT AUTH MODAL                                                   */}
-  {/* ===================================================================== */}
-  <div
-    id="auth-modal"
-    className="hidden fixed inset-0 z-50 bg-[#090A10]/60 backdrop-blur-xs flex items-center justify-center p-4"
-    role="dialog"
-    aria-modal="true"
-  >
-    <div className="theme-bg-elevated rounded-2xl max-w-md w-full p-6 shadow-2xl border theme-border">
-      <div className="flex items-center justify-between pb-3 border-b theme-border">
-        <div className="flex items-center gap-2">
-          <MyMobPayLogoMark className="w-6 h-6 object-contain" id="badge-11" />
-          <span id="auth-modal-title" className="headline-anton text-2xl">GET STARTED FREE</span>
-        </div>
-        <button type="button" onClick={closeAuthModal} className="theme-text-muted hover:theme-text-primary p-1" aria-label="Close modal">
-          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <div className="mt-4 space-y-3.5">
-        <a
-          href="https://mymob.tech/login"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full py-2.5 px-4 rounded-lg border theme-border hover:border-[#0F2BFF] text-xs font-bold theme-text-primary flex items-center justify-center gap-2 transition-colors"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
-            <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
-            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
-          </svg>
-          <span>Continue with Google OAuth</span>
-        </a>
-
-        <form onSubmit={(e) => { e.preventDefault(); handleAuthSubmit(); }} className="space-y-3">
-          <div>
-            <label className="block text-[11px] font-bold theme-text-secondary mb-1">Merchant Work Email</label>
-            <input
-              type="email"
-              required
-              placeholder="founder@saas.in"
-              className="w-full px-3 py-2 text-xs rounded-lg theme-bg-well border theme-border theme-text-primary focus:outline-none focus:border-[#0F2BFF]"
-            />
-          </div>
-          <div>
-            <label className="block text-[11px] font-bold theme-text-secondary mb-1">Password or 6-Digit OTP</label>
-            <input
-              type="password"
-              required
-              placeholder="••••••••"
-              className="w-full px-3 py-2 text-xs rounded-lg theme-bg-well border theme-border theme-text-primary focus:outline-none focus:border-[#0F2BFF]"
-            />
-          </div>
-          <button
-            type="submit"
-            id="auth-submit-btn"
-            className="btn-editorial w-full py-2.5 rounded-lg bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold"
-          >
-            Continue to Merchant Console
-          </button>
-        </form>
-
-        <div id="auth-feedback" className="hidden p-3 rounded-lg bg-[#10B981]/15 text-[#10B981] text-xs font-semibold"></div>
+        <Link href="/login?mode=signup" onClick={closeApiDrawer} className="bg-[#0F2BFF] text-white font-bold px-4 py-2 rounded">Get API Keys</Link>
       </div>
     </div>
   </div>

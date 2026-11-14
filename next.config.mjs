@@ -10,7 +10,16 @@ const nextConfig = {
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  async headers() {
+    async redirects() {
+    return [
+      {
+        source: '/signup',
+        destination: '/login?mode=signup',
+        permanent: true,
+      },
+    ];
+  },
+async headers() {
     return [
       {
         // Global security headers
