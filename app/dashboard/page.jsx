@@ -53,7 +53,7 @@ import {
 
 const formatINR = (n) => '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-const MyMobPayLogo = ({ className = 'w-36 h-auto', textColor = 'var(--text-primary)', markSize, textSize }) => {
+const MyMobPayLogo = ({ className = 'w-36 h-auto', textColor = 'var(--text-primary)', markSize, textSize, textClassName = '' }) => {
   if (markSize) {
     const boxSize = markSize + 6;
     return (
@@ -75,7 +75,7 @@ const MyMobPayLogo = ({ className = 'w-36 h-auto', textColor = 'var(--text-prima
             <path d="M 565 340 C 595 260, 700 260, 730 340 L 852 645 C 828 725, 712 725, 688 645 L 565 340 Z" fill="url(#mmp-head-g4)" />
           </svg>
         </span>
-        <span className={`font-sans font-extrabold tracking-tight leading-none text-[var(--theme-text-primary,#090D18)] ${textSize || 'text-[15px]'}`}>
+        <span className={`font-sans font-extrabold tracking-tight leading-none text-[var(--theme-text-primary,#090D18)] ${textSize || 'text-[15px]'} ${textClassName}`}>
           MyMob<span className="text-[#0F2BFF] dark:text-[#60A5FA]">Pay</span>
         </span>
       </div>
@@ -3301,7 +3301,7 @@ echo "Order Created: " . $data['orderId'];
               className="md:hidden flex items-center shrink-0 cursor-pointer focus:outline-none"
               title="Go to Dashboard Overview"
             >
-              <MyMobPayLogo markSize={24} textSize="text-[15px]" textColor="var(--theme-text-primary, #090D18)" />
+              <MyMobPayLogo markSize={24} textSize="text-[15px]" textClassName="max-[352px]:hidden" textColor="var(--theme-text-primary, #090D18)" />
             </button>
 
             {/* Desktop Mode Switcher (>= sm) */}
@@ -3323,7 +3323,7 @@ echo "Order Created: " . $data['orderId'];
                 title={!isLiveUnlocked ? 'Live Mode locked — activate subscription to unlock' : 'Live Mode'}
               >
                 <span className={`w-2 h-2 rounded-full ${!effectiveSandboxMode ? 'bg-[#10B981]' : 'bg-slate-400'}`}></span>
-                <span>Live Mode</span>
+                <span>Live</span>
                 {!isLiveUnlocked && <Lock className="w-2.5 h-2.5 text-slate-400" />}
               </button>
               <button
@@ -3339,7 +3339,7 @@ echo "Order Created: " . $data['orderId'];
                 }`}
               >
                 <span className={`w-2 h-2 rounded-full ${effectiveSandboxMode ? 'bg-amber-500 animate-pulse' : 'bg-slate-400'}`}></span>
-                <span>Test Mode</span>
+                <span>Test</span>
               </button>
             </div>
 
@@ -3439,7 +3439,7 @@ echo "Order Created: " . $data['orderId'];
                     onClick={() => setIsNotificationOpen(false)}
                   />
                   <div 
-                    className={`fixed left-2.5 right-2.5 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] text-[var(--theme-text-primary,#090D18)] ${notificationDropdownClass}`}
+                    className={`fixed left-2.5 right-2.5 top-[72px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] text-[var(--theme-text-primary,#090D18)] ${notificationDropdownClass}`}
                     data-origin="top-right"
                     onClick={(e) => e.stopPropagation()}
                   >
@@ -3566,7 +3566,7 @@ echo "Order Created: " . $data['orderId'];
                   setIsProfileDropdownOpen(!isProfileDropdownOpen);
                   setIsNotificationOpen(false);
                 }}
-                className="topbar-pill p-1 sm:pl-1.5 sm:pr-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center gap-2 transition-colors cursor-pointer text-left"
+                className="topbar-pill p-[3px] sm:pl-1.5 sm:pr-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center gap-2 transition-colors cursor-pointer text-left"
                 aria-haspopup="menu"
                 aria-expanded={isProfileDropdownOpen}
                 title="Account menu"
@@ -3593,7 +3593,7 @@ echo "Order Created: " . $data['orderId'];
                     onClick={() => setIsProfileDropdownOpen(false)}
                   />
                   <div 
-                    className={`fixed right-2.5 top-[64px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl py-2 z-50 overflow-hidden text-[var(--theme-text-primary,#090D18)] ${profileDropdownClass}`}
+                    className={`fixed right-2.5 top-[72px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl py-2 z-50 overflow-hidden text-[var(--theme-text-primary,#090D18)] ${profileDropdownClass}`}
                     data-origin="top-right"
                     onClick={(e) => e.stopPropagation()}
                   >
