@@ -183,28 +183,28 @@ export default function ProfileBusinessInfoModal({
   const planBadgeText = isActive ? 'Active Pro' : 'Sandbox Active';
 
   return (
-    // Overlay with transitions-dev modal transition (06-modal.md)
+    // Overlay with transitions-dev modal transition
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/40 backdrop- ${overlayClass}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs ${overlayClass}`}
       onClick={onClose}
     >
       <div 
         id="profile-business-modal-card"
-        className={`bg-white border border-slate-200/90 rounded-2xl shadow-2xl flex flex-col w-full max-w-xl overflow-hidden max-h-[92vh] ${modalClass}`}
+        className={`bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl flex flex-col w-full max-w-xl overflow-hidden max-h-[92vh] text-[var(--theme-text-primary,#090D18)] transition-colors duration-200 ${modalClass}`}
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Top Header (Clean typography, zero extra svg icons) */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white">
+        {/* Modal Top Header (Clean typography, theme adaptive) */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--theme-border-color,#DCE2F2)] bg-[var(--theme-bg-elevated,#FFFFFF)]">
           <div>
-            <h2 className="text-base font-bold text-slate-900 leading-tight">Profile &amp; Business Info</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Manage your merchant identity and settlement credentials</p>
+            <h2 className="text-base font-bold text-[var(--theme-text-primary,#090D18)] leading-tight">Profile &amp; Business Info</h2>
+            <p className="text-xs text-[var(--theme-text-muted,#5E6782)] mt-0.5">Manage your merchant identity and settlement credentials</p>
           </div>
           <button 
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] transition-colors cursor-pointer"
             title="Close"
           >
             <X className="w-5 h-5" />
@@ -213,64 +213,64 @@ export default function ProfileBusinessInfoModal({
 
         {/* Merchant Summary Bar */}
         <div className="px-6 pt-4 pb-2">
-          <div className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl flex items-center justify-between gap-3">
+          <div className="p-3.5 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#090D18] dark:bg-[#0F2BFF] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
                 {merchantInitials}
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-slate-900 truncate max-w-[200px]">
+                  <h3 className="text-sm font-bold text-[var(--theme-text-primary,#090D18)] truncate max-w-[200px]">
                     {businessName || 'My Business'}
                   </h3>
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                     <span>{planBadgeText}</span>
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                <p className="text-[11px] text-[var(--theme-text-muted,#5E6782)] truncate mt-0.5">
                   <span>{ownerName || 'Merchant Owner'}</span>
-                  <span className="mx-1 text-slate-300">•</span>
-                  <span className="font-mono text-slate-500">{displayEmail}</span>
+                  <span className="mx-1 opacity-50">•</span>
+                  <span className="font-mono text-[var(--theme-text-muted,#5E6782)]">{displayEmail}</span>
                 </p>
               </div>
             </div>
 
             {/* Merchant ID Pill */}
-            <div className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 flex items-center gap-2 shrink-0 shadow-2xs">
+            <div className="bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-lg px-2.5 py-1.5 flex items-center gap-2 shrink-0 shadow-2xs">
               <div className="text-left">
-                <span className="text-[9px] font-semibold text-slate-400 block leading-none mb-0.5">
+                <span className="text-[9px] font-semibold text-[var(--theme-text-muted,#5E6782)] block leading-none mb-0.5">
                   MID
                 </span>
-                <span className="text-xs font-mono font-bold text-slate-900 leading-none">
+                <span className="text-xs font-mono font-bold text-[var(--theme-text-primary,#090D18)] leading-none">
                   {shortMid}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => copyToClipboard(shortMid, 'mid-badge')}
-                className="p-1 rounded-md hover:bg-slate-100 text-slate-500 transition-colors cursor-pointer"
+                className="p-1 rounded-md hover:bg-[var(--theme-bg-secondary,#EAEEFA)] text-[var(--theme-text-muted,#5E6782)] transition-colors cursor-pointer"
                 title="Copy Merchant ID"
               >
                 <span className="t-icon-swap" data-state={copiedKey === 'mid-badge' ? 'b' : 'a'}>
-                  <Copy className="t-icon t-icon--a w-3.5 h-3.5 text-slate-400" aria-hidden={copiedKey === 'mid-badge'} />
-                  <Check className="t-icon t-icon--b w-3.5 h-3.5 text-emerald-600" aria-hidden={copiedKey !== 'mid-badge'} />
+                  <Copy className="t-icon t-icon--a w-3.5 h-3.5 text-[var(--theme-text-muted,#5E6782)]" aria-hidden={copiedKey === 'mid-badge'} />
+                  <Check className="t-icon t-icon--b w-3.5 h-3.5 text-emerald-500" aria-hidden={copiedKey !== 'mid-badge'} />
                 </span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Minimalist Typography Switcher (No extra icons) */}
+        {/* Minimalist Typography Switcher (Theme-Adaptive) */}
         <div className="px-6 pt-2 pb-1">
-          <div className="p-1 bg-slate-100 rounded-xl grid grid-cols-2 gap-1 border border-slate-200/60">
+          <div className="p-1 bg-[var(--theme-bg-secondary,#EAEEFA)] rounded-xl grid grid-cols-2 gap-1 border border-[var(--theme-border-color,#DCE2F2)]">
             <button
               type="button"
               onClick={() => setActiveTab('business')}
-              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+              className={`py-2 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'business'
-                  ? 'bg-white text-blue-600 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[var(--theme-bg-elevated,#FFFFFF)] text-[#0F2BFF] dark:text-[#60A5FA] shadow-xs'
+                  : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
               }`}
             >
               Business &amp; Contact
@@ -278,10 +278,10 @@ export default function ProfileBusinessInfoModal({
             <button
               type="button"
               onClick={() => setActiveTab('settlement')}
-              className={`py-2 px-3 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+              className={`py-2 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'settlement'
-                  ? 'bg-white text-blue-600 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[var(--theme-bg-elevated,#FFFFFF)] text-[#0F2BFF] dark:text-[#60A5FA] shadow-xs'
+                  : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
               }`}
             >
               Settlement &amp; Bank
@@ -292,14 +292,14 @@ export default function ProfileBusinessInfoModal({
         {/* Form Body */}
         <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-6 py-4 space-y-4 overscroll-contain">
           {saveSuccess && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
               <span>Business details updated successfully!</span>
             </div>
           )}
 
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
+            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
               <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -310,7 +310,7 @@ export default function ProfileBusinessInfoModal({
               {/* Business Name & Owner Name */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                     Business / Brand Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -319,12 +319,12 @@ export default function ProfileBusinessInfoModal({
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="e.g. Acme Tech Studio"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                    className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                     Owner / Contact Person
                   </label>
                   <input
@@ -332,7 +332,7 @@ export default function ProfileBusinessInfoModal({
                     value={ownerName}
                     onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="e.g. Kunal Chauhan"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                    className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                   />
                 </div>
               </div>
@@ -341,10 +341,10 @@ export default function ProfileBusinessInfoModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-slate-700">
+                    <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                       Primary Login Email
                     </label>
-                    <span className="text-[10px] text-slate-400 font-medium">
+                    <span className="text-[10px] text-[var(--theme-text-muted,#5E6782)] font-medium">
                       Primary • Locked
                     </span>
                   </div>
@@ -353,12 +353,12 @@ export default function ProfileBusinessInfoModal({
                     readOnly
                     disabled
                     value={displayEmail}
-                    className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-600 focus:outline-none cursor-not-allowed"
+                    className="h-10 px-3 bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-mono font-medium text-[var(--theme-text-muted,#5E6782)] focus:outline-none cursor-not-allowed"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                     Primary Phone / WhatsApp
                   </label>
                   <input
@@ -366,7 +366,7 @@ export default function ProfileBusinessInfoModal({
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                    className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                   />
                 </div>
               </div>
@@ -374,26 +374,26 @@ export default function ProfileBusinessInfoModal({
               {/* Category & Support Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                     Business Category / Industry
                   </label>
                   <select
                     value={businessCategory}
                     onChange={(e) => setBusinessCategory(e.target.value)}
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors cursor-pointer"
+                    className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors cursor-pointer"
                   >
-                    <option value="Digital Services & SaaS">Digital Services &amp; SaaS</option>
-                    <option value="E-Commerce & Retail">E-Commerce &amp; Retail</option>
-                    <option value="Freelance & Consulting">Freelance &amp; Agency</option>
-                    <option value="Gaming & Esports">Gaming &amp; Entertainment</option>
-                    <option value="Education & Courses">Education &amp; EdTech</option>
-                    <option value="Subscription Services">Subscription Services</option>
-                    <option value="Other">Other Business Category</option>
+                    <option value="Digital Services & SaaS" className="bg-white dark:bg-[#121826] text-slate-900 dark:text-slate-100">Digital Services &amp; SaaS</option>
+                    <option value="E-Commerce & Retail" className="bg-white dark:bg-[#121826] text-slate-900 dark:text-slate-100">E-Commerce &amp; Retail</option>
+                    <option value="Freelance & Consulting" className="bg-white dark:bg-[#121826] text-slate-900 dark:text-slate-100">Freelance &amp; Agency</option>
+                    <option value="Gaming & Esports" className="bg-white dark:bg-[#121826] text-slate-900 dark:text-slate-100">Gaming &amp; Entertainment</option>
+                    <option value="Education & Courses" className="bg-white dark:bg-[#121826] text-slate-900 dark:text-slate-100">Education &amp; EdTech</option>
+                    <option value="Subscription Services" className="bg-white dark:bg-[#121826] text-slate-900 dark:text-slate-100">Subscription Services</option>
+                    <option value="Other" className="bg-white dark:bg-[#121826] text-slate-900 dark:text-slate-100">Other Business Category</option>
                   </select>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                     Customer Support Email
                   </label>
                   <input
@@ -401,7 +401,7 @@ export default function ProfileBusinessInfoModal({
                     value={supportEmail}
                     onChange={(e) => setSupportEmail(e.target.value)}
                     placeholder="support@company.com"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                    className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                   />
                 </div>
               </div>
@@ -409,7 +409,7 @@ export default function ProfileBusinessInfoModal({
               {/* Website URL & GSTIN */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                     Business Website / Store URL
                   </label>
                   <input
@@ -417,12 +417,12 @@ export default function ProfileBusinessInfoModal({
                     value={businessWebsite}
                     onChange={(e) => setBusinessWebsite(e.target.value)}
                     placeholder="https://company.com"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                    className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                     GSTIN / Tax Registration (Optional)
                   </label>
                   <input
@@ -430,7 +430,7 @@ export default function ProfileBusinessInfoModal({
                     value={gstin}
                     onChange={(e) => setGstin(e.target.value)}
                     placeholder="e.g. 07AAAAA0000A1Z5"
-                    className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                    className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-mono font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                   />
                 </div>
               </div>
@@ -438,14 +438,14 @@ export default function ProfileBusinessInfoModal({
           ) : (
             <div className="space-y-4">
               {/* Direct UPI Settlement Notice */}
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div className="p-3.5 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900">Direct Bank Settlement</span>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold text-[var(--theme-text-primary,#090D18)]">Direct Bank Settlement</span>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                     0% Fees • Instant T+0
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 leading-relaxed mt-1">
+                <p className="text-[11px] text-[var(--theme-text-muted,#5E6782)] leading-relaxed mt-1">
                   Customer payments via UPI settle instantly into your linked account with zero gateway hold periods.
                 </p>
               </div>
@@ -453,10 +453,10 @@ export default function ProfileBusinessInfoModal({
               {/* Settlement UPI ID */}
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)]">
                     Settlement UPI ID (VPA)
                   </label>
-                  <span className="text-[10px] text-blue-600 font-semibold">Primary Payout</span>
+                  <span className="text-[10px] text-[#0F2BFF] dark:text-[#60A5FA] font-semibold">Primary Payout</span>
                 </div>
                 <div className="relative">
                   <input
@@ -464,13 +464,13 @@ export default function ProfileBusinessInfoModal({
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     placeholder="merchant@okhdfcbank or business@upi"
-                    className="w-full h-10 px-3 pr-10 bg-white border border-slate-200 rounded-xl text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                    className="w-full h-10 px-3 pr-10 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-mono font-semibold text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                   />
                   {upiId && (
                     <button
                       type="button"
                       onClick={() => copyToClipboard(upiId, 'upi-vpa')}
-                      className="absolute right-2.5 top-2.5 p-1 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer flex items-center justify-center"
+                      className="absolute right-2.5 top-2.5 p-1 text-[var(--theme-text-muted,#5E6782)] hover:text-[#0F2BFF] dark:hover:text-[#60A5FA] transition-colors cursor-pointer flex items-center justify-center"
                       title="Copy UPI ID"
                       aria-label="Copy UPI ID"
                     >
@@ -479,7 +479,7 @@ export default function ProfileBusinessInfoModal({
                           <Copy className="w-3.5 h-3.5" />
                         </span>
                         <span className="t-icon" data-icon="b" aria-hidden={copiedKey !== 'upi-vpa'}>
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
                         </span>
                       </span>
                     </button>
@@ -488,56 +488,56 @@ export default function ProfileBusinessInfoModal({
               </div>
 
               {/* Optional Bank Settlement Info */}
-              <div className="pt-2 border-t border-slate-100">
+              <div className="pt-2 border-t border-[var(--theme-border-color,#DCE2F2)]">
                 <div className="flex items-center justify-between mb-2.5">
-                  <h4 className="text-xs font-bold text-slate-800">
+                  <h4 className="text-xs font-bold text-[var(--theme-text-primary,#090D18)]">
                     Bank Account Information (Optional)
                   </h4>
-                  <span className="text-[10px] text-slate-400">For Direct IMPS Settlements</span>
+                  <span className="text-[10px] text-[var(--theme-text-muted,#5E6782)]">For Direct IMPS Settlements</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-slate-700">Bank Name</label>
+                    <label className="text-xs font-medium text-[var(--theme-text-secondary,#2A3147)]">Bank Name</label>
                     <input
                       type="text"
                       value={bankName}
                       onChange={(e) => setBankName(e.target.value)}
                       placeholder="e.g. HDFC Bank, ICICI Bank"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                      className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-slate-700">Account Beneficiary Name</label>
+                    <label className="text-xs font-medium text-[var(--theme-text-secondary,#2A3147)]">Account Beneficiary Name</label>
                     <input
                       type="text"
                       value={bankAccountName}
                       onChange={(e) => setBankAccountName(e.target.value)}
                       placeholder="Account holder name"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                      className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-slate-700">Bank Account Number</label>
+                    <label className="text-xs font-medium text-[var(--theme-text-secondary,#2A3147)]">Bank Account Number</label>
                     <input
                       type="text"
                       value={bankAccountNumber}
                       onChange={(e) => setBankAccountNumber(e.target.value)}
                       placeholder="e.g. 50100234567890"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                      className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-mono font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-slate-700">Bank IFSC Code</label>
+                    <label className="text-xs font-medium text-[var(--theme-text-secondary,#2A3147)]">Bank IFSC Code</label>
                     <input
                       type="text"
                       value={bankIfsc}
                       onChange={(e) => setBankIfsc(e.target.value.toUpperCase())}
                       placeholder="e.g. HDFC0001234"
-                      className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-colors placeholder:text-slate-400"
+                      className="h-10 px-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] rounded-xl text-xs font-mono font-medium text-[var(--theme-text-primary,#090D18)] focus:outline-none focus:border-[#0F2BFF] focus:ring-2 focus:ring-[#0F2BFF]/10 transition-colors placeholder:text-[var(--theme-text-muted,#5E6782)]"
                     />
                   </div>
                 </div>
@@ -546,14 +546,14 @@ export default function ProfileBusinessInfoModal({
           )}
 
           {/* Modal Footer Controls */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+          <div className="pt-3 border-t border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => {
                 onClose();
                 if (onOpenSettings) onOpenSettings();
               }}
-              className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition-colors"
+              className="text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline cursor-pointer transition-colors"
             >
               API Keys &amp; Webhooks →
             </button>
@@ -562,14 +562,14 @@ export default function ProfileBusinessInfoModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="h-9 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="h-9 px-4 rounded-xl border border-[var(--theme-border-color,#DCE2F2)] text-xs font-semibold text-[var(--theme-text-secondary,#2A3147)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="h-9 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-colors cursor-pointer disabled:opacity-50"
+                className="h-9 px-5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-colors cursor-pointer disabled:opacity-50"
               >
                 {saving ? (
                   <>

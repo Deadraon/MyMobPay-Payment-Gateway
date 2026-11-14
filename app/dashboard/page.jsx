@@ -3954,7 +3954,7 @@ echo "Order Created: " . $data['orderId'];
           onClick={() => setIsProfileModalOpen(false)}
         >
           <div 
-            className={`bg-white border border-slate-200/80 rounded-[32px] shadow-2xl flex flex-col md:flex-row w-full max-w-4xl overflow-hidden max-h-[85vh] relative ${profileModalClass}`}
+            className={`bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-[32px] shadow-2xl flex flex-col md:flex-row w-full max-w-4xl overflow-hidden max-h-[85vh] relative text-[var(--theme-text-primary,#090D18)] ${profileModalClass}`}
             role="dialog"
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
@@ -3978,7 +3978,7 @@ echo "Order Created: " . $data['orderId'];
 
             {/* Left Panel: Sidebar Navigation */}
 
-            <div className="w-full md:w-64 bg-slate-50 border-r border-slate-200/80 p-6 flex flex-col shrink-0 gap-6">
+            <div className="w-full md:w-64 bg-[var(--theme-bg-well,#F7F9FE)] border-r border-[var(--theme-border-color,#DCE2F2)] p-6 flex flex-col shrink-0 gap-6">
               <div>
                 <h3 className="text-base font-semibold text-slate-900">Merchant Settings</h3>
                 <p className="text-[10px] text-slate-500 font-bold mt-0.5 tracking-wide">Control Dashboard & Profile</p>
@@ -4638,7 +4638,7 @@ echo "Order Created: " . $data['orderId'];
 
             role="dialog"
             aria-modal="true"
-            className={`w-full max-w-xl bg-white border border-slate-200/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[60vh] ${commandPaletteModalClass}`}
+            className={`w-full max-w-xl bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[60vh] text-[var(--theme-text-primary,#090D18)] ${commandPaletteModalClass}`}
 
             onClick={(e) => e.stopPropagation()}
 
@@ -4646,7 +4646,7 @@ echo "Order Created: " . $data['orderId'];
 
             {/* Input Bar */}
 
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--theme-border-color,#DCE2F2)] bg-[var(--theme-bg-well,#F7F9FE)]">
 
               <Search className="w-5 h-5 text-slate-400 shrink-0" />
 
@@ -4660,7 +4660,7 @@ echo "Order Created: " . $data['orderId'];
 
                 onChange={(e) => setPaletteSearchQuery(e.target.value)}
 
-                className="bg-transparent border-none text-sm font-semibold text-slate-800 outline-none w-full placeholder-slate-400"
+                className="bg-transparent border-none text-sm font-semibold text-[var(--theme-text-primary,#090D18)] outline-none w-full placeholder:text-[var(--theme-text-muted,#5E6782)]"
 
                 autoFocus
 
@@ -4876,7 +4876,7 @@ echo "Order Created: " . $data['orderId'];
 
             {/* Visual Instructions Footer */}
 
-            <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold text-slate-400 select-none">
+            <div className="px-5 py-3.5 bg-[var(--theme-bg-well,#F7F9FE)] border-t border-[var(--theme-border-color,#DCE2F2)] flex justify-between items-center text-[10px] font-bold text-[var(--theme-text-muted,#5E6782)] select-none">
 
               <span>Press enter to select · Click to copy Ref</span>
 
@@ -4906,7 +4906,7 @@ echo "Order Created: " . $data['orderId'];
 
             role="dialog"
             aria-modal="true"
-            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-sm mx-4 overflow-hidden ${historyReceiptModalClass}`}
+            className={`bg-[var(--theme-bg-elevated,#FFFFFF)] rounded-3xl border border-[var(--theme-border-color,#DCE2F2)] shadow-2xl w-full max-w-sm mx-4 overflow-hidden text-[var(--theme-text-primary,#090D18)] ${historyReceiptModalClass}`}
 
             onClick={(e) => e.stopPropagation()}
 
@@ -4914,11 +4914,11 @@ echo "Order Created: " . $data['orderId'];
 
             <div className="h-1.5 bg-emerald-500 w-full" />
 
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div className="p-5 border-b border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-between bg-[var(--theme-bg-elevated,#FFFFFF)]">
 
               <div>
 
-                <h3 className="text-sm font-semibold text-slate-900 tracking-wide">Payment Receipt</h3>
+                <h3 className="text-sm font-semibold text-[var(--theme-text-primary,#090D18)] tracking-wide">Payment Receipt</h3>
 
                 <p className="text-[10px] text-slate-400 font-bold mt-0.5 tracking-wide">Transaction Verified Successfully</p>
 
@@ -4938,7 +4938,7 @@ echo "Order Created: " . $data['orderId'];
 
             </div>
 
-            <div className="px-5 py-3 divide-y divide-slate-100">
+            <div className="px-5 py-3 divide-y divide-[var(--theme-border-color,#DCE2F2)]">
 
               <div className="flex justify-between items-center py-2.5">
 
