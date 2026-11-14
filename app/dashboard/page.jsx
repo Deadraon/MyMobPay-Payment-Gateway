@@ -53,30 +53,43 @@ import {
 
 const formatINR = (n) => '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-const MyMobPayLogo = ({ className = 'w-48 h-auto', textColor = 'var(--text-primary)' }) => (
-  <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300`}>
-        {/* 3D Ribbon M Mark */}
-    <image
-      href="/logos/mymobpay_mark.png"
-      x="2"
-      y="2"
-      width="38"
-      height="36"
-      preserveAspectRatio="xMidYMid meet"
-    />
-    <text
-      x="44"
-      y="27"
-      fontFamily="'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-      fontWeight="800"
-      fontSize="26"
-      fill={textColor}
-      letterSpacing="-0.5"
-    >
-      MyMobPay
-    </text>
-  </svg>
-);
+const MyMobPayLogo = ({ className = 'w-36 h-auto', textColor = 'var(--text-primary)', markSize, textSize }) => {
+  if (markSize) {
+    const boxSize = markSize + 6;
+    return (
+      <div className="inline-flex items-center gap-2 select-none shrink-0">
+        <span
+          className="rounded-lg bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center p-1 shrink-0"
+          style={{ width: `${boxSize}px`, height: `${boxSize}px` }}
+        >
+          <svg className="w-full h-full overflow-visible" viewBox="115 225 790 530" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="MyMobPay Logo">
+            <defs>
+              <linearGradient id="mmp-head-g1" x1="360" y1="280" x2="510" y2="660" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#004BFF" /><stop offset="100%" stopColor="#0033B5" /></linearGradient>
+              <linearGradient id="mmp-head-g2" x1="510" y1="630" x2="670" y2="280" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#E64400" /><stop offset="50%" stopColor="#FF6D00" /><stop offset="100%" stopColor="#FF9614" /></linearGradient>
+              <linearGradient id="mmp-head-g3" x1="170" y1="710" x2="420" y2="280" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#0044E5" /><stop offset="55%" stopColor="#0088FF" /><stop offset="100%" stopColor="#00C8FF" /></linearGradient>
+              <linearGradient id="mmp-head-g4" x1="600" y1="280" x2="830" y2="710" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#FF9E1B" /><stop offset="55%" stopColor="#FF7300" /><stop offset="100%" stopColor="#F05A00" /></linearGradient>
+            </defs>
+            <path d="M 470 575 L 555 340 C 585 260, 680 260, 710 340 L 625 575 C 595 655, 500 655, 470 575 Z" fill="url(#mmp-head-g2)" />
+            <path d="M 310 340 L 395 575 C 425 655, 520 655, 550 575 L 465 340 C 435 260, 340 260, 310 340 Z" fill="url(#mmp-head-g1)" />
+            <path d="M 168 645 L 290 340 C 320 260, 425 260, 455 340 L 332 645 C 308 725, 192 725, 168 645 Z" fill="url(#mmp-head-g3)" />
+            <path d="M 565 340 C 595 260, 700 260, 730 340 L 852 645 C 828 725, 712 725, 688 645 L 565 340 Z" fill="url(#mmp-head-g4)" />
+          </svg>
+        </span>
+        <span className={`font-sans font-extrabold tracking-tight leading-none text-[var(--theme-text-primary,#090D18)] ${textSize || 'text-[15px]'}`}>
+          MyMob<span className="text-[#0F2BFF] dark:text-[#60A5FA]">Pay</span>
+        </span>
+      </div>
+    );
+  }
+  return (
+    <svg viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} transition-transform duration-300`}>
+      <image href="/logos/mymobpay_mark.png" x="2" y="2" width="38" height="36" preserveAspectRatio="xMidYMid meet" />
+      <text x="44" y="27" fontFamily="'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fontWeight="800" fontSize="26" fill={textColor} letterSpacing="-0.5">
+        MyMobPay
+      </text>
+    </svg>
+  );
+};
 
 const ALL_SHORTCUTS = [
   { name: 'Go to Overview Dashboard', tab: 'overview', icon: LayoutDashboard },
@@ -2729,7 +2742,7 @@ echo "Order Created: " . $data['orderId'];
 
         <div className="flex flex-col items-center gap-4">
 
-          <MyMobPayLogo className="w-48 h-auto mb-1" textColor="#0c2340" />
+          <MyMobPayLogo className="w-36 h-auto mb-1" textColor="#0c2340" />
           <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
 
           <p className="text-sm text-slate-500 font-medium">Loading merchant console...</p>
@@ -2838,7 +2851,7 @@ echo "Order Created: " . $data['orderId'];
         {/* Top Scrollable Section containing Brand, License Pod & Nav Items */}
         <div className="flex flex-col flex-1 overflow-y-auto min-h-0 custom-sidebar-scroll">
           {/* Brand Header: Single Uncropped MyMobPay 3D Ribbon "M" Logo */}
-          <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
+          <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
             <button
               type="button"
               onClick={() => {
@@ -2847,7 +2860,7 @@ echo "Order Created: " . $data['orderId'];
               }}
               className="inline-flex items-center gap-2.5 group focus:outline-none cursor-pointer text-left"
             >
-              <span className="w-8.5 h-8.5 rounded-xl bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center p-1 group-hover:scale-105 transition-transform shadow-2xs">
+              <span className="w-9 h-9 rounded-xl bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center p-1 group-hover:scale-105 transition-transform shadow-2xs">
                 <svg className="w-full h-full overflow-visible" viewBox="115 225 790 530" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="MyMobPay 3D Ribbon Logo">
                   <defs>
                     <linearGradient id="mmp-sb-g1" x1="360" y1="280" x2="510" y2="660" gradientUnits="userSpaceOnUse">
@@ -2877,10 +2890,10 @@ echo "Order Created: " . $data['orderId'];
                 </svg>
               </span>
               <div>
-                <span className="font-sans font-extrabold text-[16.5px] tracking-tight text-[var(--theme-text-primary,#090D18)] block leading-none">
+                <span className="font-sans font-extrabold text-[17.5px] tracking-tight text-[var(--theme-text-primary,#090D18)] block leading-none">
                   MyMob<span className="text-[#0F2BFF] dark:text-[#60A5FA]">Pay</span>
                 </span>
-                <span className="font-mono text-[8.5px] font-bold uppercase tracking-widest text-[var(--theme-text-muted,#5E6782)] mt-0.5 block">
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[var(--theme-text-muted,#5E6782)] mt-0.5 block">
                   0% MDR ENTERPRISE
                 </span>
               </div>
@@ -2890,7 +2903,7 @@ echo "Order Created: " . $data['orderId'];
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="md:hidden p-1.5 rounded-lg text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] transition-colors cursor-pointer"
+              className="md:hidden p-2 rounded-xl text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] transition-colors cursor-pointer"
               aria-label="Close navigation menu"
             >
               <X className="w-5 h-5" />
@@ -2973,7 +2986,7 @@ echo "Order Created: " . $data['orderId'];
 
                 <button
                   type="button"
-                  onClick={() => setActiveTab('subscription')}
+                  onClick={() => { setActiveTab('subscription'); setIsMobileMenuOpen(false); }}
                   className="py-1 px-2 rounded-lg bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#10B981] flex items-center justify-between transition-all cursor-pointer group"
                   title="Extend or Upgrade Plan"
                 >
@@ -3021,7 +3034,7 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             <button
-              onClick={() => setActiveTab('payment-links')}
+              onClick={() => { setActiveTab('payment-links'); setIsMobileMenuOpen(false); }}
               type="button"
               className={`nav-item ${activeTab === 'payment-links' ? 'active' : ''}`}
             >
@@ -3149,7 +3162,7 @@ echo "Order Created: " . $data['orderId'];
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-3 border-t border-[var(--theme-border-color,#DCE2F2)] space-y-2 shrink-0 bg-[var(--theme-bg-sidebar,#FFFFFF)]">
+        <div className="p-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] border-t border-[var(--theme-border-color,#DCE2F2)] space-y-2 shrink-0 bg-[var(--theme-bg-sidebar,#FFFFFF)]">
           <div className="p-2.5 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
             <div className="flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--theme-text-primary,#090D18)]">
@@ -3164,9 +3177,9 @@ echo "Order Created: " . $data['orderId'];
             </div>
           </div>
           <button
-            onClick={handleSignOut}
+            onClick={() => { setIsMobileMenuOpen(false); handleSignOut(); }}
             type="button"
-            className="w-full py-1.5 px-3 rounded-xl text-[11.5px] font-bold text-[#E11D48] hover:bg-[#E11D48]/10 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            className="w-full py-2 px-3 rounded-xl text-[12px] font-bold text-[#E11D48] hover:bg-[#E11D48]/10 flex items-center justify-center gap-2 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
@@ -3174,12 +3187,12 @@ echo "Order Created: " . $data['orderId'];
       </aside>
 
       {/* Main Content View */}
-      <main className="md:pl-[264px] flex-1 flex flex-col min-w-0 min-h-screen bg-[var(--theme-bg-canvas,#F2F4FC)] dark:bg-[#080B12] bg-arch-grid pt-16">
+      <main className="md:pl-[264px] flex-1 flex flex-col min-w-0 min-h-screen bg-[var(--theme-bg-canvas,#F2F4FC)] dark:bg-[#080B12] bg-arch-grid pt-16 overflow-x-hidden">
 
         {/* ═══════════════════════════════════════════════════════════
            HEADER (Theme-Adaptive Command Topbar)
            ═══════════════════════════════════════════════════════════ */}
-        <header className="fixed top-0 left-0 md:left-[264px] right-0 bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] z-40 flex items-center justify-between px-4 sm:px-7 shadow-xs h-16">
+        <header className="fixed top-0 left-0 md:left-[264px] right-0 bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] z-40 flex items-center justify-between px-3 sm:px-6 shadow-xs h-16">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {/* Mobile Hamburger Toggle */}
             <button
@@ -3193,10 +3206,15 @@ echo "Order Created: " . $data['orderId'];
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Mobile Brand Logo */}
-            <div className="md:hidden flex items-center shrink-0">
-              <MyMobPayLogo markSize={24} textSize="text-base sm:text-lg" textColor="var(--theme-text-primary, #090D18)" />
-            </div>
+            {/* Mobile Brand Logo (Compact & Clickable) */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('overview')}
+              className="md:hidden flex items-center shrink-0 cursor-pointer focus:outline-none"
+              title="Go to Dashboard Overview"
+            >
+              <MyMobPayLogo markSize={24} textSize="text-[15px]" textColor="var(--theme-text-primary, #090D18)" />
+            </button>
 
             {/* Live Mode | Test Mode Segmented Pill */}
             {/* Mobile Compact Mode Indicator (< sm) */}
@@ -3491,7 +3509,7 @@ echo "Order Created: " . $data['orderId'];
                   setIsProfileDropdownOpen(!isProfileDropdownOpen);
                   setIsNotificationOpen(false);
                 }}
-                className="pl-1.5 pr-3 py-1 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center gap-2 transition-colors cursor-pointer text-left"
+                className="p-1 sm:pl-1.5 sm:pr-3 sm:py-1 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center gap-2 transition-colors cursor-pointer text-left shrink-0"
               >
                 <div className="w-7 h-7 rounded-full bg-[#090D18] dark:bg-[#0F2BFF] text-white font-mono text-[11px] font-extrabold flex items-center justify-center shrink-0">
                   {merchantInitials}
