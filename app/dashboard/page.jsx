@@ -3211,11 +3211,8 @@ echo "Order Created: " . $data['orderId'];
           {/* Appearance — mobile drawer single animated toggle */}
           <div className="md:hidden p-2.5 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
             <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-[var(--theme-text-primary,#090D18)]">
-                {theme === 'dark'
-                  ? <Moon className="w-3.5 h-3.5 text-[#60A5FA]" />
-                  : <Sun className="w-3.5 h-3.5 text-[#F59E0B]" />}
-                <span>Appearance</span>
+              <span className="text-[11.5px] font-bold text-[var(--theme-text-primary,#090D18)]">
+                Appearance
               </span>
               <ThemeToggleButton
                 theme={theme}
