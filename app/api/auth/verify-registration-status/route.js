@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
 import { DEFAULT_ADMIN_EMAILS, PLATFORM_ADMIN_USER_ID } from '@/lib/adminSettings';
 import { logAdminAction } from '@/lib/adminAudit';
+import { sendWelcomeEmail } from '@/lib/mailer';
+import { formatMerchantId } from '@/lib/merchantId';
 
 /**
  * POST /api/auth/verify-registration-status
@@ -233,6 +235,54 @@ export async function POST(req) {
           details: { businessName: merchant.business_name, provider: 'Google OAuth / Session' },
           request: req
         }).catch(() => {});
+
+        // Asynchronously check and dispatch Welcome Email if not yet sent
+        const progress = merchant.setup_progress || {};
+        const welcomeAlreadySent = Boolean(
+          progress.welcome_email_sent ||
+          authUser?.user_metadata?.welcome_email_sent
+        );
+
+        if (!welcomeAlreadySent && cleanEmail && !cleanEmail.includes('invalid') && !cleanEmail.includes('blockaid')) {
+          const mid = formatMerchantId(merchant.id);
+          const bizName = (merchant.business_name && merchant.business_name !== 'My Business' ? merchant.business_name : authUser?.user_metadata?.business_name) || 'Merchant Partner';
+          const upi = (merchant.upi_id && merchant.upi_id !== 'pending@upi' ? merchant.upi_id : authUser?.user_metadata?.upi_id) || '';
+
+          // Fire-and-forget background dispatch so auth response is instant
+          (async () => {
+            try {
+              await sendWelcomeEmail({
+                to: cleanEmail,
+                businessName: bizName,
+                upiId: upi,
+                mid,
+              });
+
+              const updatedProgress = {
+                ...(typeof progress === 'object' && progress !== null ? progress : {}),
+                welcome_email_sent: true,
+                welcome_email_sent_at: new Date().toISOString(),
+              };
+
+              await supabaseAdmin
+                .from('merchants')
+                .update({ setup_progress: updatedProgress })
+                .eq('id', merchant.id);
+
+              if (authUser?.id) {
+                await supabaseAdmin.auth.admin.updateUserById(authUser.id, {
+                  user_metadata: {
+                    ...(authUser.user_metadata || {}),
+                    welcome_email_sent: true,
+                    welcome_email_sent_at: new Date().toISOString(),
+                  },
+                }).catch(() => {});
+              }
+            } catch (wErr) {
+              console.warn('[VERIFY-STATUS] Async welcome email error:', wErr?.message);
+            }
+          })();
+        }
 
         return NextResponse.json({
           allowed: true,

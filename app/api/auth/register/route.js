@@ -237,6 +237,21 @@ export async function POST(req) {
         upiId: finalUpiId,
         mid,
       });
+
+      updatedProgress.welcome_email_sent = true;
+      updatedProgress.welcome_email_sent_at = new Date().toISOString();
+      await supabaseAdmin
+        .from('merchants')
+        .update({ setup_progress: updatedProgress })
+        .eq('id', userId);
+
+      await supabaseAdmin.auth.admin.updateUserById(userId, {
+        user_metadata: {
+          ...(existingUser.user_metadata || {}),
+          welcome_email_sent: true,
+          welcome_email_sent_at: new Date().toISOString(),
+        },
+      }).catch(() => {});
     } catch (welcomeErr) {
       console.warn('[REGISTER API] Welcome email send notice:', welcomeErr?.message);
     }
