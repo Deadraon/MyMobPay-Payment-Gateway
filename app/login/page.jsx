@@ -1864,7 +1864,7 @@ export default function LoginPage() {
         {/* =================================================================== */}
         {/* RIGHT PANEL (5 COLS ON DESKTOP): INDEPENDENTLY SCROLLABLE AUTH      */}
         {/* =================================================================== */}
-        <section className="col-span-1 lg:col-span-5 h-auto lg:h-screen lg:overflow-y-auto theme-bg-primary px-5 sm:px-8 xl:px-11 py-6 sm:py-8 flex flex-col justify-between transition-colors order-1 lg:order-2">
+        <section className="col-span-1 lg:col-span-5 h-auto lg:h-screen lg:overflow-y-auto theme-bg-primary px-4 sm:px-8 xl:px-11 py-4 sm:py-8 pb-10 sm:pb-8 flex flex-col justify-between transition-colors order-1 lg:order-2">
 
           {/* Top Utility Bar: Back Link + Theme Toggle (Mobile shows Brand Logo) */}
           <div className="flex items-center justify-between gap-3 shrink-0">
@@ -1923,11 +1923,11 @@ export default function LoginPage() {
           </div>
 
           {/* Center Auth Card Container */}
-          <div className="my-auto py-5 max-w-[440px] w-full mx-auto">
+          <div className="my-auto py-2.5 sm:py-5 max-w-[440px] w-full mx-auto">
 
             {/* Domain Status Pill */}
-            <div className="text-center mb-3.5">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full theme-bg-secondary border theme-border text-[11px] font-medium theme-text-secondary">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full theme-bg-secondary border theme-border text-[11px] font-medium theme-text-secondary">
                 <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
                 <span><strong className="font-bold theme-text-primary">mymobpay.tech</strong> &bull; Unified Fintech Gateway &amp; Settlement Suite</span>
               </div>
@@ -1935,7 +1935,7 @@ export default function LoginPage() {
 
             {/* Main Elevated Auth Card */}
             <div className="theme-bg-elevated rounded-2xl border theme-border theme-card-shadow overflow-hidden">
-              <div className="p-6 sm:p-7">
+              <div className="p-4 sm:p-7">
 
                 {/* Card Header */}
                 <div className="text-center">
@@ -1994,31 +1994,31 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* Primary Segmented Mode Switcher: Log In | Sign Up */}
+                {/* Primary Segmented Mode Switcher: Log In | Sign Up (High Contrast & Tap-Friendly) */}
                 {mode !== 'reset' && !isOAuthSignup && (
-                  <div className="mt-5 grid grid-cols-2 p-1 rounded-xl theme-bg-secondary border theme-border">
+                  <div className="mt-4 sm:mt-5 grid grid-cols-2 p-1.5 rounded-2xl bg-[#E2E8F0]/80 dark:bg-[#0A0F18] border border-slate-300/90 dark:border-[#1E293B] shadow-inner">
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                      className={`py-2 px-3 rounded-lg text-[12.5px] font-bold flex items-center justify-center gap-1.5 transition-all ${
+                      className={`py-2.5 px-3 rounded-xl text-[13px] font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                         mode === 'signin'
-                          ? 'bg-white dark:bg-[#161D2B] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
-                          : 'theme-text-muted hover:theme-text-primary'
+                          ? 'bg-[#0F2BFF] text-white shadow-[0_4px_14px_rgba(15,43,255,0.45)] ring-1 ring-blue-400/30'
+                          : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5'
                       }`}
                     >
-                      <Lock className="w-3.5 h-3.5" />
+                      <Lock className="w-4 h-4 stroke-[2.4]" />
                       <span>Log In</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => { setMode('signup'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                      className={`py-2 px-3 rounded-lg text-[12.5px] font-bold flex items-center justify-center gap-1.5 transition-all ${
+                      className={`py-2.5 px-3 rounded-xl text-[13px] font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                         mode === 'signup'
-                          ? 'bg-white dark:bg-[#161D2B] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
-                          : 'theme-text-muted hover:theme-text-primary'
+                          ? 'bg-[#0F2BFF] text-white shadow-[0_4px_14px_rgba(15,43,255,0.45)] ring-1 ring-blue-400/30'
+                          : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5'
                       }`}
                     >
-                      <UserPlus className="w-3.5 h-3.5" />
+                      <UserPlus className="w-4 h-4 stroke-[2.4]" />
                       <span>Sign Up</span>
                     </button>
                   </div>
@@ -2030,7 +2030,7 @@ export default function LoginPage() {
                 {mode === 'signin' && (
                   <div className="mt-4">
                     {/* Secondary Method Switcher: WhatsApp OTP | Password */}
-                    <div className="grid grid-cols-2 p-1 rounded-xl theme-bg-well border theme-border">
+                    <div className="grid grid-cols-2 p-1 rounded-xl bg-slate-100/90 dark:bg-[#0C121D] border border-slate-200 dark:border-[#1F2C3F]">
                       <button
                         type="button"
                         onClick={() => {
@@ -2040,10 +2040,10 @@ export default function LoginPage() {
                           setOtpSent(false);
                           setEmailOtpSent(false);
                         }}
-                        className={`py-1.5 px-3 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 transition-all ${
+                        className={`py-2 px-3 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                           authTab === 'whatsapp' || authTab === 'email'
-                            ? 'bg-white dark:bg-[#1C2536] text-[#059669] dark:text-[#34D399] shadow-2xs'
-                            : 'theme-text-muted hover:theme-text-primary'
+                            ? 'bg-white dark:bg-[#162235] text-[#059669] dark:text-[#34D399] border border-emerald-500/25 shadow-xs'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                         }`}
                       >
                         {authTab === 'email' ? (
@@ -2066,10 +2066,10 @@ export default function LoginPage() {
                       <button
                         type="button"
                         onClick={() => { setAuthTab('password'); setError(''); setMessage(''); }}
-                        className={`py-1.5 px-3 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 transition-all ${
+                        className={`py-2 px-3 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                           authTab === 'password'
-                            ? 'bg-white dark:bg-[#1C2536] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
-                            : 'theme-text-muted hover:theme-text-primary'
+                            ? 'bg-white dark:bg-[#162235] text-[#0F2BFF] dark:text-[#60A5FA] border border-blue-500/25 shadow-xs'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                         }`}
                       >
                         <Lock className="w-3.5 h-3.5" />
@@ -3113,16 +3113,16 @@ export default function LoginPage() {
               </div>
 
               {/* Card Bottom Switch Strip */}
-              <div className="px-6 py-3.5 theme-bg-secondary border-t theme-border text-center text-[12px] theme-text-secondary">
+              <div className="px-5 py-3.5 theme-bg-secondary border-t theme-border text-center text-[12.5px] theme-text-secondary">
                 {mode === 'reset' ? (
                   <>
                     <span>Remembered your password?</span>
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
-                      className="ml-1 font-bold theme-link hover:underline"
+                      className="ml-1.5 font-extrabold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline cursor-pointer"
                     >
-                      Log In to Dashboard
+                      Log In to Dashboard &rarr;
                     </button>
                   </>
                 ) : mode === 'signin' ? (
@@ -3131,9 +3131,10 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => { setMode('signup'); setError(''); setMessage(''); }}
-                      className="ml-1 font-bold theme-link hover:underline"
+                      className="ml-1.5 font-extrabold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline cursor-pointer inline-flex items-center gap-1"
                     >
-                      Create Merchant Account
+                      <span>Create Merchant Account</span>
+                      <ArrowRight className="w-3.5 h-3.5 inline" />
                     </button>
                   </>
                 ) : (
@@ -3142,9 +3143,10 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
-                      className="ml-1 font-bold theme-link hover:underline"
+                      className="ml-1.5 font-extrabold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline cursor-pointer inline-flex items-center gap-1"
                     >
-                      Log In to Dashboard
+                      <span>Log In to Dashboard</span>
+                      <ArrowRight className="w-3.5 h-3.5 inline" />
                     </button>
                   </>
                 )}
