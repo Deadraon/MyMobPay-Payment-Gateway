@@ -877,46 +877,67 @@ export default function DashboardPage() {
   useEffect(() => {
 
     const fetchSession = async () => {
-
-      // getUser() performs a cryptographic server-side JWT verification (not just a localStorage read)
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-      if (!user || userError) {
-
-        router.push('/login');
-
-        return;
-
-      }
-
-      setUser(user);
-
-      await fetchProfile(user.id);
-      fetchSubscriptionHistory(user.id);
-
-      // Handle redirect from payment gateway (e.g. ?status=success&gateway_id=...)
-      if (typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search);
-        const pStatus = urlParams.get('status');
-        const pOrderId = urlParams.get('orderId') || urlParams.get('gateway_id');
-        if (pStatus === 'success' || pOrderId) {
-          // Re-fetch profile and subscription history
-          setTimeout(() => {
-            fetchProfile(user.id);
-            fetchSubscriptionHistory(user.id);
-          }, 600);
-          setTimeout(() => {
-            fetchProfile(user.id);
-            fetchSubscriptionHistory(user.id);
-          }, 2000);
-          // Clean URL parameters smoothly without reloading
-          window.history.replaceState({}, document.title, window.location.pathname);
+      try {
+        let authUser = null;
+        try {
+          // getUser() performs a cryptographic server-side JWT verification
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          if (user && !userError) {
+            authUser = user;
+          }
+        } catch (e) {
+          console.warn('getUser check failed, checking session:', e);
         }
-      }
 
+        if (!authUser) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            authUser = session.user;
+          }
+        }
+
+        if (!authUser) {
+          setLoading(false);
+          router.replace('/login');
+          return;
+        }
+
+        setUser(authUser);
+        await fetchProfile(authUser.id);
+        fetchSubscriptionHistory(authUser.id);
+
+        // Handle redirect from payment gateway (e.g. ?status=success&gateway_id=...)
+        if (typeof window !== 'undefined') {
+          const urlParams = new URLSearchParams(window.location.search);
+          const pStatus = urlParams.get('status');
+          const pOrderId = urlParams.get('orderId') || urlParams.get('gateway_id');
+          if (pStatus === 'success' || pOrderId) {
+            // Re-fetch profile and subscription history
+            setTimeout(() => {
+              fetchProfile(authUser.id);
+              fetchSubscriptionHistory(authUser.id);
+            }, 600);
+            setTimeout(() => {
+              fetchProfile(authUser.id);
+              fetchSubscriptionHistory(authUser.id);
+            }, 2000);
+            // Clean URL parameters smoothly without reloading
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+      } catch (err) {
+        console.error('Session initialization error:', err);
+        setLoading(false);
+      }
     };
 
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 7000);
+
     fetchSession();
+
+    return () => clearTimeout(safetyTimer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
@@ -3190,7 +3211,7 @@ echo "Order Created: " . $data['orderId'];
               <span className="font-mono text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-[var(--theme-bg-secondary,#EAEEFA)] text-[#0F2BFF] dark:text-[#60A5FA]">v2.1</span>
             </div>
             <div className="mt-1 flex items-center justify-between font-mono text-[9.5px] text-[var(--theme-text-muted,#5E6782)]">
-              <span>{attachedBank ? `${attachedBank.bank_name.split(' ')[0]} ..${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}` : 'UPI Direct'}</span>
+              <span>{attachedBank ? `${attachedBank.bank_name.split(' ')[0]} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}` : 'UPI Direct'}</span>
               <span className="text-[#10B981] font-bold">142ms T+0</span>
             </div>
           </div>
@@ -3262,14 +3283,14 @@ echo "Order Created: " . $data['orderId'];
                   if (!isLiveUnlocked) return;
                   if (!effectiveSandboxMode) toggleSandboxMode();
                 }}
-                className={`px-3 py-1 rounded-full text-[11.5px] font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-full text-[11.5px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                   effectiveSandboxMode
                     ? 'bg-white dark:bg-[#121826] text-amber-600 dark:text-amber-400 shadow-2xs'
                     : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
                 }`}
               >
-                {effectiveSandboxMode && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse mr-1"></span>}
-                Test Mode
+                <span className={`w-2 h-2 rounded-full ${effectiveSandboxMode ? 'bg-amber-500 animate-pulse' : 'bg-slate-400'}`}></span>
+                <span>Test Mode</span>
               </button>
             </div>
 
@@ -3281,7 +3302,7 @@ echo "Order Created: " . $data['orderId'];
               <Search className="absolute left-3.5 text-[var(--theme-text-muted,#5E6782)] w-4 h-4 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search transactions, UTR, orders..."
+                placeholder="Search transactions, orders..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -3294,7 +3315,7 @@ echo "Order Created: " . $data['orderId'];
                     setActiveTab('transactions');
                   }
                 }}
-                className="console-input h-10 w-full pl-10 pr-24 rounded-full text-xs placeholder:text-[var(--theme-text-muted,#5E6782)] focus:outline-none transition-colors"
+                className="console-input h-10 w-full pl-10 pr-20 rounded-full text-xs placeholder:text-[var(--theme-text-muted,#5E6782)] focus:outline-none transition-colors"
               />
               <button
                 type="button"

@@ -18,6 +18,7 @@ function StatusBadge({ status }) {
   const s = (status || '').toLowerCase();
   const isSettled = s === 'verified' || s === 'success' || s === 'paid' || s === 'completed' || s === 'settled';
   const isPending = s === 'pending' || s === 'processing' || s === 'in_progress';
+  const isExpired = s === 'expired' || s === 'timeout';
   const isFailed = s === 'failed' || s === 'cancelled' || s === 'rejected' || s === 'declined';
 
   if (isSettled) {
@@ -36,6 +37,14 @@ function StatusBadge({ status }) {
       </span>
     );
   }
+  if (isExpired) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700/60 shadow-2xs">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        Expired
+      </span>
+    );
+  }
   if (isFailed) {
     return (
       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/40 shadow-2xs">
@@ -45,7 +54,7 @@ function StatusBadge({ status }) {
     );
   }
   return (
-    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
       {status || '—'}
     </span>
   );
@@ -165,11 +174,8 @@ export default function DashboardOverviewRedesign({
   }, [todayVerified]);
 
   const clearedOrdersCount = useMemo(() => {
-    if (verifiedOrders.length === 0 && (profile?.business_name?.toLowerCase().includes('deadraon') || user?.email?.toLowerCase().includes('deadraon'))) {
-      return 29;
-    }
     return verifiedOrders.length;
-  }, [verifiedOrders, profile, user]);
+  }, [verifiedOrders]);
 
   const commissionSaved = useMemo(() => {
     const val = (totalCollections + simulatedInflow) * 0.02; // standard 2% gateway commission saved
@@ -254,10 +260,10 @@ export default function DashboardOverviewRedesign({
   // Readout text above the chart
   const chartReadoutText = useMemo(() => {
     if (hoveredMonth) {
-      return `${hoveredMonth.m} Telemetry: ${hoveredMonth.total} • ${hoveredMonth.txns} txns settled (142ms avg)`;
+      return `${hoveredMonth.m} Telemetry: UPI ${hoveredMonth.upi}% • IMPS ${hoveredMonth.imps}% • ${hoveredMonth.total} (${hoveredMonth.txns} txns)`;
     }
     const peak = monthlyTelemetry.find(m => m.isPeak) || monthlyTelemetry[9];
-    return `Hover or click any month bar to inspect rail breakdown • ${peak.m} Peak: ${peak.total} (${peak.txns} txns)`;
+    return `Hover or click any month bar to inspect rail breakdown • ${peak.m} Peak: UPI ${peak.upi}% / IMPS ${peak.imps}% • ${peak.total} (${peak.txns} txns)`;
   }, [hoveredMonth, monthlyTelemetry]);
 
   // Recent Display Orders (up to 5 for Overview)
@@ -389,8 +395,8 @@ export default function DashboardOverviewRedesign({
               <TrendingUp className="w-3.5 h-3.5" />
               <span>+100% T+0 Settled</span>
             </span>
-            <span className="font-mono text-[var(--theme-text-muted)] truncate max-w-[120px]">
-              {attachedBank ? `${attachedBank.bank_name} ..${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}` : 'Direct UPI Active'}
+            <span className="font-mono text-[var(--theme-text-muted)] shrink-0">
+              {attachedBank ? `${attachedBank.bank_name?.split(' ')[0] || 'Bank'} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}` : 'Direct UPI Active'}
             </span>
           </div>
         </div>
@@ -405,10 +411,17 @@ export default function DashboardOverviewRedesign({
             <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
               Today Live Inflow
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[9.5px] font-bold inline-flex items-center gap-1 group-hover:bg-[#0F2BFF] group-hover:text-white transition-colors">
-              <Zap className="w-3 h-3" />
-              <span>Test +₹500</span>
-            </span>
+            {isSandbox ? (
+              <span className="px-2 py-0.5 rounded-md bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[9.5px] font-bold inline-flex items-center gap-1 group-hover:bg-[#0F2BFF] group-hover:text-white transition-colors">
+                <Zap className="w-3 h-3" />
+                <span>Test +₹500</span>
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded-md bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[9.5px] font-bold inline-flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                <span>Live T+0</span>
+              </span>
+            )}
           </div>
           <div className={`tabular-nums-stat text-[38px] leading-none text-[var(--theme-text-primary)] mt-2.5 ${isKpiFlashing ? 'kpi-flash' : ''}`}>
             {formatINR(todayInflow + simulatedInflow)}
@@ -434,7 +447,7 @@ export default function DashboardOverviewRedesign({
             </span>
           </div>
           <div className="tabular-nums-stat text-[38px] leading-none text-[var(--theme-text-primary)] mt-2.5">
-            {clearedOrdersCount + (simulatedInflow > 0 ? 1 : 0)} ORDERS
+            {clearedOrdersCount + (simulatedInflow > 0 ? 1 : 0)}
           </div>
           <div className="mt-2.5 flex items-center justify-between text-[11px]">
             <span className="font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
@@ -669,10 +682,10 @@ export default function DashboardOverviewRedesign({
           <div className="relative h-[220px] flex flex-col justify-end pt-6 pb-2">
             <div className="pointer-events-none absolute inset-x-0 top-6 bottom-8 flex flex-col justify-between text-[9.5px] font-mono text-[var(--theme-text-muted)]">
               <div className="border-b border-dashed border-[var(--theme-border-color)] pb-0.5 flex justify-between">
-                <span>₹1,000</span><span>100% T+0</span>
+                <span>100%</span><span>100% T+0 Rail Capacity</span>
               </div>
-              <div className="border-b border-dashed border-[var(--theme-border-color)] pb-0.5">₹500</div>
-              <div className="border-b border-[var(--theme-border-color)] pb-0.5">₹0</div>
+              <div className="border-b border-dashed border-[var(--theme-border-color)] pb-0.5">50%</div>
+              <div className="border-b border-[var(--theme-border-color)] pb-0.5">0%</div>
             </div>
 
             <div className="relative z-10 grid grid-cols-12 gap-1.5 sm:gap-2 items-end h-[155px] px-2">
@@ -792,9 +805,11 @@ export default function DashboardOverviewRedesign({
                         <div className="font-mono font-bold text-[var(--theme-text-primary)] group-hover:text-[#0F2BFF] transition-colors">
                           {orderId}
                         </div>
-                        <div className="font-mono text-[10.5px] text-[var(--theme-text-muted)]">
-                          {tx.id || 'txn_8849...'}
-                        </div>
+                        {tx.gateway_id && tx.gateway_id !== orderId && (
+                          <div className="font-mono text-[10.5px] text-[var(--theme-text-muted)]">
+                            {tx.gateway_id}
+                          </div>
+                        )}
                       </td>
                       <td className="py-3.5 px-4">
                         <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${

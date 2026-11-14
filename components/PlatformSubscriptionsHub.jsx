@@ -28,7 +28,8 @@ const IST_TZ = 'Asia/Kolkata';
 
 function formatINR(n) {
   const val = Number(n) || 0;
-  return `₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const hasDecimals = val % 1 !== 0;
+  return `₹${val.toLocaleString('en-IN', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: 2 })}`;
 }
 
 function formatDateTimeIST(dateStr) {
@@ -242,8 +243,8 @@ export default function PlatformSubscriptionsHub({
         <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block truncate">Total Revenue</span>
-              <span className="text-lg sm:text-2xl font-semibold text-slate-900 block mt-0.5 sm:mt-1 truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block leading-tight">Total Revenue</span>
+              <span className="text-base sm:text-lg xl:text-xl font-bold text-slate-900 block mt-0.5 sm:mt-1 tracking-tight tabular-nums">
                 {formatINR(metrics.totalRevenue)}
               </span>
             </div>
@@ -251,7 +252,7 @@ export default function PlatformSubscriptionsHub({
               <TrendingUp className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-teal-700 font-semibold mt-2 sm:mt-2.5 truncate">
+          <p className="text-[10px] sm:text-[11px] text-teal-700 font-semibold mt-2 sm:mt-2.5 leading-tight">
             {metrics.verifiedCount} verified orders
           </p>
         </div>
@@ -260,8 +261,8 @@ export default function PlatformSubscriptionsHub({
         <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block truncate">Today&apos;s Inflow</span>
-              <span className="text-lg sm:text-2xl font-semibold text-slate-900 block mt-0.5 sm:mt-1 truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block leading-tight">Today&apos;s Inflow</span>
+              <span className="text-base sm:text-lg xl:text-xl font-bold text-slate-900 block mt-0.5 sm:mt-1 tracking-tight tabular-nums">
                 {formatINR(metrics.todayRevenue)}
               </span>
             </div>
@@ -269,7 +270,7 @@ export default function PlatformSubscriptionsHub({
               <Calendar className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-2 sm:mt-2.5 truncate">
+          <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-2 sm:mt-2.5 leading-tight">
             {metrics.todayCount} renewals today
           </p>
         </div>
@@ -278,8 +279,8 @@ export default function PlatformSubscriptionsHub({
         <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block truncate">Avg Plan Value</span>
-              <span className="text-lg sm:text-2xl font-semibold text-purple-900 block mt-0.5 sm:mt-1 truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block leading-tight">Avg Plan Value</span>
+              <span className="text-base sm:text-lg xl:text-xl font-bold text-purple-900 block mt-0.5 sm:mt-1 tracking-tight tabular-nums">
                 {formatINR(metrics.avgOrderValue)}
               </span>
             </div>
@@ -287,7 +288,7 @@ export default function PlatformSubscriptionsHub({
               <Receipt className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-purple-700 font-semibold mt-2 sm:mt-2.5 truncate">
+          <p className="text-[10px] sm:text-[11px] text-purple-700 font-semibold mt-2 sm:mt-2.5 leading-tight">
             Across active tiers
           </p>
         </div>

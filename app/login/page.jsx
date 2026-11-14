@@ -1889,7 +1889,7 @@ export default function LoginPage() {
                 className="hidden lg:inline-flex items-center gap-1.5 text-[12px] font-bold theme-text-muted hover:theme-text-primary transition-colors"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Back to mymob.tech</span>
+                <span>Back to mymobpay.tech</span>
               </Link>
             </div>
 
@@ -2496,7 +2496,7 @@ export default function LoginPage() {
                                   minLength={8}
                                   value={password}
                                   onChange={(e) => setPassword(e.target.value)}
-                                  placeholder="e.g. MyMobPay@2026"
+                                  placeholder="Create a password"
                                   className="auth-input w-full pl-3.5 pr-10 py-2.5 rounded-xl text-[13px] font-medium"
                                 />
                                 <button
@@ -2826,7 +2826,7 @@ export default function LoginPage() {
                             minLength={8}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="e.g. MyMobPay@2026"
+                            placeholder="Create a password"
                             className="auth-input w-full pl-10 pr-10 py-2.5 rounded-xl text-[13px] font-medium"
                           />
                           <button
@@ -3107,7 +3107,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowQrModal(true)}
-                      className="px-2.5 py-1 rounded-lg theme-bg-elevated border theme-border text-xs font-bold theme-link hover:border-[#0F2BFF] transition-all"
+                      className="px-2.5 py-1 rounded-lg theme-bg-elevated border theme-border text-xs font-bold theme-link hover:border-[#0F2BFF] transition-all shrink-0 whitespace-nowrap"
                     >
                       Show QR
                     </button>

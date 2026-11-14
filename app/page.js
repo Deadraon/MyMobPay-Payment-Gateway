@@ -652,15 +652,24 @@ footer {
       width: 100%;
       height: 8px;
       border-radius: 999px;
-      background-color: #DCE0F4;
+      background: linear-gradient(to right, #0F2BFF 0%, #0F2BFF 9.09%, #DCE0F4 9.09%, #DCE0F4 100%);
       outline: none;
     }
     html.dark input[type="range"].mmp-slider {
-      background-color: #232D42;
+      background: linear-gradient(to right, #0F2BFF 0%, #0F2BFF 9.09%, #232D42 9.09%, #232D42 100%);
     }
     input[type="range"].mmp-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #0F2BFF;
+      border: 3px solid #FFFFFF;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(15, 43, 255, 0.35);
+    }
+    input[type="range"].mmp-slider::-moz-range-thumb {
       width: 24px;
       height: 24px;
       border-radius: 50%;
@@ -697,11 +706,11 @@ const walletScenarios = [
 
 const sandboxPayloads = {
   create: {
-    req: 'POST https://mymob.tech/api/v1/payments/create\nContent-Type: application/json\n\n{\n  "amount": 2499.00,\n  "currency": "INR",\n  "rails": ["UPI", "IMPS"],\n  "webhook_url": "https://mymob.tech/webhooks/payment"\n}',
+    req: 'POST https://mymobpay.tech/api/v1/payments/create\nContent-Type: application/json\n\n{\n  "amount": 2499.00,\n  "currency": "INR",\n  "rails": ["UPI", "IMPS"],\n  "webhook_url": "https://mymobpay.tech/webhooks/payment"\n}',
     res: '{\n  "status": "CREATED",\n  "currency": "INR",\n  "amount": 2499.00,\n  "commission_fee": 0.00\n}'
   },
   status: {
-    req: 'GET https://mymob.tech/api/v1/payments/{payment_id}\nAuthorization: Bearer <API_KEY>',
+    req: 'GET https://mymobpay.tech/api/v1/payments/{payment_id}\nAuthorization: Bearer <API_KEY>',
     res: '{\n  "status": "SETTLED",\n  "rail": "UPI",\n  "gross_amount": 2499.00,\n  "commission_deducted": 0.00,\n  "net_settled": 2499.00\n}'
   },
   webhook: {
@@ -970,6 +979,7 @@ export default function HomePage() {
     var dLNet = document.getElementById('comp-legacy-net');
     var dMNet = document.getElementById('comp-mymob-net');
     var dBar = document.getElementById('bar-label-legacy');
+    var slider = document.getElementById('comp-vol-slider');
 
     if (dVol) dVol.textContent = '₹' + vol.toLocaleString('en-IN');
     if (dAnn) dAnn.textContent = '₹' + annualSaved.toLocaleString('en-IN') + ' / yr';
@@ -977,22 +987,39 @@ export default function HomePage() {
     if (dLNet) dLNet.textContent = '₹' + legacyNet.toLocaleString('en-IN');
     if (dMNet) dMNet.textContent = '₹' + vol.toLocaleString('en-IN') + ' (100%)';
     if (dBar) dBar.textContent = '+₹' + legacyCutMonth.toLocaleString('en-IN') + '/mo kept';
-  }
 
-  function selectPlanVolume(vol, btnEl) {
-    if (typeof document === 'undefined') return;
-    var pills = document.querySelectorAll('.vol-pill');
-    for (var i = 0; i < pills.length; i++) {
-      pills[i].className = 'vol-pill px-4 py-1.5 rounded-full text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors';
+    // Sync slider thumb position and fill colour
+    if (slider) {
+      var slMin = parseInt(slider.min, 10) || 50000;
+      var slMax = parseInt(slider.max, 10) || 5000000;
+      if (slider.value != vol) {
+        slider.value = vol;
+      }
+      var pct = ((vol - slMin) / (slMax - slMin)) * 100;
+      var isDark = document.documentElement.classList.contains('dark') || document.documentElement.classList.contains('dark-theme');
+      var trackColor = isDark ? '#232D42' : '#DCE0F4';
+      slider.style.background = 'linear-gradient(to right, #0F2BFF 0%, #0F2BFF ' + pct + '%, ' + trackColor + ' ' + pct + '%, ' + trackColor + ' 100%)';
     }
-    if (btnEl) {
-      btnEl.className = 'vol-pill px-4 py-1.5 rounded-full text-xs font-bold bg-[#0F2BFF] text-white shadow-2xs transition-colors';
-    }
-    var saved = Math.round(vol * 0.02);
+
+    // Keep plan savings callout and volume pills in sync with the slider
     var callout = document.getElementById('plan-savings-callout');
     if (callout) {
-      callout.textContent = 'At ₹' + vol.toLocaleString('en-IN') + '/mo: Save ₹' + saved.toLocaleString('en-IN') + '/mo in 2% gateway fees • MyMobPay Commission: ₹0.00';
+      callout.textContent = 'At ₹' + vol.toLocaleString('en-IN') + '/mo: Save ₹' + legacyCutMonth.toLocaleString('en-IN') + '/mo in 2% gateway fees • MyMobPay Commission: ₹0.00';
     }
+
+    var pillVolumes = [100000, 500000, 1500000, 2500000];
+    var pills = document.querySelectorAll('.vol-pill');
+    for (var i = 0; i < pills.length; i++) {
+      if (pillVolumes[i] === vol) {
+        pills[i].className = 'vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold bg-[#0F2BFF] text-white shadow-2xs transition-colors text-center';
+      } else {
+        pills[i].className = 'vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors text-center';
+      }
+    }
+  }
+
+  function selectPlanVolume(vol) {
+    updateComparisonSlider(vol);
   }
 
   // 11. Section I: Developer REST API Sandbox
@@ -1206,6 +1233,7 @@ export default function HomePage() {
     setThemeMode(savedTheme === 'dark' ? 'dark' : 'light');
     filterWalletRows('ALL');
     switchSandboxTab('create');
+    updateComparisonSlider(500000);
     const cleanupPhone = initPhoneAnimations();
     twTimerRef.current = setTimeout(stepHeroTypewriter, 1800);
 
@@ -1224,6 +1252,7 @@ export default function HomePage() {
       window.removeEventListener('keydown', handleKeyDown);
       if (cleanupPhone) cleanupPhone();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -1400,8 +1429,8 @@ export default function HomePage() {
                 <span className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-2 h-2 rounded-full bg-[#FF6E00]"></span>
               </div>
 
-              {/* Floating Badge 1 (Left of Hero Phone) */}
-              <div className="float-badge-1 hidden sm:flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl theme-bg-elevated border theme-border shadow-lg absolute -left-12 lg:-left-16 top-24 z-20">
+              {/* Floating Badge 1 (Left of Hero Phone - Repositioned so it does not overlap mockup text) */}
+              <div className="float-badge-1 hidden sm:flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl theme-bg-elevated border theme-border shadow-lg absolute -left-16 sm:-left-24 lg:-left-28 top-8 z-20">
                 <span className="w-7 h-7 rounded-full bg-[#10B981]/15 text-[#10B981] flex items-center justify-center shrink-0">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </span>
@@ -1411,8 +1440,8 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Floating Badge 2 (Right of Hero Phone) */}
-              <div className="float-badge-2 hidden sm:flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl theme-bg-elevated border theme-border shadow-lg absolute -right-10 lg:-right-14 top-64 z-20">
+              {/* Floating Badge 2 (Right of Hero Phone - Repositioned below chat bubbles so it never clips text) */}
+              <div className="float-badge-2 hidden sm:flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl theme-bg-elevated border theme-border shadow-lg absolute -right-14 sm:-right-20 lg:-right-24 top-[380px] z-20">
                 <span className="w-7 h-7 rounded-full bg-[#0F2BFF]/12 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[10px] font-extrabold flex items-center justify-center shrink-0">
                   0%
                 </span>
@@ -1494,7 +1523,7 @@ export default function HomePage() {
                           type="number"
                           min="1"
                           max="500000"
-                          placeholder="Enter amount (e.g. 1850)"
+                          placeholder="Amount (e.g. 1850)"
                           className="w-full pl-6 pr-2.5 py-1.5 rounded-full theme-bg-well border theme-border text-[10.5px] font-semibold theme-text-primary focus:outline-none focus:border-[#0F2BFF]"
                         />
                       </div>
@@ -1716,7 +1745,7 @@ export default function HomePage() {
                 ZERO COMMISSION MODEL
               </div>
               <h2 className="headline-anton text-[40px] sm:text-[48px] mt-1.5">
-                OWN YOUR<br />
+                OWN YOUR{' '}<br />
                 MONEY
               </h2>
               <p className="mt-3.5 text-[14.5px] theme-text-secondary leading-[1.65]">
@@ -1751,7 +1780,7 @@ export default function HomePage() {
                 SUBSCRIPTION INFRASTRUCTURE
               </div>
               <h2 className="headline-anton text-[40px] sm:text-[48px] mt-1.5">
-                PAYING 2% FEES<br />
+                PAYING 2% FEES{' '}<br />
                 IS A DRAG
               </h2>
               <p className="mt-3.5 text-[14.5px] theme-text-secondary leading-[1.65]">
@@ -1796,7 +1825,7 @@ export default function HomePage() {
                   <svg className="phone-cloud-right absolute right-3 top-12 w-10 h-6 text-[#9AD9FF]" viewBox="0 0 48 28" fill="currentColor"><path d="M12 24h26a8 8 0 000-16 11 11 0 00-21-2A7 7 0 0012 24z"/></svg>
 
                   <div className="mt-5 font-display uppercase text-[36px] leading-[0.88] text-[#8CD6FF] tracking-wide">
-                    YUM,<br />
+                    YUM, <br />
                     0% FEES.
                   </div>
 
@@ -1992,7 +2021,7 @@ export default function HomePage() {
                 INSTANT TELEMETRY
               </div>
               <h2 className="headline-anton text-[40px] sm:text-[48px] mt-1.5">
-                GET YOU A GATEWAY<br />
+                GET YOU A GATEWAY{' '}<br />
                 THAT SETTLES FAST
               </h2>
               <p className="mt-3.5 text-[14.5px] theme-text-secondary leading-[1.65]">
@@ -2023,7 +2052,7 @@ export default function HomePage() {
             0% COMMISSION MATHEMATICS
           </div>
           <h2 className="headline-anton text-[38px] sm:text-[50px] mt-2">
-            MYMOBPAY VS. 2%<br />
+            MYMOBPAY VS. 2%{' '}<br />
             GATEWAYS
           </h2>
           <p className="mt-3 text-[14.5px] sm:text-[15.5px] theme-text-secondary leading-relaxed">
@@ -2062,16 +2091,17 @@ export default function HomePage() {
                   min="50000"
                   max="5000000"
                   step="50000"
-                  value="500000"
+                  defaultValue="500000"
                   onInput={(e) => updateComparisonSlider(e.target.value)} onChange={(e) => updateComparisonSlider(e.target.value)}
                   className="mmp-slider"
                   aria-label="Monthly Payment Volume"
+                  style={{ background: 'linear-gradient(to right, #0F2BFF 0%, #0F2BFF 9.09%, #DCE0F4 9.09%, #DCE0F4 100%)' }}
                 />
-                <div className="mt-2.5 flex justify-between font-mono text-[10.5px] theme-text-muted">
-                  <span>₹50K/mo</span>
-                  <span>₹10L/mo</span>
-                  <span>₹25L/mo</span>
-                  <span>₹50L/mo</span>
+                <div className="relative mt-2.5 h-4 font-mono text-[10.5px] theme-text-muted select-none">
+                  <span className="absolute left-0">₹50K/mo</span>
+                  <span className="absolute left-[19.2%] -translate-x-1/2">₹10L/mo</span>
+                  <span className="absolute left-[49.5%] -translate-x-1/2">₹25L/mo</span>
+                  <span className="absolute right-0">₹50L/mo</span>
                 </div>
               </div>
 
@@ -2127,7 +2157,7 @@ export default function HomePage() {
                 PLATFORM OVERVIEW
               </div>
               <h3 className="headline-anton text-3xl mt-1">
-                BUILT FOR 0%<br />
+                BUILT FOR 0% <br />
                 COMMISSION
               </h3>
 
@@ -2169,7 +2199,7 @@ export default function HomePage() {
             MERCHANT WORKFLOWS (ILLUSTRATIVE)
           </div>
           <h3 className="headline-anton text-[34px] sm:text-[44px] mt-1.5">
-            IMAGINE REVIEWING YOUR<br />
+            IMAGINE REVIEWING YOUR <br />
             GATEWAY LIKE THIS
           </h3>
           <p className="mt-2.5 text-[13.5px] theme-text-secondary max-w-[460px] mx-auto">
@@ -2274,7 +2304,7 @@ export default function HomePage() {
           SUBSCRIPTION-BASED PRICING
         </div>
         <h2 className="headline-anton text-[38px] sm:text-[50px] mt-2">
-          KEEP 100% OF YOUR REVENUE.<br />
+          KEEP 100% OF YOUR REVENUE. <br />
           PICK YOUR PLAN.
         </h2>
         <p className="mt-2.5 text-[14px] theme-text-secondary">
@@ -2282,32 +2312,32 @@ export default function HomePage() {
         </p>
 
         {/* Interactive Monthly Volume Pill Bar */}
-        <div className="mt-5 inline-flex flex-wrap items-center justify-center gap-2 theme-bg-elevated p-1.5 rounded-full border theme-border">
+        <div className="mt-5 inline-grid grid-cols-2 sm:inline-flex sm:flex-wrap items-center justify-center gap-1.5 sm:gap-2 theme-bg-elevated p-1.5 rounded-2xl sm:rounded-full border theme-border max-w-full">
           <button
             type="button"
             onClick={(e) => selectPlanVolume(100000, e.currentTarget)}
-            className="vol-pill px-4 py-1.5 rounded-full text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors"
+            className="vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors text-center"
           >
             ₹1L/mo
           </button>
           <button
             type="button"
             onClick={(e) => selectPlanVolume(500000, e.currentTarget)}
-            className="vol-pill px-4 py-1.5 rounded-full text-xs font-bold bg-[#0F2BFF] text-white shadow-2xs transition-colors"
+            className="vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold bg-[#0F2BFF] text-white shadow-2xs transition-colors text-center"
           >
             ₹5L/mo
           </button>
           <button
             type="button"
             onClick={(e) => selectPlanVolume(1500000, e.currentTarget)}
-            className="vol-pill px-4 py-1.5 rounded-full text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors"
+            className="vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors text-center"
           >
             ₹15L/mo
           </button>
           <button
             type="button"
             onClick={(e) => selectPlanVolume(2500000, e.currentTarget)}
-            className="vol-pill px-4 py-1.5 rounded-full text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors"
+            className="vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors text-center"
           >
             ₹25L/mo
           </button>
@@ -2331,6 +2361,10 @@ export default function HomePage() {
               <div className="mt-1 font-bold text-sm text-[#090A10]">
                 Direct UPI QR & IMPS Links
               </div>
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="font-mono text-[26px] font-extrabold text-[#090A10] leading-none">₹499</span>
+                <span className="text-[#090A10]/70 text-xs font-semibold">/month</span>
+              </div>
             </div>
 
             <svg className="absolute bottom-0 left-0 w-full h-56" viewBox="0 0 330 220" fill="none" aria-hidden="true">
@@ -2347,7 +2381,7 @@ export default function HomePage() {
               <polygon points="198,220 198,58 252,58 252,220" fill="#E03E96" stroke="#090A10" strokeWidth="1.5"/>
               <polygon points="198,58 216,42 270,42 252,58" fill="#F472B6" stroke="#090A10" strokeWidth="1.5"/>
               <polygon points="252,58 270,42 270,220 252,220" fill="#090A10"/>
-              <text x="206" y="82" fill="#090A10" fontFamily="JetBrains Mono" fontSize="9" fontWeight="700">100% KEPT</text>
+              <text x="225" y="82" textAnchor="middle" fill="#090A10" fontFamily="JetBrains Mono" fontSize="7.5" fontWeight="700">100% KEPT</text>
             </svg>
           </Link>
 
@@ -2364,7 +2398,7 @@ export default function HomePage() {
                       <span>MyMobPay</span>
                       <span className="w-2 h-2 rounded-full bg-[#0EA5E9]"></span>
                     </div>
-                    <div className="text-[9.5px] text-[#6E748C]">mymob.tech</div>
+                    <div className="text-[9.5px] text-[#6E748C]">mymobpay.tech</div>
                   </div>
                 </div>
                 <span className="font-mono text-[9px] font-bold bg-[#F2F3FB] text-[#0F2BFF] px-2 py-0.5 rounded">
@@ -2372,11 +2406,15 @@ export default function HomePage() {
                 </span>
               </div>
 
-              <p className="mt-3 text-[11.5px] text-[#222533] leading-relaxed">
+              <div className="mt-2.5 flex items-baseline gap-1">
+                <span className="font-mono text-[22px] font-extrabold text-[#090A10] leading-none">₹999</span>
+                <span className="text-[#6E748C] text-xs font-semibold">/month</span>
+              </div>
+              <p className="mt-2 text-[11px] text-[#222533] leading-relaxed">
                 Growth Plan — <strong>0% commission</strong> UPI & IMPS collections + real-time webhooks.
               </p>
 
-              <Link href="/login?mode=signup" className="mt-3.5 w-full py-2 rounded-lg bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[11px] font-bold text-center transition-colors block">Explore Growth Plan</Link>
+              <Link href="/login?mode=signup" className="mt-3 w-full py-2 rounded-lg bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[11px] font-bold text-center transition-colors block">Explore Growth Plan</Link>
             </div>
           </div>
 
@@ -2404,7 +2442,11 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="mt-4 text-[11px] font-semibold text-white/85 underline">
+            <div className="mt-4 flex items-baseline gap-1 justify-center">
+              <span className="font-mono text-[22px] font-extrabold text-[#D8FF66] leading-none">Custom</span>
+              <span className="text-white/70 text-xs font-semibold">pricing</span>
+            </div>
+            <div className="mt-2 text-[11px] font-semibold text-white/85 underline">
               View plans in Merchant Portal
             </div>
           </Link>
@@ -2481,16 +2523,19 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#232D42]">
-            <div className="p-5">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-[#94A3B8] mb-2">REQUEST PAYLOAD</div>
-              <pre id="sb-req-code" className="font-mono text-xs text-[#E2E8F0] overflow-x-auto leading-relaxed"></pre>
+            <div className="p-4 sm:p-5">
+              <div className="font-mono text-[10px] uppercase tracking-wider text-[#94A3B8] mb-2 flex items-center justify-between">
+                <span>REQUEST PAYLOAD</span>
+                <span className="text-[9px] text-[#64748B] sm:hidden font-mono">scroll ↔</span>
+              </div>
+              <pre id="sb-req-code" className="font-mono text-xs text-[#E2E8F0] overflow-x-auto leading-relaxed whitespace-pre-wrap sm:whitespace-pre break-all sm:break-normal"></pre>
             </div>
-            <div className="p-5 bg-[#090C12]">
+            <div className="p-4 sm:p-5 bg-[#090C12]">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-[10px] uppercase tracking-wider text-[#94A3B8]">LIVE RESPONSE</span>
                 <span id="sb-res-badge" className="font-mono text-[10px] font-bold text-[#10B981]">200 OK</span>
               </div>
-              <pre id="sb-res-code" className="font-mono text-xs text-[#6EE7B7] overflow-x-auto leading-relaxed"></pre>
+              <pre id="sb-res-code" className="font-mono text-xs text-[#6EE7B7] overflow-x-auto leading-relaxed whitespace-pre-wrap sm:whitespace-pre break-all sm:break-normal"></pre>
             </div>
           </div>
         </div>
@@ -2541,7 +2586,7 @@ export default function HomePage() {
           {/* Right Column: Security Copy */}
           <div className="md:col-span-6">
             <h2 className="headline-anton-white text-[40px] sm:text-[48px]">
-              YOUR SECURITY,<br />
+              YOUR SECURITY, <br />
               OUR PRIORITY
             </h2>
             <p className="mt-4 text-[14.5px] text-white/85 leading-[1.65] max-w-[400px]">
@@ -2621,7 +2666,7 @@ export default function HomePage() {
           <MyMobPayLogoMark className="w-full h-full object-contain" id="badge-7" />
         </div>
         <h2 className="headline-anton text-[42px] sm:text-[56px]">
-          READY TO KEEP 100%?<br />
+          READY TO KEEP 100%? <br />
           LAUNCH MYMOBPAY.
         </h2>
         <p className="mt-3 text-sm theme-text-secondary">
@@ -2691,7 +2736,7 @@ export default function HomePage() {
       </div>
 
       <div className="pt-6 border-t theme-border text-center text-[11px] theme-text-muted">
-        © 2026 MyMobPay (mymob.tech). All rights reserved.
+        © 2026 MyMobPay (mymobpay.tech). All rights reserved.
       </div>
     </div>
   </footer>
@@ -2741,7 +2786,7 @@ export default function HomePage() {
 
         <div className="mt-4 bg-[#07090E] border border-white/10 rounded-xl p-4">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
-            <span id="drawer-endpoint-label" className="font-mono text-[11px] text-[#94A3B8]">POST https://mymob.tech/api/v1/payments/create</span>
+            <span id="drawer-endpoint-label" className="font-mono text-[11px] text-[#94A3B8]">POST https://mymobpay.tech/api/v1/payments/create</span>
             <button type="button" id="drawer-copy-btn" onClick={copyDrawerCode} className="font-mono text-[11px] font-bold text-[#D8FF66] hover:underline">Copy JSON</button>
           </div>
           <pre id="drawer-code-pre" className="font-mono text-xs text-[#E2E8F0] overflow-x-auto leading-relaxed"></pre>

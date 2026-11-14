@@ -47,9 +47,6 @@ export const metadata = {
   // ── Canonical & Robots ────────────────────────────────────────
   alternates: {
     canonical: BASE_URL,
-    types: {
-      'text/markdown': `${BASE_URL}/.md`,
-    },
   },
   robots: {
     index: true,
@@ -144,14 +141,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Markdown alternates for AI agent content negotiation */}
-        <link rel="alternate" type="text/markdown" title="Home (Markdown)" href="/.md" />
-        <link rel="alternate" type="text/markdown" title="Login (Markdown)" href="/login.md" />
-        <link rel="alternate" type="text/markdown" title="Developer Docs (Markdown)" href="/#developer-section.md" />
-        <link rel="alternate" type="text/markdown" title="Pricing (Markdown)" href="/#pricing-section.md" />
-        <link rel="alternate" type="text/markdown" title="Terms (Markdown)" href="/terms.md" />
-        <link rel="alternate" type="text/markdown" title="Privacy (Markdown)" href="/privacy.md" />
-
         {/* Theme detection script running inline before rendering */}
         <script
           dangerouslySetInnerHTML={{

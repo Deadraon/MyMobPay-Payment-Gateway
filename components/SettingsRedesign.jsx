@@ -1222,10 +1222,10 @@ export default function SettingsRedesign({
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600'}`} />
-                    <div className="flex flex-col truncate">
-                      <span className={`truncate font-semibold ${isActive ? 'text-blue-700' : 'text-slate-800'}`}>{cat.label}</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className={`text-xs font-semibold leading-tight ${isActive ? 'text-blue-700' : 'text-slate-800'}`}>{cat.label}</span>
                       {cat.subtitle && (
-                        <span className={`text-[10px] truncate font-medium ${isActive ? 'text-blue-600' : 'text-slate-500'}`}>
+                        <span className={`text-[10px] leading-tight mt-0.5 ${isActive ? 'text-blue-600' : 'text-slate-500'}`}>
                           {cat.subtitle}
                         </span>
                       )}
@@ -2084,16 +2084,16 @@ export default function SettingsRedesign({
                       value={newMemberEmail}
                       onChange={(e) => setNewMemberEmail(e.target.value)}
                       placeholder="teammate@company.com"
-                      className="flex-1 px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:border-indigo-500"
+                      className="flex-1 px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-hidden focus:border-indigo-500"
                     />
                     <select
                       value={newMemberRole}
                       onChange={(e) => setNewMemberRole(e.target.value)}
-                      className="px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium"
+                      className="px-3 py-2 text-xs text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-medium focus:outline-hidden focus:border-indigo-500"
                     >
-                      <option value="Admin">Admin (All except subscription)</option>
-                      <option value="Operator">Operator (View + create links)</option>
-                      <option value="Viewer">Viewer (Read-only)</option>
+                      <option value="Admin" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Admin (All except subscription)</option>
+                      <option value="Operator" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Operator (View + create links)</option>
+                      <option value="Viewer" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Viewer (Read-only)</option>
                     </select>
                     <button
                       type="button"

@@ -625,7 +625,7 @@ export default function TransactionsRedesign({
         {/* Metric 1: Total Volume */}
         <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 truncate">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 leading-tight">
               Total Volume
             </span>
             <span className="p-1.5 sm:p-2 rounded-xl bg-blue-50 text-blue-600 shrink-0">
@@ -649,7 +649,7 @@ export default function TransactionsRedesign({
         {/* Metric 2: Settled Volume */}
         <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 truncate">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 leading-tight">
               Settled to Bank
             </span>
             <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
@@ -672,7 +672,7 @@ export default function TransactionsRedesign({
         {/* Metric 3: Successful Conversions */}
         <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 truncate">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 leading-tight">
               Successful Inflow
             </span>
             <span className="p-1.5 sm:p-2 rounded-xl bg-blue-50 text-blue-600 shrink-0">
@@ -698,7 +698,7 @@ export default function TransactionsRedesign({
         {/* Metric 4: Settlement Velocity */}
         <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-slate-300 transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 truncate">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 leading-tight">
               Credit Velocity
             </span>
             <span className="p-1.5 sm:p-2 rounded-xl bg-amber-50 text-amber-600 shrink-0">
@@ -1324,28 +1324,52 @@ export default function TransactionsRedesign({
               Previous
             </button>
 
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              let pageNum;
-              if (totalPages <= 5) pageNum = i + 1;
-              else if (currentPage <= 3) pageNum = i + 1;
-              else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
-              else pageNum = currentPage - 2 + i;
+            {(() => {
+              const pages = [];
+              if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) pages.push(i);
+              } else {
+                if (currentPage <= 4) {
+                  pages.push(1, 2, 3, 4, 5, 'ellipsis-end', totalPages);
+                } else if (currentPage >= totalPages - 3) {
+                  pages.push(1, 'ellipsis-start', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+                } else {
+                  pages.push(1, 'ellipsis-start', currentPage - 1, currentPage, currentPage + 1, 'ellipsis-end', totalPages);
+                }
+              }
 
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  type="button"
-                  className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-colors ${
-                    currentPage === pageNum
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white text-slate-700 border border-slate-200/80 hover:bg-slate-50'
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
+              return pages.map((p, idx) => {
+                if (typeof p === 'string') {
+                  const jumpTarget = p === 'ellipsis-start' ? Math.max(1, currentPage - 5) : Math.min(totalPages, currentPage + 5);
+                  return (
+                    <button
+                      key={`${p}-${idx}`}
+                      type="button"
+                      onClick={() => setCurrentPage(jumpTarget)}
+                      className="w-8 h-8 rounded-xl text-xs font-bold text-slate-400 hover:text-blue-600 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer"
+                      title={p === 'ellipsis-start' ? 'Jump back 5 pages' : 'Jump forward 5 pages'}
+                    >
+                      ...
+                    </button>
+                  );
+                }
+
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    type="button"
+                    className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-colors cursor-pointer ${
+                      currentPage === p
+                        ? 'bg-blue-600 text-white shadow-xs'
+                        : 'bg-white text-slate-700 border border-slate-200/80 hover:bg-slate-50'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              });
+            })()}
 
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
