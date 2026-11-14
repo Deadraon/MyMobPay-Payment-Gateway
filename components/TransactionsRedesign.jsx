@@ -1296,92 +1296,99 @@ export default function TransactionsRedesign({
         {/* ═══════════════════════════════════════════════════════════
            6. PAGINATION & LEDGER FOOTER CONTROLS
            ═══════════════════════════════════════════════════════════ */}
-        <div className="px-6 py-4 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+        <div className="px-4 sm:px-6 py-4 bg-white dark:bg-[#121826] border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-medium text-center sm:text-left">
             <span>
-              Showing <strong className="text-[#0c2340] font-bold">{filteredOrders.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}</strong> to{' '}
-              <strong className="text-[#0c2340] font-bold">{Math.min(currentPage * itemsPerPage, filteredOrders.length)}</strong> of{' '}
-              <strong className="text-[#0c2340] font-bold">{filteredOrders.length}</strong> transactions
+              Showing <strong className="text-[#0c2340] dark:text-white font-bold">{filteredOrders.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}</strong> to{' '}
+              <strong className="text-[#0c2340] dark:text-white font-bold">{Math.min(currentPage * itemsPerPage, filteredOrders.length)}</strong> of{' '}
+              <strong className="text-[#0c2340] dark:text-white font-bold">{filteredOrders.length}</strong> transactions
             </span>
-            <span className="mx-1 text-slate-300">•</span>
-            <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-mono text-[11px]">
-              Page {currentPage} of {totalPages}
+            <span className="hidden sm:inline mx-1 text-slate-300 dark:text-slate-600">•</span>
+            <span className="hidden sm:inline bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-mono text-[11px]">
+              Page {currentPage} of {totalPages || 1}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 border transition-colors ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 border transition-colors cursor-pointer ${
                 currentPage === 1
-                  ? 'bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed'
-                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  ? 'bg-slate-50 dark:bg-slate-900/40 text-slate-300 dark:text-slate-600 border-slate-100 dark:border-slate-800 cursor-not-allowed'
+                  : 'bg-white dark:bg-[#1a2236] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
               type="button"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
-              Previous
+              <span>Previous</span>
             </button>
 
-            {(() => {
-              const pages = [];
-              if (totalPages <= 7) {
-                for (let i = 1; i <= totalPages; i++) pages.push(i);
-              } else {
-                if (currentPage <= 4) {
-                  pages.push(1, 2, 3, 4, 5, 'ellipsis-end', totalPages);
-                } else if (currentPage >= totalPages - 3) {
-                  pages.push(1, 'ellipsis-start', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-                } else {
-                  pages.push(1, 'ellipsis-start', currentPage - 1, currentPage, currentPage + 1, 'ellipsis-end', totalPages);
-                }
-              }
+            <span className="sm:hidden px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono text-xs font-bold whitespace-nowrap">
+              Page {currentPage} of {totalPages || 1}
+            </span>
 
-              return pages.map((p, idx) => {
-                if (typeof p === 'string') {
-                  const jumpTarget = p === 'ellipsis-start' ? Math.max(1, currentPage - 5) : Math.min(totalPages, currentPage + 5);
+            {/* Desktop page buttons */}
+            <div className="hidden sm:flex items-center gap-1">
+              {(() => {
+                const pages = [];
+                if (totalPages <= 5) {
+                  for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                  if (currentPage <= 3) {
+                    pages.push(1, 2, 3, 'ellipsis-end', totalPages);
+                  } else if (currentPage >= totalPages - 2) {
+                    pages.push(1, 'ellipsis-start', totalPages - 2, totalPages - 1, totalPages);
+                  } else {
+                    pages.push(1, 'ellipsis-start', currentPage, 'ellipsis-end', totalPages);
+                  }
+                }
+
+                return pages.map((p, idx) => {
+                  if (typeof p === 'string') {
+                    const jumpTarget = p === 'ellipsis-start' ? Math.max(1, currentPage - 3) : Math.min(totalPages, currentPage + 3);
+                    return (
+                      <button
+                        key={`${p}-${idx}`}
+                        type="button"
+                        onClick={() => setCurrentPage(jumpTarget)}
+                        className="w-8 h-8 rounded-xl text-xs font-bold text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors cursor-pointer"
+                        title={p === 'ellipsis-start' ? 'Jump back' : 'Jump forward'}
+                      >
+                        ...
+                      </button>
+                    );
+                  }
+
                   return (
                     <button
-                      key={`${p}-${idx}`}
+                      key={p}
+                      onClick={() => setCurrentPage(p)}
                       type="button"
-                      onClick={() => setCurrentPage(jumpTarget)}
-                      className="w-8 h-8 rounded-xl text-xs font-bold text-slate-400 hover:text-blue-600 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer"
-                      title={p === 'ellipsis-start' ? 'Jump back 5 pages' : 'Jump forward 5 pages'}
+                      className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-colors cursor-pointer ${
+                        currentPage === p
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'bg-white dark:bg-[#1a2236] text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      }`}
                     >
-                      ...
+                      {p}
                     </button>
                   );
-                }
-
-                return (
-                  <button
-                    key={p}
-                    onClick={() => setCurrentPage(p)}
-                    type="button"
-                    className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-colors cursor-pointer ${
-                      currentPage === p
-                        ? 'bg-blue-600 text-white shadow-xs'
-                        : 'bg-white text-slate-700 border border-slate-200/80 hover:bg-slate-50'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                );
-              });
-            })()}
+                });
+              })()}
+            </div>
 
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage >= totalPages}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 border transition-colors ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 border transition-colors cursor-pointer ${
                 currentPage >= totalPages
-                  ? 'bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed'
-                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  ? 'bg-slate-50 dark:bg-slate-900/40 text-slate-300 dark:text-slate-600 border-slate-100 dark:border-slate-800 cursor-not-allowed'
+                  : 'bg-white dark:bg-[#1a2236] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
               type="button"
             >
-              Next
+              <span>Next</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>

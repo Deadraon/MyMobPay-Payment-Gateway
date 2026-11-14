@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import QRCode from 'react-qr-code';
 import {
   CheckCircle2, X, AlertCircle, Plus, ArrowRight, ShieldCheck,
@@ -92,6 +93,33 @@ export default function DashboardOverviewRedesign({
   const [simulatedInflow, setSimulatedInflow] = useState(0);
   const [isKpiFlashing, setIsKpiFlashing] = useState(false);
   const [hoveredMonth, setHoveredMonth] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isCounterQrModalOpen || selectedTx) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCounterQrModalOpen, selectedTx]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsCounterQrModalOpen(false);
+        setSelectedTx(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Show Toast helper
   const showToast = (msg) => {
@@ -666,7 +694,7 @@ export default function DashboardOverviewRedesign({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--theme-border-color)]">
             <div>
               <div className="text-[14px] font-extrabold text-[var(--theme-text-primary)]">Settlement Velocity &amp; Rail Telemetry</div>
-              <div className="font-mono text-[11px] text-[#0F2BFF] dark:text-[#60A5FA] mt-0.5">
+              <div className="font-mono text-[11px] text-[#0F2BFF] dark:text-[#60A5FA] mt-0.5 whitespace-normal break-words leading-relaxed">
                 {chartReadoutText}
               </div>
             </div>
@@ -684,51 +712,55 @@ export default function DashboardOverviewRedesign({
           </div>
 
           {/* Interactive 12-Month Bar Chart */}
-          <div className="relative h-[220px] flex flex-col justify-end pt-6 pb-2">
-            <div className="pointer-events-none absolute inset-x-0 top-6 bottom-8 flex flex-col justify-between text-[9.5px] font-mono text-[var(--theme-text-muted)]">
-              <div className="border-b border-dashed border-[var(--theme-border-color)] pb-0.5 flex justify-between">
-                <span>100%</span><span>100% T+0 Rail Capacity</span>
-              </div>
-              <div className="border-b border-dashed border-[var(--theme-border-color)] pb-0.5">50%</div>
-              <div className="border-b border-[var(--theme-border-color)] pb-0.5">0%</div>
-            </div>
-
-            <div className="relative z-10 grid grid-cols-12 gap-1.5 sm:gap-2 items-end h-[155px] px-2">
-              {monthlyTelemetry.map((item, idx) => (
-                <div
-                  key={item.m}
-                  onMouseEnter={() => setHoveredMonth(item)}
-                  onMouseLeave={() => setHoveredMonth(null)}
-                  onClick={() => setHoveredMonth(item)}
-                  className="flex flex-col items-center justify-end h-full gap-1 group cursor-pointer"
-                >
-                  <div className="w-full flex items-end justify-center gap-0.5 sm:gap-1 h-full">
-                    {/* UPI Bar */}
-                    <div
-                      style={{ height: `${item.upi}%` }}
-                      className="w-1/2 max-w-[12px] bg-[#0F2BFF] rounded-t-sm chart-bar-anim group-hover:brightness-110 transition-all"
-                      title={`${item.m} UPI: ${item.upi}%`}
-                    ></div>
-                    {/* IMPS Bar */}
-                    <div
-                      style={{ height: `${item.imps}%` }}
-                      className="w-1/2 max-w-[12px] bg-[#10B981] rounded-t-sm chart-bar-anim group-hover:brightness-110 transition-all"
-                      title={`${item.m} IMPS: ${item.imps}%`}
-                    ></div>
-                  </div>
+          <div className="overflow-x-auto no-scrollbar pt-2">
+            <div className="min-w-[420px] sm:min-w-0 relative h-[220px] flex flex-col justify-end pt-6 pb-2">
+              <div className="pointer-events-none absolute inset-x-0 top-6 bottom-8 flex flex-col justify-between text-[9.5px] font-mono text-[var(--theme-text-muted)]">
+                <div className="border-b border-dashed border-[var(--theme-border-color)] pb-0.5 flex justify-between">
+                  <span>100%</span>
+                  <span className="hidden sm:inline">100% T+0 Rail Capacity</span>
+                  <span className="sm:hidden">Capacity</span>
                 </div>
-              ))}
-            </div>
+                <div className="border-b border-dashed border-[var(--theme-border-color)] pb-0.5">50%</div>
+                <div className="border-b border-[var(--theme-border-color)] pb-0.5">0%</div>
+              </div>
 
-            <div className="grid grid-cols-12 gap-1.5 sm:gap-2 text-center font-mono text-[10px] text-[var(--theme-text-muted)] pt-2.5 px-2">
-              {monthlyTelemetry.map((item) => (
-                <span
-                  key={item.m}
-                  className={`truncate ${item.isPeak ? 'font-bold text-[#0F2BFF] dark:text-[#60A5FA]' : item.isLive ? 'font-bold text-[#10B981]' : ''}`}
-                >
-                  {item.m}
-                </span>
-              ))}
+              <div className="relative z-10 grid grid-cols-12 gap-1.5 sm:gap-2 items-end h-[155px] px-2">
+                {monthlyTelemetry.map((item, idx) => (
+                  <div
+                    key={item.m}
+                    onMouseEnter={() => setHoveredMonth(item)}
+                    onMouseLeave={() => setHoveredMonth(null)}
+                    onClick={() => setHoveredMonth(item)}
+                    className="flex flex-col items-center justify-end h-full gap-1 group cursor-pointer"
+                  >
+                    <div className="w-full flex items-end justify-center gap-0.5 sm:gap-1 h-full">
+                      {/* UPI Bar */}
+                      <div
+                        style={{ height: `${item.upi}%` }}
+                        className="w-1/2 max-w-[12px] bg-[#0F2BFF] rounded-t-sm chart-bar-anim group-hover:brightness-110 transition-all"
+                        title={`${item.m} UPI: ${item.upi}%`}
+                      ></div>
+                      {/* IMPS Bar */}
+                      <div
+                        style={{ height: `${item.imps}%` }}
+                        className="w-1/2 max-w-[12px] bg-[#10B981] rounded-t-sm chart-bar-anim group-hover:brightness-110 transition-all"
+                        title={`${item.m} IMPS: ${item.imps}%`}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-12 gap-1.5 sm:gap-2 text-center font-mono text-[10px] text-[var(--theme-text-muted)] pt-2.5 px-2">
+                {monthlyTelemetry.map((item) => (
+                  <span
+                    key={item.m}
+                    className={`truncate ${item.isPeak ? 'font-bold text-[#0F2BFF] dark:text-[#60A5FA]' : item.isLive ? 'font-bold text-[#10B981]' : ''}`}
+                  >
+                    {item.m}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -744,7 +776,7 @@ export default function DashboardOverviewRedesign({
                 maxLength={12}
                 value={inlineUtr}
                 onChange={(e) => setInlineUtr(e.target.value.replace(/[^0-9]/g, ''))}
-                placeholder="Instant NPCI UTR Check: Enter 12-digit UTR (e.g. 431988210492)"
+                placeholder="Enter 12-digit UTR"
                 className="console-input w-full pl-9 pr-3 py-2 rounded-xl font-mono text-xs"
               />
             </div>
@@ -937,18 +969,18 @@ export default function DashboardOverviewRedesign({
       </div>
 
       {/* ── 3. SLIDE-OVER TRANSACTION & WEBHOOK INSPECTOR DRAWER ─────── */}
-      {selectedTx && (
+      {mounted && selectedTx && typeof document !== 'undefined' && createPortal(
         <div
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedTx(null);
           }}
-          className="fixed inset-0 z-50 bg-[#090D18]/60 backdrop-blur-xs flex justify-end"
+          className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex justify-end overscroll-contain"
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md bg-[var(--theme-bg-elevated)] border-l border-[var(--theme-border-color)] h-full p-6 flex flex-col justify-between overflow-y-auto shadow-2xl view-enter">
+          <div className="w-full max-w-md bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border-l border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] h-full p-6 flex flex-col justify-between overflow-y-auto shadow-2xl animate-fade-in">
             <div className="space-y-5">
-              <div className="flex items-center justify-between pb-4 border-b border-[var(--theme-border-color)]">
+              <div className="flex items-center justify-between pb-4 border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40]">
                 <div>
                   <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
                     T+0 SETTLEMENT INSPECTOR
@@ -1069,28 +1101,29 @@ export default function DashboardOverviewRedesign({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ── 4. COUNTER STATIC QR MODAL ───────────────────────────────── */}
-      {isCounterQrModalOpen && (
+      {mounted && isCounterQrModalOpen && typeof document !== 'undefined' && createPortal(
         <div
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsCounterQrModalOpen(false);
           }}
-          className="fixed inset-0 z-50 bg-[#090D18]/60 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overscroll-contain select-none"
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl view-enter">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--theme-border-color)]">
+          <div className="bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative max-h-[92vh] overflow-y-auto animate-fade-in">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40]">
               <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
                 DIRECT BANK STATIC QR
               </span>
               <button
                 type="button"
                 onClick={() => setIsCounterQrModalOpen(false)}
-                className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] cursor-pointer"
+                className="p-1 rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-bg-secondary)] transition-colors cursor-pointer"
                 aria-label="Close QR Modal"
               >
                 <X className="w-4 h-4" />
@@ -1119,7 +1152,7 @@ export default function DashboardOverviewRedesign({
               0% MDR &bull; Instant T+0 Direct Credit
             </div>
 
-            <div className="mt-4 pt-3 border-t border-[var(--theme-border-color)] flex items-center justify-center gap-2">
+            <div className="mt-4 pt-3 border-t border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] flex items-center justify-center gap-2">
               <button
                 type="button"
                 onClick={() => copyText(merchantVpa, 'Merchant UPI VPA copied to clipboard')}
@@ -1138,17 +1171,19 @@ export default function DashboardOverviewRedesign({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ── 5. FLOATING NOTIFICATION TOAST ───────────────────────────── */}
-      {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 rounded-2xl bg-[#090D18] text-white border border-slate-700 px-4 py-3 shadow-2xl flex items-center gap-2.5 text-xs font-semibold view-enter">
+      {mounted && toastMessage && typeof document !== 'undefined' && createPortal(
+        <div className="fixed bottom-5 right-5 z-[9999] rounded-2xl bg-[#090D18] text-white border border-slate-700 px-4 py-3 shadow-2xl flex items-center gap-2.5 text-xs font-semibold animate-fade-in select-none">
           <span className="w-5 h-5 rounded-full bg-[#10B981] text-[#042F1E] flex items-center justify-center shrink-0">
             <Check className="w-3 h-3 stroke-[3]" />
           </span>
           <span>{toastMessage}</span>
-        </div>
+        </div>,
+        document.body
       )}
 
     </section>

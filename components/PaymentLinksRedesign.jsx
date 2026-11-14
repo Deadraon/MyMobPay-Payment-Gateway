@@ -2741,48 +2741,39 @@ export default function PaymentLinksRedesign({
         </div>
 
         {/* Pagination Footer */}
-        <div className="p-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-          <span>
+        <div className="p-4 bg-slate-50 dark:bg-[#121826] border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-center sm:text-left">
             Showing{' '}
-            <strong className="text-slate-900 font-semibold">
+            <strong className="text-slate-900 dark:text-white font-semibold">
               {filteredLinks.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to{' '}
               {Math.min(currentPage * itemsPerPage, filteredLinks.length)}
             </strong>{' '}
             of {filteredLinks.length} payment links
           </span>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2236] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
               type="button"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Previous</span>
             </button>
 
-            {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((num) => (
-              <button
-                key={num}
-                onClick={() => setCurrentPage(num)}
-                className={`px-2.5 py-1 rounded text-xs font-semibold transition-colors ${
-                  currentPage === num
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
-                }`}
-                type="button"
-              >
-                {num}
-              </button>
-            ))}
+            <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono text-xs font-bold whitespace-nowrap">
+              Page {currentPage} of {totalPages || 1}
+            </span>
 
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="p-1.5 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              disabled={currentPage >= totalPages}
+              className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2236] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
               type="button"
             >
-              <ChevronRight className="w-4 h-4" />
+              <span>Next</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

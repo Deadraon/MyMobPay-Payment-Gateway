@@ -2047,23 +2047,23 @@ export default function SettingsRedesign({
               ═══════════════════════════════════════════════════════════ */}
           {activeCategory === 'team' && (
             <div className="flex flex-col gap-6 animate-fadeIn">
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-6 shadow-xs">
+              <div className="bg-white dark:bg-[#121826] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col gap-6 shadow-xs">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold border border-indigo-100 dark:border-indigo-800/50">
                       <Users className="w-5 h-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-base text-[#0c2340] font-bold tracking-tight">
+                        <h3 className="text-base text-[#0c2340] dark:text-white font-bold tracking-tight">
                           Team Members &amp; Access Roles
                         </h3>
-                        <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-200">
+                        <span className="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold border border-indigo-200 dark:border-indigo-800/50">
                           Role-Based Access
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Manage co-founders, accounting staff, and operational members.
                       </p>
                     </div>
@@ -2071,15 +2071,15 @@ export default function SettingsRedesign({
                 </div>
 
                 {teamMsg && (
-                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex justify-between">
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl text-xs flex justify-between">
                     <span>{teamMsg}</span>
                     <button type="button" onClick={() => setTeamMsg(null)}>&times;</button>
                   </div>
                 )}
 
                 {/* Invite Form */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                  <h4 className="text-xs font-bold text-slate-800">Invite New Team Member</h4>
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-3">
+                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Invite New Team Member</h4>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <input
                       type="email"
@@ -2127,7 +2127,7 @@ export default function SettingsRedesign({
                 {/* Team List Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-500 font-bold text-[10px] border-b border-slate-200">
+                    <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold text-[10px] border-b border-slate-200 dark:border-slate-800">
                       <tr>
                         <th className="px-4 py-3">Member</th>
                         <th className="px-4 py-3">Role</th>
@@ -2136,31 +2136,31 @@ export default function SettingsRedesign({
                         <th className="px-4 py-3 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                       {teamMembers.map((m) => (
-                        <tr key={m.id} className="hover:bg-slate-50/80">
+                        <tr key={m.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
                           <td className="px-4 py-3">
-                            <span className="font-bold text-slate-800">{m.email}</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-200">{m.email}</span>
                           </td>
                           <td className="px-4 py-3">
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              m.role === 'Owner' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
-                              m.role === 'Admin' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' :
-                              m.role === 'Operator' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                              'bg-slate-100 text-slate-600 border border-slate-200'
+                              m.role === 'Owner' ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800' :
+                              m.role === 'Admin' ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800' :
+                              m.role === 'Operator' ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' :
+                              'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
                             }`}>
                               {m.role}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <span className={`inline-flex items-center gap-1 text-[11px] font-medium ${
-                              m.status === 'Active' ? 'text-emerald-700' : 'text-amber-700'
+                              m.status === 'Active' ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'
                             }`}>
                               <span className={`w-1.5 h-1.5 rounded-full ${m.status === 'Active' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                               {m.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-slate-500 text-[11px]">{m.addedAt}</td>
+                          <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-[11px]">{m.addedAt}</td>
                           <td className="px-4 py-3 text-right">
                             {m.role !== 'Owner' ? (
                               <button

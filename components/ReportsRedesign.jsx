@@ -504,16 +504,16 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
       </div>
 
       {/* ── Hourly Traffic Heatmap ───────────────────────────────────── */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-[#121826] border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Hourly Payment Velocity Heatmap (IST)</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Hourly Payment Velocity Heatmap (IST)</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Identifies peak payment hours for timing flash sales, marketing campaigns, or support staffing.
             </p>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
+            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">
               🔥 Peak Hour: {hourlyData.peakHour.label} ({hourlyData.peakHour.count} orders, {formatINR(hourlyData.peakHour.volume)})
             </span>
           </div>
@@ -521,39 +521,43 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
 
         {/* 24-Hour Bar Graph */}
         <div className="pt-2">
-          <div className="grid grid-cols-12 sm:grid-cols-24 gap-1 items-end h-28 border-b border-slate-100 pb-2">
-            {hourlyData.hours.map(h => {
-              const heightPct = Math.round((h.count / hourlyData.maxCount) * 100);
-              const isPeak = h.hour === hourlyData.peakHour.hour && h.count > 0;
+          <div className="overflow-x-auto no-scrollbar pb-1">
+            <div className="min-w-[540px] sm:min-w-0">
+              <div className="grid grid-cols-24 gap-1 items-end h-28 border-b border-slate-100 dark:border-slate-800 pb-2">
+                {hourlyData.hours.map(h => {
+                  const heightPct = Math.round((h.count / hourlyData.maxCount) * 100);
+                  const isPeak = h.hour === hourlyData.peakHour.hour && h.count > 0;
 
-              return (
-                <div key={h.hour} className="flex flex-col items-center gap-1 group relative h-full justify-end">
-                  <div
-                    className={`w-full rounded-t-sm transition-colors duration-300 ${
-                      isPeak
-                        ? 'bg-emerald-600'
-                        : h.count > 0
-                        ? 'bg-blue-600 hover:bg-blue-700'
-                        : 'bg-slate-100 hover:bg-slate-200'
-                    }`}
-                    style={{ height: `${Math.max(heightPct, 8)}%` }}
-                  />
-                  {/* Tooltip on hover */}
-                  <div className="absolute bottom-full mb-1 hidden group-hover:flex flex-col items-center z-20 pointer-events-none">
-                    <div className="bg-slate-900 text-white text-[10px] font-mono py-1 px-2 rounded-md shadow-lg whitespace-nowrap">
-                      {h.label}: {h.count} orders ({formatINR(h.volume)})
+                  return (
+                    <div key={h.hour} className="flex flex-col items-center gap-1 group relative h-full justify-end">
+                      <div
+                        className={`w-full rounded-t-sm transition-colors duration-300 ${
+                          isPeak
+                            ? 'bg-emerald-600'
+                            : h.count > 0
+                            ? 'bg-blue-600 hover:bg-blue-700'
+                            : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        }`}
+                        style={{ height: `${Math.max(heightPct, 8)}%` }}
+                      />
+                      {/* Tooltip on hover */}
+                      <div className="absolute bottom-full mb-1 hidden group-hover:flex flex-col items-center z-20 pointer-events-none">
+                        <div className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-mono py-1 px-2 rounded-md shadow-lg whitespace-nowrap border border-slate-700">
+                          {h.label}: {h.count} orders ({formatINR(h.volume)})
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="flex justify-between items-center text-[10px] font-mono text-slate-400 pt-1.5 px-0.5">
-            <span>00:00</span>
-            <span>06:00</span>
-            <span>12:00</span>
-            <span>18:00</span>
-            <span>23:00</span>
+                  );
+                })}
+              </div>
+              <div className="flex justify-between items-center text-[10px] font-mono text-slate-400 dark:text-slate-500 pt-1.5 px-0.5">
+                <span>00:00</span>
+                <span>06:00</span>
+                <span>12:00</span>
+                <span>18:00</span>
+                <span>23:00</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
