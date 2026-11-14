@@ -1,59 +1,54 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   X,
-  ShieldCheck,
   Scale,
-  Ban,
-  CreditCard,
-  CheckCircle2,
-  ExternalLink,
-  Check,
-  Lock,
-  AlertTriangle,
   Landmark,
-  UserCheck
+  Ban,
+  UserCheck,
+  ShieldCheck,
+  Check,
+  ExternalLink,
+  CreditCard,
+  AlertTriangle
 } from 'lucide-react';
-import Link from 'next/link';
 
 // ── Authentic Indian Tricolour Flag SVG ──
-const IndianFlag = ({ className = 'w-4 h-3' }) => (
+const IndianFlag = ({ className = 'w-3.5 h-2.5' }) => (
   <svg
     className={`${className} rounded-[1.5px] overflow-hidden shrink-0 inline-block`}
-    viewBox="0 0 640 480"
+    viewBox="0 0 24 18"
     aria-label="India Flag"
   >
-    <path fill="#FF9933" d="M0 0h640v160H0z" />
-    <path fill="#FFFFFF" d="M0 160h640v160H0z" />
-    <path fill="#138808" d="M0 320h640v160H0z" />
-    <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" strokeWidth="6" />
-    <circle cx="320" cy="240" r="8" fill="#000080" />
-    <g stroke="#000080" strokeWidth="2.5">
-      {Array.from({ length: 24 }).map((_, i) => (
-        <line
-          key={i}
-          x1="320"
-          y1="240"
-          x2={320 + 38 * Math.cos((i * 15 * Math.PI) / 180)}
-          y2={240 + 38 * Math.sin((i * 15 * Math.PI) / 180)}
-        />
-      ))}
-    </g>
+    <rect width="24" height="6" fill="#FF9933" />
+    <rect y="6" width="24" height="6" fill="#FFFFFF" />
+    <rect y="12" width="24" height="6" fill="#138808" />
+    <circle cx="12" cy="9" r="2.2" fill="none" stroke="#000080" strokeWidth="0.8" />
   </svg>
 );
+
+function normalizeTab(t) {
+  if (t === 'overview' || t === 'direct') return 'direct';
+  if (t === 'prohibited') return 'prohibited';
+  if (t === 'rules' || t === 'guidelines') return 'guidelines';
+  if (t === 'security' || t === 'antifraud') return 'antifraud';
+  return 'direct';
+}
 
 export default function LegalAgreementModal({
   isOpen,
   onClose,
   onAccept,
-  initialTab = 'overview'
+  initialTab = 'direct'
 }) {
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState(() => normalizeTab(initialTab));
+  const [feedbackToast, setFeedbackToast] = useState('');
 
   useEffect(() => {
     if (initialTab) {
-      setActiveTab(initialTab);
+      setActiveTab(normalizeTab(initialTab));
     }
   }, [initialTab]);
 
@@ -68,6 +63,7 @@ export default function LegalAgreementModal({
       window.addEventListener('keydown', handleKeyDown);
     } else {
       document.body.style.overflow = '';
+      setFeedbackToast('');
     }
     return () => {
       document.body.style.overflow = '';
@@ -77,308 +73,373 @@ export default function LegalAgreementModal({
 
   if (!isOpen) return null;
 
+  const handleAccept = () => {
+    setFeedbackToast('Merchant Operating Rules & Legal Terms accepted (v2.5).');
+    if (onAccept) onAccept();
+    setTimeout(() => {
+      onClose();
+    }, 400);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto selection:bg-[#0F2BFF] selection:text-white">
       {/* ── Soft Atmospheric Scrim ── */}
       <div
-        className="fixed inset-0 bg-[#0d253d]/45 backdrop-blur-md transition-opacity duration-200"
+        className="fixed inset-0 bg-[#090A10]/70 backdrop-blur-sm transition-opacity duration-200"
         onClick={onClose}
       />
 
-      {/* ── Modal Dialog (Clean Slate Theme • Seamless & Borderless) ── */}
-      <div
+      {/* ── Modal Dialog Card ── */}
+      <section
+        id="merchant-legal-terms-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="legal-modal-title"
-        className="relative w-full max-w-2xl bg-white text-slate-800 rounded-3xl shadow-[0_20px_70px_-15px_rgba(13,37,61,0.22)] flex flex-col max-h-[88vh] overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150"
+        className="relative z-10 theme-bg-elevated border theme-border rounded-[28px] max-w-[660px] w-full overflow-hidden theme-modal-shadow transition-colors flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150"
       >
-        {/* ── Header ── */}
-        <div className="p-4 sm:p-6 pb-3 sm:pb-4 bg-white flex items-start justify-between shrink-0">
-          <div className="flex items-start gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-700 shrink-0 mt-0.5">
-              <Scale className="w-5 h-5 text-slate-700" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 text-[10px] font-semibold text-slate-600">
-                  <IndianFlag className="w-3.5 h-2.5" />
-                  <span>RBI PSS Act 2007 Guidelines</span>
-                </span>
-                <span className="text-[10px] text-slate-600 font-mono hidden sm:inline-block">v2.5</span>
+        {/* 1. MODAL HEADER + 4-TAB NAVIGATION BAR */}
+        <div className="px-6 sm:px-8 pt-6 pb-4 border-b theme-border shrink-0">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              {/* Scales of Justice Icon Container */}
+              <div className="w-11 h-11 rounded-2xl theme-bg-secondary border theme-border flex items-center justify-center text-[#0F2BFF] dark:text-[#60A5FA] shrink-0">
+                <Scale className="w-5 h-5 stroke-[2]" />
               </div>
-              <h2 id="legal-modal-title" className="text-sm sm:text-base font-semibold text-[#0d253d] tracking-tight leading-snug">
-                Merchant Operating Rules &amp; Legal Terms
-              </h2>
+
+              <div>
+                {/* Top Badge Strip: Indian Flag + RBI PSS Act 2007 Guidelines + v2.5 */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full theme-bg-secondary border theme-border text-[11px] font-bold theme-text-primary">
+                    <IndianFlag className="w-3.5 h-2.5" />
+                    <span>RBI PSS Act 2007 Guidelines</span>
+                  </span>
+
+                  <span className="font-mono text-[11px] font-bold theme-text-muted">
+                    v2.5
+                  </span>
+                </div>
+
+                {/* Modal Main Heading */}
+                <h2 id="legal-modal-title" className="headline-anton text-[22px] sm:text-[28px] mt-1.5 leading-none">
+                  MERCHANT OPERATING RULES &amp; LEGAL TERMS
+                </h2>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer shrink-0 ml-3"
-            aria-label="Close dialog"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* ── Seamless Capsule Segmented Tab Bar (Smooth Horizontal Scroll, No Awkward Wrap) ── */}
-        <div className="px-4 sm:px-6 pb-2.5 bg-white shrink-0 overflow-x-auto scrollbar-none">
-          <div className="bg-slate-100/80 p-1 rounded-2xl inline-flex items-center gap-1 min-w-full sm:min-w-0">
+            {/* Top-Right Close Button */}
             <button
               type="button"
-              onClick={() => setActiveTab('overview')}
-              className={`px-3 py-1.5 rounded-xl text-xs transition-all duration-150 cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
-                activeTab === 'overview'
-                  ? 'bg-white text-[#0d253d] font-semibold shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800 font-medium'
+              onClick={onClose}
+              className="w-8 h-8 rounded-full theme-bg-secondary border theme-border flex items-center justify-center theme-text-muted hover:theme-text-primary transition-colors shrink-0 cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X className="w-4 h-4 stroke-[2.3]" />
+            </button>
+          </div>
+
+          {/* 4 Interactive Category Tabs */}
+          <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 rounded-2xl theme-bg-secondary border theme-border">
+            <button
+              type="button"
+              id="tab-btn-direct"
+              onClick={() => setActiveTab('direct')}
+              className={`py-2 px-2.5 rounded-xl text-[11.5px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === 'direct'
+                  ? 'bg-white dark:bg-[#161F30] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
+                  : 'theme-text-muted hover:theme-text-primary'
               }`}
             >
-              <Landmark className="w-3.5 h-3.5" />
-              <span>Direct Settlement</span>
+              <Landmark className="w-3.5 h-3.5 shrink-0 stroke-[2.1]" />
+              <span className="truncate">Direct Settlement</span>
             </button>
 
             <button
               type="button"
+              id="tab-btn-prohibited"
               onClick={() => setActiveTab('prohibited')}
-              className={`px-3 py-1.5 rounded-xl text-xs transition-all duration-150 cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
+              className={`py-2 px-2.5 rounded-xl text-[11.5px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'prohibited'
-                  ? 'bg-white text-[#0d253d] font-semibold shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800 font-medium'
+                  ? 'bg-white dark:bg-[#161F30] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
+                  : 'theme-text-muted hover:theme-text-primary'
               }`}
             >
-              <Ban className="w-3.5 h-3.5" />
-              <span>Prohibited Goods</span>
+              <Ban className="w-3.5 h-3.5 shrink-0 stroke-[2.1]" />
+              <span className="truncate">Prohibited Goods</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('rules')}
-              className={`px-3 py-1.5 rounded-xl text-xs transition-all duration-150 cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
-                activeTab === 'rules'
-                  ? 'bg-white text-[#0d253d] font-semibold shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800 font-medium'
+              id="tab-btn-guidelines"
+              onClick={() => setActiveTab('guidelines')}
+              className={`py-2 px-2.5 rounded-xl text-[11.5px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === 'guidelines'
+                  ? 'bg-white dark:bg-[#161F30] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
+                  : 'theme-text-muted hover:theme-text-primary'
               }`}
             >
-              <UserCheck className="w-3.5 h-3.5" />
-              <span>Merchant Guidelines</span>
+              <UserCheck className="w-3.5 h-3.5 shrink-0 stroke-[2.1]" />
+              <span className="truncate">Merchant Guidelines</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('security')}
-              className={`px-3 py-1.5 rounded-xl text-xs transition-all duration-150 cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
-                activeTab === 'security'
-                  ? 'bg-white text-[#0d253d] font-semibold shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800 font-medium'
+              id="tab-btn-antifraud"
+              onClick={() => setActiveTab('antifraud')}
+              className={`py-2 px-2.5 rounded-xl text-[11.5px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === 'antifraud'
+                  ? 'bg-white dark:bg-[#161F30] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
+                  : 'theme-text-muted hover:theme-text-primary'
               }`}
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Anti-Fraud &amp; Law</span>
+              <ShieldCheck className="w-3.5 h-3.5 shrink-0 stroke-[2.1]" />
+              <span className="truncate">Anti-Fraud &amp; Law</span>
             </button>
           </div>
         </div>
 
-        {/* ── Scrollable Body Content (Border-Free Soft Surfaces) ── */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+        {/* 2. MODAL BODY (4 TAB PANELS) */}
+        <div className="px-6 sm:px-8 py-5 space-y-4 text-left overflow-y-auto flex-1">
 
-          {/* TAB 1: OVERVIEW & DIRECT SETTLEMENT */}
-          {activeTab === 'overview' && (
-            <div className="space-y-3.5 animate-in fade-in duration-150">
-              <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 text-slate-800 space-y-1.5">
-                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block">
-                  Statutory Notice • Non-Custodial Architecture
+          {/* Feedback Toast */}
+          {feedbackToast && (
+            <div
+              id="modal-feedback-toast"
+              className="rounded-xl bg-[#ECFDF5] dark:bg-[#064E3B]/40 border border-[#A7F3D0] dark:border-[#10B981]/40 px-4 py-2.5 flex items-center justify-between gap-2 text-xs font-semibold text-[#065F46] dark:text-[#6EE7B7] tab-animate"
+            >
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full bg-[#10B981] text-white flex items-center justify-center shrink-0">
+                  <Check className="w-2.5 h-2.5 stroke-[3]" />
                 </span>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  MyMobPay operates strictly as a <strong className="text-slate-900 font-semibold">technical software routing provider</strong> under Section 18 of the Payment and Settlement Systems Act, 2007. We are not a payment aggregator, digital wallet, or escrow repository. We never hold, pool, or manage merchant or customer funds.
+                <span>{feedbackToast}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFeedbackToast('')}
+                className="hover:opacity-75 font-bold cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+          )}
+
+          {/* ================================================================= */}
+          {/* PANEL 1: DIRECT SETTLEMENT                                        */}
+          {/* ================================================================= */}
+          {activeTab === 'direct' && (
+            <div id="tab-panel-direct" className="space-y-4 tab-animate">
+              {/* Statutory Notice Card */}
+              <div className="rounded-2xl p-5 theme-bg-well border theme-border">
+                <div className="font-mono text-[10.5px] font-bold uppercase tracking-[0.1em] theme-text-primary mb-2">
+                  STATUTORY NOTICE &bull; NON-CUSTODIAL ARCHITECTURE
+                </div>
+                <p className="text-[13.5px] leading-[1.65] theme-text-secondary">
+                  MyMobPay operates strictly as a <strong className="font-bold theme-text-primary">technical software routing provider</strong> under Section 18 of the Payment and Settlement Systems Act, 2007. We are not a payment aggregator, digital wallet, or escrow repository. We never hold, pool, or manage merchant or customer funds.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-4 rounded-2xl bg-slate-50 space-y-1">
-                  <div className="flex items-center gap-2 text-slate-900 font-semibold text-xs">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>0% Transaction Commission</span>
+              {/* 2 Side-by-Side Feature Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {/* 0% Transaction Commission */}
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-5 h-5 rounded-full bg-[#10B981]/15 text-[#10B981] flex items-center justify-center shrink-0">
+                      <Check className="w-3.5 h-3.5 stroke-[2.6]" />
+                    </span>
+                    <span className="text-[13px] font-extrabold theme-text-primary">
+                      0% Transaction Commission
+                    </span>
                   </div>
-                  <p className="text-xs text-slate-500 leading-normal">
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
                     You keep 100% of your customer volume. Payments settle directly into your bank account with zero middleman fee deductions.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 space-y-1">
-                  <div className="flex items-center gap-2 text-slate-900 font-semibold text-xs">
-                    <CreditCard className="w-4 h-4 text-slate-700 shrink-0" />
-                    <span>Instant NPCI UPI Settlement</span>
+                {/* Instant NPCI UPI Settlement */}
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-5 h-5 rounded-md bg-[#0F2BFF]/12 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0">
+                      <CreditCard className="w-3.5 h-3.5 stroke-[2.2]" />
+                    </span>
+                    <span className="text-[13px] font-extrabold theme-text-primary">
+                      Instant NPCI UPI Settlement
+                    </span>
                   </div>
-                  <p className="text-xs text-slate-500 leading-normal">
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
                     Buyers transfer directly to your bank UPI address in 0 seconds. Money routes directly on banking rails.
                   </p>
                 </div>
+              </div>
 
-                <div className="p-4 rounded-2xl bg-amber-50/70 space-y-1 sm:col-span-2">
-                  <div className="flex items-center gap-2 text-amber-900 font-semibold text-xs">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>Merchant Sole Refund Responsibility</span>
-                  </div>
-                  <p className="text-xs text-amber-900/80 leading-normal">
-                    Because MyMobPay maintains zero custodial balances, <strong className="text-amber-950 font-medium">all customer refunds, order cancellations, and chargebacks must be issued directly by you</strong> using your bank UPI or net-banking application.
+              {/* Amber Callout Box: Merchant Sole Refund Responsibility */}
+              <div className="rounded-2xl p-4 sm:p-5 bg-[#FFFBEB] dark:bg-[#451A03]/35 border border-[#FDE68A] dark:border-[#F59E0B]/40">
+                <div className="flex items-center gap-2 text-[13px] font-extrabold text-[#92400E] dark:text-[#FCD34D] mb-1.5">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-[#D97706] dark:text-[#FBBF24] stroke-[2.3]" />
+                  <span>Merchant Sole Refund Responsibility</span>
+                </div>
+                <p className="text-[12.5px] leading-[1.6] text-[#92400E]/90 dark:text-[#FDE68A]/90">
+                  Because MyMobPay maintains zero custodial balances, <strong className="font-bold text-[#78350F] dark:text-white">all customer refunds, order cancellations, and chargebacks must be issued directly by you</strong> using your bank UPI or net-banking application.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ================================================================= */}
+          {/* PANEL 2: PROHIBITED GOODS                                         */}
+          {/* ================================================================= */}
+          {activeTab === 'prohibited' && (
+            <div id="tab-panel-prohibited" className="space-y-4 tab-animate">
+              <div className="rounded-2xl p-5 theme-bg-well border theme-border">
+                <div className="font-mono text-[10.5px] font-bold uppercase tracking-[0.1em] text-[#E11D48] mb-2">
+                  ACCEPTABLE USE POLICY &bull; RESTRICTED MERCHANT CATEGORIES
+                </div>
+                <p className="text-[13.5px] leading-[1.65] theme-text-secondary">
+                  Merchants are strictly prohibited from using MyMobPay software routing to generate UPI QR codes or payment links for goods or services banned under Indian law, NPCI operating circulars, or the Information Technology Act, 2000.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Unlicensed Gaming &amp; Betting</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Real-money gambling, offshore betting portals, unauthorized lottery schemes, and unlicensed fantasy gaming pools.
+                  </p>
+                </div>
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Illicit &amp; Regulated Goods</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Narcotics, controlled substances, counterfeit merchandise, adult content, and unlicensed financial investment schemes.
+                  </p>
+                </div>
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Multi-Level Marketing &amp; Schemes</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Pyramid models, referral-gated matrix schemes, unauthorized chit funds, and unregistered cryptocurrency token pre-sales.
+                  </p>
+                </div>
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Weapons &amp; Hazardous Goods</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Firearms, tactical weapons, fireworks, uncertified explosives, and hazardous materials without statutory permits.
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* TAB 2: PROHIBITED BUSINESSES */}
-          {activeTab === 'prohibited' && (
-            <div className="space-y-3.5 animate-in fade-in duration-150">
-              <div className="p-3.5 rounded-2xl bg-slate-50 text-slate-700 text-xs flex items-start gap-2.5">
-                <Ban className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                <span className="leading-relaxed">
-                  <strong className="text-slate-900 font-semibold">Prohibited Categories:</strong> Accounts routing payments for the following goods or services are subject to immediate termination in compliance with Indian cyber laws.
-                </span>
+          {/* ================================================================= */}
+          {/* PANEL 3: MERCHANT GUIDELINES                                      */}
+          {/* ================================================================= */}
+          {activeTab === 'guidelines' && (
+            <div id="tab-panel-guidelines" className="space-y-4 tab-animate">
+              <div className="rounded-2xl p-5 theme-bg-well border theme-border">
+                <div className="font-mono text-[10.5px] font-bold uppercase tracking-[0.1em] theme-link mb-2">
+                  OPERATIONAL COMPLIANCE &bull; VPA &amp; CHECKOUT STANDARDS
+                </div>
+                <p className="text-[13.5px] leading-[1.65] theme-text-secondary">
+                  Merchants must configure a valid, KYC-verified bank UPI address belonging to the business or proprietor and provide clear customer support channels on their checkout pages.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors text-xs space-y-1">
-                  <span className="font-semibold text-slate-900 block">Illegal Gambling &amp; Betting</span>
-                  <p className="text-slate-500 leading-normal">Sports betting, casino wagering, lotteries, or chance games prohibited under the Public Gambling Act, 1867.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Direct Bank VPA Ownership</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Your settlement UPI ID must belong directly to your verified business or proprietor bank account for uninterrupted T+0 settlement.
+                  </p>
                 </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors text-xs space-y-1">
-                  <span className="font-semibold text-slate-900 block">Unlicensed Financial Schemes</span>
-                  <p className="text-slate-500 leading-normal">Multi-level marketing (MLM), pyramid schemes, unauthorized forex, or unregistered crypto pre-sales.</p>
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Automated UTR Fulfillment</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Verify HMAC-SHA256 webhook signatures on your server before marking orders fulfilled against 12-digit NPCI UTR numbers.
+                  </p>
                 </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors text-xs space-y-1">
-                  <span className="font-semibold text-slate-900 block">Controlled Substances &amp; Drugs</span>
-                  <p className="text-slate-500 leading-normal">Narcotics, illegal chemicals, or prescription pharmaceuticals sold without state pharmacy licenses.</p>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors text-xs space-y-1">
-                  <span className="font-semibold text-slate-900 block">Adult Content &amp; Media</span>
-                  <p className="text-slate-500 leading-normal">Pornography, sexually explicit media, escort directories, or non-consensual material.</p>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors text-xs space-y-1">
-                  <span className="font-semibold text-slate-900 block">Weapons &amp; Hazardous Goods</span>
-                  <p className="text-slate-500 leading-normal">Firearms, ammunition, tactical knives, explosive items, or fireworks without statutory permits.</p>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors text-xs space-y-1">
-                  <span className="font-semibold text-slate-900 block">Scams, Phishing &amp; Malware</span>
-                  <p className="text-slate-500 leading-normal">Phished credentials, social media bot followers, hacking scripts, or deceptive brand impersonation.</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: MERCHANT OPERATING RULES */}
-          {activeTab === 'rules' && (
-            <div className="space-y-3 animate-in fade-in duration-150">
-              <div className="space-y-2 text-xs">
-                <div className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors space-y-1">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">01</span>
-                    <span className="font-semibold text-slate-900">Transparent Pricing &amp; No Surcharging</span>
-                  </div>
-                  <p className="text-slate-500 pl-7.5 leading-relaxed">
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Transparent Customer Pricing</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
                     All payment requests must reflect genuine order amounts. Adding hidden convenience fees or surcharging buyers for choosing UPI is strictly prohibited under NPCI guidelines.
                   </p>
                 </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors space-y-1">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">02</span>
-                    <span className="font-semibold text-slate-900">Authentic Business Identity &amp; Support Channels</span>
-                  </div>
-                  <p className="text-slate-500 pl-7.5 leading-relaxed">
-                    You must display an authentic business name, reachable customer support email, and contact phone number on your website, app, or checkout links.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors space-y-1">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">03</span>
-                    <span className="font-semibold text-slate-900">Prompt Delivery &amp; Support Responsiveness</span>
-                  </div>
-                  <p className="text-slate-500 pl-7.5 leading-relaxed">
-                    Fulfill digital and physical orders within the promised timeframe. Respond to customer inquiries or payment concerns within 48 business hours.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition-colors space-y-1">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">04</span>
-                    <span className="font-semibold text-slate-900">Clear Refund &amp; Cancellation Terms</span>
-                  </div>
-                  <p className="text-slate-500 pl-7.5 leading-relaxed">
-                    Maintain a visible refund policy. If goods cannot be fulfilled or delivery fails, you must issue a direct refund to the customer&apos;s UPI address.
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Visible Support &amp; Refund Terms</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Maintain reachable customer support channels (email/phone) and an explicit refund policy visible to buyers prior to checkout with 48h response times.
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* TAB 4: ANTI-FRAUD & STATUTORY LAW */}
-          {activeTab === 'security' && (
-            <div className="space-y-3.5 animate-in fade-in duration-150">
-              <div className="p-4 rounded-2xl bg-slate-50 text-slate-800 text-xs space-y-2">
-                <span className="font-semibold block text-sm flex items-center gap-2 text-slate-900">
-                  <Lock className="w-4 h-4 text-slate-700 shrink-0" />
-                  <span>UTR Integrity &amp; Information Technology Act 2000</span>
-                </span>
-                <p className="text-slate-600 leading-relaxed">
-                  Submitting synthetic or forged Unique Transaction Reference (UTR) numbers, tampering with notification forwarder apps, or spoofing bank SMS alerts violates <strong className="text-slate-900 font-semibold">Sections 43, 66, and 66D of the Information Technology Act, 2000</strong>.
+          {/* ================================================================= */}
+          {/* PANEL 4: ANTI-FRAUD & LAW                                         */}
+          {/* ================================================================= */}
+          {activeTab === 'antifraud' && (
+            <div id="tab-panel-antifraud" className="space-y-4 tab-animate">
+              <div className="rounded-2xl p-5 theme-bg-well border theme-border">
+                <div className="font-mono text-[10.5px] font-bold uppercase tracking-[0.1em] text-[#10B981] mb-2">
+                  STATUTORY ENFORCEMENT &bull; IT ACT 2000 &amp; CERT-IN DIRECTIVES
+                </div>
+                <p className="text-[13.5px] leading-[1.65] theme-text-secondary">
+                  MyMobPay actively monitors API routing for deceptive checkout impersonation, phishing links, and fraudulent collection requests. Any workspace flagged by banks or cybercrime cells is terminated immediately.
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 text-xs space-y-2 text-slate-600">
-                <p className="leading-relaxed">
-                  <strong className="text-slate-900 font-semibold">PMLA 2002 Record Retention:</strong> In compliance with the Prevention of Money Laundering Act (PMLA), 2002, merchants are required to retain commercial transaction records and fulfillment proof for at least five (5) years.
-                </p>
-                <p className="leading-relaxed text-slate-500">
-                  <strong className="text-slate-800 font-semibold">Law Enforcement Cooperation:</strong> MyMobPay cooperates fully with Indian law enforcement agencies (LEAs), CERT-In, and the National Cyber Crime Reporting Portal upon receipt of lawful notices.
-                </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Law Enforcement &amp; Nodal Disclosure</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    In accordance with Indian cybercrime laws and RBI PSS Act 2007 guidelines, merchant registration records and API logs may be furnished to authorized law enforcement agencies upon lawful notice.
+                  </p>
+                </div>
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">Synthetic UTR Tampering Prohibited</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Submitting fabricated 12-digit transaction references or spoofing bank SMS webhooks constitutes a criminal offense under Section 66D of the IT Act, 2000.
+                  </p>
+                </div>
+                <div className="rounded-2xl p-4 sm:p-5 theme-bg-well border theme-border sm:col-span-2">
+                  <div className="text-[13px] font-extrabold theme-text-primary mb-1.5">PMLA 2002 5-Year Record Retention</div>
+                  <p className="text-[12.5px] leading-[1.6] theme-text-secondary">
+                    Under the Prevention of Money Laundering Act, merchants must preserve commercial order logs, buyer invoices, and fulfillment proofs for a statutory minimum of 5 years.
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
         </div>
 
-        {/* ── Footer Bar ── */}
-        <div className="p-4 sm:p-5 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+        {/* 3. MODAL FOOTER BAR */}
+        <div className="px-6 sm:px-8 py-4 theme-bg-secondary border-t theme-border flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           <Link
             href="/terms"
             target="_blank"
-            className="text-xs text-slate-500 hover:text-slate-900 transition-colors inline-flex items-center gap-1.5 font-medium group"
+            className="inline-flex items-center gap-1.5 text-[12.5px] font-bold theme-text-secondary hover:theme-link transition-colors group"
           >
             <span>Read Complete Terms of Service</span>
-            <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
+              className="px-5 py-2.5 rounded-full theme-bg-elevated border theme-border text-[12.5px] font-bold theme-text-secondary hover:theme-text-primary transition-colors cursor-pointer"
             >
               Close
             </button>
+
             <button
               type="button"
-              onClick={() => {
-                if (onAccept) onAccept();
-                onClose();
-              }}
-              className="px-5 py-2.5 rounded-full bg-[#0d253d] hover:bg-[#1a385c] active:bg-[#071524] text-white text-xs font-semibold shadow-xs transition-colors flex items-center gap-2 cursor-pointer"
+              onClick={handleAccept}
+              className="btn-editorial px-6 py-2.5 rounded-full bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[12.5px] font-bold inline-flex items-center justify-center gap-2 shadow-md cursor-pointer"
             >
-              <Check className="w-4 h-4" />
+              <Check className="w-3.5 h-3.5 stroke-[2.8]" />
               <span>I Understand &amp; Accept Rules</span>
             </button>
           </div>
         </div>
 
-      </div>
+      </section>
     </div>
   );
 }

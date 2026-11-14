@@ -2452,3 +2452,79 @@ section[id] { scroll-margin-top: 96px; }
   .t-tabs-pill, .t-tab { transition: none !important; }
   .t-learn-chevron, .t-learn-arm { transition: none !important; }
 }
+
+/* ─── Semantic Theme Engine & Legal Terms Tokens ─────────── */
+:root {
+  --theme-bg-backdrop: #EAEEFA;
+  --theme-bg-elevated: #FFFFFF;
+  --theme-bg-secondary: #EEF1FB;
+  --theme-bg-well: #F7F8FD;
+  --theme-text-primary: #090A10;
+  --theme-text-secondary: #222533;
+  --theme-text-muted: #5A607A;
+  --theme-accent-link: #0F2BFF;
+  --theme-border-color: #DCE2F2;
+  --theme-modal-shadow: 0 28px 64px -14px rgba(15, 23, 42, 0.16), 0 6px 20px -6px rgba(15, 43, 255, 0.06);
+}
+
+html.dark {
+  --theme-bg-backdrop: #0A0E17;
+  --theme-bg-elevated: #161F30;
+  --theme-bg-secondary: #101624;
+  --theme-bg-well: #0E1420;
+  --theme-text-primary: #F8FAFC;
+  --theme-text-secondary: #CBD5E1;
+  --theme-text-muted: #94A3B8;
+  --theme-accent-link: #60A5FA;
+  --theme-border-color: #243049;
+  --theme-modal-shadow: 0 32px 72px -12px rgba(0, 0, 0, 0.78);
+}
+
+.theme-bg-elevated { background-color: var(--theme-bg-elevated); }
+.theme-bg-secondary { background-color: var(--theme-bg-secondary); }
+.theme-bg-well { background-color: var(--theme-bg-well); }
+.theme-text-primary { color: var(--theme-text-primary); }
+.theme-text-secondary { color: var(--theme-text-secondary); }
+.theme-text-muted { color: var(--theme-text-muted); }
+.theme-link { color: var(--theme-accent-link); }
+.theme-border { border-color: var(--theme-border-color); }
+.theme-modal-shadow { box-shadow: var(--theme-modal-shadow); }
+
+/* Animated Tab & Modal Transitions */
+@keyframes tabSlideFade {
+  0%   { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.tab-animate {
+  animation: tabSlideFade 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Editorial Shimmer Button */
+.btn-editorial {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.btn-editorial::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.btn-editorial:hover::after {
+  left: 135%;
+}
+.btn-editorial:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 10px 24px -6px rgba(15, 43, 255, 0.45);
+}
+.btn-editorial:active {
+  transform: translateY(0px) scale(0.99);
+}
+
