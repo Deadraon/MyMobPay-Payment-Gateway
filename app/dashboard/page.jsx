@@ -3253,11 +3253,11 @@ echo "Order Created: " . $data['orderId'];
            HEADER (Theme-Adaptive Command Topbar)
            ═══════════════════════════════════════════════════════════ */}
         <header className="fixed top-0 left-0 md:left-[264px] right-0 bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] z-40 flex items-center justify-between gap-2 px-3 sm:px-6 h-16">
-          <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 md:flex-1 md:min-w-0">
             {/* Mobile Hamburger Toggle — 40px target matching the right-side controls */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden topbar-control text-[var(--theme-text-primary,#090D18)]"
+              className="md:hidden topbar-control text-[var(--theme-text-primary,#090D18)] shrink-0"
               type="button"
               title={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -3273,7 +3273,7 @@ echo "Order Created: " . $data['orderId'];
               className="md:hidden flex items-center shrink-0 cursor-pointer focus:outline-none"
               title="Go to Dashboard Overview"
             >
-              <MyMobPayLogo markSize={24} textSize="text-[15px]" textClassName="max-[352px]:hidden" textColor="var(--theme-text-primary, #090D18)" />
+              <MyMobPayLogo markSize={24} textSize="text-[15px]" textClassName="whitespace-nowrap" textColor="var(--theme-text-primary, #090D18)" />
             </button>
 
             {/* Desktop Mode Switcher (>= sm) */}
@@ -3351,8 +3351,8 @@ echo "Order Created: " . $data['orderId'];
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {/* Mobile Mode Switcher Pill (< sm) — same 40px height as every icon control */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
+            {/* Mobile Mode Switcher Pill (< sm) */}
             <button
               type="button"
               onClick={() => {
@@ -3363,7 +3363,7 @@ echo "Order Created: " . $data['orderId'];
                 }
                 toggleSandboxMode();
               }}
-              className={`sm:hidden topbar-pill px-3 text-[11.5px] font-bold gap-1.5 transition-all ${
+              className={`sm:hidden topbar-pill px-2.5 py-1 text-[11.5px] font-bold gap-1.5 transition-all shrink-0 ${
                 !effectiveSandboxMode
                   ? 'border border-emerald-500/30 bg-emerald-500/10 dark:bg-emerald-500/15 text-[#059669] dark:text-[#34D399] active:scale-95'
                   : 'border border-amber-500/35 bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 active:scale-95'
@@ -3372,7 +3372,7 @@ echo "Order Created: " . $data['orderId'];
               aria-label={!effectiveSandboxMode ? 'Switch to Test Mode' : 'Switch to Live Mode'}
             >
               <span className={`w-2 h-2 rounded-full shrink-0 ${!effectiveSandboxMode ? 'bg-[#10B981]' : 'bg-amber-500 animate-pulse'}`} />
-              <span className="leading-none">{!effectiveSandboxMode ? 'Live' : 'Test'}</span>
+              <span className="leading-none whitespace-nowrap">{!effectiveSandboxMode ? 'Live' : 'Test'}</span>
             </button>
             {/* Help Button */}
             <button
@@ -3495,17 +3495,11 @@ echo "Order Created: " . $data['orderId'];
               )}
             </div>
 
-            {/* Animated Single Theme Toggle Button (Light ↔ Dark) */}
+            {/* Animated Single Theme Toggle Button (Light ↔ Dark) - Desktop only (kept in mobile menu drawer) */}
             <ThemeToggleButton
               theme={theme}
               onToggle={toggleTheme}
               className="hidden md:inline-flex"
-            />
-            <ThemeToggleButton
-              theme={theme}
-              onToggle={toggleTheme}
-              showLabel={false}
-              className="md:hidden"
             />
 
             {/* Merchant Profile Pill: Deadraon */}

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import ThemeToggleButton from '@/components/ThemeToggleButton';
 
 // Dedicated crisp vector 3D ribbon mark with unique SVG gradient scopes
 function MyMobPayLogoMark({ className = "w-5 h-5", id = "mmp" }) {
@@ -738,45 +739,29 @@ const twPhrases = ['OWN IT.', 'KEEP 100%.', 'ZERO FEES.', 'SETTLE T+0.'];
 
 export default function HomePage() {
   const twTimerRef = useRef(null);
+  const [theme, setTheme] = useState('light');
 
-  // 2. Light / Dark Mode Switcher (Default: Light Mode)
+  // Light / Dark Mode Controller with persistence
   function setThemeMode(mode) {
     if (typeof document === 'undefined') return;
-    var root = document.documentElement;
-    var isDark = (mode === 'dark');
+    const isDark = (mode === 'dark');
+    setTheme(isDark ? 'dark' : 'light');
     if (isDark) {
-      root.classList.add('dark');
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light-theme');
     } else {
-      root.classList.remove('dark');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light-theme');
     }
     try {
       localStorage.setItem('mymobpay_theme', isDark ? 'dark' : 'light');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
     } catch (e) {}
-
-    var btnLight = document.getElementById('theme-btn-light');
-    var btnDark = document.getElementById('theme-btn-dark');
-    if (btnLight && btnDark) {
-      if (isDark) {
-        btnDark.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#0F2BFF] text-white shadow-2xs';
-        btnLight.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all theme-text-muted hover:theme-text-primary';
-      } else {
-        btnLight.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#0F2BFF] text-white shadow-2xs';
-        btnDark.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all theme-text-muted hover:theme-text-primary';
-      }
-    }
-
-    var mobLight = document.getElementById('mob-theme-light');
-    var mobDark = document.getElementById('mob-theme-dark');
-    if (mobLight && mobDark) {
-      if (isDark) {
-        mobDark.className = 'px-3 py-1 rounded-full text-[11px] font-bold bg-[#0F2BFF] text-white';
-        mobLight.className = 'px-3 py-1 rounded-full text-[11px] font-bold theme-text-muted';
-      } else {
-        mobLight.className = 'px-3 py-1 rounded-full text-[11px] font-bold bg-[#0F2BFF] text-white';
-        mobDark.className = 'px-3 py-1 rounded-full text-[11px] font-bold theme-text-muted';
-      }
-    }
   }
+
+  const toggleTheme = () => {
+    setThemeMode(theme === 'dark' ? 'light' : 'dark');
+  };
 
   function toggleMobileNav() {
     if (typeof document === 'undefined') return;
@@ -1291,29 +1276,13 @@ export default function HomePage() {
         <a href="#faq-section" className="nav-pill-item">FAQ</a>
       </nav>
 
-      {/* Zone 3 (Right): Segmented Light/Dark Switcher + Auth CTAs */}
+      {/* Zone 3 (Right): Animated Theme Switcher + Auth CTAs */}
       <div className="hidden md:flex items-center gap-3 shrink-0">
-        {/* Segmented Theme Switcher */}
-        <div className="inline-flex items-center p-0.5 rounded-full theme-bg-elevated border theme-border" role="group" aria-label="Theme Mode">
-          <button
-            type="button"
-            id="theme-btn-light"
-            onClick={() => setThemeMode('light')}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#0F2BFF] text-white shadow-2xs"
-          >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-            <span>Light</span>
-          </button>
-          <button
-            type="button"
-            id="theme-btn-dark"
-            onClick={() => setThemeMode('dark')}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all theme-text-muted hover:theme-text-primary"
-          >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <span>Dark</span>
-          </button>
-        </div>
+        {/* Animated Single Theme Toggle Button */}
+        <ThemeToggleButton
+          theme={theme}
+          onToggle={toggleTheme}
+        />
 
         <Link href="/login" className="text-[13px] font-bold theme-link hover:underline px-2 py-1">Log in</Link>
 
@@ -1349,10 +1318,10 @@ export default function HomePage() {
 
       <div className="flex items-center justify-between pt-2 border-t theme-border">
         <span className="font-mono text-[10px] font-bold uppercase tracking-wider theme-text-muted">Appearance</span>
-        <div className="inline-flex items-center p-0.5 rounded-full theme-bg-well border theme-border">
-          <button type="button" id="mob-theme-light" onClick={() => setThemeMode('light')} className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#0F2BFF] text-white">Light</button>
-          <button type="button" id="mob-theme-dark" onClick={() => setThemeMode('dark')} className="px-3 py-1 rounded-full text-[11px] font-bold theme-text-muted">Dark</button>
-        </div>
+        <ThemeToggleButton
+          theme={theme}
+          onToggle={toggleTheme}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-2.5 pt-1">
