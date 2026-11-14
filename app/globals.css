@@ -2570,31 +2570,61 @@ html.dark .workspace-license-pod {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 9.5px 12px;
-  border-radius: 13px;
-  font-size: 13px;
+  padding: 8px 11px;
+  border-radius: 11px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--theme-text-muted);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  border: 1px solid transparent;
 }
 .nav-item svg {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-item:hover {
   color: var(--theme-text-primary);
   background-color: var(--theme-bg-secondary);
-  transform: translateX(3px);
+  transform: translateX(2px);
 }
 .nav-item:hover svg {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 .nav-item.active {
   color: #FFFFFF !important;
   font-weight: 700;
   background-color: #0F2BFF !important;
-  box-shadow: 0 8px 20px -6px rgba(15, 43, 255, 0.52);
+  box-shadow: 0 4px 14px -2px rgba(15, 43, 255, 0.42);
   transform: translateX(0);
+}
+.nav-item.active svg {
+  color: #FFFFFF !important;
+}
+.nav-item.active span {
+  color: #FFFFFF !important;
+}
+.nav-item.active span[class*="rounded"] {
+  background-color: rgba(255, 255, 255, 0.22) !important;
+  color: #FFFFFF !important;
+}
+
+/* Custom Minimal Sidebar Scrollbar */
+.custom-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.25) transparent;
+}
+.custom-sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.25);
+  border-radius: 9999px;
+}
+.custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.45);
 }
 
 /* Animated Bank Pipeline Packets */
