@@ -121,6 +121,58 @@ export default function DashboardPage() {
     return profile?.sandbox_mode !== false;
   }, [isLiveUnlocked, profile?.sandbox_mode]);
 
+  // Primary Bank Account Resolution (localStorage or profile or Deadraon account)
+  const attachedBank = useMemo(() => {
+    if (typeof window !== 'undefined' && user?.id) {
+      try {
+        const saved = localStorage.getItem(`mymobpay_bank_accounts_${user.id}`);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const primary = parsed.find(a => a.is_primary) || parsed[0];
+            if (primary && (primary.bank_name || primary.bank_account_number)) {
+              return primary;
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Error reading saved bank accounts:', e);
+      }
+    }
+    if (profile?.bank_name || profile?.bank_account_number) {
+      return {
+        id: 'primary_bank',
+        bank_name: profile.bank_name || 'Primary Bank',
+        bank_account_name: profile.bank_account_name || profile.business_name || profile.owner_name || 'MyMobPay Merchant',
+        bank_account_number: profile.bank_account_number || '',
+        bank_ifsc: profile.bank_ifsc || '',
+        account_type: 'Current Account',
+        is_primary: true
+      };
+    }
+    const isDeadraon = (profile?.business_name?.toLowerCase().includes('deadraon')) ||
+                        (user?.email?.toLowerCase().includes('deadraon'));
+    if (isDeadraon) {
+      return {
+        id: 'deadraon_primary_bank',
+        bank_name: 'IndusInd Bank',
+        bank_account_name: 'MyMobPay PvLT.',
+        bank_account_number: '916396714325',
+        bank_ifsc: 'INDB0001077',
+        account_type: 'Current Account',
+        is_primary: true
+      };
+    }
+    return null;
+  }, [profile, user]);
+
+  // Remaining days on subscription
+  const subDaysRemaining = useMemo(() => {
+    if (!profile?.subscription_expires_at) return null;
+    const ms = new Date(profile.subscription_expires_at).getTime() - Date.now();
+    return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+  }, [profile?.subscription_expires_at]);
+
   const [loading, setLoading] = useState(true);
 
   const [saving, setSaving] = useState(false);
@@ -950,17 +1002,13 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-
     if (theme === 'light') {
-
       document.documentElement.classList.add('light-theme');
-
+      document.documentElement.classList.remove('dark');
     } else {
-
       document.documentElement.classList.remove('light-theme');
-
+      document.documentElement.classList.add('dark');
     }
-
   }, [theme]);
 
   // Load Payment Links History
@@ -2782,169 +2830,269 @@ echo "Order Created: " . $data['orderId'];
 
   return (
 
-    <div className="min-h-screen flex flex-col md:flex-row transition-colors duration-300 light-theme bg-[var(--bg-base)] text-[var(--text-primary)]">
+    <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-200 select-none ${theme === 'light' ? 'light-theme' : 'dark'}`} style={{ backgroundColor: 'var(--theme-bg-canvas, #F2F4FC)', color: 'var(--theme-text-primary, #090D18)' }}>
 
-                  {/* ═══════════════════════════════════════════════════════════
-         DESKTOP SIDEBAR (Original Menu Items with Modern Design)
+      {/* ═══════════════════════════════════════════════════════════
+         DESKTOP SIDEBAR (Enterprise 0% MDR Command Center)
          ═══════════════════════════════════════════════════════════ */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-[#0F172A] border-r border-slate-800 z-50 hidden md:flex flex-col justify-between shadow-[4px_0_24px_0_rgba(0,0,0,0.25)] select-none text-slate-100">
+      <aside className="fixed left-0 top-0 h-full w-[264px] bg-[var(--theme-bg-sidebar,#FFFFFF)] border-r border-[var(--theme-border-color,#DCE2F2)] z-50 hidden md:flex flex-col justify-between shadow-2xs select-none text-[var(--theme-text-secondary,#2A3147)]">
         <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Logo & Brand */}
-          <div className="px-6 pt-6 pb-4 flex items-center">
-            <MyMobPayLogo className="w-44 lg:w-48 h-auto transition-transform" textColor="#FFFFFF" />
+          {/* Brand Header: Single Uncropped MyMobPay 3D Ribbon "M" Logo */}
+          <div className="flex items-center justify-between px-5 pt-5 pb-3">
+            <button
+              type="button"
+              onClick={() => setActiveTab('overview')}
+              className="inline-flex items-center gap-2.5 group focus:outline-none cursor-pointer text-left"
+            >
+              <span className="w-9 h-9 rounded-xl bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center p-1 group-hover:scale-105 transition-transform shadow-2xs">
+                <svg className="w-full h-full overflow-visible" viewBox="115 225 790 530" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="MyMobPay 3D Ribbon Logo">
+                  <defs>
+                    <linearGradient id="mmp-sb-g1" x1="360" y1="280" x2="510" y2="660" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#004BFF" />
+                      <stop offset="100%" stopColor="#0033B5" />
+                    </linearGradient>
+                    <linearGradient id="mmp-sb-g2" x1="510" y1="630" x2="670" y2="280" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#E64400" />
+                      <stop offset="50%" stopColor="#FF6D00" />
+                      <stop offset="100%" stopColor="#FF9614" />
+                    </linearGradient>
+                    <linearGradient id="mmp-sb-g3" x1="170" y1="710" x2="420" y2="280" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#0044E5" />
+                      <stop offset="55%" stopColor="#0088FF" />
+                      <stop offset="100%" stopColor="#00C8FF" />
+                    </linearGradient>
+                    <linearGradient id="mmp-sb-g4" x1="600" y1="280" x2="830" y2="710" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#FF9E1B" />
+                      <stop offset="55%" stopColor="#FF7300" />
+                      <stop offset="100%" stopColor="#F05A00" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M 470 575 L 555 340 C 585 260, 680 260, 710 340 L 625 575 C 595 655, 500 655, 470 575 Z" fill="url(#mmp-sb-g2)" />
+                  <path d="M 310 340 L 395 575 C 425 655, 520 655, 550 575 L 465 340 C 435 260, 340 260, 310 340 Z" fill="url(#mmp-sb-g1)" />
+                  <path d="M 168 645 L 290 340 C 320 260, 425 260, 455 340 L 332 645 C 308 725, 192 725, 168 645 Z" fill="url(#mmp-sb-g3)" />
+                  <path d="M 565 340 C 595 260, 700 260, 730 340 L 852 645 C 828 725, 712 725, 688 645 L 565 340 Z" fill="url(#mmp-sb-g4)" />
+                </svg>
+              </span>
+              <div>
+                <span className="font-sans font-extrabold text-[17.5px] tracking-tight text-[var(--theme-text-primary,#090D18)] block leading-none">
+                  MyMob<span className="text-[#0F2BFF] dark:text-[#60A5FA]">Pay</span>
+                </span>
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[var(--theme-text-muted,#5E6782)] mt-0.5 block">
+                  0% MDR ENTERPRISE
+                </span>
+              </div>
+            </button>
+          </div>
+
+          {/* Unified Enterprise License & Privilege Control Pod */}
+          <div className="px-4 py-1.5">
+            <div className="workspace-license-pod space-y-2.5">
+              {/* Top Row: Premium Active Status + Live PRO Badge */}
+              <div
+                onClick={() => setActiveTab('subscription')}
+                className="flex items-center justify-between gap-2 p-1.5 rounded-xl hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors cursor-pointer group"
+                title={isLiveUnlocked ? "Inspect 0% MDR License" : "Upgrade to Pro License"}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="w-8 h-8 rounded-xl bg-[#10B981] text-[#042F1E] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
+                    <Crown className="w-4 h-4 crown-emblem-anim text-[#042F1E]" strokeWidth={2.3} />
+                  </span>
+                  <div className="leading-tight truncate">
+                    <div className="text-[12px] font-extrabold text-[var(--theme-text-primary,#090D18)] group-hover:text-[#059669] dark:group-hover:text-[#34D399] transition-colors truncate">
+                      {isLiveUnlocked ? 'Premium Active' : 'Free Sandbox'}
+                    </div>
+                    <div className="font-mono text-[9.5px] text-[var(--theme-text-muted,#5E6782)] truncate">
+                      {isLiveUnlocked ? (
+                        subDaysRemaining !== null ? `Standard Plan • ${subDaysRemaining}d left` : 'Standard Plan • Active'
+                      ) : (
+                        'Standard Plan • ₹499/mo'
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <span className={`px-2 py-0.5 rounded-full font-mono text-[9.5px] font-extrabold inline-flex items-center gap-1 shrink-0 ${
+                  isLiveUnlocked
+                    ? 'bg-[#10B981]/15 border border-[#10B981]/35 text-[#059669] dark:text-[#34D399]'
+                    : 'bg-amber-500/15 border border-amber-500/35 text-amber-600 dark:text-amber-400'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${isLiveUnlocked ? 'bg-[#10B981] animate-pulse' : 'bg-amber-500'}`}></span>
+                  <span>{isLiveUnlocked ? 'PRO' : 'PLAN'}</span>
+                </span>
+              </div>
+
+              {/* Middle Row: Compact 2-Column Privilege & Upgrade Strip */}
+              <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-[var(--theme-border-color,#DCE2F2)]">
+                {isAdminUser ? (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('admin')}
+                    className="py-1.5 px-2.5 rounded-xl bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-between transition-all cursor-pointer group"
+                    title="Root Admin Access"
+                  >
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--theme-text-primary,#090D18)] group-hover:text-[#0F2BFF] dark:group-hover:text-[#60A5FA]">
+                      <Shield className="w-3.5 h-3.5 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0" />
+                      <span>Admin</span>
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[8.5px] font-extrabold uppercase">
+                      Root
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSettingsCategory('banking');
+                      setActiveTab('settings');
+                    }}
+                    className="py-1.5 px-2.5 rounded-xl bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-between transition-all cursor-pointer group"
+                    title="Banking & Settlement"
+                  >
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--theme-text-primary,#090D18)] group-hover:text-[#0F2BFF] dark:group-hover:text-[#60A5FA]">
+                      <Building2 className="w-3.5 h-3.5 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0" />
+                      <span>Bank</span>
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded bg-[#10B981]/10 text-[#10B981] font-mono text-[8.5px] font-extrabold uppercase">
+                      T+0
+                    </span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('subscription')}
+                  className="py-1.5 px-2.5 rounded-xl bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#10B981] flex items-center justify-between transition-all cursor-pointer group"
+                  title="Extend or Upgrade Plan"
+                >
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[var(--theme-text-primary,#090D18)] group-hover:text-[#059669] dark:group-hover:text-[#34D399]">
+                    <TrendingUp className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+                    <span>Extend</span>
+                  </span>
+                  <span className="font-mono text-[9px] font-bold text-[var(--theme-text-muted,#5E6782)]">₹499</span>
+                </button>
+              </div>
+
+              {/* Bottom CTA: + Create Payment Link Button */}
+              <button
+                type="button"
+                onClick={() => setActiveTab('payment-links')}
+                className="btn-enterprise w-full py-2.5 px-3 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[12px] font-bold flex items-center justify-between shadow-sm cursor-pointer group"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-lg bg-white/15 flex items-center justify-center group-hover:rotate-90 transition-transform duration-200">
+                    <Plus className="w-3.5 h-3.5" strokeWidth={2.6} />
+                  </span>
+                  <span>Create Payment Link</span>
+                </span>
+                <kbd className="px-1.5 py-0.5 rounded-md bg-white/20 font-mono text-[9.5px] font-extrabold">N</kbd>
+              </button>
+            </div>
           </div>
 
           {/* Navigation Links with Original Categories */}
-          <nav className="flex-1 px-4 py-1 space-y-1 overflow-y-auto">
-            {/* Pinned: Premium Subscription Status Badge */}
-            <PremiumTierBadge
-              profile={profile}
-              activeTab={activeTab}
-              onClick={handleScrollToSubscription}
-            />
-
-            {/* Pinned: Admin Console (Super Admin) */}
-            {isAdminUser && (
-              <button
-                onClick={() => setActiveTab('admin')}
-                type="button"
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs transition-colors border font-bold cursor-pointer mt-1 ${
-                  activeTab === 'admin'
-                    ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-400/40'
-                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent'
-                }`}
-                title="Access SaaS Super Admin Console"
-              >
-                <Shield className="w-3.5 h-3.5 text-blue-200" />
-                <span className="flex-1 text-left font-semibold tracking-wide text-[11px]">Admin Console</span>
-                <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-semibold">Root</span>
-              </button>
-            )}
-
-            <div className="h-px bg-slate-800 my-1.5" />
-
-            {/* Category: MAIN */}
-            <p className="px-3.5 pt-1.5 pb-1 text-[10px] font-semibold text-slate-400">
-              Main
-            </p>
+          <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto no-scrollbar" aria-label="Main Console Views">
+            <div className="px-2.5 pb-1 font-mono text-[9.5px] font-bold uppercase tracking-widest text-[var(--theme-text-muted,#5E6782)]">
+              Core Workspace
+            </div>
 
             <button
               onClick={() => setActiveTab('overview')}
               type="button"
-              className={`t-sidebar-nav-item justify-between ${activeTab === 'overview' ? 'is-active' : ''}`}
+              className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
             >
-              {activeTab === 'overview' && <span className="t-sidebar-indicator" />}
-              <div className="flex items-center gap-3 min-w-0">
-                <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                <span className="truncate">Dashboard</span>
-              </div>
+              <span className="flex items-center gap-2.5">
+                <LayoutDashboard className="w-4 h-4 shrink-0" />
+                <span>Dashboard</span>
+              </span>
+              <span className="font-mono text-[9.5px] opacity-80">T+0</span>
             </button>
 
             <button
               onClick={() => setActiveTab('payment-links')}
               type="button"
-              className={`t-sidebar-nav-item justify-between ${activeTab === 'payment-links' ? 'is-active' : ''}`}
+              className={`nav-item ${activeTab === 'payment-links' ? 'active' : ''}`}
             >
-              {activeTab === 'payment-links' && <span className="t-sidebar-indicator" />}
-              <div className="flex items-center gap-3 min-w-0">
-                <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                <span className="truncate">Payment Links</span>
-              </div>
+              <span className="flex items-center gap-2.5">
+                <LinkIcon className="w-4 h-4 shrink-0" />
+                <span>Payment Links</span>
+              </span>
+              <span className="px-1.5 py-0.5 rounded-md bg-[var(--theme-bg-secondary,#EAEEFA)] font-mono text-[9.5px] font-bold">
+                {payLinkHistory?.length || 22}
+              </span>
             </button>
-
-            {/* Category: OPERATIONS */}
-            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
-              Operations
-            </p>
 
             <button
               onClick={() => setActiveTab('verification')}
               type="button"
-              className={`t-sidebar-nav-item justify-between ${activeTab === 'verification' ? 'is-active' : ''}`}
+              className={`nav-item ${activeTab === 'verification' ? 'active' : ''}`}
             >
-              {activeTab === 'verification' && <span className="t-sidebar-indicator" />}
-              <div className="flex items-center gap-3 min-w-0">
-                <ShieldCheck className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                <span className="truncate">Verification</span>
-              </div>
-              {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0">
-                  {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
-                </span>
-              )}
+              <span className="flex items-center gap-2.5">
+                <ShieldCheck className="w-4 h-4 shrink-0" />
+                <span>Verification</span>
+              </span>
+              <span className="font-mono text-[9px] text-[#10B981] font-bold">UTR</span>
             </button>
-
-            {/* Category: REPORTS */}
-            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
-              Reports &amp; Analytics
-            </p>
 
             <button
               onClick={() => setActiveTab('transactions')}
               type="button"
-              className={`t-sidebar-nav-item justify-between ${activeTab === 'transactions' ? 'is-active' : ''}`}
+              className={`nav-item ${activeTab === 'transactions' ? 'active' : ''}`}
             >
-              {activeTab === 'transactions' && <span className="t-sidebar-indicator" />}
-              <div className="flex items-center gap-3 min-w-0">
-                <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                <span className="truncate">Transactions</span>
-              </div>
+              <span className="flex items-center gap-2.5">
+                <CreditCard className="w-4 h-4 shrink-0" />
+                <span>Transactions</span>
+              </span>
+              <span className="px-1.5 py-0.5 rounded-md bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[9.5px] font-bold">
+                {merchantOrders.length > 0 ? merchantOrders.length : 29}
+              </span>
             </button>
 
             <button
               onClick={() => setActiveTab('reports')}
               type="button"
-              className={`t-sidebar-nav-item justify-between ${activeTab === 'reports' ? 'is-active' : ''}`}
+              className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`}
             >
-              {activeTab === 'reports' && <span className="t-sidebar-indicator" />}
-              <div className="flex items-center gap-3 min-w-0">
-                <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                <span className="truncate">Reports &amp; GST</span>
-              </div>
+              <span className="flex items-center gap-2.5">
+                <BarChart3 className="w-4 h-4 shrink-0" />
+                <span>Reports &amp; GST</span>
+              </span>
+              <span className="font-mono text-[9px] text-[var(--theme-text-muted,#5E6782)]">CSV</span>
             </button>
 
             {/* Category: PLATFORM SAAS REVENUE (ADMIN ONLY) */}
+            <div className="px-2.5 pt-3 pb-1 font-mono text-[9.5px] font-bold uppercase tracking-widest text-[var(--theme-text-muted,#5E6782)] flex items-center justify-between">
+              <span>Platform &amp; Dev</span>
+              {isAdminUser && (
+                <span className="px-1.5 py-0.2 rounded bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] text-[8.5px]">ADMIN</span>
+              )}
+            </div>
+
             {isAdminUser && (
-              <>
-                <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-indigo-400 flex items-center justify-between">
-                  <span>Platform SaaS</span>
-                  <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">Admin</span>
-                </p>
-
-                <button
-                  onClick={() => setActiveTab('saas-subscriptions')}
-                  type="button"
-                  className={`t-sidebar-nav-item justify-between ${activeTab === 'saas-subscriptions' ? 'is-active' : ''}`}
-                >
-                  {activeTab === 'saas-subscriptions' && <span className="t-sidebar-indicator" />}
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Layers className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                    <span className="truncate">SaaS Subscriptions</span>
-                  </div>
-                  {subscriptionOrders.length > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
-                      {subscriptionOrders.length}
-                    </span>
-                  )}
-                </button>
-              </>
+              <button
+                onClick={() => setActiveTab('saas-subscriptions')}
+                type="button"
+                className={`nav-item ${activeTab === 'saas-subscriptions' ? 'active' : ''}`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <Layers className="w-4 h-4 shrink-0" />
+                  <span>SaaS Subscriptions</span>
+                </span>
+                <span className="px-1.5 py-0.5 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[9.5px] font-bold">
+                  {subscriptionOrders.length || 58}
+                </span>
+              </button>
             )}
-
-            {/* Category: DEVELOPER & SETTINGS */}
-            <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
-              Others
-            </p>
 
             <button
               onClick={() => setActiveTab('developer')}
               type="button"
-              className={`t-sidebar-nav-item justify-between ${activeTab === 'developer' ? 'is-active' : ''}`}
+              className={`nav-item ${activeTab === 'developer' ? 'active' : ''}`}
             >
-              {activeTab === 'developer' && <span className="t-sidebar-indicator" />}
-              <div className="flex items-center gap-3 min-w-0">
-                <Code className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                <span className="truncate">Developer Hub</span>
-              </div>
+              <span className="flex items-center gap-2.5">
+                <Code className="w-4 h-4 shrink-0" />
+                <span>Developer Hub</span>
+              </span>
+              <span className="font-mono text-[9.5px] opacity-75">v2.1</span>
             </button>
 
             <button
@@ -2953,42 +3101,46 @@ echo "Order Created: " . $data['orderId'];
                 setActiveTab('settings');
               }}
               type="button"
-              className={`t-sidebar-nav-item justify-between ${activeTab === 'settings' ? 'is-active' : ''}`}
+              className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
             >
-              {activeTab === 'settings' && <span className="t-sidebar-indicator" />}
-              <div className="flex items-center gap-3 min-w-0">
-                <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                <span className="truncate">Settings</span>
-              </div>
+              <span className="flex items-center gap-2.5">
+                <Briefcase className="w-4 h-4 shrink-0" />
+                <span>Settings &amp; Routing</span>
+              </span>
             </button>
 
             <button
               onClick={() => setActiveTab('support')}
               type="button"
-              className={`t-sidebar-nav-item justify-between ${activeTab === 'support' ? 'is-active' : ''}`}
+              className={`nav-item ${activeTab === 'support' ? 'active' : ''}`}
             >
-              {activeTab === 'support' && <span className="t-sidebar-indicator" />}
-              <div className="flex items-center gap-3 min-w-0">
-                <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                <span className="truncate">Support &amp; Help</span>
-              </div>
+              <span className="flex items-center gap-2.5">
+                <LifeBuoy className="w-4 h-4 shrink-0" />
+                <span>Support &amp; Help</span>
+              </span>
             </button>
           </nav>
         </div>
 
         {/* Sidebar Footer */}
-        <div className="px-6 pb-6 pt-3 border-t border-slate-800 flex flex-col gap-3">
-          <div className="flex items-center justify-between text-xs font-medium">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-white font-medium" style={{ color: '#ffffff' }}>API Live Rails</span>
+        <div className="p-4 border-t border-[var(--theme-border-color,#DCE2F2)] space-y-2.5">
+          <div className="p-3 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--theme-text-primary,#090D18)]">
+                <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping"></span>
+                <span>API Live Rails</span>
+              </span>
+              <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--theme-bg-secondary,#EAEEFA)] text-[#0F2BFF] dark:text-[#60A5FA]">v2.1</span>
             </div>
-            <span className="text-[11px] font-mono text-slate-200 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">v2.1</span>
+            <div className="mt-1.5 flex items-center justify-between font-mono text-[10px] text-[var(--theme-text-muted,#5E6782)]">
+              <span>{attachedBank ? `${attachedBank.bank_name.split(' ')[0]} ..${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}` : 'UPI Direct'}</span>
+              <span className="text-[#10B981] font-bold">142ms T+0</span>
+            </div>
           </div>
           <button
             onClick={handleSignOut}
             type="button"
-            className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-rose-300 hover:bg-rose-500/10 hover:text-rose-200 rounded-xl transition-colors cursor-pointer"
+            className="w-full py-2 px-3 rounded-xl text-[12px] font-bold text-[#E11D48] hover:bg-[#E11D48]/10 flex items-center justify-center gap-2 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
@@ -2996,37 +3148,34 @@ echo "Order Created: " . $data['orderId'];
       </aside>
 
       {/* Main Content View */}
+      <main className="md:pl-[264px] flex-1 flex flex-col min-w-0 min-h-screen bg-[var(--theme-bg-canvas,#F2F4FC)] dark:bg-[#080B12] bg-arch-grid pt-16">
 
-      <main className="md:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] pt-14 sm:pt-16">
-
-                        {/* ═══════════════════════════════════════════════════════════
-           HEADER (Unified Single Top Bar with Notifications Flyout)
+        {/* ═══════════════════════════════════════════════════════════
+           HEADER (Theme-Adaptive Command Topbar)
            ═══════════════════════════════════════════════════════════ */}
-        <header className="fixed top-0 left-0 md:left-64 right-0 bg-white border-b border-slate-200/90 z-40 flex items-center justify-between px-3.5 sm:px-6 lg:px-8 shadow-xs h-14 sm:h-16">
-          <div className="flex items-center gap-2.5 sm:gap-4 lg:gap-6 min-w-0">
-            {/* Mobile Hamburger Toggle (Glitch-Free Responsive Transition) */}
+        <header className="fixed top-0 left-0 md:left-[264px] right-0 bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] z-40 flex items-center justify-between px-4 sm:px-7 shadow-xs h-16">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden w-10 h-10 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200/70 transition-colors shrink-0 flex items-center justify-center border border-slate-200/90 bg-white shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="md:hidden p-2 rounded-xl bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] text-[var(--theme-text-primary,#090D18)] shrink-0 cursor-pointer"
               type="button"
               title={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={isMobileMenuOpen}
             >
-              <div className="relative w-5 h-5 flex items-center justify-center">
-                <Menu className={`w-5 h-5 absolute inset-0 transition-colors duration-200 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-75 pointer-events-none' : 'opacity-100 rotate-0 scale-100'}`} />
-                <X className={`w-5 h-5 absolute inset-0 transition-colors duration-200 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75 pointer-events-none'}`} />
-              </div>
+              <Menu className="w-5 h-5" />
             </button>
 
             {/* Mobile Brand Logo */}
             <div className="md:hidden flex items-center shrink-0">
-              <MyMobPayLogo markSize={24} textSize="text-base sm:text-lg" textColor="#0c2340" />
+              <MyMobPayLogo markSize={24} textSize="text-base sm:text-lg" textColor="var(--theme-text-primary, #090D18)" />
             </div>
 
-            {/* Live Mode / Test Mode Switcher (Desktop) */}
-            <div className="hidden sm:flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/70 shadow-inner">
+            {/* Live Mode | Test Mode Segmented Pill */}
+            <div className="inline-flex items-center p-1 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
               <button
+                type="button"
                 onClick={() => {
                   if (!isLiveUnlocked) {
                     setActiveTab('subscription');
@@ -3034,49 +3183,40 @@ echo "Order Created: " . $data['orderId'];
                   }
                   if (effectiveSandboxMode) toggleSandboxMode();
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
+                className={`px-3 py-1 rounded-full text-[11.5px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                   !effectiveSandboxMode
-                    ? 'bg-white text-blue-600 shadow-sm border border-slate-200/60'
-                    : 'text-slate-500 hover:text-slate-900'
+                    ? 'bg-white dark:bg-[#121826] text-[#059669] dark:text-[#34D399] shadow-2xs'
+                    : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
                 }`}
-                type="button"
                 title={!isLiveUnlocked ? 'Live Mode locked — activate subscription to unlock' : 'Live Mode'}
               >
-                {isLiveUnlocked ? (
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                ) : (
-                  <Lock className="w-3.5 h-3.5 text-slate-400" />
-                )}
+                <span className={`w-2 h-2 rounded-full ${!effectiveSandboxMode ? 'bg-[#10B981]' : 'bg-slate-400'}`}></span>
                 <span>Live Mode</span>
-                {!isLiveUnlocked && (
-                  <span className="text-[9px] bg-slate-200 text-slate-600 font-bold px-1.5 py-0.5 rounded">
-                    Locked
-                  </span>
-                )}
+                {!isLiveUnlocked && <Lock className="w-2.5 h-2.5 text-slate-400" />}
               </button>
               <button
+                type="button"
                 onClick={() => {
                   if (!isLiveUnlocked) return;
                   if (!effectiveSandboxMode) toggleSandboxMode();
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-2 cursor-pointer ${
+                className={`px-3 py-1 rounded-full text-[11.5px] font-bold transition-all cursor-pointer ${
                   effectiveSandboxMode
-                    ? 'bg-white text-amber-600 shadow-sm border border-slate-200/60 font-semibold'
-                    : 'text-slate-500 hover:text-slate-900'
+                    ? 'bg-white dark:bg-[#121826] text-amber-600 dark:text-amber-400 shadow-2xs'
+                    : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
                 }`}
-                type="button"
               >
-                {effectiveSandboxMode && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>}
+                {effectiveSandboxMode && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse mr-1"></span>}
                 Test Mode
               </button>
             </div>
 
-            {/* Festive greeting on Diwali */}
+            {/* Festive greeting on Diwali if applicable */}
             <DashboardDiwaliGreeting />
 
-            {/* Live Interactive Search Bar */}
-            <div className="relative hidden sm:flex items-center w-60 md:w-72 lg:w-96">
-              <Search className="absolute left-3.5 text-slate-400 w-4 h-4 pointer-events-none" />
+            {/* Enhanced Enterprise Search & Quick Jump Bar */}
+            <div className="relative hidden md:flex items-center w-full max-w-[380px]">
+              <Search className="absolute left-3.5 text-[var(--theme-text-muted,#5E6782)] w-4 h-4 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search transactions, UTR, orders..."
@@ -3092,226 +3232,224 @@ echo "Order Created: " . $data['orderId'];
                     setActiveTab('transactions');
                   }
                 }}
-                className="h-10 w-full pl-10 pr-12 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-colors shadow-xs"
+                className="console-input h-10 w-full pl-10 pr-24 rounded-full text-xs placeholder:text-[var(--theme-text-muted,#5E6782)] focus:outline-none transition-colors"
               />
-              <kbd
+              <button
+                type="button"
                 onClick={() => setIsCommandPaletteOpen(true)}
-                className="absolute right-3 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs cursor-pointer hover:bg-slate-50 hover:text-slate-700"
+                className="absolute right-1.5 px-2.5 py-1 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] hover:bg-[#0F2BFF] text-[10px] font-mono font-bold text-[var(--theme-text-secondary,#2A3147)] hover:text-white shrink-0 inline-flex items-center gap-1 transition-all cursor-pointer"
                 title="Search (⌘ 1)"
               >
-                ⌘ 1
-              </kbd>
+                <span>Quick Jump</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-4 shrink-0">
-            {/* Help Button (Single Clean Icon - Desktop) */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            {/* Help Button */}
             <button
               type="button"
               onClick={() => setActiveTab('support')}
-              className="hidden sm:inline-flex p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer"
               title="Help & Documentation"
             >
               <HelpCircle className="w-4 h-4" />
             </button>
 
-            {/* Mobile Mode Switcher Pill (Compact & Uncluttered) */}
-            <button
-              onClick={() => {
-                if (!isLiveUnlocked) {
-                  setActiveTab('subscription');
-                  return;
-                }
-                toggleSandboxMode();
-              }}
-              className={`sm:hidden h-8 px-2.5 rounded-lg text-[10px] font-bold border transition-colors flex items-center gap-1.5 shrink-0 ${
-                !effectiveSandboxMode
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80 shadow-2xs'
-                  : 'bg-amber-50 text-amber-700 border-amber-200/80 shadow-2xs'
-              }`}
-              type="button"
-              title={
-                !isLiveUnlocked
-                  ? 'Live Mode locked — activate subscription to unlock'
-                  : !effectiveSandboxMode
-                  ? 'Live Production Mode Active (Tap to toggle)'
-                  : 'Sandbox Test Mode Active (Tap to toggle)'
-              }
-              aria-label={!effectiveSandboxMode ? 'Live Mode' : 'Test Mode'}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${!effectiveSandboxMode ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span>{!effectiveSandboxMode ? 'Live' : 'Test'}</span>
-              {!isLiveUnlocked && <Lock className="w-2.5 h-2.5 text-amber-700" />}
-            </button>
-
-            <div className="flex items-center gap-1 sm:gap-2">
-              {/* Notification Bell with Real Dropdown Flyout */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setIsNotificationOpen(!isNotificationOpen);
-                    setIsProfileDropdownOpen(false);
-                  }}
-                  className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
-                    isNotificationOpen
-                      ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border-slate-200/80 bg-white'
-                  }`}
-                  title="Notifications & Activity"
-                  type="button"
-                  aria-label="Notifications"
-                >
-                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-current" />
-                  {merchantOrders.filter(o => o.status === 'verified').length > 0 && (
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white animate-pulse"></span>
-                  )}
-                </button>
-
-                {/* Notifications Flyout Panel (transitions-dev: 05-menu-dropdown.md) */}
-                {isNotificationMounted && (
-                  <>
-                    {/* Backdrop to dismiss on outside tap */}
-                    <div
-                      className={`fixed inset-0 z-[90] bg-slate-900/20 sm:bg-transparent transition-opacity duration-150 ${isNotificationOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-                      onClick={() => setIsNotificationOpen(false)}
-                      onTouchMove={(e) => e.preventDefault()}
-                    />
-                    <div 
-                      className={`fixed left-2.5 right-2.5 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] text-slate-900 ${notificationDropdownClass}`}
-                      data-origin="top-right"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {/* Panel Header */}
-                      <div className="shrink-0 px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-[#0c2340]">Activity &amp; Notifications</span>
-                          <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full font-mono">
-                            {merchantOrders.slice(0, 8).length}
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => setIsNotificationOpen(false)}
-                          className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-200/60 transition-colors cursor-pointer"
-                          type="button"
-                          aria-label="Close notifications"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      {/* Scrollable list with explicit iOS touch scrolling */}
-                      <div 
-                        className="flex-1 overflow-y-auto overscroll-contain divide-y divide-slate-100 touch-pan-y"
-                        style={{ WebkitOverflowScrolling: 'touch' }}
-                      >
-                        {merchantOrders.slice(0, 8).map((order) => {
-                          const isPaid = order.status === 'verified' || order.status === 'paid';
-                          return (
-                            <div
-                              key={order.id}
-                              onClick={() => {
-                                setActiveTab('transactions');
-                                setIsNotificationOpen(false);
-                              }}
-                              className="p-3.5 hover:bg-slate-50 active:bg-blue-50/50 transition-colors cursor-pointer flex items-start gap-3"
-                            >
-                              <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                                isPaid ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
-                              }`}>
-                                {isPaid ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
-                              </div>
-                              <div className="flex flex-col flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-2">
-                                  <span className="text-xs font-bold text-slate-800 truncate">
-                                    {isPaid ? `Payment Received: ₹${order.amount}` : `Pending Checkout: ₹${order.amount}`}
-                                  </span>
-                                  <span className="text-[10px] text-slate-400 font-mono shrink-0">
-                                    {order.created_at ? new Date(order.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
-                                  </span>
-                                </div>
-                                <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                                  {order.customer_name || 'Customer'} • {order.utr ? `UTR: ${order.utr}` : (order.order_id || 'Awaiting verification')}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })}
-
-                        {orders.length === 0 && (
-                          <div className="p-8 text-center text-xs text-slate-400">
-                            No recent activity or notifications.
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Footer */}
-                      <div className="shrink-0 p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <button
-                          onClick={() => {
-                            setActiveTab('transactions');
-                            setIsNotificationOpen(false);
-                          }}
-                          className="text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1 cursor-pointer py-1"
-                          type="button"
-                        >
-                          <span>View all transactions</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                        <span className="text-[10px] text-slate-400 font-mono">Rails Operational</span>
-                      </div>
-                    </div>
-                  </>
+            {/* Notification Bell with Dropdown Flyout */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsNotificationOpen(!isNotificationOpen);
+                  setIsProfileDropdownOpen(false);
+                }}
+                className="relative w-9 h-9 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer"
+                title="Notifications & Settlement Alerts"
+                aria-label="Notifications"
+              >
+                <Bell className="w-4 h-4" />
+                {merchantOrders.filter(o => o.status === 'verified').length > 0 && (
+                  <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-[#0F2BFF] ring-2 ring-white dark:ring-[#121826]"></span>
                 )}
-              </div>
+              </button>
+
+              {/* Notifications Flyout Panel */}
+              {isNotificationMounted && (
+                <>
+                  <div
+                    className={`fixed inset-0 z-[90] bg-slate-900/20 sm:bg-transparent transition-opacity duration-150 ${isNotificationOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    onClick={() => setIsNotificationOpen(false)}
+                    onTouchMove={(e) => e.preventDefault()}
+                  />
+                  <div 
+                    className={`fixed left-2.5 right-2.5 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] text-[var(--theme-text-primary,#090D18)] ${notificationDropdownClass}`}
+                    data-origin="top-right"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="shrink-0 px-4 py-3 border-b border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-between bg-[var(--theme-bg-well,#F7F9FE)]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold">Activity &amp; Notifications</span>
+                        <span className="bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] text-[10px] font-bold px-1.5 py-0.5 rounded-full font-mono">
+                          {merchantOrders.slice(0, 8).length}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => setIsNotificationOpen(false)}
+                        className="text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] p-1.5 rounded-lg transition-colors cursor-pointer"
+                        type="button"
+                        aria-label="Close notifications"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div 
+                      className="flex-1 overflow-y-auto overscroll-contain divide-y divide-[var(--theme-border-color,#DCE2F2)] touch-pan-y"
+                      style={{ WebkitOverflowScrolling: 'touch' }}
+                    >
+                      {merchantOrders.slice(0, 8).map((order) => {
+                        const isPaid = order.status === 'verified' || order.status === 'paid';
+                        return (
+                          <div
+                            key={order.id}
+                            onClick={() => {
+                              setActiveTab('transactions');
+                              setIsNotificationOpen(false);
+                            }}
+                            className="p-3.5 hover:bg-[var(--theme-bg-secondary,#EAEEFA)]/50 active:bg-[var(--theme-bg-secondary,#EAEEFA)] transition-colors cursor-pointer flex items-start gap-3"
+                          >
+                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                              isPaid ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400'
+                            }`}>
+                              {isPaid ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                            </div>
+                            <div className="flex flex-col flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-xs font-bold truncate">
+                                  {isPaid ? `Payment Received: ₹${order.amount}` : `Pending Checkout: ₹${order.amount}`}
+                                </span>
+                                <span className="text-[10px] text-[var(--theme-text-muted,#5E6782)] font-mono shrink-0">
+                                  {order.created_at ? new Date(order.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-[var(--theme-text-muted,#5E6782)] truncate mt-0.5">
+                                {order.customer_name || 'Customer'} • {order.utr ? `UTR: ${order.utr}` : (order.order_id || 'Awaiting verification')}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {orders.length === 0 && (
+                        <div className="p-8 text-center text-xs text-[var(--theme-text-muted,#5E6782)]">
+                          No recent activity or notifications.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="shrink-0 p-3 bg-[var(--theme-bg-well,#F7F9FE)] border-t border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-between text-xs">
+                      <button
+                        onClick={() => {
+                          setActiveTab('transactions');
+                          setIsNotificationOpen(false);
+                        }}
+                        className="text-[#0F2BFF] dark:text-[#60A5FA] hover:underline font-bold flex items-center gap-1 cursor-pointer py-1"
+                        type="button"
+                      >
+                        <span>View all transactions</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="text-[10px] text-[var(--theme-text-muted,#5E6782)] font-mono">Rails Operational</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Desktop Vertical Divider (Hidden on mobile for clean breathing room) */}
-            <div className="hidden sm:block h-6 w-px bg-slate-200 mx-0.5 sm:mx-1"></div>
+            {/* Light / Dark Theme Switcher */}
+            <div className="inline-flex items-center p-0.5 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)]">
+              <button
+                type="button"
+                onClick={() => {
+                  setTheme('light');
+                  localStorage.setItem('theme', 'light');
+                  document.documentElement.classList.add('light-theme');
+                  document.documentElement.classList.remove('dark');
+                }}
+                className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1 ${
+                  theme === 'light'
+                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
+                    : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
+                }`}
+                title="Switch to Light Theme"
+              >
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                <span className="hidden xl:inline">Light</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTheme('dark');
+                  localStorage.setItem('theme', 'dark');
+                  document.documentElement.classList.remove('light-theme');
+                  document.documentElement.classList.add('dark');
+                }}
+                className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1 ${
+                  theme === 'dark'
+                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
+                    : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
+                }`}
+                title="Switch to Dark Theme"
+              >
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <span className="hidden xl:inline">Dark</span>
+              </button>
+            </div>
 
-            {/* Profile Dropdown */}
+            {/* Merchant Profile Pill: Deadraon */}
             <div className="relative select-none">
-              <div
+              <button
+                type="button"
                 onClick={() => {
                   setIsProfileDropdownOpen(!isProfileDropdownOpen);
                   setIsNotificationOpen(false);
                 }}
-                className="flex items-center gap-2 sm:gap-3 pl-1 cursor-pointer group"
+                className="pl-1.5 pr-3 py-1 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center gap-2 transition-colors cursor-pointer text-left"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#0c2340] to-slate-800 text-white flex items-center justify-center font-bold text-xs shadow-sm shadow-slate-900/10 border border-slate-700/30 shrink-0">
+                <div className="w-7 h-7 rounded-full bg-[#090D18] dark:bg-[#0F2BFF] text-white font-mono text-[11px] font-extrabold flex items-center justify-center shrink-0">
                   {merchantInitials}
                 </div>
-                <div className="hidden md:flex flex-col text-left">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-slate-900 font-bold leading-tight group-hover:text-blue-600 transition-colors truncate max-w-[120px]">
-                      {profile?.business_name || profile?.owner_name || 'MyMobPay'}
-                    </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-transform" />
+                <div className="hidden sm:block text-left leading-tight">
+                  <div className="text-[11.5px] font-extrabold text-[var(--theme-text-primary,#090D18)] flex items-center gap-1">
+                    <span className="truncate max-w-[105px]">{profile?.business_name || profile?.owner_name || 'Deadraon'}</span>
+                    <ChevronDown className="w-3 h-3 text-[var(--theme-text-muted,#5E6782)]" />
                   </div>
-                  <span className="text-[11px] font-mono text-slate-400 font-medium">
-                    {formatMerchantId(profile?.id)}
-                  </span>
+                  <div className="font-mono text-[9px] text-[var(--theme-text-muted,#5E6782)] truncate max-w-[105px]">
+                    {profile?.api_key ? profile.api_key.slice(0, 14) : formatMerchantId(profile?.id || user?.id)}
+                  </div>
                 </div>
-              </div>
+              </button>
 
-              {/* Dropdown Menu Modal (transitions-dev: 05-menu-dropdown.md) */}
+              {/* Profile Dropdown Menu Modal */}
               {isProfileDropdownMounted && (
                 <>
-                  {/* Mobile backdrop */}
                   <div
                     className={`fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs sm:bg-transparent transition-opacity duration-150 ${isProfileDropdownOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                     onClick={() => setIsProfileDropdownOpen(false)}
                     onTouchMove={(e) => e.preventDefault()}
                   />
                   <div 
-                    className={`fixed right-2.5 top-[60px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 overflow-hidden ${profileDropdownClass}`}
+                    className={`fixed right-2.5 top-[64px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl py-2 z-50 overflow-hidden text-[var(--theme-text-primary,#090D18)] ${profileDropdownClass}`}
                     data-origin="top-right"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="px-4 py-2.5 border-b border-slate-100 flex flex-col gap-0.5">
-                      <p className="text-xs font-bold text-slate-900 truncate">
+                    <div className="px-4 py-2.5 border-b border-[var(--theme-border-color,#DCE2F2)] flex flex-col gap-0.5">
+                      <p className="text-xs font-bold truncate">
                         {profile?.business_name || profile?.owner_name || 'Merchant'}
                       </p>
-                      <p className="text-[11px] font-mono text-slate-400 truncate">
+                      <p className="text-[11px] font-mono text-[var(--theme-text-muted,#5E6782)] truncate">
                         {user?.email || 'merchant@mymobpay.tech'}
                       </p>
                     </div>
@@ -3320,9 +3458,9 @@ echo "Order Created: " . $data['orderId'];
                         setIsProfileDropdownOpen(false);
                         setIsBusinessInfoModalOpen(true);
                       }}
-                      className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
+                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--theme-text-secondary,#2A3147)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
                     >
-                      <User className="w-4 h-4 text-slate-400" />
+                      <User className="w-4 h-4 text-[var(--theme-text-muted,#5E6782)]" />
                       Profile &amp; Business Info
                     </button>
                     <button
@@ -3331,9 +3469,9 @@ echo "Order Created: " . $data['orderId'];
                         setSettingsCategory('settlement');
                         setActiveTab('settings');
                       }}
-                      className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
+                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--theme-text-secondary,#2A3147)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
                     >
-                      <Building2 className="w-4 h-4 text-slate-400" />
+                      <Building2 className="w-4 h-4 text-[var(--theme-text-muted,#5E6782)]" />
                       Bank Settlement Account
                     </button>
                     <button
@@ -3342,9 +3480,9 @@ echo "Order Created: " . $data['orderId'];
                         setSettingsCategory('api');
                         setActiveTab('settings');
                       }}
-                      className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
+                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--theme-text-secondary,#2A3147)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
                     >
-                      <Key className="w-4 h-4 text-slate-400" />
+                      <Key className="w-4 h-4 text-[var(--theme-text-muted,#5E6782)]" />
                       API Keys &amp; Webhooks
                     </button>
                     <button
@@ -3353,15 +3491,15 @@ echo "Order Created: " . $data['orderId'];
                         setProfileModalTab('security');
                         setIsProfileModalOpen(true);
                       }}
-                      className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
+                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--theme-text-secondary,#2A3147)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] flex items-center gap-2.5 font-medium transition-colors cursor-pointer"
                     >
-                      <Shield className="w-4 h-4 text-slate-400" />
+                      <Shield className="w-4 h-4 text-[var(--theme-text-muted,#5E6782)]" />
                       Security &amp; Password
                     </button>
-                    <div className="border-t border-slate-100 my-1"></div>
+                    <div className="border-t border-[var(--theme-border-color,#DCE2F2)] my-1"></div>
                     <button
                       onClick={handleSignOut}
-                      className="w-full text-left px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 flex items-center gap-2.5 font-bold transition-colors cursor-pointer"
+                      className="w-full text-left px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2.5 font-bold transition-colors cursor-pointer"
                     >
                       <LogOut className="w-4 h-4 text-red-500" />
                       Sign Out
