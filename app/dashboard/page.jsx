@@ -2970,6 +2970,7 @@ echo "Order Created: " . $data['orderId'];
                     onClick={() => {
                       setSettingsCategory('banking');
                       setActiveTab('settings');
+                      setIsMobileMenuOpen(false);
                     }}
                     className="py-1 px-2 rounded-lg bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-between transition-all cursor-pointer group"
                     title="Banking & Settlement"
@@ -3197,7 +3198,7 @@ echo "Order Created: " . $data['orderId'];
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] text-[var(--theme-text-primary,#090D18)] shrink-0 cursor-pointer"
+              className="md:hidden w-9 h-9 rounded-xl bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] text-[var(--theme-text-primary,#090D18)] flex items-center justify-center shrink-0 cursor-pointer hover:bg-[var(--theme-border-color,#DCE2F2)] transition-colors"
               type="button"
               title={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -3214,28 +3215,6 @@ echo "Order Created: " . $data['orderId'];
               title="Go to Dashboard Overview"
             >
               <MyMobPayLogo markSize={24} textSize="text-[15px]" textColor="var(--theme-text-primary, #090D18)" />
-            </button>
-
-            {/* Live Mode | Test Mode Segmented Pill */}
-            {/* Mobile Compact Mode Indicator (< sm) */}
-            <button
-              type="button"
-              onClick={() => {
-                if (!isLiveUnlocked) {
-                  setActiveTab('subscription');
-                  setIsMobileMenuOpen(false);
-                  return;
-                }
-                toggleSandboxMode();
-              }}
-              className={`sm:hidden px-2 py-1 rounded-full text-[10.5px] font-bold inline-flex items-center gap-1.5 border border-[var(--theme-border-color,#DCE2F2)] bg-[var(--theme-bg-secondary,#EAEEFA)] transition-all cursor-pointer shrink-0 ${
-                !effectiveSandboxMode ? 'text-[#059669] dark:text-[#34D399]' : 'text-amber-600 dark:text-amber-400'
-              }`}
-              title={!isLiveUnlocked ? 'Live Mode locked — tap to subscribe' : 'Toggle Live / Test Mode'}
-            >
-              <span className={`w-2 h-2 rounded-full ${!effectiveSandboxMode ? 'bg-[#10B981]' : 'bg-amber-500 animate-pulse'}`}></span>
-              <span>{!effectiveSandboxMode ? 'Live' : 'Test'}</span>
-              {!isLiveUnlocked && <Lock className="w-2.5 h-2.5 text-slate-400" />}
             </button>
 
             {/* Desktop Mode Switcher (>= sm) */}
@@ -3312,7 +3291,29 @@ echo "Order Created: " . $data['orderId'];
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            {/* Mobile Mode Switcher Pill (< sm) */}
+            <button
+              type="button"
+              onClick={() => {
+                if (!isLiveUnlocked) {
+                  setActiveTab('subscription');
+                  setIsMobileMenuOpen(false);
+                  return;
+                }
+                toggleSandboxMode();
+              }}
+              className={`sm:hidden h-8 px-2.5 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-2xs ${
+                !effectiveSandboxMode
+                  ? 'border border-emerald-500/25 bg-emerald-500/10 dark:bg-emerald-500/15 text-[#059669] dark:text-[#34D399] active:scale-95'
+                  : 'border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 active:scale-95'
+              }`}
+              title={!isLiveUnlocked ? 'Sandbox Test Mode Active • Tap to unlock 0% MDR Live Mode' : (!effectiveSandboxMode ? 'Live Mode Active • Tap for Test Mode' : 'Test Mode Active • Tap for Live Mode')}
+              aria-label={!effectiveSandboxMode ? 'Switch to Test Mode' : 'Switch to Live Mode'}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${!effectiveSandboxMode ? 'bg-[#10B981]' : 'bg-amber-500 animate-pulse'}`} />
+              <span className="leading-none">{!effectiveSandboxMode ? 'Live' : 'Test'}</span>
+            </button>
             {/* Help Button */}
             <button
               type="button"
@@ -3331,7 +3332,7 @@ echo "Order Created: " . $data['orderId'];
                   setIsNotificationOpen(!isNotificationOpen);
                   setIsProfileDropdownOpen(false);
                 }}
-                className="relative w-9 h-9 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer"
+                className="relative w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer"
                 title="Notifications & Settlement Alerts"
                 aria-label="Notifications"
               >
@@ -3450,7 +3451,7 @@ echo "Order Created: " . $data['orderId'];
                   document.documentElement.classList.add('light-theme');
                 }
               }}
-              className="md:hidden w-8 h-8 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer shrink-0"
+              className="md:hidden w-8.5 h-8.5 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer shrink-0"
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
               aria-label="Toggle theme"
             >
