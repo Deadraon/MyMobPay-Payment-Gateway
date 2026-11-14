@@ -1103,6 +1103,16 @@ export default function DashboardPage() {
 
   };
 
+  // Single source of truth for theme changes: persist + let the [theme] effect
+  // apply the `dark` / `light-theme` classes on <html>.
+  const applyTheme = (nextTheme) => {
+
+    setTheme(nextTheme);
+
+    try { localStorage.setItem('theme', nextTheme); } catch { /* storage may be blocked */ }
+
+  };
+
   // Safe UUID generator
 
   const generateUUID = () => {
@@ -3202,6 +3212,45 @@ echo "Order Created: " . $data['orderId'];
 
         {/* Sidebar Footer */}
         <div className="p-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] border-t border-[var(--theme-border-color,#DCE2F2)] space-y-2 shrink-0 bg-[var(--theme-bg-sidebar,#FFFFFF)]">
+          {/* Appearance — mobile drawer only; the desktop header keeps its Light/Dark pill */}
+          <div className="md:hidden p-2 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--theme-text-primary,#090D18)]">
+                {theme === 'dark'
+                  ? <Moon className="w-3.5 h-3.5 text-[#60A5FA]" />
+                  : <Sun className="w-3.5 h-3.5 text-[#F59E0B]" />}
+                <span>Appearance</span>
+              </span>
+              <div className="inline-flex items-center p-0.5 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)]">
+                <button
+                  type="button"
+                  onClick={() => applyTheme('light')}
+                  className={`inline-flex items-center justify-center gap-1 h-9 px-3 rounded-full text-[11px] font-bold transition-colors cursor-pointer ${
+                    theme === 'light'
+                      ? 'bg-[#0F2BFF] text-white shadow-sm'
+                      : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
+                  }`}
+                  aria-label="Switch to Light Theme"
+                  aria-pressed={theme === 'light'}
+                >
+                  <Sun className="w-3.5 h-3.5" /> Light
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyTheme('dark')}
+                  className={`inline-flex items-center justify-center gap-1 h-9 px-3 rounded-full text-[11px] font-bold transition-colors cursor-pointer ${
+                    theme === 'dark'
+                      ? 'bg-[#0F2BFF] text-white shadow-sm'
+                      : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
+                  }`}
+                  aria-label="Switch to Dark Theme"
+                  aria-pressed={theme === 'dark'}
+                >
+                  <Moon className="w-3.5 h-3.5" /> Dark
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="p-2.5 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
             <div className="flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--theme-text-primary,#090D18)]">
@@ -3231,12 +3280,12 @@ echo "Order Created: " . $data['orderId'];
         {/* ═══════════════════════════════════════════════════════════
            HEADER (Theme-Adaptive Command Topbar)
            ═══════════════════════════════════════════════════════════ */}
-        <header className="fixed top-0 left-0 md:left-[264px] right-0 bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] z-40 flex items-center justify-between px-3 sm:px-6 shadow-xs h-16">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            {/* Mobile Hamburger Toggle */}
+        <header className="fixed top-0 left-0 md:left-[264px] right-0 bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] z-40 flex items-center justify-between gap-2 px-3 sm:px-6 h-16">
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+            {/* Mobile Hamburger Toggle — 40px target matching the right-side controls */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden w-9 h-9 rounded-xl bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] text-[var(--theme-text-primary,#090D18)] flex items-center justify-center shrink-0 cursor-pointer hover:bg-[var(--theme-border-color,#DCE2F2)] transition-colors"
+              className="md:hidden topbar-control text-[var(--theme-text-primary,#090D18)]"
               type="button"
               title={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -3256,7 +3305,7 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             {/* Desktop Mode Switcher (>= sm) */}
-            <div className="hidden sm:inline-flex items-center p-1 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
+            <div className="hidden sm:inline-flex topbar-pill items-center p-1 bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
               <button
                 type="button"
                 onClick={() => {
@@ -3266,9 +3315,9 @@ echo "Order Created: " . $data['orderId'];
                   }
                   if (effectiveSandboxMode) toggleSandboxMode();
                 }}
-                className={`px-3 py-1 rounded-full text-[11.5px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`topbar-segment ${
                   !effectiveSandboxMode
-                    ? 'bg-white dark:bg-[#121826] text-[#059669] dark:text-[#34D399] shadow-2xs'
+                    ? 'bg-white dark:bg-[#121826] text-[#059669] dark:text-[#34D399] shadow-sm'
                     : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
                 }`}
                 title={!isLiveUnlocked ? 'Live Mode locked — activate subscription to unlock' : 'Live Mode'}
@@ -3283,9 +3332,9 @@ echo "Order Created: " . $data['orderId'];
                   if (!isLiveUnlocked) return;
                   if (!effectiveSandboxMode) toggleSandboxMode();
                 }}
-                className={`px-3 py-1 rounded-full text-[11.5px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`topbar-segment ${
                   effectiveSandboxMode
-                    ? 'bg-white dark:bg-[#121826] text-amber-600 dark:text-amber-400 shadow-2xs'
+                    ? 'bg-white dark:bg-[#121826] text-amber-600 dark:text-amber-400 shadow-sm'
                     : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
                 }`}
               >
@@ -3330,8 +3379,8 @@ echo "Order Created: " . $data['orderId'];
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Mobile Mode Switcher Pill (< sm) */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            {/* Mobile Mode Switcher Pill (< sm) — same 40px height as every icon control */}
             <button
               type="button"
               onClick={() => {
@@ -3342,42 +3391,43 @@ echo "Order Created: " . $data['orderId'];
                 }
                 toggleSandboxMode();
               }}
-              className={`sm:hidden h-8 px-2.5 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-2xs ${
+              className={`sm:hidden topbar-pill px-3 text-[11.5px] font-bold gap-1.5 transition-all ${
                 !effectiveSandboxMode
-                  ? 'border border-emerald-500/25 bg-emerald-500/10 dark:bg-emerald-500/15 text-[#059669] dark:text-[#34D399] active:scale-95'
-                  : 'border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 active:scale-95'
+                  ? 'border border-emerald-500/30 bg-emerald-500/10 dark:bg-emerald-500/15 text-[#059669] dark:text-[#34D399] active:scale-95'
+                  : 'border border-amber-500/35 bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 active:scale-95'
               }`}
               title={!isLiveUnlocked ? 'Sandbox Test Mode Active • Tap to unlock 0% MDR Live Mode' : (!effectiveSandboxMode ? 'Live Mode Active • Tap for Test Mode' : 'Test Mode Active • Tap for Live Mode')}
               aria-label={!effectiveSandboxMode ? 'Switch to Test Mode' : 'Switch to Live Mode'}
             >
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${!effectiveSandboxMode ? 'bg-[#10B981]' : 'bg-amber-500 animate-pulse'}`} />
+              <span className={`w-2 h-2 rounded-full shrink-0 ${!effectiveSandboxMode ? 'bg-[#10B981]' : 'bg-amber-500 animate-pulse'}`} />
               <span className="leading-none">{!effectiveSandboxMode ? 'Live' : 'Test'}</span>
             </button>
             {/* Help Button */}
             <button
               type="button"
               onClick={() => setActiveTab('support')}
-              className="hidden sm:flex w-9 h-9 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer"
+              className="hidden sm:inline-flex topbar-control"
               title="Help & Documentation"
+              aria-label="Help & Documentation"
             >
-              <HelpCircle className="w-4 h-4" />
+              <HelpCircle className="w-[18px] h-[18px]" />
             </button>
 
             {/* Notification Bell with Dropdown Flyout */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <button
                 type="button"
                 onClick={() => {
                   setIsNotificationOpen(!isNotificationOpen);
                   setIsProfileDropdownOpen(false);
                 }}
-                className="relative w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer"
+                className="topbar-control relative"
                 title="Notifications & Settlement Alerts"
                 aria-label="Notifications"
               >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-[18px] h-[18px]" />
                 {merchantOrders.filter(o => o.status === 'verified').length > 0 && (
-                  <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-[#0F2BFF] ring-2 ring-white dark:ring-[#121826]"></span>
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#0F2BFF] ring-2 ring-white dark:ring-[#121826]"></span>
                 )}
               </button>
 
@@ -3473,84 +3523,55 @@ echo "Order Created: " . $data['orderId'];
               )}
             </div>
 
-            {/* Light / Dark Theme Switcher */}
-            {/* Mobile Theme Toggle Button (< md) */}
-            <button
-              type="button"
-              onClick={() => {
-                const nextTheme = theme === 'dark' ? 'light' : 'dark';
-                setTheme(nextTheme);
-                localStorage.setItem('theme', nextTheme);
-                if (nextTheme === 'dark') {
-                  document.documentElement.classList.remove('light-theme');
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                  document.documentElement.classList.add('light-theme');
-                }
-              }}
-              className="md:hidden w-8.5 h-8.5 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer shrink-0"
-              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-400" />
-              ) : (
-                <Moon className="w-4 h-4 text-[#0F2BFF]" />
-              )}
-            </button>
-
-            {/* Desktop Theme Switcher Pill (>= md) */}
-            <div className="hidden md:inline-flex items-center p-0.5 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
+            {/* Light / Dark Theme Switcher — mobile lives in the nav drawer (Appearance)
+                so the phone topbar keeps a symmetric 40px control row. */}
+            <div className="hidden md:inline-flex topbar-pill items-center p-1 bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
               <button
                 type="button"
-                onClick={() => {
-                  setTheme('light');
-                  localStorage.setItem('theme', 'light');
-                  document.documentElement.classList.remove('dark');
-                  document.documentElement.classList.add('light-theme');
-                }}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1 ${
+                onClick={() => applyTheme('light')}
+                className={`topbar-segment ${
                   theme === 'light'
-                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
+                    ? 'bg-[#0F2BFF] text-white shadow-sm'
                     : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
                 }`}
                 title="Switch to Light Theme"
+                aria-label="Switch to Light Theme"
+                aria-pressed={theme === 'light'}
               >
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
                 <span className="hidden xl:inline">Light</span>
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setTheme('dark');
-                  localStorage.setItem('theme', 'dark');
-                  document.documentElement.classList.remove('light-theme');
-                  document.documentElement.classList.add('dark');
-                }}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1 ${
+                onClick={() => applyTheme('dark')}
+                className={`topbar-segment ${
                   theme === 'dark'
-                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
+                    ? 'bg-[#0F2BFF] text-white shadow-sm'
                     : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
                 }`}
                 title="Switch to Dark Theme"
+                aria-label="Switch to Dark Theme"
+                aria-pressed={theme === 'dark'}
               >
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 <span className="hidden xl:inline">Dark</span>
               </button>
             </div>
 
             {/* Merchant Profile Pill: Deadraon */}
-            <div className="relative select-none">
+            <div className="relative select-none shrink-0">
               <button
                 type="button"
                 onClick={() => {
                   setIsProfileDropdownOpen(!isProfileDropdownOpen);
                   setIsNotificationOpen(false);
                 }}
-                className="p-1 sm:pl-1.5 sm:pr-3 sm:py-1 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center gap-2 transition-colors cursor-pointer text-left shrink-0"
+                className="topbar-pill p-1 sm:pl-1.5 sm:pr-3 bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center gap-2 transition-colors cursor-pointer text-left"
+                aria-haspopup="menu"
+                aria-expanded={isProfileDropdownOpen}
+                title="Account menu"
               >
-                <div className="w-7 h-7 rounded-full bg-[#090D18] dark:bg-[#0F2BFF] text-white font-mono text-[11px] font-extrabold flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#090D18] dark:bg-[#0F2BFF] text-white font-mono text-[11px] font-extrabold flex items-center justify-center shrink-0">
                   {merchantInitials}
                 </div>
                 <div className="hidden sm:block text-left leading-tight">
