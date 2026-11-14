@@ -2818,6 +2818,181 @@ html.dark .console-input:focus {
     touch-action: manipulation;
     transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
   }
+
+  /* ═══ Animated Single Theme Toggle Button (Light ↔ Dark) ═══════
+     Cross-fades Sun ↔ Moon with rotation, scale, and cross-blur (09-icon-swap)
+     paired with vertical slide text states swap (04-text-states-swap). */
+  .theme-toggle-single {
+    --toggle-h: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: var(--toggle-h);
+    min-height: var(--toggle-h);
+    padding: 0 14px 0 8px;
+    border-radius: 9999px;
+    border: 1px solid var(--theme-border-color, var(--border-color, #DCE2F2));
+    background-color: var(--theme-bg-well, var(--bg-well, #F7F9FE));
+    color: var(--theme-text-primary, var(--text-primary, #090D18));
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+    transition: background-color 0.22s ease, border-color 0.22s ease, color 0.22s ease,
+                box-shadow 0.22s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .theme-toggle-single:hover {
+    border-color: #0F2BFF;
+    background-color: var(--theme-bg-secondary, #EAEEFA);
+    color: var(--theme-text-primary, #090D18);
+    box-shadow: 0 2px 10px -2px rgba(15, 43, 255, 0.16);
+  }
+
+  html.dark .theme-toggle-single {
+    background-color: var(--theme-bg-well, var(--bg-well, #121826));
+    border-color: var(--theme-border-color, var(--border-color, #1F2A40));
+    color: var(--theme-text-primary, var(--text-primary, #F8FAFC));
+  }
+
+  html.dark .theme-toggle-single:hover {
+    border-color: #60A5FA;
+    background-color: var(--theme-bg-secondary, #161D2B);
+    box-shadow: 0 2px 12px -2px rgba(96, 165, 250, 0.2);
+  }
+
+  .theme-toggle-single:active {
+    transform: scale(0.95);
+  }
+
+  .theme-toggle-single:focus-visible {
+    outline: 2px solid #0F2BFF;
+    outline-offset: 2px;
+  }
+
+  /* Compact icon-only variant */
+  .theme-toggle-single.icon-only {
+    width: var(--toggle-h);
+    padding: 0;
+    justify-content: center;
+  }
+
+  /* Icon Badge with spring rotation on hover */
+  .theme-toggle-icon-box {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 9999px;
+    background-color: rgba(245, 158, 11, 0.14);
+    color: #D97706;
+    flex-shrink: 0;
+    transition: background-color 0.28s ease, color 0.28s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html.dark .theme-toggle-icon-box {
+    background-color: rgba(96, 165, 250, 0.16);
+    color: #60A5FA;
+  }
+
+  .theme-toggle-single:hover .theme-toggle-icon-box {
+    transform: rotate(18deg) scale(1.06);
+  }
+
+  /* Layered Icons for seamless cross-fade + spin */
+  .theme-toggle-icon {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.28s ease;
+  }
+
+  /* Light Theme: Sun visible, Moon tucked away */
+  .theme-toggle-single[data-theme="light"] .theme-toggle-sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    filter: blur(0);
+  }
+  .theme-toggle-single[data-theme="light"] .theme-toggle-moon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.25);
+    filter: blur(2.5px);
+    pointer-events: none;
+  }
+
+  /* Dark Theme: Moon visible, Sun tucked away */
+  .theme-toggle-single[data-theme="dark"] .theme-toggle-sun {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.25);
+    filter: blur(2.5px);
+    pointer-events: none;
+  }
+  .theme-toggle-single[data-theme="dark"] .theme-toggle-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    filter: blur(0);
+  }
+
+  /* Text Label Slot */
+  .theme-toggle-label-box {
+    position: relative;
+    display: inline-grid;
+    align-items: center;
+    line-height: 1;
+    min-width: 32px;
+  }
+
+  .theme-toggle-label {
+    grid-area: 1 / 1;
+    white-space: nowrap;
+    transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.24s ease;
+  }
+
+  .theme-toggle-single[data-theme="light"] .theme-toggle-label-light {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  .theme-toggle-single[data-theme="light"] .theme-toggle-label-dark {
+    opacity: 0;
+    transform: translateY(5px);
+    filter: blur(2px);
+    pointer-events: none;
+  }
+
+  .theme-toggle-single[data-theme="dark"] .theme-toggle-label-light {
+    opacity: 0;
+    transform: translateY(-5px);
+    filter: blur(2px);
+    pointer-events: none;
+  }
+  .theme-toggle-single[data-theme="dark"] .theme-toggle-label-dark {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-toggle-single,
+    .theme-toggle-icon,
+    .theme-toggle-label,
+    .theme-toggle-icon-box {
+      transition: none !important;
+      animation: none !important;
+      transform: none !important;
+    }
+  }
 }
 
 /* Animated Tab & Modal Transitions */

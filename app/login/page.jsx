@@ -16,6 +16,7 @@ import QRCode from 'react-qr-code';
 import { useModalTransition } from '@/components/useModalTransition';
 import { validateStrongPassword, getPasswordCriteria } from '@/lib/passwordValidation';
 import LegalAgreementModal from '@/components/LegalAgreementModal';
+import ThemeToggleButton from '@/components/ThemeToggleButton';
 
 // Dedicated crisp vector 3D ribbon mark with unique SVG gradient scopes
 function MyMobPayLogoMark({ className = "w-6 h-6", id = "auth-logo" }) {
@@ -1923,37 +1924,11 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* Segmented Light / Dark Switcher */}
-            <div className="inline-flex items-center p-0.5 rounded-full theme-bg-secondary border theme-border" role="group" aria-label="Appearance">
-              <button
-                type="button"
-                onClick={() => handleSetTheme('light')}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
-                  theme === 'light'
-                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
-                    : 'theme-text-muted hover:theme-text-primary'
-                }`}
-              >
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                  <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-                </svg>
-                <span>Light</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSetTheme('dark')}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
-                  theme === 'dark'
-                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
-                    : 'theme-text-muted hover:theme-text-primary'
-                }`}
-              >
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-                <span>Dark</span>
-              </button>
-            </div>
+            {/* Animated Single Theme Toggle Button */}
+            <ThemeToggleButton
+              theme={theme}
+              onToggle={() => handleSetTheme(theme === 'dark' ? 'light' : 'dark')}
+            />
           </div>
 
           {/* Center Auth Card Container */}

@@ -43,6 +43,7 @@ import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
 import { formatMerchantId } from '@/lib/merchantId';
 import { useDropdownTransition } from '@/components/useDropdownTransition';
 import { useModalTransition } from '@/components/useModalTransition';
+import ThemeToggleButton from '@/components/ThemeToggleButton';
 import { DashboardDiwaliGreeting } from '@/components/DashboardDiwaliElements';
 
 import { 
@@ -1094,13 +1095,8 @@ export default function DashboardPage() {
   }, [profile?.id]);
 
   const toggleTheme = () => {
-
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
-
-    setTheme(nextTheme);
-
-    localStorage.setItem('theme', nextTheme);
-
+    applyTheme(nextTheme);
   };
 
   // Single source of truth for theme changes: persist + let the [theme] effect
@@ -3212,43 +3208,19 @@ echo "Order Created: " . $data['orderId'];
 
         {/* Sidebar Footer */}
         <div className="p-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] border-t border-[var(--theme-border-color,#DCE2F2)] space-y-2 shrink-0 bg-[var(--theme-bg-sidebar,#FFFFFF)]">
-          {/* Appearance — mobile drawer only; the desktop header keeps its Light/Dark pill */}
-          <div className="md:hidden p-2 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
+          {/* Appearance — mobile drawer single animated toggle */}
+          <div className="md:hidden p-2.5 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
             <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--theme-text-primary,#090D18)]">
+              <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-[var(--theme-text-primary,#090D18)]">
                 {theme === 'dark'
                   ? <Moon className="w-3.5 h-3.5 text-[#60A5FA]" />
                   : <Sun className="w-3.5 h-3.5 text-[#F59E0B]" />}
                 <span>Appearance</span>
               </span>
-              <div className="inline-flex items-center p-0.5 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)]">
-                <button
-                  type="button"
-                  onClick={() => applyTheme('light')}
-                  className={`inline-flex items-center justify-center gap-1 h-9 px-3 rounded-full text-[11px] font-bold transition-colors cursor-pointer ${
-                    theme === 'light'
-                      ? 'bg-[#0F2BFF] text-white shadow-sm'
-                      : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
-                  }`}
-                  aria-label="Switch to Light Theme"
-                  aria-pressed={theme === 'light'}
-                >
-                  <Sun className="w-3.5 h-3.5" /> Light
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyTheme('dark')}
-                  className={`inline-flex items-center justify-center gap-1 h-9 px-3 rounded-full text-[11px] font-bold transition-colors cursor-pointer ${
-                    theme === 'dark'
-                      ? 'bg-[#0F2BFF] text-white shadow-sm'
-                      : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
-                  }`}
-                  aria-label="Switch to Dark Theme"
-                  aria-pressed={theme === 'dark'}
-                >
-                  <Moon className="w-3.5 h-3.5" /> Dark
-                </button>
-              </div>
+              <ThemeToggleButton
+                theme={theme}
+                onToggle={toggleTheme}
+              />
             </div>
           </div>
           <div className="p-2.5 rounded-xl bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)]">
@@ -3523,40 +3495,18 @@ echo "Order Created: " . $data['orderId'];
               )}
             </div>
 
-            {/* Light / Dark Theme Switcher — mobile lives in the nav drawer (Appearance)
-                so the phone topbar keeps a symmetric 40px control row. */}
-            <div className="hidden md:inline-flex topbar-pill items-center p-1 bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
-              <button
-                type="button"
-                onClick={() => applyTheme('light')}
-                className={`topbar-segment ${
-                  theme === 'light'
-                    ? 'bg-[#0F2BFF] text-white shadow-sm'
-                    : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
-                }`}
-                title="Switch to Light Theme"
-                aria-label="Switch to Light Theme"
-                aria-pressed={theme === 'light'}
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-                <span className="hidden xl:inline">Light</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => applyTheme('dark')}
-                className={`topbar-segment ${
-                  theme === 'dark'
-                    ? 'bg-[#0F2BFF] text-white shadow-sm'
-                    : 'text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)]'
-                }`}
-                title="Switch to Dark Theme"
-                aria-label="Switch to Dark Theme"
-                aria-pressed={theme === 'dark'}
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                <span className="hidden xl:inline">Dark</span>
-              </button>
-            </div>
+            {/* Animated Single Theme Toggle Button (Light ↔ Dark) */}
+            <ThemeToggleButton
+              theme={theme}
+              onToggle={toggleTheme}
+              className="hidden md:inline-flex"
+            />
+            <ThemeToggleButton
+              theme={theme}
+              onToggle={toggleTheme}
+              showLabel={false}
+              className="md:hidden"
+            />
 
             {/* Merchant Profile Pill: Deadraon */}
             <div className="relative select-none shrink-0">
