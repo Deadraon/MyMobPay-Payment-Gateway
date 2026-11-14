@@ -531,6 +531,9 @@ html.dark .clay-camera { background: #475569; }
   position: relative;
   overflow: hidden;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, background-color 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 .btn-editorial::after {
   content: '';
@@ -544,22 +547,24 @@ html.dark .clay-camera { background: #475569; }
   transition: left 0.55s ease;
   pointer-events: none;
 }
-.btn-editorial:hover:not(:disabled)::after {
-  left: 135%;
-}
-.btn-editorial:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px -6px rgba(15, 43, 255, 0.48);
+@media (hover: hover) and (pointer: fine) {
+  .btn-editorial:hover:not(:disabled)::after {
+    left: 135%;
+  }
+  .btn-editorial:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px -6px rgba(15, 43, 255, 0.48);
+  }
+  .btn-editorial:hover .btn-arrow-icon {
+    transform: translateX(4px);
+  }
 }
 .btn-editorial:active:not(:disabled) {
-  transform: translateY(0px) scale(0.99);
+  transform: translateY(0px) scale(0.98);
 }
 
 .btn-arrow-icon {
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.btn-editorial:hover .btn-arrow-icon {
-  transform: translateX(4px);
 }
 
 .auth-input {
@@ -653,6 +658,7 @@ export default function LoginPage() {
 
   // Status & Feedback
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
@@ -678,6 +684,7 @@ export default function LoginPage() {
   const isOAuthSignupRef = useRef(isOAuthSignup);
   isOAuthSignupRef.current = isOAuthSignup;
   const isEmailOtpVerifyingRef = useRef(false);
+  const isCheckingStatusRef = useRef(false);
 
   // Handle URL query parameters & recovery hash
   useEffect(() => {
@@ -718,10 +725,11 @@ export default function LoginPage() {
   useEffect(() => {
     const handleAuthRedirect = async (session, isExplicitOAuthRedirect = false) => {
       if (!session?.user) return;
-      if (isRedirectingRef.current) return;
+      if (isRedirectingRef.current || isCheckingStatusRef.current) return;
       if (modeRef.current === 'reset') return;
       if (isRegistrationSubmittedRef.current) return;
 
+      isCheckingStatusRef.current = true;
       const hasUrlGoogleFlag = typeof window !== 'undefined' && window.location.search.includes('googleAuth=true');
 
       setLoading(true);
@@ -821,6 +829,8 @@ export default function LoginPage() {
         setError('Could not verify account authorization. Please try signing in again.');
         setLoading(false);
         isRedirectingRef.current = false;
+      } finally {
+        isCheckingStatusRef.current = false;
       }
     };
 
@@ -1626,20 +1636,40 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
+    if (googleLoading) return;
+    setGoogleLoading(true);
     setError('');
     setMessage('');
+
+    // Safety timeout: auto-recover button state if OAuth redirect is delayed or blocked
+    const safetyTimeout = setTimeout(() => {
+      setGoogleLoading(false);
+    }, 8000);
+
     try {
-      const { error: authError } = await supabase.auth.signInWithOAuth({
+      const { data, error: authError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/login?googleAuth=true`,
+          skipBrowserRedirect: false,
         },
       });
-      if (authError) throw authError;
+
+      if (authError) {
+        clearTimeout(safetyTimeout);
+        throw authError;
+      }
+
+      if (data?.url) {
+        clearTimeout(safetyTimeout);
+        // Explicit top-level navigation ensures immediate redirect on mobile WebViews & browsers
+        window.location.href = data.url;
+      }
     } catch (err) {
+      clearTimeout(safetyTimeout);
+      console.error('Google OAuth sign-in error:', err);
       setError(formatCustomerError(err?.message || 'Could not sign in with Google. Please try again.'));
-      setLoading(false);
+      setGoogleLoading(false);
     }
   };
 
@@ -3079,16 +3109,26 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
-                    disabled={loading}
-                    className="btn-editorial w-full py-2.5 px-4 rounded-xl theme-bg-well border theme-border hover:border-[#0F2BFF] text-[12.5px] font-bold theme-text-primary flex items-center justify-center gap-2.5 transition-all cursor-pointer disabled:opacity-50"
+                    disabled={loading || googleLoading}
+                    style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                    className="btn-editorial w-full py-2.5 px-4 rounded-xl theme-bg-well border theme-border hover:border-[#0F2BFF] text-[12.5px] font-bold theme-text-primary flex items-center justify-center gap-2.5 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-[0.98]"
                   >
-                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
-                      <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
-                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
-                    </svg>
-                    <span>Continue with Google</span>
+                    {googleLoading ? (
+                      <>
+                        <span className="w-4 h-4 rounded-full border-2 border-[#0F2BFF]/30 border-t-[#0F2BFF] animate-spin shrink-0" aria-hidden="true"></span>
+                        <span className="pointer-events-none">Connecting to Google...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 shrink-0 pointer-events-none" viewBox="0 0 24 24">
+                          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
+                          <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
+                          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
+                        </svg>
+                        <span className="pointer-events-none">Continue with Google</span>
+                      </>
+                    )}
                   </button>
                 )}
 
