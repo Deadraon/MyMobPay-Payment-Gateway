@@ -17,49 +17,56 @@ import { useModalTransition } from '@/components/useModalTransition';
 import { validateStrongPassword, getPasswordCriteria } from '@/lib/passwordValidation';
 import LegalAgreementModal from '@/components/LegalAgreementModal';
 
-// ── Helper: Detect Bank Name & Styling from UPI ID ──
+// Dedicated crisp vector 3D ribbon mark with unique SVG gradient scopes
+function MyMobPayLogoMark({ className = "w-6 h-6", id = "auth-logo" }) {
+  return (
+    <svg className={`overflow-visible shrink-0 ${className}`} viewBox="115 225 790 530" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="MyMobPay Logo">
+      <defs>
+        <linearGradient id={`auth-g1-${id}`} x1="360" y1="280" x2="510" y2="660" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#004BFF" />
+          <stop offset="100%" stopColor="#0033B5" />
+        </linearGradient>
+        <linearGradient id={`auth-g2-${id}`} x1="510" y1="630" x2="670" y2="280" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#E64400" />
+          <stop offset="50%" stopColor="#FF6D00" />
+          <stop offset="100%" stopColor="#FF9614" />
+        </linearGradient>
+        <linearGradient id={`auth-g3-${id}`} x1="170" y1="710" x2="420" y2="280" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#0044E5" />
+          <stop offset="55%" stopColor="#0088FF" />
+          <stop offset="100%" stopColor="#00C8FF" />
+        </linearGradient>
+        <linearGradient id={`auth-g4-${id}`} x1="600" y1="280" x2="830" y2="710" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FF9E1B" />
+          <stop offset="55%" stopColor="#FF7300" />
+          <stop offset="100%" stopColor="#F05A00" />
+        </linearGradient>
+      </defs>
+      <path d="M 470 575 L 555 340 C 585 260, 680 260, 710 340 L 625 575 C 595 655, 500 655, 470 575 Z" fill={`url(#auth-g2-${id})`} />
+      <path d="M 310 340 L 395 575 C 425 655, 520 655, 550 575 L 465 340 C 435 260, 340 260, 310 340 Z" fill={`url(#auth-g1-${id})`} />
+      <path d="M 168 645 L 290 340 C 320 260, 425 260, 455 340 L 332 645 C 308 725, 192 725, 168 645 Z" fill={`url(#auth-g3-${id})`} />
+      <path d="M 565 340 C 595 260, 700 260, 730 340 L 852 645 C 828 725, 712 725, 688 645 L 565 340 Z" fill={`url(#auth-g4-${id})`} />
+    </svg>
+  );
+}
+
+// Helper: Detect Bank Name & Styling from UPI ID
 const getBankFromUpi = (upi) => {
   if (!upi || !upi.includes('@')) return null;
   const handle = upi.split('@')[1]?.toLowerCase();
   if (!handle) return null;
-  if (handle.includes('hdfc')) return { name: 'HDFC Bank', color: 'text-blue-700 bg-blue-50 border-blue-200' };
-  if (handle.includes('sbi')) return { name: 'State Bank of India', color: 'text-sky-700 bg-sky-50 border-sky-200' };
-  if (handle.includes('icici')) return { name: 'ICICI Bank', color: 'text-amber-700 bg-amber-50 border-amber-200' };
-  if (handle.includes('axis')) return { name: 'Axis Bank', color: 'text-rose-700 bg-rose-50 border-rose-200' };
-  if (handle.includes('paytm')) return { name: 'Paytm Payments Bank', color: 'text-cyan-700 bg-cyan-50 border-cyan-200' };
-  if (handle.includes('ybl') || handle.includes('ibl')) return { name: 'Yes Bank / PhonePe', color: 'text-purple-700 bg-purple-50 border-purple-200' };
-  if (handle.includes('barodampay')) return { name: 'Bank of Baroda', color: 'text-orange-700 bg-orange-50 border-orange-200' };
-  if (handle.includes('kotak')) return { name: 'Kotak Mahindra Bank', color: 'text-red-700 bg-red-50 border-red-200' };
-  return { name: `@${handle} UPI Network`, color: 'text-indigo-700 bg-indigo-50 border-indigo-200' };
+  if (handle.includes('hdfc')) return { name: 'HDFC Bank', color: 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800' };
+  if (handle.includes('sbi')) return { name: 'State Bank of India', color: 'text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800' };
+  if (handle.includes('icici')) return { name: 'ICICI Bank', color: 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800' };
+  if (handle.includes('axis')) return { name: 'Axis Bank', color: 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800' };
+  if (handle.includes('paytm')) return { name: 'Paytm Payments Bank', color: 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/40 border-cyan-200 dark:border-cyan-800' };
+  if (handle.includes('ybl') || handle.includes('ibl')) return { name: 'Yes Bank / PhonePe', color: 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800' };
+  if (handle.includes('barodampay')) return { name: 'Bank of Baroda', color: 'text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800' };
+  if (handle.includes('kotak')) return { name: 'Kotak Mahindra Bank', color: 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800' };
+  return { name: `@${handle} UPI Network`, color: 'text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800' };
 };
 
-const MyMobPayLogo = ({ className = '', textColor = '#0d253d', markSize = 32 }) => {
-  const resolvedColor = textColor === 'var(--text-primary)' ? '#0d253d' : textColor;
-  return (
-    <div className={`inline-flex items-center gap-2 select-none shrink-0 transition-transform duration-300 ${className}`}>
-      <img
-        src="/logos/mymobpay_mark.png"
-        alt="MyMobPay Mark"
-        width={markSize}
-        height={markSize}
-        className="object-contain shrink-0"
-        style={{ width: `${markSize}px`, height: `${markSize}px` }}
-      />
-      <span
-        className="font-semibold tracking-tight leading-none text-xl sm:text-2xl"
-        style={{
-          fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          color: resolvedColor,
-          letterSpacing: '-0.5px'
-        }}
-      >
-        MyMobPay
-      </span>
-    </div>
-  );
-};
-
-// ── Authentic Indian Tricolour Flag SVG (renders accurately across Windows and all platforms) ──
+// Authentic Indian Tricolour Flag SVG
 const IndianFlag = ({ className = 'w-4 h-3' }) => (
   <svg 
     className={`${className} rounded-[1.5px] overflow-hidden shrink-0 inline-block`} 
@@ -85,28 +92,25 @@ const IndianFlag = ({ className = 'w-4 h-3' }) => (
   </svg>
 );
 
-// ── Open-Redirect Prevention: Strict sanitization of client-provided redirect URLs ──
+// Open-Redirect Prevention: Strict sanitization of client-provided redirect URLs
 function getSafeRedirectUrl(rawUrl, defaultUrl = '/dashboard') {
   if (!rawUrl || typeof rawUrl !== 'string') return defaultUrl;
   const trimmed = rawUrl.trim();
-  // Must start with '/' and not with '//' or '/\' (prevents protocol-relative URLs)
   if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.startsWith('/\\')) {
     return defaultUrl;
   }
-  // Disallow redirecting back to /login or /signup
   if (trimmed.startsWith('/login') || trimmed.startsWith('/signup')) {
     return defaultUrl;
   }
   return trimmed;
 }
 
-// ── Translate developer/system errors to clear, customer-friendly English ──
+// Translate developer/system errors to clear, customer-friendly English
 function formatCustomerError(err) {
   if (!err) return '';
   const raw = (typeof err === 'string' ? err : err.message || err.error_description || String(err)).trim();
   const lower = raw.toLowerCase();
 
-  // 1. Token / OTP code errors (e.g. "Token has expired or is invalid")
   if (
     lower.includes('token') || 
     lower.includes('otp') || 
@@ -116,17 +120,15 @@ function formatCustomerError(err) {
       return 'Your verification code has expired. Please request a new code below.';
     }
     if (lower.includes('invalid') || lower.includes('incorrect') || lower.includes('wrong')) {
-      return 'The verification code you entered is incorrect. Please check the 6 digits in your email and try again.';
+      return 'The verification code you entered is incorrect. Please check the 6 digits and try again.';
     }
-    return 'Invalid verification code. Please check the 6 digits sent to your email and try again.';
+    return 'Invalid verification code. Please check the 6 digits sent to your device and try again.';
   }
 
-  // 2. Magic Link errors
   if (lower.includes('link') && (lower.includes('expired') || lower.includes('invalid') || lower.includes('already used'))) {
     return 'This sign-in link has expired or has already been used. Please request a new link.';
   }
 
-  // 3. Field-specific uniqueness conflicts (UPI, Phone) - preserve exact user-friendly message!
   if (lower.includes('settlement upi') || lower.includes('upi id') || (lower.includes('upi') && lower.includes('registered'))) {
     return raw;
   }
@@ -134,7 +136,6 @@ function formatCustomerError(err) {
     return raw;
   }
 
-  // 4. Credentials & Accounts
   if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) {
     return 'Incorrect email or password. Please double-check your details and try again.';
   }
@@ -154,7 +155,6 @@ function formatCustomerError(err) {
     return 'Please check your email and click the confirmation link to activate your account.';
   }
 
-  // 4. Rate limits & Cooldowns
   if (
     lower.includes('rate limit') || 
     lower.includes('over_email_send_rate_limit') || 
@@ -164,12 +164,10 @@ function formatCustomerError(err) {
     return 'Too many attempts. For your security, please wait a minute before requesting another code.';
   }
 
-  // 5. Supabase default email service limits / failures
   if (lower.includes('magic link email') || lower.includes('error sending') || lower.includes('error sending email')) {
     return 'Email OTP service requires Custom SMTP in Supabase. You can sign up directly with your password below, or log in via the Log In tab.';
   }
 
-  // 6. Network / Server errors
   if (lower.includes('network') || lower.includes('failed to fetch') || lower.includes('load failed')) {
     return 'Connection issue. Please check your internet connection and try again.';
   }
@@ -177,7 +175,6 @@ function formatCustomerError(err) {
     return 'Our server is temporarily busy. Please wait a moment and try again.';
   }
 
-  // 6. Generic cleanup: Strip any developer technical terms
   return raw
     .replace(/\btoken\b/gi, 'verification code')
     .replace(/\bcredentials\b/gi, 'login details')
@@ -190,7 +187,7 @@ function formatCustomerError(err) {
     .replace(/\bendpoint\b/gi, 'service');
 }
 
-// ── 6-digit OTP box input component ────────────────────────────────
+// 6-digit OTP Box Input
 function OtpBoxInput({ value, onChange, disabled }) {
   const digits = Array.from({ length: 6 }, (_, i) => (value || '')[i] || '');
   const inputRefs = useRef([]);
@@ -258,7 +255,7 @@ function OtpBoxInput({ value, onChange, disabled }) {
   };
 
   return (
-    <div className="grid grid-cols-6 gap-1.5 sm:gap-2 w-full">
+    <div className="grid grid-cols-6 gap-2 w-full">
       {digits.map((d, i) => (
         <input
           key={i}
@@ -274,21 +271,340 @@ function OtpBoxInput({ value, onChange, disabled }) {
           onPaste={handlePaste}
           onClick={e => e.target.select()}
           placeholder={d ? '' : '·'}
-          className={`h-11 sm:h-12 w-full text-center font-bold text-[17px] sm:text-[20px] rounded-lg border-2 transition-colors outline-none ${
+          className={`auth-input h-11 sm:h-12 w-full text-center font-mono font-extrabold text-[17px] sm:text-[19px] rounded-xl transition-all ${
             d
-              ? 'bg-white border-[#0EA5E9] text-[#0d253d] ring-2 ring-[#0EA5E9]/20 shadow-xs'
-              : 'bg-[#f6f9fc] border-[#e3e8ee] text-[#0d253d] placeholder:text-[#64748d]'
-          } focus:border-[#0EA5E9] focus:bg-white focus:ring-2 focus:ring-[#0EA5E9]/20 disabled:opacity-50`}
+              ? 'border-[#0F2BFF] dark:border-[#60A5FA] bg-white dark:bg-[#161D2B] text-[#0F2BFF] dark:text-[#60A5FA]'
+              : 'theme-bg-well theme-text-primary'
+          } disabled:opacity-50`}
         />
       ))}
     </div>
   );
 }
 
+// Scoped Redesign Styles (Semantic variables, Anton, Barlow, JetBrains, ceramic phone, animations)
+const REDESIGN_CSS = `
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #EEF1FB;
+  --bg-elevated: #FFFFFF;
+  --bg-well: #F7F8FD;
+  --bg-left-panel: #EAEEFA;
+  --text-primary: #090A10;
+  --text-secondary: #222533;
+  --text-muted: #5A607A;
+  --accent-link: #0F2BFF;
+  --border-color: #DCE2F2;
+  --card-shadow: 0 18px 44px -12px rgba(15, 23, 42, 0.08), 0 4px 14px -4px rgba(15, 43, 255, 0.04);
+  --phone-screen-bg: #FFFFFF;
+  --phone-card-bg: #F4F6FC;
+  --phone-card-border: #E2E6F4;
+}
+
+html.dark {
+  --bg-primary: #101624;
+  --bg-secondary: #161F30;
+  --bg-elevated: #182235;
+  --bg-well: #0E1420;
+  --bg-left-panel: #0A0E17;
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --accent-link: #60A5FA;
+  --border-color: #243049;
+  --card-shadow: 0 22px 54px -12px rgba(0, 0, 0, 0.65);
+  --phone-screen-bg: #0D1322;
+  --phone-card-bg: #151E32;
+  --phone-card-border: #24324F;
+}
+
+.left-showcase-panel {
+  background-color: var(--bg-left-panel);
+  color: var(--text-primary);
+  background-size: 48px 48px;
+  background-image:
+    linear-gradient(to right, rgba(15, 43, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 43, 255, 0.055) 1px, transparent 1px);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+html.dark .left-showcase-panel {
+  background-image:
+    linear-gradient(to right, rgba(96, 165, 250, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(96, 165, 250, 0.07) 1px, transparent 1px);
+}
+
+.theme-bg-primary { background-color: var(--bg-primary); }
+.theme-bg-secondary { background-color: var(--bg-secondary); }
+.theme-bg-elevated { background-color: var(--bg-elevated); }
+.theme-bg-well { background-color: var(--bg-well); }
+.theme-text-primary { color: var(--text-primary); }
+.theme-text-secondary { color: var(--text-secondary); }
+.theme-text-muted { color: var(--text-muted); }
+.theme-link { color: var(--accent-link); }
+.theme-border { border-color: var(--border-color); }
+.theme-card-shadow { box-shadow: var(--card-shadow); }
+
+.headline-anton {
+  font-family: 'Anton', 'Barlow Condensed', Impact, sans-serif !important;
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.96;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+}
+
+.tabular-nums-stat {
+  font-family: 'Barlow Condensed', 'Anton', sans-serif !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes gridBeamTravel {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  30%  { opacity: 0.85; }
+  70%  { opacity: 0.85; }
+  100% { transform: translateY(600%); opacity: 0; }
+}
+.grid-beam-v {
+  animation: gridBeamTravel 6s linear infinite;
+}
+
+@keyframes spinOrbitSlow {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes spinOrbitReverse {
+  from { transform: translate(-50%, -50%) rotate(360deg); }
+  to   { transform: translate(-50%, -50%) rotate(0deg); }
+}
+.orbit-ring-cw {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 9999px;
+  border: 1.5px dashed rgba(15, 43, 255, 0.22);
+  animation: spinOrbitSlow 28s linear infinite;
+  pointer-events: none;
+}
+.orbit-ring-ccw {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 110, 0, 0.22);
+  animation: spinOrbitReverse 20s linear infinite;
+  pointer-events: none;
+}
+html.dark .orbit-ring-cw { border-color: rgba(96, 165, 250, 0.25); }
+html.dark .orbit-ring-ccw { border-color: rgba(255, 158, 27, 0.25); }
+
+.clay-iphone-auth {
+  position: relative;
+  width: 284px;
+  height: 552px;
+  background-color: #F6F7FD;
+  border-radius: 46px;
+  padding: 13px;
+  box-shadow:
+    inset 0 2px 4px #FFFFFF,
+    inset 0 -3px 6px rgba(160, 168, 200, 0.38),
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.96),
+    -22px 26px 50px rgba(20, 24, 80, 0.14),
+    0 10px 24px rgba(20, 24, 80, 0.06);
+  user-select: none;
+  flex-shrink: 0;
+  will-change: transform;
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background-color 0.3s ease;
+}
+html.dark .clay-iphone-auth {
+  background-color: #1C2334;
+  box-shadow:
+    inset 0 1.5px 3px rgba(255, 255, 255, 0.25),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.65),
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.12),
+    -22px 26px 52px rgba(0, 0, 0, 0.72),
+    0 10px 24px rgba(0, 0, 0, 0.52);
+}
+
+@keyframes clayFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(-8px) rotate(0.4deg); }
+}
+.clay-float {
+  animation: clayFloat 5.8s ease-in-out infinite;
+}
+
+.clay-side-silent,
+.clay-side-vol-up,
+.clay-side-vol-down {
+  position: absolute;
+  left: -3px;
+  width: 3px;
+  background-color: #DDE1F0;
+  border-radius: 3px 0 0 3px;
+}
+.clay-side-silent { top: 88px; height: 22px; }
+.clay-side-vol-up { top: 124px; height: 40px; }
+.clay-side-vol-down { top: 174px; height: 40px; }
+
+.clay-side-power {
+  position: absolute;
+  right: -3px;
+  top: 140px;
+  width: 3px;
+  height: 58px;
+  background-color: #DDE1F0;
+  border-radius: 0 3px 3px 0;
+}
+html.dark .clay-side-silent,
+html.dark .clay-side-vol-up,
+html.dark .clay-side-vol-down,
+html.dark .clay-side-power {
+  background-color: #334155;
+}
+
+.clay-screen-auth {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--phone-screen-bg);
+  border-radius: 35px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.clay-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 21px;
+  background-color: var(--phone-screen-bg);
+  border-radius: 0 0 14px 14px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.clay-speaker {
+  width: 32px;
+  height: 3.5px;
+  background: #CBD5E1;
+  border-radius: 99px;
+}
+html.dark .clay-speaker { background: #334155; }
+
+.clay-camera {
+  width: 5.5px;
+  height: 5.5px;
+  background: #94A3B8;
+  border-radius: 99px;
+}
+html.dark .clay-camera { background: #475569; }
+
+@keyframes qrScanLine {
+  0%, 100% { top: 10%; opacity: 0.25; }
+  50%      { top: 86%; opacity: 0.95; }
+}
+.qr-laser-line {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background-color: #0F2BFF;
+  box-shadow: 0 0 8px rgba(15, 43, 255, 0.6);
+  animation: qrScanLine 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.btn-editorial {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, background-color 0.2s ease;
+}
+.btn-editorial::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.btn-editorial:hover:not(:disabled)::after {
+  left: 135%;
+}
+.btn-editorial:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -6px rgba(15, 43, 255, 0.48);
+}
+.btn-editorial:active:not(:disabled) {
+  transform: translateY(0px) scale(0.99);
+}
+
+.btn-arrow-icon {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-editorial:hover .btn-arrow-icon {
+  transform: translateX(4px);
+}
+
+.auth-input {
+  background-color: var(--bg-well);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-primary);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.auth-input:focus {
+  outline: none;
+  border-color: #0F2BFF;
+  background-color: var(--bg-elevated);
+  box-shadow: 0 0 0 3.5px rgba(15, 43, 255, 0.13);
+}
+html.dark .auth-input:focus {
+  border-color: #60A5FA;
+  box-shadow: 0 0 0 3.5px rgba(96, 165, 250, 0.18);
+}
+
+@keyframes popInBanner {
+  0%   { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.banner-enter {
+  animation: popInBanner 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes spinLoader {
+  to { transform: rotate(360deg); }
+}
+.spinner-ring {
+  width: 18px;
+  height: 18px;
+  border: 2.4px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #FFFFFF;
+  border-radius: 9999px;
+  animation: spinLoader 0.7s linear infinite;
+}
+`;
+
 export default function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
-  const [authTab, setAuthTab] = useState('whatsapp'); // 'whatsapp' (WhatsApp OTP - DEFAULT) | 'email' (Email OTP) | 'password'
+  const [mode, setMode] = useState('signin'); // 'signin' | 'signup' | 'reset'
+  const [authTab, setAuthTab] = useState('whatsapp'); // 'whatsapp' | 'email' | 'password'
+  const [theme, setTheme] = useState('light');
 
   // WhatsApp OTP Health & Dynamic Fallback
   const [isWaDegraded, setIsWaDegraded] = useState(false);
@@ -329,8 +645,8 @@ export default function LoginPage() {
   const [noWebsite, setNoWebsite] = useState(false);
   const [isOAuthSignup, setIsOAuthSignup] = useState(false);
   const [oauthUserId, setOauthUserId] = useState(null);
-  const [oauthStep, setOauthStep] = useState(1); // 1: Password | 2: Business | 3: Website | 4: UPI | 5: Phone
-  const [stepDirection, setStepDirection] = useState('forward'); // 'forward' | 'backward'
+  const [oauthStep, setOauthStep] = useState(1);
+  const [stepDirection, setStepDirection] = useState('forward');
 
   // Real-time strong password criteria calculation
   const passwordCriteria = useMemo(() => getPasswordCriteria(password), [password]);
@@ -340,18 +656,21 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
+  // Left Panel Phone Simulation State
+  const [phoneVerifiedText, setPhoneVerifiedText] = useState('Auto-Verify Active');
+
   // QR Express Login Modal
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrTimer, setQrTimer] = useState(45);
   const [qrChallenge, setQrChallenge] = useState('mymob-auth-session');
   const { isMounted: isQrModalMounted, modalClass: qrModalClass, overlayClass: qrOverlayClass } = useModalTransition(showQrModal);
 
-  // Legal Agreement & Operational Guidelines Acceptance (Mandatory for new merchants)
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  // Legal Agreement & Operational Guidelines Acceptance
+  const [termsAccepted, setTermsAccepted] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [legalModalTab, setLegalModalTab] = useState('overview');
 
-  // Refs to allow onAuthStateChange callback to access current UI state synchronously
+  // Synchronous refs
   const modeRef = useRef(mode);
   modeRef.current = mode;
   const isRegistrationSubmittedRef = useRef(false);
@@ -360,7 +679,7 @@ export default function LoginPage() {
   isOAuthSignupRef.current = isOAuthSignup;
   const isEmailOtpVerifyingRef = useRef(false);
 
-  // Handle URL query parameters & password recovery hash on initial mount
+  // Handle URL query parameters & recovery hash
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -369,10 +688,33 @@ export default function LoginPage() {
       } else if (params.get('mode') === 'reset' || window.location.hash.includes('type=recovery')) {
         setMode('reset');
       }
+
+      // Sync theme with localStorage
+      try {
+        const savedTheme = localStorage.getItem('mymobpay_theme') || 'light';
+        setTheme(savedTheme);
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
     }
   }, []);
 
-  // Supabase Auth State Change Listener (for Google OAuth redirects & existing sessions)
+  const handleSetTheme = (newTheme) => {
+    setTheme(newTheme);
+    try {
+      localStorage.setItem('mymobpay_theme', newTheme);
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  };
+
+  // Supabase Auth State Change Listener
   useEffect(() => {
     const handleAuthRedirect = async (session, isExplicitOAuthRedirect = false) => {
       if (!session?.user) return;
@@ -397,7 +739,6 @@ export default function LoginPage() {
 
         const verifyData = await verifyRes.json();
 
-        // 1. If user already has an existing account (or is platform admin), bypass signup & route directly to dashboard
         const isAlreadyRegistered = Boolean(
           verifyData &&
           verifyData.allowed &&
@@ -426,12 +767,8 @@ export default function LoginPage() {
           return;
         }
 
-        // 2. If user authenticated via Google Workspace but needs to complete registration details
         if (verifyData && !verifyData.isAdmin && (verifyData.needsRegistration === true || !verifyData.registered)) {
-          // If the user arrived directly at /login without an active Google redirect or is doing normal Email OTP signup:
-          // Never trap them into an incomplete OAuth state!
           if (!hasUrlGoogleFlag && !isExplicitOAuthRedirect) {
-            // Case A: User was verifying their Email OTP on the standard signup form
             if (modeRef.current === 'signup' && !isOAuthSignupRef.current) {
               setIsEmailVerified(true);
               setLoading(false);
@@ -441,8 +778,6 @@ export default function LoginPage() {
               return;
             }
 
-            // Case B: Stale incomplete session in browser storage from an earlier abandoned visit.
-            // Cleanly sign out so user is NOT trapped, and can start fresh with Google verification or email OTP.
             try {
               await supabase.auth.signOut();
             } catch (e) {}
@@ -454,7 +789,6 @@ export default function LoginPage() {
             return;
           }
 
-          // Active Google OAuth signup flow (just redirected back from Google): Launch step-by-step wizard
           setMode('signup');
           setIsOAuthSignup(true);
           setOauthStep(1);
@@ -475,8 +809,6 @@ export default function LoginPage() {
           return;
         }
 
-        // If backend explicitly rejected with specific reason
-        console.warn('[LOGIN] Account verification response:', verifyData);
         setError(verifyData?.error || 'Could not verify merchant account. Please try again.');
         setLoading(false);
         isRedirectingRef.current = false;
@@ -514,7 +846,6 @@ export default function LoginPage() {
     let isMounted = true;
 
     const probeWhatsAppHealth = async () => {
-      // 1. Instant check against local device failure cooldown to prevent UI flash
       if (typeof window !== 'undefined') {
         try {
           const degradedUntil = localStorage.getItem('mmp_wa_degraded_until');
@@ -525,7 +856,6 @@ export default function LoginPage() {
         } catch (e) {}
       }
 
-      // 2. Query global circuit breaker on backend
       try {
         const res = await fetch('/api/auth/whatsapp-otp/status');
         if (!res.ok) return;
@@ -542,7 +872,6 @@ export default function LoginPage() {
             } catch (e) {}
           }
         } else {
-          // If server reports healthy and local timer expired, restore
           if (typeof window !== 'undefined') {
             const degradedUntil = localStorage.getItem('mmp_wa_degraded_until');
             if (!degradedUntil || Date.now() >= Number(degradedUntil)) {
@@ -563,7 +892,7 @@ export default function LoginPage() {
     };
   }, []);
 
-  // Auto-dismiss transient feedback messages after 5 seconds
+  // Auto-dismiss transient feedback messages
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
@@ -581,7 +910,6 @@ export default function LoginPage() {
     }
     return () => clearInterval(interval);
   }, [emailOtpSent, emailTimer]);
-
 
   // WhatsApp OTP Countdown timer
   useEffect(() => {
@@ -609,7 +937,6 @@ export default function LoginPage() {
         setQrTimer(prev => {
           if (prev <= 1) {
             setQrChallenge('mymob-auth-' + crypto.randomUUID());
-
             return 45;
           }
           return prev - 1;
@@ -621,7 +948,32 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [showQrModal]);
 
-  // Phone / OTP Handlers — wired to real API
+  // Interactive Phone QR Simulation in Left Panel
+  const handleSimulatePhoneQrScan = () => {
+    setPhoneVerifiedText('UTR #4391882014 Verified ✓');
+    setMessage('Live P2P QR Checkout verified! Zero gateway fee deducted.');
+    setTimeout(() => {
+      setPhoneVerifiedText('Auto-Verify Active');
+    }, 2800);
+  };
+
+  const handlePhoneMouseMove = (e) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
+    const phoneEl = e.currentTarget;
+    const rect = phoneEl.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    phoneEl.style.animationPlayState = 'paused';
+    phoneEl.style.transform = `perspective(950px) rotateY(${(x * 10).toFixed(2)}deg) rotateX(${(-y * 10).toFixed(2)}deg) translateY(-5px)`;
+  };
+
+  const handlePhoneMouseLeave = (e) => {
+    const phoneEl = e.currentTarget;
+    phoneEl.style.transform = '';
+    phoneEl.style.animationPlayState = 'running';
+  };
+
+  // WhatsApp OTP Flow
   const triggerOtpFlow = useCallback(async (method = otpMethod) => {
     const cleanPhone = phone.trim().replace(/\D/g, '');
     if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
@@ -642,13 +994,11 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // Handle resend cooldown — server returns secondsLeft
         if (res.status === 429 && data.secondsLeft) {
           setOtpTimer(data.secondsLeft);
-          setOtpSent(true); // show OTP input but with timer active
+          setOtpSent(true);
         }
 
-        // WhatsApp delivery failure detected: auto-fallback to Email OTP
         if (data.fallbackToEmail || res.status === 502) {
           setIsWaDegraded(true);
           setWaDegradedReason(data.error || 'WhatsApp delivery unavailable');
@@ -687,7 +1037,7 @@ export default function LoginPage() {
     }
   }, [phone, otpMethod]);
 
-  // Email OTP Handler (Strictly OTP code, NO buttons/links)
+  // Email OTP Flow
   const handleSendEmailOtp = async () => {
     let rawIdentifier = email.trim();
     if (!rawIdentifier) {
@@ -701,7 +1051,6 @@ export default function LoginPage() {
     try {
       let cleanEmail = rawIdentifier.toLowerCase();
 
-      // If user typed a Merchant ID (MID-XXXX) or UUID instead of email, resolve to email
       if (!cleanEmail.includes('@')) {
         const resolveRes = await fetch('/api/auth/resolve-identifier', {
           method: 'POST',
@@ -716,7 +1065,6 @@ export default function LoginPage() {
         setEmail(cleanEmail);
       }
 
-      // Pre-check email uniqueness before sending OTP in signup mode
       if (mode === 'signup') {
         const checkRes = await fetch('/api/auth/check-details', {
           method: 'POST',
@@ -767,7 +1115,6 @@ export default function LoginPage() {
     }
     let cleanEmail = email.trim().toLowerCase();
 
-    // If email state is not yet an email address, resolve it
     if (!cleanEmail.includes('@')) {
       try {
         const resolveRes = await fetch('/api/auth/resolve-identifier', {
@@ -780,9 +1127,7 @@ export default function LoginPage() {
           cleanEmail = resolveData.email.toLowerCase();
           setEmail(cleanEmail);
         }
-      } catch (e) {
-        // fallback
-      }
+      } catch (e) {}
     }
 
     setError('');
@@ -791,7 +1136,7 @@ export default function LoginPage() {
     isEmailOtpVerifyingRef.current = true;
 
     try {
-      const { data, error: verifyErr } = await supabase.auth.verifyOtp({
+      const { error: verifyErr } = await supabase.auth.verifyOtp({
         email: cleanEmail,
         token: emailOtp.trim(),
         type: 'email',
@@ -848,13 +1193,11 @@ export default function LoginPage() {
 
       if (!res.ok) {
         setError(data.error || 'OTP verification failed.');
-        // Clear OTP boxes on wrong attempt
         if (data.remaining !== undefined) setOtp('');
         return;
       }
 
       if (!data.accountExists) {
-        // Phone verified but no account — prompt signup
         setError('');
         setMessage('Phone verified! No merchant account found. Please sign up below.');
         setOtpSent(false);
@@ -866,13 +1209,10 @@ export default function LoginPage() {
       setMessage('WhatsApp OTP verified! Signing you in...');
       if (data.tokenHash) {
         try {
-          const { error: sessionError } = await supabase.auth.verifyOtp({
+          await supabase.auth.verifyOtp({
             token_hash: data.tokenHash,
             type: 'magiclink',
           });
-          if (sessionError) {
-            console.warn('Session verification notice:', sessionError);
-          }
         } catch (sessEx) {
           console.warn('verifyOtp error:', sessEx);
         }
@@ -894,112 +1234,10 @@ export default function LoginPage() {
     }
   };
 
-  // Dedicated Signup WhatsApp Phone OTP Handlers
-  const handleSendPhoneOtp = async () => {
-    const cleanPhone = phone.trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
-      setError('Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).');
-      return;
-    }
-    setError('');
-    setMessage('');
-    setLoading(true);
-
-    try {
-      // In Sign Up mode, pre-check if mobile number is already registered
-      const checkRes = await fetch('/api/auth/check-details', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone }),
-      });
-      const checkData = await checkRes.json();
-      if (!checkRes.ok || checkData.available === false) {
-        setError(checkData.error || 'This WhatsApp mobile number is already registered to another account. Please use a different number or log in.');
-        setLoading(false);
-        return;
-      }
-
-      const res = await fetch('/api/auth/whatsapp-otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone, purpose: 'signup' }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (res.status === 429 && data.secondsLeft) {
-          setPhoneTimer(data.secondsLeft);
-          setPhoneOtpSent(true);
-        }
-        if (data.fallbackToEmail || res.status === 502) {
-          setIsWaDegraded(true);
-          if (typeof window !== 'undefined') {
-            try {
-              localStorage.setItem('mmp_wa_degraded_until', String(Date.now() + 15 * 60 * 1000));
-            } catch (e) {}
-          }
-        }
-        setError(data.error || 'Failed to send WhatsApp verification code.');
-        return;
-      }
-
-      setPhoneOtpSent(true);
-      setPhoneOtp('');
-      setPhoneTimer(45);
-      setMessage(data.message || `6-digit verification code sent to +91 ${cleanPhone} via WhatsApp. Please check your WhatsApp messages!`);
-    } catch (err) {
-      console.error('WhatsApp OTP send error:', err);
-      setError(err?.message || 'Network error while sending WhatsApp verification code.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyPhoneOtp = async () => {
-    if (!phoneOtp || phoneOtp.length !== 6) {
-      setError('Please enter the complete 6-digit WhatsApp verification code.');
-      return;
-    }
-    const cleanPhone = phone.trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
-      setError('Please enter a valid 10-digit mobile number.');
-      return;
-    }
-
-    setError('');
-    setMessage('');
-    setLoading(true);
-
-    try {
-      const res = await fetch('/api/auth/whatsapp-otp/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone, otp: phoneOtp.trim(), purpose: 'signup' }),
-      });
-      const data = await res.json();
-
-      if (!res.ok || !data.verified) {
-        setError(data.error || 'WhatsApp verification failed. Please check the 6 digits and try again.');
-        setPhoneOtp('');
-        return;
-      }
-
-      setIsPhoneVerified(true);
-      setMessage(`WhatsApp number +91 ${cleanPhone} verified successfully!`);
-    } catch (err) {
-      console.error('WhatsApp OTP verify error:', err);
-      setError(err?.message || 'Network error during WhatsApp verification.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Legacy alias kept for button onClick compatibility
-  const handleWhatsAppOtp = () => triggerOtpFlow('whatsapp');
-
   const handleForgotPassword = async () => {
     if (!email.trim() || !email.includes('@')) {
-      setError('Please enter your merchant email address in the field above to receive a reset link.');
+      setAuthTab('email');
+      setError('Switched to Email OTP. Enter your email above to receive a login code.');
       return;
     }
     setError('');
@@ -1052,7 +1290,7 @@ export default function LoginPage() {
     }
   };
 
-  // Dedicated Google OAuth Step-by-Step Handlers
+  // Google OAuth Multi-Step Handlers
   const handleNextOAuthStep = async () => {
     setError('');
     if (oauthStep === 1) {
@@ -1071,7 +1309,6 @@ export default function LoginPage() {
       setStepDirection('forward');
       setOauthStep(3);
     } else if (oauthStep === 3) {
-      // Step 3: Website URL (Optional / Can skip)
       const cleanWeb = websiteUrl.trim();
       if (!noWebsite && cleanWeb) {
         const domainPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
@@ -1083,7 +1320,6 @@ export default function LoginPage() {
       setStepDirection('forward');
       setOauthStep(4);
     } else if (oauthStep === 4) {
-      // Step 4: Settlement UPI ID
       const cleanUpi = upiId.trim().toLowerCase();
       if (!cleanUpi.includes('@') || cleanUpi.length < 5) {
         setError('Please enter a valid Settlement UPI ID (e.g. store@okhdfcbank).');
@@ -1103,14 +1339,12 @@ export default function LoginPage() {
           return;
         }
       } catch (e) {
-        // proceed if check fails
       } finally {
         setLoading(false);
       }
       setStepDirection('forward');
       setOauthStep(5);
     } else if (oauthStep === 5) {
-      // Step 5: Phone Number
       const cleanPhone = phone.trim().replace(/\D/g, '');
       if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone) || /^(\d)\1{9}$/.test(cleanPhone)) {
         setError('Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).');
@@ -1133,7 +1367,6 @@ export default function LoginPage() {
     const discardingEmail = email;
     setLoading(true);
 
-    // Clean up partial uncompleted auth user while session is active
     if (discardingUserId || discardingEmail) {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -1207,18 +1440,16 @@ export default function LoginPage() {
       }
 
       if (!upiId.trim() || !upiId.includes('@')) {
-        setError('Please enter a valid Settlement UPI ID (e.g. store@upi, name@okaxis) where customer payments will route.');
+        setError('Please enter a valid Settlement UPI ID (e.g. store@upi, name@okhdfcbank) where customer payments will route.');
         return;
       }
 
-      // ── Enforce Mandatory Legal Agreement & Guidelines Acceptance ──
       if (!termsAccepted) {
         isRegistrationSubmittedRef.current = false;
         setError('Please review and accept the Terms of Service, Legal Agreement, and Merchant Operating Rules to continue.');
         return;
       }
 
-      // ── Pre-check all registration details before proceeding ──
       try {
         const checkRes = await fetch('/api/auth/check-details', {
           method: 'POST',
@@ -1240,7 +1471,6 @@ export default function LoginPage() {
         console.warn('Registration pre-check error:', checkErr);
       }
 
-      // ── Enforce Email OTP Verification (if not already verified via Google) ──
       if (!isEmailVerified && !isOAuthSignup) {
         if (emailOtpSent && emailOtp.length === 6) {
           const { error: verifyErr } = await supabase.auth.verifyOtp({
@@ -1298,7 +1528,6 @@ export default function LoginPage() {
           throw new Error(data.error || `Registration failed (HTTP ${res.status})`);
         }
 
-        // Clean up any active session so the user must explicitly enter their credentials to log in
         try {
           await supabase.auth.signOut();
         } catch (signOutErr) {
@@ -1311,7 +1540,6 @@ export default function LoginPage() {
         setOauthStep(1);
         setOauthUserId(null);
 
-        // Clear password & wizard inputs while retaining email for convenience
         setPassword('');
         setConfirmPassword('');
         setBusinessName('');
@@ -1323,13 +1551,11 @@ export default function LoginPage() {
         setEmailOtp('');
         setEmailOtpSent(false);
 
-        // Switch view to Sign In (password tab) and display confirmation message
         setMode('signin');
         setAuthTab('password');
         setError('');
         setMessage('Signup successful! Please login.');
 
-        // Clean URL to ensure no residual parameters (e.g. googleAuth=true or mode=signup)
         if (typeof window !== 'undefined') {
           window.history.replaceState({}, '', '/login');
         }
@@ -1341,7 +1567,6 @@ export default function LoginPage() {
       } else if (action === 'signin') {
         let loginEmail = email.trim();
 
-        // If user typed a Merchant ID (MID-XXXX) or Business name instead of email
         if (!loginEmail.includes('@')) {
           try {
             const res = await fetch('/api/auth/resolve-identifier', {
@@ -1411,185 +1636,317 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden grid grid-cols-1 lg:grid-cols-12 bg-[#f6f9fc] font-sohne text-[#0d253d] relative">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col selection:bg-[#0F2BFF] selection:text-white theme-bg-primary theme-text-secondary">
+      <style dangerouslySetInnerHTML={{ __html: REDESIGN_CSS }} />
 
-      
-      {/* ────────────────────────────────────────────────────────
-         LEFT PANE: DYNAMIC PRODUCT HERO SHOWCASE (Desktop only)
-         ──────────────────────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:col-span-7 bg-[#070913] relative z-10 flex-col justify-between p-8 xl:p-12 h-screen overflow-hidden border-r border-[#1a2035] shrink-0">
-        
-        {/* Soft Ambient Depth Glows */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#0EA5E9]/15 rounded-full pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3b82f6]/10 rounded-full pointer-events-none" />
+      {/* ===================================================================== */}
+      {/* SPLIT-SCREEN AUTHENTICATION WORKSPACE (STATIC LEFT, SCROLLABLE RIGHT) */}
+      {/* ===================================================================== */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-screen lg:h-screen lg:overflow-hidden">
 
-        {/* Deep Tech Grid Line Overlay - Subtle & Refined */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] pointer-events-none" />
+        {/* =================================================================== */}
+        {/* LEFT PANEL (7 COLS ON DESKTOP): LAVENDER-ICE SHOWCASE + 3D PHONE    */}
+        {/* =================================================================== */}
+        <section className="hidden lg:flex lg:col-span-7 h-screen overflow-hidden relative left-showcase-panel border-r theme-border px-8 xl:px-14 py-7 flex-col justify-between order-2 lg:order-1">
 
-        {/* Logo Wordmark header */}
-        <Link href="/" className="inline-block relative z-10 shrink-0">
-          <MyMobPayLogo className="w-40 xl:w-44 h-auto" textColor="#FFFFFF" />
-        </Link>
+          {/* Traveling Blueprint Grid Light Beams */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+            <div className="grid-beam-v absolute left-[18%] top-0 w-[1.5px] h-28 bg-[#0F2BFF]/25"></div>
+            <div className="grid-beam-v absolute left-[82%] top-0 w-[1.5px] h-28 bg-[#0F2BFF]/20" style={{ animationDelay: '2.8s' }}></div>
+          </div>
 
-        {/* Core Value Copy and Vector Terminal Simulator alignment */}
-        <div className="grid grid-cols-12 gap-6 xl:gap-8 items-center relative z-10 my-auto">
-          
-          <div className="col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/[0.06] border border-white/10 rounded-full text-[10px] font-semibold text-[#b9b9f9]">
-              🟢 Direct P2P Settlements
+          {/* Top Row: Single Brand Logo (Left Panel) */}
+          <div className="relative z-10 flex items-center justify-between gap-4">
+            <Link href="/" className="inline-flex items-center gap-2.5 group focus:outline-none">
+              <span className="w-10 h-10 rounded-xl bg-white dark:bg-[#161D2B] border theme-border shadow-xs flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
+                <MyMobPayLogoMark className="w-full h-full" id="left-logo" />
+              </span>
+              <span className="font-sans font-extrabold text-[19px] tracking-tight theme-text-primary">
+                MyMob<span className="text-[#0F2BFF] dark:text-[#60A5FA]">Pay</span>
+              </span>
+            </Link>
+          </div>
+
+          {/* Center Content: Editorial Copy (Left) + Sculpted 3D QR iPhone (Right) */}
+          <div className="relative z-10 my-auto py-2 grid grid-cols-1 xl:grid-cols-12 gap-8 items-center">
+
+            {/* Left Copy Column */}
+            <div className="xl:col-span-6 text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full theme-bg-elevated border theme-border shadow-2xs mb-5">
+                <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                <span className="font-mono text-[10.5px] font-bold uppercase tracking-[0.12em] theme-text-primary">
+                  DIRECT P2P SETTLEMENTS &bull; 0% FEE
+                </span>
+              </div>
+
+              <h1 className="headline-anton text-[42px] xl:text-[50px] tracking-[0.01em] select-none space-y-0.5">
+                <span className="block theme-text-primary">BUILT FOR</span>
+                <span className="block theme-text-primary">FOUNDERS</span>
+                <span className="block text-[#0F2BFF] dark:text-[#60A5FA]">DEFYING ALL ODDS.</span>
+              </h1>
+
+              <p className="mt-4 max-w-[400px] text-[14px] xl:text-[14.5px] theme-text-secondary leading-relaxed">
+                Join thousands of businesses managing billing programmatically with flat-rate subscriptions and <strong className="font-bold theme-text-primary">0% gateway cuts</strong>.
+              </p>
+
+              {/* 3 Clean Feature Checkpoints */}
+              <ul className="mt-6 space-y-3 text-[13px] font-semibold theme-text-primary">
+                <li className="flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-[#10B981]/15 text-[#10B981] flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </span>
+                  <span>Zero transaction cuts on monthly volumes</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-[#0F2BFF]/12 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </span>
+                  <span>HMAC-SHA256 signed developer webhooks</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-[#FF6E00]/15 text-[#FF6E00] flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </span>
+                  <span>Risk-free sandbox simulation active</span>
+                </li>
+              </ul>
             </div>
-            
-            <h2 className="text-3xl xl:text-4xl font-light text-white leading-tight tracking-[-0.64px] font-sohne">
-              Built for founders defying all odds
-            </h2>
-            
-            <p className="text-xs xl:text-sm text-slate-400 leading-relaxed font-normal">
-              Join thousands of businesses managing billing programmatically with flat-rate subscriptions and 0% gateway cuts.
-            </p>
 
-            <div className="pt-2 space-y-3.5 font-normal text-xs text-slate-300">
-              <p className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">Zero transaction cuts on monthly volumes</span>
-              </p>
-              <p className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">HMAC-SHA256 signed developer webhooks</span>
-              </p>
-              <p className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">Risk-free sandbox simulation active</span>
-              </p>
+            {/* Right 3D iPhone Column */}
+            <div className="xl:col-span-6 flex justify-center relative">
+              <div className="relative flex items-center justify-center">
+
+                {/* Counter-Rotating Orbital Payment Rings */}
+                <div className="orbit-ring-cw hidden sm:block w-[320px] h-[320px]">
+                  <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#0F2BFF]"></span>
+                </div>
+                <div className="orbit-ring-ccw hidden sm:block w-[360px] h-[360px]">
+                  <span className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-2 h-2 rounded-full bg-[#FF6E00]"></span>
+                </div>
+
+                {/* Sculpted 3D Ceramic / Titanium iPhone */}
+                <div 
+                  className="clay-iphone-auth clay-float relative z-10 cursor-pointer" 
+                  onMouseMove={handlePhoneMouseMove}
+                  onMouseLeave={handlePhoneMouseLeave}
+                  onClick={handleSimulatePhoneQrScan}
+                  title="Click to simulate instant UTR verification"
+                >
+                  <div className="clay-side-silent"></div>
+                  <div className="clay-side-vol-up"></div>
+                  <div className="clay-side-vol-down"></div>
+                  <div className="clay-side-power"></div>
+
+                  <div className="clay-screen-auth">
+                    <div className="clay-notch">
+                      <div className="clay-speaker"></div>
+                      <div className="clay-camera"></div>
+                    </div>
+
+                    {/* Top Bar & Checkout Header */}
+                    <div className="relative z-10">
+                      <div className="pt-2 px-5 flex items-center justify-between text-[9.5px] font-bold theme-text-primary">
+                        <span>10:42 AM</span>
+                        <span className="font-mono text-[9px] theme-text-muted">5G &bull; 100%</span>
+                      </div>
+
+                      <div className="mt-3.5 px-4 text-center">
+                        <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full theme-bg-well border theme-border">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                          <span className="font-mono text-[9px] font-bold uppercase tracking-wider theme-text-primary">
+                            Direct Bank Checkout
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Center Total Due + Dynamic QR Card */}
+                    <div className="relative z-10 px-3.5 space-y-2.5">
+                      <div className="rounded-2xl p-3 theme-bg-well border theme-border">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-semibold theme-text-muted">Total Due</span>
+                          <span className="font-mono text-[8.5px] font-bold uppercase px-2 py-0.5 rounded-full bg-[#0F2BFF]/12 text-[#0F2BFF] dark:text-[#60A5FA]">
+                            P2P Route
+                          </span>
+                        </div>
+                        <div className="mt-0.5 flex items-baseline justify-between">
+                          <div className="tabular-nums-stat text-[26px] leading-none theme-text-primary">
+                            &#8377;500.00
+                          </div>
+                          <span className="font-mono text-[9px] text-[#10B981] font-bold">
+                            &#8377;0.00 Fee
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Dynamic QR Code Container */}
+                      <div className="rounded-2xl bg-white border border-[#E2E5F4] p-3 text-center shadow-xs relative">
+                        <div className="relative w-[156px] h-[156px] mx-auto p-2 rounded-xl bg-white border border-[#E2E5F4] flex items-center justify-center group">
+                          {/* Corner Framing Brackets */}
+                          <span className="absolute top-1.5 left-1.5 w-3.5 h-3.5 border-t-2 border-l-2 border-[#0F2BFF] rounded-tl"></span>
+                          <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 border-t-2 border-r-2 border-[#0F2BFF] rounded-tr"></span>
+                          <span className="absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-b-2 border-l-2 border-[#0F2BFF] rounded-bl"></span>
+                          <span className="absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-b-2 border-r-2 border-[#0F2BFF] rounded-br"></span>
+
+                          {/* Animated Laser Scan Line */}
+                          <div className="qr-laser-line"></div>
+
+                          {/* Crisp Vector QR Matrix */}
+                          <svg className="w-full h-full text-[#090A10]" viewBox="0 0 120 120" fill="currentColor">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M8 8h32v32H8V8zm6 6v20h20V14H14z"/>
+                            <rect x="18" y="18" width="12" height="12" rx="1.5"/>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M80 8h32v32H80V8zm6 6v20h20V14H86z"/>
+                            <rect x="90" y="18" width="12" height="12" rx="1.5"/>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M8 80h32v32H8V80zm6 6v20h20V86H14z"/>
+                            <rect x="18" y="90" width="12" height="12" rx="1.5"/>
+                            <rect x="48" y="10" width="6" height="6" rx="1"/>
+                            <rect x="60" y="10" width="10" height="6" rx="1"/>
+                            <rect x="48" y="22" width="10" height="6" rx="1"/>
+                            <rect x="64" y="22" width="6" height="12" rx="1"/>
+                            <rect x="10" y="48" width="12" height="6" rx="1"/>
+                            <rect x="28" y="48" width="6" height="12" rx="1"/>
+                            <rect x="10" y="62" width="6" height="10" rx="1"/>
+                            <rect x="22" y="66" width="12" height="6" rx="1"/>
+                            <rect x="82" y="48" width="10" height="6" rx="1"/>
+                            <rect x="98" y="48" width="12" height="6" rx="1"/>
+                            <rect x="86" y="60" width="6" height="12" rx="1"/>
+                            <rect x="102" y="62" width="8" height="8" rx="1"/>
+                            <rect x="48" y="82" width="12" height="6" rx="1"/>
+                            <rect x="66" y="82" width="6" height="12" rx="1"/>
+                            <rect x="48" y="96" width="6" height="14" rx="1"/>
+                            <rect x="60" y="102" width="14" height="8" rx="1"/>
+                            <rect x="82" y="82" width="14" height="6" rx="1"/>
+                            <rect x="102" y="82" width="8" height="14" rx="1"/>
+                            <rect x="82" y="96" width="12" height="14" rx="1"/>
+                            <rect x="100" y="102" width="10" height="8" rx="1"/>
+                          </svg>
+
+                          {/* Center UPI Badge */}
+                          <div className="absolute w-8 h-8 rounded-lg bg-[#0F2BFF] text-white shadow-md flex items-center justify-center font-mono text-[9px] font-extrabold tracking-tight border-2 border-white group-hover:scale-110 transition-transform">
+                            UPI
+                          </div>
+                        </div>
+
+                        {/* Auto-Verify Status Pill */}
+                        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#10B981]/12 text-[#059669] font-mono text-[9px] font-bold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-ping"></span>
+                          <span>{phoneVerifiedText}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Phone Footer */}
+                    <div className="relative z-10 pb-2 pt-1 text-center">
+                      <div className="font-mono text-[8px] theme-text-muted">
+                        Direct Bank Settlement &bull; <strong className="theme-text-primary">0% Fee</strong>
+                      </div>
+                      <div className="w-16 h-1 rounded-full bg-[#CBD5E1] dark:bg-[#334155] mx-auto mt-1"></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom Row: Clean Copyright Footer */}
+          <div className="relative z-10 flex items-center justify-between gap-2 pt-3 border-t theme-border text-[11px] font-mono theme-text-muted">
+            <span>&copy; 2026 MyMobPay &bull; Secure B2B Gateway Infrastructures</span>
+            <span className="theme-link font-bold">0% COMMISSION RAIL</span>
+          </div>
+        </section>
+
+        {/* =================================================================== */}
+        {/* RIGHT PANEL (5 COLS ON DESKTOP): INDEPENDENTLY SCROLLABLE AUTH      */}
+        {/* =================================================================== */}
+        <section className="col-span-1 lg:col-span-5 h-auto lg:h-screen lg:overflow-y-auto theme-bg-primary px-5 sm:px-8 xl:px-11 py-6 sm:py-8 flex flex-col justify-between transition-colors order-1 lg:order-2">
+
+          {/* Top Utility Bar: Back Link + Theme Toggle (Mobile shows Brand Logo) */}
+          <div className="flex items-center justify-between gap-3 shrink-0">
+            <div className="flex items-center gap-3">
+              {/* Mobile Only: Top Brand Logo */}
+              <Link href="/" className="lg:hidden inline-flex items-center gap-2 group">
+                <span className="w-8 h-8 rounded-lg bg-white dark:bg-[#161D2B] border theme-border shadow-xs flex items-center justify-center p-0.5">
+                  <MyMobPayLogoMark className="w-full h-full" id="mobile-top-logo" />
+                </span>
+                <span className="font-sans font-bold text-base theme-text-primary">
+                  MyMob<span className="text-[#0F2BFF] dark:text-[#60A5FA]">Pay</span>
+                </span>
+              </Link>
+
+              {/* Desktop Back Link */}
+              <Link
+                href="/"
+                className="hidden lg:inline-flex items-center gap-1.5 text-[12px] font-bold theme-text-muted hover:theme-text-primary transition-colors"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Back to mymob.tech</span>
+              </Link>
+            </div>
+
+            {/* Segmented Light / Dark Switcher */}
+            <div className="inline-flex items-center p-0.5 rounded-full theme-bg-secondary border theme-border" role="group" aria-label="Appearance">
+              <button
+                type="button"
+                onClick={() => handleSetTheme('light')}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                  theme === 'light'
+                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
+                    : 'theme-text-muted hover:theme-text-primary'
+                }`}
+              >
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                  <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                </svg>
+                <span>Light</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetTheme('dark')}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                  theme === 'dark'
+                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
+                    : 'theme-text-muted hover:theme-text-primary'
+                }`}
+              >
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+                <span>Dark</span>
+              </button>
             </div>
           </div>
 
-          {/* Interactive Bezel Frame containing payment mockup */}
-          <div className="col-span-5 flex justify-end">
-            <div className="relative w-full max-w-[220px] xl:max-w-[240px] bg-[#030712] border-4 border-[#1e293b] rounded-[30px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden aspect-[9/18.5] flex flex-col transition-transform duration-500">
-              
-              {/* Speaker camera notch */}
-              <div className="absolute top-0 inset-x-0 h-4 flex justify-center z-30">
-                <div className="bg-[#1e293b] w-20 h-2.5 rounded-b-xl" />
-              </div>
+          {/* Center Auth Card Container */}
+          <div className="my-auto py-5 max-w-[440px] w-full mx-auto">
 
-              {/* simulated checkout screen content */}
-              <div className="flex-1 bg-[#090d16] pt-6 px-3.5 pb-3.5 flex flex-col justify-between font-sans select-none text-white text-[10px]">
-                
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center text-[7px] font-bold text-slate-400 px-0.5">
-                    <span>10:42 AM</span>
-                    <span>LTE</span>
-                  </div>
-
-                  <div className="flex flex-col items-center pt-1">
-                    <MyMobPayLogo className="w-22 h-auto" textColor="#FFFFFF" />
-                    <p className="text-[6px] text-slate-400 font-semibold mt-0.5">Direct Bank Checkout</p>
-                  </div>
-
-                  <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-2.5 shadow-sm space-y-1.5">
-                    <div className="flex justify-between items-center text-[7px] text-slate-400 font-bold">
-                      <span>Total Due</span>
-                      <span className="text-[#a5b4fc] font-semibold bg-[#0EA5E9]/25 px-1 py-0.2 rounded text-[5px]">P2P Route</span>
-                    </div>
-                    <div className="flex items-baseline">
-                      <span className="text-[10px] font-bold text-slate-400 mr-0.5">₹</span>
-                      <span className="text-xl font-semibold text-white tracking-tight leading-none">500.00</span>
-                    </div>
-                  </div>
-
-                  {/* QR Vector preview with Animated Scanning Laser */}
-                  <div className="bg-white border border-[#e3e8ee] rounded-xl p-2.5 shadow-sm flex flex-col items-center justify-center space-y-2 relative overflow-hidden group">
-                    
-                    {/* Laser Scanner Beam */}
-                    <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#0EA5E9] to-transparent top-0" />
-
-                    <svg viewBox="0 0 100 100" className="w-18 h-18 text-slate-800" fill="currentColor">
-                      {/* Corner marks */}
-                      <path d="M0,0 h24 v6 h-18 v18 h-6 z M76,0 h24 v24 h-6 v-18 h-18 z M0,76 h6 v18 h18 v6 h-24 z M76,100 h24 v-24 h-6 v18 h-18 z" fill="#0EA5E9" opacity="0.2" />
-                      
-                      <rect x="10" y="10" width="20" height="20" fill="#0F172A" rx="2" />
-                      <rect x="14" y="14" width="12" height="12" fill="#FFFFFF" rx="1.5" />
-                      <rect x="17" y="17" width="6" height="6" fill="#3B82F6" />
-                      
-                      <rect x="70" y="10" width="20" height="20" fill="#0F172A" rx="2" />
-                      <rect x="74" y="14" width="12" height="12" fill="#FFFFFF" rx="1.5" />
-                      <rect x="77" y="17" width="6" height="6" fill="#3B82F6" />
-                      
-                      <rect x="10" y="70" width="20" height="20" fill="#0F172A" rx="2" />
-                      <rect x="14" y="74" width="12" height="12" fill="#FFFFFF" rx="1.5" />
-                      <rect x="17" y="77" width="6" height="6" fill="#3B82F6" />
-                      
-                      <path d="M40,10 h6 v6 h-6 z M50,15 h8 v4 h-8 z M45,25 h10 v4 h-10 z M35,35 h8 v8 h-8 z M55,35 h12 v4 h-12 z M35,50 h12 v4 h-12 z M50,50 h6 v6 h-6 z M10,40 h8 v8 h-8 z M25,45 h10 v4 h-10 z M70,40 h8 v6 h-8 z M82,45 h8 v4 h-8 z M70,55 h12 v4 h-12 z M10,55 h6 v6 h-6 z M80,70 h10 v8 h-10 z M80,85 h8 v8 h-8 z" fill="#0F172A" />
-                      
-                      <rect x="40" y="40" width="20" height="20" fill="#0EA5E9" rx="3" />
-                      <text x="50" y="54" fontFamily="'Orbitron', sans-serif" fontWeight="950" fontSize="13" fill="#FFFFFF" textAnchor="middle">M</text>
-                    </svg>
-                    
-                    <span className="text-[6px] text-slate-400 font-semibold flex items-center gap-0.5">
-                      <ShieldCheck className="w-2.5 h-2.5 text-emerald-500" /> Auto-Verify Active
-                    </span>
-                  </div>
-
-                </div>
-
-                <div className="space-y-2 pt-2.5 border-t border-slate-800 text-center text-[6px] font-bold text-slate-500 tracking-wide">
-                  Secure checkout by MyMobPay
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-        {/* Footer info in left panel */}
-        <p className="text-[10px] text-slate-500 font-light relative z-10 shrink-0">
-          © 2026 MyMobPay · Secure B2B Gateway Infrastructures
-        </p>
-
-      </div>
-
-      {/* ────────────────────────────────────────────────────────
-         RIGHT PANE: BRAND MATCHED AUTHENTICATION CONSOLE
-         ──────────────────────────────────────────────────────── */}
-      <div className="col-span-1 lg:col-span-5 bg-[#f6f9fc] h-auto lg:h-screen lg:overflow-y-auto relative z-10 font-sohne">
-        
-        <div className="min-h-full w-full flex flex-col justify-center items-center px-4 sm:px-6 py-8 sm:py-10">
-          
-          <div className="w-full flex flex-col items-center max-w-md">
-
-            {/* Top Branding & Institutional Mark */}
-            <div className="flex flex-col items-center mb-5 text-center">
-              <div className="flex items-center justify-center mb-2.5">
-                <Link href="/" className="inline-block hover:opacity-95 transition-opacity">
-                  <MyMobPayLogo className="w-40 sm:w-44 h-auto" textColor="#0d253d" />
-                </Link>
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#e3e8ee] text-[#273951] text-[11px] font-medium shadow-2xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#009d6d] animate-pulse"></span>
-                <span>mymobpay.tech • Unified Fintech Gateway &amp; Settlement Suite</span>
+            {/* Domain Status Pill */}
+            <div className="text-center mb-3.5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full theme-bg-secondary border theme-border text-[11px] font-medium theme-text-secondary">
+                <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                <span><strong className="font-bold theme-text-primary">mymobpay.tech</strong> &bull; Unified Fintech Gateway &amp; Settlement Suite</span>
               </div>
             </div>
 
-            {/* Centered Auth Card Container */}
-            <div className="w-full bg-white rounded-2xl shadow-sm overflow-hidden border border-[#e3e8ee]">
-              
-              {/* Card Header */}
-              <div className="p-5 sm:p-8 bg-white">
+            {/* Main Elevated Auth Card */}
+            <div className="theme-bg-elevated rounded-2xl border theme-border theme-card-shadow overflow-hidden">
+              <div className="p-6 sm:p-7">
+
+                {/* Card Header */}
                 <div className="text-center">
-                  <h1 className="text-xl sm:text-2xl font-light text-[#0d253d] tracking-[-0.4px] mb-1 font-sohne">
+                  <h2 className="headline-anton text-[30px] sm:text-[34px] tracking-wide">
                     {isOAuthSignup 
-                      ? 'Complete Merchant Setup' 
+                      ? 'COMPLETE MERCHANT SETUP' 
                       : mode === 'signin' 
-                      ? 'Log in to Dashboard' 
+                      ? 'LOG IN TO DASHBOARD' 
                       : mode === 'signup' 
-                      ? 'Create Merchant Account' 
-                      : 'Set New Password'}
-                  </h1>
-                  <p className="text-xs text-[#64748d] leading-relaxed font-light">
+                      ? 'CREATE MERCHANT ACCOUNT' 
+                      : 'SET NEW PASSWORD'}
+                  </h2>
+                  <p className="mt-1 text-[12px] sm:text-[12.5px] theme-text-muted">
                     {isOAuthSignup
-                      ? 'Quick 5-step profile setup to start collecting instant payments'
+                      ? 'Quick profile setup to start collecting instant payments'
                       : mode === 'signin' 
                       ? 'Manage payments, instant settlements, and customer refunds' 
                       : mode === 'signup'
@@ -1598,52 +1955,63 @@ export default function LoginPage() {
                   </p>
                 </div>
 
+                {/* Error Banner */}
                 {error && (
-                  <div className="mt-4 bg-rose-50/80 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs font-medium flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                    <span className="flex-1 leading-normal">{formatCustomerError(error)}</span>
+                  <div className="mt-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 p-3 text-xs text-rose-700 dark:text-rose-300 font-medium flex items-start justify-between gap-2 banner-enter">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                      <span className="leading-snug">{formatCustomerError(error)}</span>
+                    </div>
+                    <button type="button" onClick={() => setError('')} className="p-0.5 text-rose-500 hover:text-rose-700 shrink-0">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 )}
 
+                {/* Success / Feedback Status Banner */}
                 {message && (
-                  <div className="mt-4 bg-emerald-50/80 border border-emerald-200 text-emerald-700 p-3 rounded-xl text-xs font-medium flex items-center justify-between gap-2 shadow-2xs">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span className="leading-normal">{message}</span>
+                  <div className="mt-4 rounded-xl bg-[#ECFDF5] dark:bg-[#064E3B]/40 border border-[#A7F3D0] dark:border-[#10B981]/40 px-3.5 py-2.5 flex items-center justify-between gap-2.5 banner-enter">
+                    <div className="flex items-center gap-2.5 text-left">
+                      <span className="w-5 h-5 rounded-full bg-[#10B981] text-white flex items-center justify-center shrink-0">
+                        <Check className="w-3 h-3 stroke-[3]" />
+                      </span>
+                      <span className="text-[12px] font-semibold text-[#065F46] dark:text-[#6EE7B7] leading-snug">
+                        {message}
+                      </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => setMessage('')}
-                      className="text-emerald-600 hover:text-emerald-800 p-0.5 rounded cursor-pointer shrink-0 ml-1"
-                      aria-label="Dismiss message"
+                      className="text-[#065F46] dark:text-[#6EE7B7] hover:opacity-75 p-1 shrink-0"
+                      aria-label="Dismiss notification"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 )}
 
-                {/* ── Primary Auth Mode Switcher: Log In vs Sign Up (hidden in reset mode & Google OAuth onboarding) ── */}
+                {/* Primary Segmented Mode Switcher: Log In | Sign Up */}
                 {mode !== 'reset' && !isOAuthSignup && (
-                  <div className="mt-5 p-1 bg-[#f0f2f5] rounded-full grid grid-cols-2 gap-1 border border-[#e3e8ee] shadow-2xs">
-                    <button 
-                      type="button" 
+                  <div className="mt-5 grid grid-cols-2 p-1 rounded-xl theme-bg-secondary border theme-border">
+                    <button
+                      type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                      className={`py-2 rounded-full text-xs font-medium transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                        mode === 'signin' 
-                          ? 'bg-white text-[#0284C7] shadow-xs' 
-                          : 'text-[#64748d] hover:text-[#0d253d]'
+                      className={`py-2 px-3 rounded-lg text-[12.5px] font-bold flex items-center justify-center gap-1.5 transition-all ${
+                        mode === 'signin'
+                          ? 'bg-white dark:bg-[#161D2B] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
+                          : 'theme-text-muted hover:theme-text-primary'
                       }`}
                     >
                       <Lock className="w-3.5 h-3.5" />
                       <span>Log In</span>
                     </button>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => { setMode('signup'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                      className={`py-2 rounded-full text-xs font-medium transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                        mode === 'signup' 
-                          ? 'bg-white text-[#0284C7] shadow-xs' 
-                          : 'text-[#64748d] hover:text-[#0d253d]'
+                      className={`py-2 px-3 rounded-lg text-[12.5px] font-bold flex items-center justify-center gap-1.5 transition-all ${
+                        mode === 'signup'
+                          ? 'bg-white dark:bg-[#161D2B] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
+                          : 'theme-text-muted hover:theme-text-primary'
                       }`}
                     >
                       <UserPlus className="w-3.5 h-3.5" />
@@ -1652,441 +2020,415 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* In Sign In Mode ONLY: Sub-Tab Switcher (WhatsApp OTP vs Password) */}
+                {/* ======================================================= */}
+                {/* VIEW 1: LOG IN CONTAINER                                */}
+                {/* ======================================================= */}
                 {mode === 'signin' && (
-                  <div className="mt-4 p-1 bg-[#f6f9fc] rounded-lg grid grid-cols-2 gap-1 border border-[#e3e8ee]/70 shadow-xs">
-                    <button 
-                      type="button" 
-                      onClick={() => {
-                        setAuthTab(isWaDegraded ? 'email' : 'whatsapp');
-                        setError('');
-                        setMessage('');
-                        setOtpSent(false);
-                        setEmailOtpSent(false);
-                      }}
-                      className={`py-2 rounded-md text-xs font-semibold transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                        authTab === 'whatsapp' || authTab === 'email'
-                          ? 'bg-white text-[#0284C7] shadow-sm' 
-                          : 'text-[#64748d] hover:text-[#0d253d]'
-                      }`}
-                    >
-                      {authTab === 'email' ? (
-                        <>
-                          <Mail className="w-3.5 h-3.5 text-[#0284C7]" />
-                          <span>Email OTP</span>
-                          {isWaDegraded && (
-                            <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.5 rounded ml-1">
-                              Primary
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <MessageCircle className="w-3.5 h-3.5 text-[#009d6d]" />
-                          <span>WhatsApp OTP</span>
-                        </>
-                      )}
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => { setAuthTab('password'); setError(''); setMessage(''); }}
-                      className={`py-2 rounded-full text-xs font-medium transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                        authTab === 'password' 
-                          ? 'bg-white text-[#0284C7] shadow-xs' 
-                          : 'text-[#64748d] hover:text-[#0d253d]'
-                      }`}
-                    >
-                      <Lock className="w-3.5 h-3.5" />
-                      <span>Password</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* Degraded Alert Banner when WhatsApp delivery is experiencing delays */}
-                {mode === 'signin' && isWaDegraded && (
-                  <div className="mt-3.5 p-3 rounded-lg bg-amber-50 border border-amber-200/90 text-xs text-amber-950 flex items-start gap-2.5 shadow-xs">
-                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                    <div className="flex-1 text-[11px] leading-relaxed">
-                      <div className="font-semibold text-amber-900 flex items-center justify-between">
-                        <span>Email OTP Active</span>
-                        <span className="text-[9px] font-bold bg-amber-200/80 text-amber-900 px-1.5 py-0.5 rounded">
-                          Auto Fallback
-                        </span>
-                      </div>
-                      <p className="text-amber-800 mt-0.5">
-                        WhatsApp OTP delivery is experiencing delays. Login is defaulted to fast 6-digit Email OTP.
-                      </p>
-                      {authTab === 'email' ? (
-                        <button
-                          type="button"
-                          onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
-                          className="mt-1 font-semibold text-amber-950 underline hover:text-amber-800 cursor-pointer inline-flex items-center gap-1"
-                        >
-                          <span>Prefer WhatsApp? Try WhatsApp OTP anyway &rarr;</span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                          className="mt-1 font-semibold text-blue-700 underline hover:text-blue-900 cursor-pointer inline-flex items-center gap-1"
-                        >
-                          <span>&larr; Switch back to recommended Email OTP</span>
-                        </button>
-                      )}
+                  <div className="mt-4">
+                    {/* Secondary Method Switcher: WhatsApp OTP | Password */}
+                    <div className="grid grid-cols-2 p-1 rounded-xl theme-bg-well border theme-border">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAuthTab(isWaDegraded ? 'email' : 'whatsapp');
+                          setError('');
+                          setMessage('');
+                          setOtpSent(false);
+                          setEmailOtpSent(false);
+                        }}
+                        className={`py-1.5 px-3 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 transition-all ${
+                          authTab === 'whatsapp' || authTab === 'email'
+                            ? 'bg-white dark:bg-[#1C2536] text-[#059669] dark:text-[#34D399] shadow-2xs'
+                            : 'theme-text-muted hover:theme-text-primary'
+                        }`}
+                      >
+                        {authTab === 'email' ? (
+                          <>
+                            <Mail className="w-3.5 h-3.5 text-[#0F2BFF] dark:text-[#60A5FA]" />
+                            <span>Email OTP</span>
+                            {isWaDegraded && (
+                              <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.5 rounded ml-1">
+                                Primary
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <MessageCircle className="w-3.5 h-3.5 text-[#059669] dark:text-[#34D399]" />
+                            <span>WhatsApp OTP</span>
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setAuthTab('password'); setError(''); setMessage(''); }}
+                        className={`py-1.5 px-3 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 transition-all ${
+                          authTab === 'password'
+                            ? 'bg-white dark:bg-[#1C2536] text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs'
+                            : 'theme-text-muted hover:theme-text-primary'
+                        }`}
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        <span>Password</span>
+                      </button>
                     </div>
-                  </div>
-                )}
 
-                {/* ── Sign In: WhatsApp OTP View (DEFAULT) ── */}
-                {mode === 'signin' && authTab === 'whatsapp' && (
-                  <div className="mt-6 flex flex-col space-y-4">
-                    {!otpSent ? (
-                      <>
-                        <div className="flex flex-col space-y-1.5">
-                          <label className="text-xs font-medium text-[#64748d] flex items-center justify-between">
-                            <span>WhatsApp Mobile Number</span>
-                            <span className="text-[#009d6d] font-semibold text-[11px] flex items-center gap-1">
-                              <MessageCircle className="w-3 h-3" />
-                              Instant WhatsApp OTP
+                    {/* Degraded Alert Banner */}
+                    {isWaDegraded && (
+                      <div className="mt-3.5 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-950 dark:text-amber-200 flex items-start gap-2.5">
+                        <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                        <div className="flex-1 text-[11.5px] leading-relaxed">
+                          <div className="font-semibold text-amber-900 dark:text-amber-100 flex items-center justify-between">
+                            <span>Email OTP Active</span>
+                            <span className="text-[9px] font-bold bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 px-1.5 py-0.5 rounded">
+                              Auto Fallback
                             </span>
-                          </label>
-                          <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-colors border border-[#e3e8ee] shadow-2xs">
-                            <div className="flex items-center gap-1.5 pr-2.5 py-2 text-[#0d253d] text-sm font-semibold border-r border-[#e3e8ee] shrink-0 select-none">
-                              <IndianFlag className="w-4 h-3" />
-                              <span>+91</span>
-                            </div>
-                            <input
-                              type="tel"
-                              maxLength={10}
-                              required
-                              value={phone}
-                              onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                              onKeyDown={(e) => e.key === 'Enter' && phone.trim().replace(/\D/g, '').length === 10 && triggerOtpFlow('whatsapp')}
-                              placeholder="10-digit WhatsApp number"
-                              className="w-full bg-transparent py-2.5 pl-3 text-sm text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans tracking-normal"
-                            />
                           </div>
-                          <p className="text-[11px] text-[#64748d] leading-relaxed">
-                            We will send a 6-digit verification code directly to your WhatsApp.
+                          <p className="mt-0.5 text-amber-800 dark:text-amber-300">
+                            WhatsApp delivery experiencing delays. Login is defaulted to fast 6-digit Email OTP.
                           </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => triggerOtpFlow('whatsapp')}
-                          disabled={loading || phone.trim().replace(/\D/g, '').length !== 10}
-                          className="w-full h-11 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
-                        >
-                          {loading ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-white" />
-                          ) : (
-                            <>
-                              <MessageCircle className="w-4 h-4" />
-                              <span>Send WhatsApp OTP</span>
-                              <ArrowRight className="w-4 h-4" />
-                            </>
-                          )}
-                        </button>
-
-                        {/* Blue line at bottom to switch to Email OTP */}
-                        <div className="text-center pt-2 border-t border-[#e3e8ee]/60">
-                          <button
-                            type="button"
-                            onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                            className="text-xs text-[#0284C7] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
-                          >
-                            <span>Prefer email? Sign in with Email OTP &rarr;</span>
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50/70 border border-emerald-200">
-                          <div className="flex items-center gap-2 text-xs text-[#0d253d] font-medium">
-                            <MessageCircle className="w-4 h-4 text-[#009d6d] shrink-0" />
-                            <span>OTP sent to WhatsApp <strong className="text-emerald-700">+91 {phone}</strong></span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => { setOtpSent(false); setOtp(''); setError(''); setMessage(''); }}
-                            className="text-[11px] text-[#0284C7] font-semibold hover:underline cursor-pointer"
-                          >
-                            Change
-                          </button>
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="text-xs font-medium text-[#64748d] text-center block">
-                            Enter 6-digit WhatsApp Verification Code
-                          </label>
-                          <OtpBoxInput value={otp} onChange={setOtp} disabled={loading} />
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={handleVerifyOtp}
-                          disabled={loading || otp.length !== 6}
-                          className="w-full h-11 bg-[#009d6d] hover:bg-[#007f58] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
-                        >
-                          {loading ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-white" />
-                          ) : (
-                            <>
-                              <span>Verify OTP &amp; Enter Dashboard</span>
-                              <CheckCircle2 className="w-4 h-4" />
-                            </>
-                          )}
-                        </button>
-
-                        {/* Resend button & blue line at bottom */}
-                        <div className="text-center pt-2 space-y-2.5">
-                          <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-emerald-50/50 border border-emerald-200/70 text-[11px] text-[#64748d]">
-                            <MessageCircle className="w-3.5 h-3.5 text-[#009d6d] shrink-0" />
-                            <span>Enter the 6-digit code received on your WhatsApp number.</span>
-                          </div>
-
-                          {otpTimer > 0 ? (
-                            <span className="text-xs text-[#64748d] block">
-                              Resend code in <strong className="text-[#0d253d]">{otpTimer}s</strong>
-                            </span>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => triggerOtpFlow('whatsapp')}
-                              disabled={loading}
-                              className="text-xs font-semibold text-[#009d6d] hover:underline cursor-pointer"
-                            >
-                              Didn&apos;t receive WhatsApp code? Resend OTP
-                            </button>
-                          )}
-
-                          {/* Blue line at bottom */}
-                          <div className="pt-2 border-t border-[#e3e8ee]/60">
-                            <button
-                              type="button"
-                              onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
-                              className="text-xs text-[#0284C7] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
-                            >
-                              <span>Prefer email? Sign in with Email OTP &rarr;</span>
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {/* ── Sign In: Email OTP View (Alternative via Blue Line) ── */}
-                {mode === 'signin' && authTab === 'email' && (
-                  <div className="mt-6 flex flex-col space-y-4">
-                    {!emailOtpSent ? (
-                      <>
-                        <div className="flex flex-col space-y-1.5">
-                          <label className="text-xs font-medium text-[#64748d] flex items-center justify-between">
-                            <span>Merchant Email / ID</span>
-                            <span className="text-[#0284C7] font-semibold text-[11px]">
-                              6-Digit OTP
-                            </span>
-                          </label>
-                          <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                            <Mail className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
-                            <input
-                              type="text"
-                              required
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && email.trim() && handleSendEmailOtp()}
-                              placeholder="merchant@company.com or Merchant ID"
-                              className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
-                            />
-                          </div>
-                          <p className="text-[11px] text-[#64748d] leading-relaxed">
-                            We will send a 6-digit verification code to your registered email inbox.
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={handleSendEmailOtp}
-                          disabled={loading || !email.trim()}
-                          className="w-full h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
-                        >
-                          {loading ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-white" />
-                          ) : (
-                            <>
-                              <span>Send Email OTP</span>
-                              <ArrowRight className="w-4 h-4" />
-                            </>
-                          )}
-                        </button>
-
-                        {/* Blue line at bottom to switch to WhatsApp OTP */}
-                        <div className="text-center pt-2 border-t border-[#e3e8ee]/60">
-                          <button
-                            type="button"
-                            onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
-                            className="text-xs text-[#0284C7] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
-                          >
-                            <span>{isWaDegraded ? 'Prefer WhatsApp? Try WhatsApp OTP anyway \u2192' : 'Prefer WhatsApp? Sign in with WhatsApp OTP \u2192'}</span>
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-[#f6f9fc]/60 border border-[#e3e8ee]">
-                          <div className="flex items-center gap-2 text-xs text-[#0d253d] font-medium">
-                            <Mail className="w-4 h-4 text-[#0284C7] shrink-0" />
-                            <span>Code sent to <strong className="text-[#0284C7]">{email}</strong></span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => { setEmailOtpSent(false); setEmailOtp(''); setError(''); setMessage(''); }}
-                            className="text-[11px] text-[#0284C7] font-semibold hover:underline cursor-pointer"
-                          >
-                            Change
-                          </button>
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="text-xs font-medium text-[#64748d] text-center block">
-                            Enter 6-digit Email Verification Code
-                          </label>
-                          <OtpBoxInput value={emailOtp} onChange={setEmailOtp} disabled={loading} />
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={handleVerifyEmailOtp}
-                          disabled={loading || emailOtp.length !== 6}
-                          className="w-full h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
-                        >
-                          {loading ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-white" />
-                          ) : (
-                            <>
-                              <span>Verify OTP &amp; Enter Dashboard</span>
-                              <CheckCircle2 className="w-4 h-4" />
-                            </>
-                          )}
-                        </button>
-
-                        {/* Resend button & blue line at bottom */}
-                        <div className="text-center pt-2 space-y-2.5">
-                          <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-[#f6f9fc]/50 border border-[#e3e8ee]/70 text-[11px] text-[#64748d]">
-                            <Mail className="w-3.5 h-3.5 text-[#0284C7] shrink-0" />
-                            <span>Enter the 6-digit verification code from your email to sign in.</span>
-                          </div>
-
-                          {emailTimer > 0 ? (
-                            <span className="text-xs text-[#64748d] block">
-                              Resend code in <strong className="text-[#0d253d]">{emailTimer}s</strong>
-                            </span>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={handleSendEmailOtp}
-                              disabled={loading}
-                              className="text-xs font-semibold text-[#0284C7] hover:underline cursor-pointer"
-                            >
-                              Didn&apos;t receive email? Resend code
-                            </button>
-                          )}
-
-                          {/* Blue line at bottom */}
-                          <div className="pt-2 border-t border-[#e3e8ee]/60">
+                          {authTab === 'email' ? (
                             <button
                               type="button"
                               onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
-                              className="text-xs text-[#0284C7] font-semibold hover:underline cursor-pointer inline-flex items-center gap-1 transition-colors"
+                              className="mt-1 font-semibold text-amber-950 dark:text-amber-200 underline hover:opacity-80 inline-flex items-center gap-1"
                             >
-                              <span>{isWaDegraded ? 'Prefer WhatsApp? Try WhatsApp OTP anyway \u2192' : 'Prefer WhatsApp? Sign in with WhatsApp OTP \u2192'}</span>
+                              <span>Prefer WhatsApp? Try WhatsApp OTP anyway &rarr;</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                              className="mt-1 font-semibold text-[#0F2BFF] dark:text-[#60A5FA] underline hover:opacity-80 inline-flex items-center gap-1"
+                            >
+                              <span>&larr; Switch back to recommended Email OTP</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* METHOD 1: WHATSAPP OTP */}
+                    {authTab === 'whatsapp' && (
+                      <div className="mt-5 space-y-4">
+                        {!otpSent ? (
+                          <>
+                            <div>
+                              <div className="flex items-center justify-between mb-1.5">
+                                <label className="text-[12px] font-bold theme-text-primary">
+                                  WhatsApp Mobile Number
+                                </label>
+                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#059669] dark:text-[#34D399]">
+                                  <MessageCircle className="w-3 h-3" />
+                                  <span>Instant WhatsApp OTP</span>
+                                </span>
+                              </div>
+
+                              <div className="flex items-stretch rounded-xl overflow-hidden border-[1.5px] theme-border focus-within:border-[#0F2BFF] dark:focus-within:border-[#60A5FA] transition-all">
+                                <div className="px-3.5 py-2.5 theme-bg-secondary border-r theme-border flex items-center gap-2 shrink-0 select-none">
+                                  <IndianFlag className="w-4 h-3" />
+                                  <span className="font-mono text-[13px] font-bold theme-text-primary">+91</span>
+                                </div>
+                                <input
+                                  type="tel"
+                                  maxLength={10}
+                                  required
+                                  value={phone}
+                                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                                  onKeyDown={(e) => e.key === 'Enter' && phone.trim().replace(/\D/g, '').length === 10 && triggerOtpFlow('whatsapp')}
+                                  placeholder="10-digit WhatsApp number"
+                                  className="w-full px-3.5 py-2.5 theme-bg-well text-[13.5px] font-mono font-semibold theme-text-primary focus:outline-none"
+                                />
+                              </div>
+
+                              <p className="mt-1.5 text-[11.5px] theme-text-muted">
+                                We will send a 6-digit verification code directly to your WhatsApp.
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => triggerOtpFlow('whatsapp')}
+                              disabled={loading || phone.trim().replace(/\D/g, '').length !== 10}
+                              className="btn-editorial w-full h-12 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white font-bold text-[13.5px] flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                            >
+                              {loading ? (
+                                <span className="spinner-ring" aria-hidden="true"></span>
+                              ) : (
+                                <>
+                                  <span>Send WhatsApp OTP</span>
+                                  <ArrowRight className="btn-arrow-icon w-4 h-4" />
+                                </>
+                              )}
+                            </button>
+
+                            <div className="mt-4 text-center">
+                              <button
+                                type="button"
+                                onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                                className="text-[12.5px] font-bold theme-link hover:underline inline-flex items-center gap-1"
+                              >
+                                <span>Prefer email? Sign in with Email OTP &rarr;</span>
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-[#ECFDF5] dark:bg-[#064E3B]/40 border border-[#A7F3D0] dark:border-[#10B981]/40">
+                              <div className="flex items-center gap-2 text-xs theme-text-primary font-medium">
+                                <MessageCircle className="w-4 h-4 text-[#059669] shrink-0" />
+                                <span>Code sent to WhatsApp <strong className="text-[#059669] dark:text-[#34D399] font-mono">+91 {phone}</strong></span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => { setOtpSent(false); setOtp(''); setError(''); setMessage(''); }}
+                                className="text-[11px] font-bold theme-link hover:underline"
+                              >
+                                Change
+                              </button>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[12px] font-bold theme-text-primary">Enter 6-Digit WhatsApp OTP</span>
+                                {otpTimer > 0 ? (
+                                  <span className="font-mono text-[11px] font-semibold theme-text-muted">
+                                    Resend in {otpTimer}s
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => triggerOtpFlow('whatsapp')}
+                                    disabled={loading}
+                                    className="font-mono text-[11px] font-bold text-[#059669] dark:text-[#34D399] hover:underline"
+                                  >
+                                    Resend OTP
+                                  </button>
+                                )}
+                              </div>
+                              <OtpBoxInput value={otp} onChange={setOtp} disabled={loading} />
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={handleVerifyOtp}
+                              disabled={loading || otp.length !== 6}
+                              className="btn-editorial w-full h-12 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-[13.5px] flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                            >
+                              {loading ? (
+                                <span className="spinner-ring" aria-hidden="true"></span>
+                              ) : (
+                                <>
+                                  <span>Verify OTP &amp; Enter Dashboard</span>
+                                  <Check className="w-4 h-4 stroke-[2.5]" />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* METHOD 2: PASSWORD */}
+                    {authTab === 'password' && (
+                      <form onSubmit={(e) => { e.preventDefault(); handleAuth('signin'); }} className="mt-5 space-y-4">
+                        <div>
+                          <label className="block text-[12px] font-bold theme-text-primary mb-1.5">
+                            Merchant Email / ID
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="merchant@company.com or Merchant ID"
+                            className="auth-input w-full px-3.5 py-2.5 rounded-xl text-[13px] font-medium"
+                          />
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <label className="text-[12px] font-bold theme-text-primary">
+                              Password
+                            </label>
+                            <button
+                              type="button"
+                              onClick={handleForgotPassword}
+                              className="text-[11px] font-bold theme-link hover:underline"
+                            >
+                              Forgot password?
+                            </button>
+                          </div>
+                          <div className="relative">
+                            <input
+                              type={showPassword ? 'text' : 'password'}
+                              required
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              placeholder="••••••••••••"
+                              className="auth-input w-full pl-3.5 pr-10 py-2.5 rounded-xl text-[13px] font-medium"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(prev => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 theme-text-muted hover:theme-text-primary p-1"
+                              aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                           </div>
                         </div>
-                      </>
+
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="btn-editorial w-full h-12 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white font-bold text-[13.5px] flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                        >
+                          {loading ? (
+                            <span className="spinner-ring" aria-hidden="true"></span>
+                          ) : (
+                            <>
+                              <span>Log In to Dashboard</span>
+                              <ArrowRight className="btn-arrow-icon w-4 h-4" />
+                            </>
+                          )}
+                        </button>
+
+                        <div className="mt-4 text-center">
+                          <button
+                            type="button"
+                            onClick={() => { setAuthTab('email'); setError(''); setMessage(''); setEmailOtpSent(false); }}
+                            className="text-[12.5px] font-bold theme-link hover:underline inline-flex items-center gap-1"
+                          >
+                            <span>Prefer passwordless? Sign in with Email OTP &rarr;</span>
+                          </button>
+                        </div>
+                      </form>
+                    )}
+
+                    {/* METHOD 3: EMAIL OTP */}
+                    {authTab === 'email' && (
+                      <div className="mt-5 space-y-4">
+                        {!emailOtpSent ? (
+                          <>
+                            <div>
+                              <div className="flex items-center justify-between mb-1.5">
+                                <label className="text-[12px] font-bold theme-text-primary">
+                                  Merchant Email Address
+                                </label>
+                                <span className="font-mono text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
+                                  Instant 6-Digit Email OTP
+                                </span>
+                              </div>
+                              <input
+                                type="text"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && email.trim() && handleSendEmailOtp()}
+                                placeholder="merchant@company.com or Merchant ID"
+                                className="auth-input w-full px-3.5 py-2.5 rounded-xl text-[13px] font-medium"
+                              />
+                              <p className="mt-1.5 text-[11.5px] theme-text-muted">
+                                We will send a 6-digit verification code directly to your email.
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={handleSendEmailOtp}
+                              disabled={loading || !email.trim()}
+                              className="btn-editorial w-full h-12 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white font-bold text-[13.5px] flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                            >
+                              {loading ? (
+                                <span className="spinner-ring" aria-hidden="true"></span>
+                              ) : (
+                                <>
+                                  <span>Send 6-Digit Email OTP</span>
+                                  <ArrowRight className="btn-arrow-icon w-4 h-4" />
+                                </>
+                              )}
+                            </button>
+
+                            <div className="mt-4 text-center">
+                              <button
+                                type="button"
+                                onClick={() => { setAuthTab('whatsapp'); setError(''); setMessage(''); setOtpSent(false); }}
+                                className="text-[12.5px] font-bold theme-link hover:underline inline-flex items-center gap-1"
+                              >
+                                <span>&larr; Back to WhatsApp OTP</span>
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between p-3 rounded-xl theme-bg-secondary border theme-border">
+                              <div className="flex items-center gap-2 text-xs theme-text-primary font-medium">
+                                <Mail className="w-4 h-4 text-[#0F2BFF] shrink-0" />
+                                <span>Code sent to <strong className="font-mono text-[#0F2BFF]">{email}</strong></span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => { setEmailOtpSent(false); setEmailOtp(''); setError(''); setMessage(''); }}
+                                className="text-[11px] font-bold theme-link hover:underline"
+                              >
+                                Change
+                              </button>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[12px] font-bold theme-text-primary">Enter 6-Digit Email OTP</span>
+                                {emailTimer > 0 ? (
+                                  <span className="font-mono text-[11px] font-semibold theme-text-muted">
+                                    Resend in {emailTimer}s
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={handleSendEmailOtp}
+                                    disabled={loading}
+                                    className="font-mono text-[11px] font-bold theme-link hover:underline"
+                                  >
+                                    Resend OTP
+                                  </button>
+                                )}
+                              </div>
+                              <OtpBoxInput value={emailOtp} onChange={setEmailOtp} disabled={loading} />
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={handleVerifyEmailOtp}
+                              disabled={loading || emailOtp.length !== 6}
+                              className="btn-editorial w-full h-12 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white font-bold text-[13.5px] flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                            >
+                              {loading ? (
+                                <span className="spinner-ring" aria-hidden="true"></span>
+                              ) : (
+                                <>
+                                  <span>Verify OTP &amp; Enter Dashboard</span>
+                                  <Check className="w-4 h-4 stroke-[2.5]" />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}
 
-                {/* ── Sign In: Email / ID & Password View ── */}
-                {mode === 'signin' && authTab === 'password' && (
-                  <form onSubmit={(e) => { e.preventDefault(); handleAuth('signin'); }} className="mt-6 flex flex-col space-y-4">
-                    <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-medium text-[#64748d]">Merchant Email / ID</label>
-                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                        <Mail className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
-                        <input
-                          type="text"
-                          required
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="merchant@company.com or Merchant ID"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <label className="text-xs font-medium text-[#64748d]">Password</label>
-                        <button
-                          type="button"
-                          onClick={handleForgotPassword}
-                          className="text-[11px] font-semibold text-[#0284C7] hover:underline"
-                        >
-                          Forgot?
-                        </button>
-                      </div>
-                      <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                        <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="••••••••••••"
-                          className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(prev => !prev)}
-                          className="text-[#64748d] hover:text-[#0d253d] p-1 cursor-pointer"
-                          aria-label={showPassword ? "Hide password" : "Show password"}
-                        >
-                          <span className="t-icon-swap" data-state={showPassword ? 'b' : 'a'}>
-                            <Eye className="t-icon t-icon--a w-4 h-4" aria-hidden={showPassword} />
-                            <EyeOff className="t-icon t-icon--b w-4 h-4" aria-hidden={!showPassword} />
-                          </span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
-                    >
-                      {loading ? (
-                        <Loader2 className="w-5 h-5 animate-spin text-white" />
-                      ) : (
-                        <>
-                          <span>Log In to Account</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
-
-                {/* ── Mode: Sign Up Form (Unified with Email OTP or Dedicated Google OAuth Onboarding) ── */}
+                {/* ======================================================= */}
+                {/* VIEW 2: SIGN UP CONTAINER (Standard or OAuth Wizard)   */}
+                {/* ======================================================= */}
                 {mode === 'signup' && (
                   isOAuthSignup ? (
                     <div className="mt-5 flex flex-col">
                       {/* Google Connected Account Pill */}
-                      <div className="flex items-center justify-between p-2.5 px-3 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] mb-5 shadow-2xs">
+                      <div className="flex items-center justify-between p-2.5 px-3 rounded-xl theme-bg-secondary border theme-border mb-4">
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-7 h-7 rounded-full bg-white shadow-2xs border border-[#e3e8ee] flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-full bg-white dark:bg-[#161D2B] shadow-2xs border theme-border flex items-center justify-center shrink-0">
                             <svg className="w-4 h-4" viewBox="0 0 24 24">
                               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -2095,506 +2437,281 @@ export default function LoginPage() {
                             </svg>
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-semibold text-[#0d253d] truncate max-w-[190px]">{email}</span>
-                              <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded-full border border-emerald-300 shrink-0">
-                                <Check className="w-2.5 h-2.5 text-emerald-600" />
-                                Verified
-                              </span>
-                            </div>
-                            <span className="text-[10px] text-[#64748d] block font-medium">Google Workspace Verified</span>
+                            <span className="text-xs font-semibold theme-text-primary truncate block max-w-[190px]">{email}</span>
+                            <span className="text-[10px] theme-text-muted">Google Workspace Verified</span>
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={handleSignOutToSwitchAccount}
-                          className="text-[11px] font-semibold text-[#0284C7] hover:underline cursor-pointer shrink-0 ml-2"
+                          className="text-[11px] font-bold theme-link hover:underline shrink-0"
                         >
                           Change
                         </button>
                       </div>
 
-                      {/* Stepper Progress Header */}
-                      <div className="mb-5">
-                        <div className="flex items-center justify-between text-xs mb-2">
-                          <span className="text-[11px] font-bold text-[#0284C7] flex items-center gap-1.5">
-                            <span>Step {oauthStep} of 5</span>
-                            <span className="text-[#64748d] font-normal">•</span>
-                            <span className="text-[#0d253d]">
-                              {oauthStep === 1 && 'Create Password'}
-                              {oauthStep === 2 && 'Business Details'}
-                              {oauthStep === 3 && 'Website / Store'}
-                              {oauthStep === 4 && 'Settlement UPI'}
-                              {oauthStep === 5 && 'Mobile Number'}
-                            </span>
+                      {/* Stepper Progress */}
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between text-xs mb-1.5">
+                          <span className="font-mono text-[11px] font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
+                            Step {oauthStep} of 5 &bull; {
+                              oauthStep === 1 ? 'Password' :
+                              oauthStep === 2 ? 'Business Name' :
+                              oauthStep === 3 ? 'Website / App' :
+                              oauthStep === 4 ? 'Settlement UPI' : 'Mobile Number'
+                            }
                           </span>
-                          <span className="text-[10px] text-[#64748d] font-semibold">
-                            {oauthStep === 1 && '20%'}
-                            {oauthStep === 2 && '40%'}
-                            {oauthStep === 3 && '60%'}
-                            {oauthStep === 4 && '80%'}
-                            {oauthStep === 5 && '100%'}
+                          <span className="font-mono text-[10px] font-semibold theme-text-muted">
+                            {oauthStep * 20}%
                           </span>
                         </div>
-                        <div className="w-full h-1.5 bg-[#f0f2f5] rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-[#0EA5E9] rounded-full transition-colors duration-300 ease-out"
+                        <div className="w-full h-1.5 theme-bg-secondary rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#0F2BFF] rounded-full transition-all duration-300"
                             style={{ width: `${(oauthStep / 5) * 100}%` }}
                           />
                         </div>
                       </div>
 
-                      {/* Form Step Container with transitions-dev Step Slide */}
-                      <form 
-                        onSubmit={(e) => { 
-                          e.preventDefault(); 
-                          handleNextOAuthStep(); 
-                        }} 
-                        className="flex flex-col"
-                      >
-                        <div 
-                          key={oauthStep} 
-                          className={`t-step-slide ${stepDirection === 'forward' ? 't-step-forward' : 't-step-backward'}`}
-                        >
-                          {/* ── STEP 1: Create Password ── */}
-                          {oauthStep === 1 && (
-                            <div className="space-y-4">
-                              <div>
-                                <h2 className="text-sm font-semibold text-[#0d253d] mb-0.5">
-                                  Create a strong password
-                                </h2>
-                                <p className="text-xs text-[#64748d] leading-relaxed">
-                                  Set a secure password for direct login with your email address anytime.
-                                </p>
+                      {/* OAuth Step Inputs */}
+                      <form onSubmit={(e) => { e.preventDefault(); handleNextOAuthStep(); }} className="space-y-4">
+                        {oauthStep === 1 && (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-[12px] font-bold theme-text-primary block mb-1">
+                                Create a Strong Password <span className="text-[#E11D48]">*</span>
+                              </label>
+                              <div className="relative">
+                                <input
+                                  type={showPassword ? 'text' : 'password'}
+                                  required
+                                  minLength={8}
+                                  value={password}
+                                  onChange={(e) => setPassword(e.target.value)}
+                                  placeholder="e.g. MyMobPay@2026"
+                                  className="auth-input w-full pl-3.5 pr-10 py-2.5 rounded-xl text-[13px] font-medium"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPassword(prev => !prev)}
+                                  className="absolute right-3 top-1/2 -translate-y-1/2 theme-text-muted hover:theme-text-primary p-1"
+                                >
+                                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                </button>
                               </div>
+                            </div>
 
-                              <div className="space-y-1.5">
-                                <div className="flex items-center justify-between">
-                                  <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                                    <span>New Password</span>
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  <span className="text-[10px] text-[#64748d] font-medium">8+ chars required</span>
-                                </div>
-                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                                  <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
-                                  <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    autoFocus
-                                    required
-                                    minLength={8}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="e.g. MyMobPay@2026"
-                                    className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
-                                  />
+                            {/* Password requirements */}
+                            <div className="p-3 rounded-xl theme-bg-well border theme-border space-y-1.5 text-[11px]">
+                              <div className="font-bold theme-text-muted text-[10px]">PASSWORD CRITERIA</div>
+                              <div className="grid grid-cols-2 gap-1.5">
+                                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasMinLength ? 'text-[#10B981] font-bold' : 'theme-text-muted'}`}>
+                                  <span>{passwordCriteria.hasMinLength ? '✓' : '·'}</span> 8+ Characters
+                                </span>
+                                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasUppercase ? 'text-[#10B981] font-bold' : 'theme-text-muted'}`}>
+                                  <span>{passwordCriteria.hasUppercase ? '✓' : '·'}</span> 1 Uppercase (A-Z)
+                                </span>
+                                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? 'text-[#10B981] font-bold' : 'theme-text-muted'}`}>
+                                  <span>{passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? '✓' : '·'}</span> Number &amp; Symbol
+                                </span>
+                                <span className={`flex items-center gap-1.5 ${passwordCriteria.noSequenceOrRepeat ? 'text-[#10B981] font-bold' : 'theme-text-muted'}`}>
+                                  <span>{passwordCriteria.noSequenceOrRepeat ? '✓' : '·'}</span> No 123 / 111
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {oauthStep === 2 && (
+                          <div className="space-y-3">
+                            <label className="text-[12px] font-bold theme-text-primary block mb-1">
+                              Business / Brand Name <span className="text-[#E11D48]">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={businessName}
+                              onChange={(e) => setBusinessName(e.target.value)}
+                              placeholder="e.g. Acme Tech Studio"
+                              className="auth-input w-full px-3.5 py-2.5 rounded-xl text-[13px] font-medium"
+                            />
+                            <p className="text-[11.5px] theme-text-muted">
+                              This name will appear on customer payment screens and receipts.
+                            </p>
+                          </div>
+                        )}
+
+                        {oauthStep === 3 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <label className="text-[12px] font-bold theme-text-primary">
+                                Website or Store URL
+                              </label>
+                              <span className="text-[10px] font-semibold theme-text-muted bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                                Optional
+                              </span>
+                            </div>
+                            <input
+                              type="text"
+                              disabled={noWebsite}
+                              value={websiteUrl}
+                              onChange={(e) => setWebsiteUrl(e.target.value.trim())}
+                              placeholder="e.g. acmestudio.com"
+                              className="auth-input w-full px-3.5 py-2.5 rounded-xl text-[13px] font-medium disabled:opacity-50"
+                            />
+                            <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={noWebsite}
+                                onChange={(e) => {
+                                  setNoWebsite(e.target.checked);
+                                  if (e.target.checked) setWebsiteUrl('');
+                                }}
+                                className="w-3.5 h-3.5 rounded text-[#0F2BFF]"
+                              />
+                              <span className="text-xs theme-text-muted">
+                                I don&apos;t have a website yet (UPI links will work directly)
+                              </span>
+                            </label>
+                          </div>
+                        )}
+
+                        {oauthStep === 4 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <label className="text-[12px] font-bold theme-text-primary">
+                                Settlement UPI ID <span className="text-[#E11D48]">*</span>
+                              </label>
+                              {getBankFromUpi(upiId) ? (
+                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getBankFromUpi(upiId).color}`}>
+                                  {getBankFromUpi(upiId).name}
+                                </span>
+                              ) : (
+                                <span className="text-[11px] font-bold theme-link">Direct Bank Routing</span>
+                              )}
+                            </div>
+                            <input
+                              type="text"
+                              required
+                              value={upiId}
+                              onChange={(e) => setUpiId(e.target.value.toLowerCase().trim())}
+                              placeholder="e.g. merchant@okhdfcbank"
+                              className="auth-input w-full px-3.5 py-2.5 rounded-xl text-[13px] font-mono font-medium"
+                            />
+                            <p className="text-[11px] theme-text-muted">
+                              Supports all bank UPI handles: @okhdfcbank, @oksbi, @okicici, @paytm, @ybl, etc.
+                            </p>
+                          </div>
+                        )}
+
+                        {oauthStep === 5 && (
+                          <div className="space-y-3">
+                            <label className="text-[12px] font-bold theme-text-primary block mb-1">
+                              Mobile Number (WhatsApp) <span className="text-[#E11D48]">*</span>
+                            </label>
+                            <div className="flex items-stretch rounded-xl overflow-hidden border-[1.5px] theme-border focus-within:border-[#0F2BFF] dark:focus-within:border-[#60A5FA] transition-all">
+                              <div className="px-3.5 py-2.5 theme-bg-secondary border-r theme-border flex items-center gap-2 shrink-0 select-none">
+                                <IndianFlag className="w-4 h-3" />
+                                <span className="font-mono text-[13px] font-bold theme-text-primary">+91</span>
+                              </div>
+                              <input
+                                type="tel"
+                                maxLength={10}
+                                required
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                                placeholder="10-digit mobile number"
+                                className="w-full px-3.5 py-2.5 theme-bg-well text-[13px] font-mono font-semibold theme-text-primary focus:outline-none"
+                              />
+                            </div>
+
+                            {/* Legal Agreement */}
+                            <div className="p-3 rounded-xl theme-bg-well border theme-border">
+                              <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={termsAccepted}
+                                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                                  className="mt-0.5 w-4 h-4 rounded text-[#0F2BFF]"
+                                />
+                                <span className="text-[11.5px] leading-relaxed theme-text-secondary">
+                                  I agree to the{' '}
                                   <button
                                     type="button"
-                                    onClick={() => setShowPassword(prev => !prev)}
-                                    className="text-[#64748d] hover:text-[#0d253d] p-1 cursor-pointer"
-                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                    onClick={() => { setLegalModalTab('overview'); setShowLegalModal(true); }}
+                                    className="font-bold theme-link hover:underline"
                                   >
-                                    <span className="t-icon-swap" data-state={showPassword ? 'b' : 'a'}>
-                                      <Eye className="t-icon t-icon--a w-4 h-4" aria-hidden={showPassword} />
-                                      <EyeOff className="t-icon t-icon--b w-4 h-4" aria-hidden={!showPassword} />
-                                    </span>
+                                    Terms of Service &amp; Legal Agreement
                                   </button>
-                                </div>
-
-                                {/* Password criteria checklist */}
-                                <div className="p-3 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] space-y-1.5 text-[11px] mt-2">
-                                  <div className="text-[10px] font-bold text-[#64748d]">Password Requirements</div>
-                                  <div className="grid grid-cols-2 gap-1.5">
-                                    <span className={`flex items-center gap-1.5 ${passwordCriteria.hasMinLength ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
-                                      <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasMinLength ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
-                                        {passwordCriteria.hasMinLength ? '✓' : '·'}
-                                      </span>
-                                      8+ Characters
-                                    </span>
-                                    <span className={`flex items-center gap-1.5 ${passwordCriteria.hasUppercase ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
-                                      <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasUppercase ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
-                                        {passwordCriteria.hasUppercase ? '✓' : '·'}
-                                      </span>
-                                      1 Uppercase (A-Z)
-                                    </span>
-                                    <span className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
-                                      <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
-                                        {passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? '✓' : '·'}
-                                      </span>
-                                      Number &amp; Symbol
-                                    </span>
-                                    <span className={`flex items-center gap-1.5 ${passwordCriteria.noSequenceOrRepeat ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
-                                      <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.noSequenceOrRepeat ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
-                                        {passwordCriteria.noSequenceOrRepeat ? '✓' : '·'}
-                                      </span>
-                                      No 123 / 111
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* ── STEP 2: Business / Brand Name ── */}
-                          {oauthStep === 2 && (
-                            <div className="space-y-4">
-                              <div>
-                                <h2 className="text-sm font-semibold text-[#0d253d] mb-0.5">
-                                  What is your business name?
-                                </h2>
-                                <p className="text-xs text-[#64748d] leading-relaxed">
-                                  This name will be presented to your customers across checkout screens and payment receipts.
-                                </p>
-                              </div>
-
-                              <div className="space-y-1.5">
-                                <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                                  <span>Business / Brand Name</span>
-                                  <span className="text-red-500">*</span>
-                                </label>
-                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                                  <Building2 className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
-                                  <input
-                                    type="text"
-                                    autoFocus
-                                    required
-                                    value={businessName}
-                                    onChange={(e) => setBusinessName(e.target.value)}
-                                    placeholder="e.g. Acme Tech Studio"
-                                    className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
-                                  />
-                                </div>
-                                <p className="text-[11px] text-[#64748d]">
-                                  You can change your display branding anytime in your settings.
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* ── STEP 3: Website URL (Optional / Can Skip) ── */}
-                          {oauthStep === 3 && (
-                            <div className="space-y-4">
-                              <div>
-                                <div className="flex items-center justify-between mb-0.5">
-                                  <h2 className="text-sm font-semibold text-[#0d253d]">
-                                    Do you have a website or app?
-                                  </h2>
-                                  <span className="text-[10px] font-semibold text-[#64748d] bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                                    Optional
-                                  </span>
-                                </div>
-                                <p className="text-xs text-[#64748d] leading-relaxed">
-                                  Add your storefront or product link to configure webhook callbacks and automated checkout redirects.
-                                </p>
-                              </div>
-
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                                    <span>Website or Store URL</span>
-                                  </label>
-                                  {websiteUrl.trim() && (
-                                    <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                                      <Check className="w-3 h-3" />
-                                      Valid URL
-                                    </span>
-                                  )}
-                                </div>
-
-                                <div className={`flex items-center rounded-lg px-3 transition-colors border ${
-                                  noWebsite 
-                                    ? 'bg-slate-50 border-slate-200 opacity-60' 
-                                    : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] shadow-2xs'
-                                }`}>
-                                  <Globe className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
-                                  <span className="text-xs text-[#64748d] font-mono mr-1 select-none">https://</span>
-                                  <input
-                                    type="text"
-                                    autoFocus={!noWebsite}
-                                    disabled={noWebsite || loading}
-                                    value={websiteUrl.replace(/^https?:\/\//i, '')}
-                                    onChange={(e) => {
-                                      setWebsiteUrl(e.target.value.trim());
-                                      if (noWebsite) setNoWebsite(false);
-                                    }}
-                                    placeholder="acmestudio.com"
-                                    className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans"
-                                  />
-                                </div>
-
-                                {/* No website quick-toggle checkbox */}
-                                <div className="pt-1">
-                                  <label className="inline-flex items-center gap-2 cursor-pointer select-none">
-                                    <input
-                                      type="checkbox"
-                                      checked={noWebsite}
-                                      onChange={(e) => {
-                                        setNoWebsite(e.target.checked);
-                                        if (e.target.checked) setWebsiteUrl('');
-                                      }}
-                                      className="w-3.5 h-3.5 rounded text-[#0284C7] border-[#cbd5e1] focus:ring-[#0EA5E9] cursor-pointer"
-                                    />
-                                    <span className="text-xs text-[#64748d] hover:text-[#0d253d]">
-                                      I don&apos;t have a website yet (UPI links will work directly)
-                                    </span>
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* ── STEP 4: Settlement UPI ID ── */}
-                          {oauthStep === 4 && (
-                            <div className="space-y-4">
-                              <div>
-                                <h2 className="text-sm font-semibold text-[#0d253d] mb-0.5">
-                                  Where should settlements route?
-                                </h2>
-                                <p className="text-xs text-[#64748d] leading-relaxed">
-                                  Enter your settlement UPI ID. All incoming customer payments route directly to your bank account with 0% gateway commission.
-                                </p>
-                              </div>
-
-                              <div className="space-y-1.5">
-                                <div className="flex items-center justify-between">
-                                  <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                                    <span>Settlement UPI ID</span>
-                                    <span className="text-red-500">*</span>
-                                  </label>
-                                  {getBankFromUpi(upiId) ? (
-                                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getBankFromUpi(upiId).color}`}>
-                                      {getBankFromUpi(upiId).name}
-                                    </span>
-                                  ) : (
-                                    <span className="text-[10px] text-[#0284C7] font-semibold bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
-                                      Direct Bank Routing
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                                  <QrCode className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
-                                  <input
-                                    type="text"
-                                    autoFocus
-                                    required
-                                    value={upiId}
-                                    onChange={(e) => setUpiId(e.target.value.toLowerCase().trim())}
-                                    placeholder="e.g. merchant@okhdfcbank"
-                                    className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans"
-                                  />
-                                </div>
-                                <p className="text-[11px] text-[#64748d]">
-                                  Supports all bank UPI handles: @okhdfcbank, @oksbi, @okicici, @paytm, @ybl, etc.
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* ── STEP 5: Mobile Number (WhatsApp) ── */}
-                          {oauthStep === 5 && (
-                            <div className="space-y-4">
-                              <div>
-                                <h2 className="text-sm font-semibold text-[#0d253d] mb-0.5">
-                                  Enter your mobile number
-                                </h2>
-                                <p className="text-xs text-[#64748d] leading-relaxed">
-                                  Indian mobile number for instant transaction alerts, high-value settlement notifications, and account recovery.
-                                </p>
-                              </div>
-
-                              <div className="space-y-1.5">
-                                <label className="text-xs font-semibold text-[#0d253d] block">
-                                  Mobile Number (WhatsApp)
-                                </label>
-
-                                <div className="flex items-center rounded-lg px-3 transition-colors border bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] shadow-2xs">
-                                  <div className="flex items-center gap-1.5 pr-2.5 py-2.5 text-[#0d253d] text-xs font-semibold border-r border-[#e3e8ee] shrink-0 select-none">
-                                    <IndianFlag className="w-4 h-3" />
-                                    <span>+91</span>
-                                  </div>
-                                  <input
-                                    type="tel"
-                                    autoFocus
-                                    maxLength={10}
-                                    required
-                                    disabled={loading}
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                                    placeholder="10-digit mobile number"
-                                    className="w-full bg-transparent py-2.5 pl-3 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans tracking-normal"
-                                  />
-                                </div>
-                              </div>
-
-                              {/* Account Summary Mini-Card */}
-                              <div className="p-3 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] space-y-1.5 text-xs">
-                                <span className="text-[10px] font-bold text-[#64748d] block mb-1">
-                                  Account Summary
+                                  , and confirm compliance with{' '}
+                                  <button
+                                    type="button"
+                                    onClick={() => { setLegalModalTab('prohibited'); setShowLegalModal(true); }}
+                                    className="font-bold theme-link hover:underline"
+                                  >
+                                    Acceptable Use Rules
+                                  </button>
+                                  .
                                 </span>
-                                <div className="flex items-center justify-between text-[11px]">
-                                  <span className="text-[#64748d]">Google Account</span>
-                                  <span className="font-semibold text-[#0d253d] truncate max-w-[180px]">{email}</span>
-                                </div>
-                                <div className="flex items-center justify-between text-[11px]">
-                                  <span className="text-[#64748d]">Business</span>
-                                  <span className="font-semibold text-[#0d253d]">{businessName || '—'}</span>
-                                </div>
-                                <div className="flex items-center justify-between text-[11px]">
-                                  <span className="text-[#64748d]">Website</span>
-                                  <span className="font-semibold text-[#0d253d] truncate max-w-[180px]">
-                                    {noWebsite || !websiteUrl.trim() ? 'Not provided (Can add later)' : websiteUrl.replace(/^https?:\/\//i, '')}
-                                  </span>
-                                </div>
-                                <div className="flex items-center justify-between text-[11px]">
-                                  <span className="text-[#64748d]">Settlement UPI</span>
-                                  <span className="font-semibold text-[#0d253d] font-sans">{upiId || '—'}</span>
-                                </div>
-                              </div>
-
-                              {/* Legal Agreement & Operating Rules Acceptance */}
-                              <div className="p-3.5 rounded-2xl bg-white border border-[#e2e8f0] space-y-2 shadow-2xs">
-                                <label className="flex items-start gap-2.5 cursor-pointer select-none">
-                                  <input
-                                    type="checkbox"
-                                    checked={termsAccepted}
-                                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                                    className="mt-0.5 w-4 h-4 rounded text-[#0EA5E9] focus:ring-[#0EA5E9] border-[#cbd5e1] cursor-pointer"
-                                  />
-                                  <span className="text-[11px] sm:text-xs text-[#0d253d] leading-snug">
-                                    I have read and agree to the{' '}
-                                    <button
-                                      type="button"
-                                      onClick={() => { setLegalModalTab('overview'); setShowLegalModal(true); }}
-                                      className="font-bold text-[#0284C7] hover:underline cursor-pointer"
-                                    >
-                                      Terms &amp; Legal Agreement
-                                    </button>
-                                    , and confirm my business complies with the{' '}
-                                    <button
-                                      type="button"
-                                      onClick={() => { setLegalModalTab('prohibited'); setShowLegalModal(true); }}
-                                      className="font-bold text-[#0284C7] hover:underline cursor-pointer"
-                                    >
-                                      Acceptable Use Rules
-                                    </button>
-                                    .
-                                  </span>
-                                </label>
-                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pl-6 text-[10px] text-[#64748d] font-medium">
-                                  <span>Non-Custodial (RBI PSS Act 2007)</span>
-                                  <span>•</span>
-                                  <span>0% Escrow</span>
-                                  <span>•</span>
-                                  <span>Direct Bank Settlements</span>
-                                </div>
-                              </div>
+                              </label>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
 
-                        {/* Navigation Buttons Row */}
-                        <div className="mt-6 flex items-center gap-2.5">
+                        <div className="flex items-center gap-2.5 pt-2">
                           {oauthStep > 1 && (
                             <button
                               type="button"
                               onClick={handlePrevOAuthStep}
-                              disabled={loading}
-                              className="h-11 px-4 rounded-full border border-[#e3e8ee] bg-white hover:bg-[#f6f9fc] text-[#0d253d] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 shadow-2xs"
+                              className="h-11 px-4 rounded-xl border theme-border theme-bg-elevated theme-text-primary text-xs font-bold flex items-center gap-1 hover:theme-bg-secondary"
                             >
                               <ChevronLeft className="w-4 h-4" />
                               <span>Back</span>
                             </button>
                           )}
-
-                          {oauthStep === 3 && !noWebsite && !websiteUrl.trim() && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setNoWebsite(true);
-                                setStepDirection('forward');
-                                setOauthStep(4);
-                              }}
-                              disabled={loading}
-                              className="h-11 px-4 rounded-full border border-dashed border-[#cbd5e1] hover:border-[#94a3b8] bg-[#f8fafc] text-[#64748d] hover:text-[#0d253d] text-xs font-semibold transition-colors cursor-pointer"
-                            >
-                              <span>Skip for now</span>
-                            </button>
-                          )}
-
                           <button
                             type="submit"
-                            disabled={
-                              loading ||
-                              (oauthStep === 1 && !(passwordCriteria?.isValid || passwordCriteria?.allMet)) ||
-                              (oauthStep === 2 && businessName.trim().length < 2) ||
-                              (oauthStep === 3 && !noWebsite && websiteUrl.trim().length > 0 && !/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/.test(websiteUrl.trim())) ||
-                              (oauthStep === 4 && (!upiId.trim().includes('@') || upiId.trim().length < 5)) ||
-                              (oauthStep === 5 && (phone.trim().length !== 10 || !/^[6-9]\d{9}$/.test(phone.trim()) || !termsAccepted))
-                            }
-                            className="flex-1 h-11 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-md transition-colors duration-200 cursor-pointer disabled:opacity-50"
+                            disabled={loading || (oauthStep === 5 && !termsAccepted)}
+                            className="btn-editorial flex-1 h-11 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white font-bold text-[13px] flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
                           >
                             {loading ? (
-                              <>
-                                <Loader2 className="w-4 h-4 animate-spin text-white" />
-                                <span>{oauthStep === 5 ? 'Creating Merchant Account...' : 'Verifying...'}</span>
-                              </>
+                              <span className="spinner-ring" aria-hidden="true"></span>
                             ) : oauthStep === 5 ? (
-                              !termsAccepted ? (
-                                <>
-                                  <Scale className="w-4 h-4" />
-                                  <span>Accept Agreement to Continue</span>
-                                </>
-                              ) : (
-                                <>
-                                  <span>Complete Setup &amp; Launch Dashboard</span>
-                                  <ArrowRight className="w-4 h-4" />
-                                </>
-                              )
+                              <>
+                                <span>Complete Setup &amp; Launch Dashboard</span>
+                                <ArrowRight className="btn-arrow-icon w-4 h-4" />
+                              </>
                             ) : (
                               <>
                                 <span>Continue</span>
-                                <ArrowRight className="w-4 h-4" />
+                                <ArrowRight className="btn-arrow-icon w-4 h-4" />
                               </>
                             )}
-                          </button>
-                        </div>
-
-                        {/* Option to cancel and start over */}
-                        <div className="mt-4 text-center">
-                          <button
-                            type="button"
-                            onClick={handleSignOutToSwitchAccount}
-                            disabled={loading}
-                            className="text-[11px] text-[#64748d] hover:text-[#0284C7] transition-colors cursor-pointer"
-                          >
-                            Want to sign up with Email OTP or a different account? <span className="underline font-semibold">Start Over</span>
                           </button>
                         </div>
                       </form>
                     </div>
                   ) : (
-                    <form onSubmit={(e) => { e.preventDefault(); handleAuth('signup'); }} className="mt-6 flex flex-col space-y-4">
-                      {/* Merchant Email Address with inline OTP verification */}
-                      <div className="flex flex-col space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                            <span>Merchant Email Address</span>
-                            <span className="text-red-500">*</span>
+                    /* STANDARD SIGNUP FORM */
+                    <form onSubmit={(e) => { e.preventDefault(); handleAuth('signup'); }} className="mt-5 space-y-4 text-left">
+                      {/* 1. Merchant Email Address * + Inline Verify Button */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-[12px] font-bold theme-text-primary">
+                            Merchant Email Address <span className="text-[#E11D48]">*</span>
                           </label>
                           {isEmailVerified && (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              Verified
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#10B981]">
+                              <Check className="w-3 h-3 stroke-[3]" />
+                              <span>Verified</span>
                             </span>
                           )}
                         </div>
 
-                        <div className={`flex items-center rounded-lg px-3 transition-colors border ${
-                          isEmailVerified 
-                            ? 'bg-emerald-50/40 border-emerald-300' 
-                            : 'bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] shadow-2xs'
-                        }`}>
-                          <Mail className={`w-4 h-4 mr-2 shrink-0 ${isEmailVerified ? 'text-emerald-600' : 'text-[#64748d]'}`} />
+                        <div className="relative flex items-center">
+                          <span className="absolute left-3.5 theme-text-muted pointer-events-none">
+                            <Mail className="w-4 h-4" />
+                          </span>
                           <input
                             type="email"
                             required
@@ -2606,7 +2723,7 @@ export default function LoginPage() {
                               if (emailOtpSent) setEmailOtpSent(false);
                             }}
                             placeholder="merchant@company.com"
-                            className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium disabled:opacity-85"
+                            className="auth-input w-full pl-10 pr-24 py-2.5 rounded-xl text-[13px] font-medium disabled:opacity-85"
                           />
                           {isEmailVerified ? (
                             <button
@@ -2616,7 +2733,7 @@ export default function LoginPage() {
                                 setEmailOtpSent(false);
                                 setEmailOtp('');
                               }}
-                              className="text-[11px] text-[#0284C7] font-medium hover:underline shrink-0 pl-2 cursor-pointer"
+                              className="absolute right-2 text-[11px] font-bold theme-link hover:underline px-2 py-1"
                             >
                               Change
                             </button>
@@ -2625,45 +2742,38 @@ export default function LoginPage() {
                               type="button"
                               onClick={handleSendEmailOtp}
                               disabled={loading || !email.trim() || !email.includes('@')}
-                              className="shrink-0 ml-2 px-2.5 py-1.5 bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] disabled:opacity-40 text-white rounded-full text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer shadow-2xs"
+                              className="absolute right-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-[#0F2BFF] text-white shadow-2xs hover:bg-[#081EC4] transition-all disabled:opacity-50"
                             >
-                              {loading && !emailOtpSent ? (
-                                <Loader2 className="w-3 h-3 animate-spin" />
-                              ) : emailOtpSent ? (
-                                'Resend OTP'
-                              ) : (
-                                'Verify'
-                              )}
+                              {loading && !emailOtpSent ? 'Sending...' : emailOtpSent ? 'Resend' : 'Verify'}
                             </button>
                           )}
                         </div>
 
-                        {/* Inline OTP Verification Box */}
+                        {/* Inline OTP Drawer */}
                         {emailOtpSent && !isEmailVerified && (
-                          <div className="mt-2 p-3.5 rounded-xl bg-[#f6f9fc]/70 border border-[#e3e8ee] space-y-3">
+                          <div className="mt-2.5 p-3.5 rounded-xl theme-bg-secondary border theme-border banner-enter space-y-2.5">
                             <div className="flex items-center justify-between text-xs">
-                              <span className="text-[11px] font-semibold text-[#0d253d] flex items-center gap-1.5">
-                                <Zap className="w-3.5 h-3.5 text-[#0284C7]" />
-                                <span>Code sent to <strong className="text-[#0284C7]">{email}</strong></span>
+                              <span className="font-bold theme-text-primary text-[11.5px]">
+                                Code sent to <strong className="font-mono text-[#0F2BFF]">{email}</strong>
                               </span>
                               {emailTimer > 0 ? (
-                                <span className="text-[10px] text-[#64748d]">
-                                  Resend in <strong>{emailTimer}s</strong>
+                                <span className="font-mono text-[10.5px] theme-text-muted">
+                                  Resend in {emailTimer}s
                                 </span>
                               ) : (
                                 <button
                                   type="button"
                                   onClick={handleSendEmailOtp}
                                   disabled={loading}
-                                  className="text-[10px] font-bold text-[#0284C7] hover:underline cursor-pointer"
+                                  className="font-mono text-[10.5px] font-bold theme-link hover:underline"
                                 >
-                                  Resend Code
+                                  Resend OTP
                                 </button>
                               )}
                             </div>
 
-                            <div className="space-y-1.5">
-                              <label className="text-[11px] font-medium text-[#64748d] block text-center">
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold theme-text-muted block text-center">
                                 Enter 6-Digit Email Verification Code
                               </label>
                               <OtpBoxInput value={emailOtp} onChange={setEmailOtp} disabled={loading} />
@@ -2673,13 +2783,13 @@ export default function LoginPage() {
                               type="button"
                               onClick={handleVerifyEmailOtp}
                               disabled={loading || emailOtp.length !== 6}
-                              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                              className="btn-editorial w-full py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
                             >
                               {loading ? (
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span className="spinner-ring" aria-hidden="true"></span>
                               ) : (
                                 <>
-                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                                   <span>Confirm 6-Digit OTP</span>
                                 </>
                               )}
@@ -2688,17 +2798,20 @@ export default function LoginPage() {
                         )}
                       </div>
 
-                      {/* Create Strong Password */}
-                      <div className="flex flex-col space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                            <span>Create Password (8+ chars)</span>
-                            <span className="text-red-500">*</span>
+                      {/* 2. Create Password (8+ chars) * */}
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <label className="text-[12px] font-bold theme-text-primary">
+                            Create Password (8+ chars) <span className="text-[#E11D48]">*</span>
                           </label>
-                          <span className="text-[10px] text-[#64748d] font-medium">1 Upper, 1 Number, 1 Symbol</span>
+                          <span className="text-[10.5px] font-medium theme-text-muted">
+                            1 Upper, 1 Number, 1 Symbol
+                          </span>
                         </div>
-                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                          <Lock className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
+                        <div className="relative flex items-center">
+                          <span className="absolute left-3.5 theme-text-muted pointer-events-none">
+                            <Lock className="w-4 h-4" />
+                          </span>
                           <input
                             type={showPassword ? 'text' : 'password'}
                             required
@@ -2706,161 +2819,131 @@ export default function LoginPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="e.g. MyMobPay@2026"
-                            className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
+                            className="auth-input w-full pl-10 pr-10 py-2.5 rounded-xl text-[13px] font-medium"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(prev => !prev)}
-                            className="text-[#64748d] hover:text-[#0d253d] p-1 cursor-pointer"
-                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            className="absolute right-3 theme-text-muted hover:theme-text-primary p-1"
+                            aria-label="Toggle password visibility"
                           >
-                            <span className="t-icon-swap" data-state={showPassword ? 'b' : 'a'}>
-                              <Eye className="t-icon t-icon--a w-4 h-4" aria-hidden={showPassword} />
-                              <EyeOff className="t-icon t-icon--b w-4 h-4" aria-hidden={!showPassword} />
-                            </span>
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
                         </div>
 
                         {/* Real-time Password Strength Criteria Checklist */}
                         {password.length > 0 && (
-                          <div className="p-2.5 rounded-lg bg-[#f6f9fc] border border-[#e3e8ee] space-y-1 text-[11px] mt-1">
+                          <div className="p-2.5 rounded-xl theme-bg-well border theme-border space-y-1 text-[11px] mt-1.5">
                             <div className="grid grid-cols-2 gap-1.5">
-                              <span className={`flex items-center gap-1.5 ${passwordCriteria.hasMinLength ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
-                                <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasMinLength ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
-                                  {passwordCriteria.hasMinLength ? '✓' : '·'}
-                                </span>
-                                8+ Characters
+                              <span className={`flex items-center gap-1.5 ${passwordCriteria.hasMinLength ? 'text-[#10B981] font-bold' : 'theme-text-muted'}`}>
+                                <span>{passwordCriteria.hasMinLength ? '✓' : '·'}</span> 8+ Characters
                               </span>
-                              <span className={`flex items-center gap-1.5 ${passwordCriteria.hasUppercase ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
-                                <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasUppercase ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
-                                  {passwordCriteria.hasUppercase ? '✓' : '·'}
-                                </span>
-                                1 Uppercase (A-Z)
+                              <span className={`flex items-center gap-1.5 ${passwordCriteria.hasUppercase ? 'text-[#10B981] font-bold' : 'theme-text-muted'}`}>
+                                <span>{passwordCriteria.hasUppercase ? '✓' : '·'}</span> 1 Uppercase (A-Z)
                               </span>
-                              <span className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
-                                <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
-                                  {passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? '✓' : '·'}
-                                </span>
-                                Number &amp; Symbol
+                              <span className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? 'text-[#10B981] font-bold' : 'theme-text-muted'}`}>
+                                <span>{passwordCriteria.hasNumber && passwordCriteria.hasSpecial ? '✓' : '·'}</span> Number &amp; Symbol
                               </span>
-                              <span className={`flex items-center gap-1.5 ${passwordCriteria.noSequenceOrRepeat ? 'text-emerald-700 font-semibold' : 'text-slate-500'}`}>
-                                <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${passwordCriteria.noSequenceOrRepeat ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-200 text-slate-500'}`}>
-                                  {passwordCriteria.noSequenceOrRepeat ? '✓' : '·'}
-                                </span>
-                                No 123 / 111
+                              <span className={`flex items-center gap-1.5 ${passwordCriteria.noSequenceOrRepeat ? 'text-[#10B981] font-bold' : 'theme-text-muted'}`}>
+                                <span>{passwordCriteria.noSequenceOrRepeat ? '✓' : '·'}</span> No 123 / 111
                               </span>
                             </div>
                           </div>
                         )}
                       </div>
 
-                      {/* Business / Brand Name */}
-                      <div className="flex flex-col space-y-1.5">
-                        <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                          <span>Business / Brand Name</span>
-                          <span className="text-red-500">*</span>
+                      {/* 3. Business / Brand Name * */}
+                      <div>
+                        <label className="block text-[12px] font-bold theme-text-primary mb-1.5">
+                          Business / Brand Name <span className="text-[#E11D48]">*</span>
                         </label>
-                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                          <Building2 className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
+                        <div className="relative flex items-center">
+                          <span className="absolute left-3.5 theme-text-muted pointer-events-none">
+                            <Building2 className="w-4 h-4" />
+                          </span>
                           <input
                             type="text"
                             required
                             value={businessName}
                             onChange={(e) => setBusinessName(e.target.value)}
                             placeholder="e.g. Acme Tech Studio"
-                            className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium"
+                            className="auth-input w-full pl-10 pr-3.5 py-2.5 rounded-xl text-[13px] font-medium"
                           />
                         </div>
                       </div>
 
-                      {/* Settlement UPI ID */}
-                      <div className="flex flex-col space-y-1.5">
-                        <label className="text-xs font-semibold text-[#0d253d] flex items-center justify-between">
-                          <span className="flex items-center gap-1">
-                            <span>Settlement UPI ID</span>
-                            <span className="text-red-500">*</span>
+                      {/* 4. Settlement UPI ID * + Direct Bank Routing */}
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <label className="text-[12px] font-bold theme-text-primary">
+                            Settlement UPI ID <span className="text-[#E11D48]">*</span>
+                          </label>
+                          {getBankFromUpi(upiId) ? (
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getBankFromUpi(upiId).color}`}>
+                              {getBankFromUpi(upiId).name}
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-bold theme-link">Direct Bank Routing</span>
+                          )}
+                        </div>
+                        <div className="relative flex items-center">
+                          <span className="absolute left-3.5 theme-text-muted pointer-events-none">
+                            <QrCode className="w-4 h-4" />
                           </span>
-                          <span className="text-[10px] text-[#0284C7] font-medium">Direct Bank Routing</span>
-                        </label>
-                        <div className="flex items-center rounded-lg bg-white px-3 focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] transition-colors border border-[#e3e8ee] shadow-2xs">
-                          <QrCode className="w-4 h-4 text-[#64748d] mr-2 shrink-0" />
                           <input
                             type="text"
                             required
                             value={upiId}
                             onChange={(e) => setUpiId(e.target.value)}
-                            onBlur={async () => {
-                              const cleanUpi = upiId.trim().toLowerCase();
-                              if (cleanUpi.includes('@') && cleanUpi.length >= 5) {
-                                try {
-                                  const checkRes = await fetch('/api/auth/check-details', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ upiId: cleanUpi }),
-                                  });
-                                  const checkData = await checkRes.json();
-                                  if (!checkRes.ok || checkData.available === false) {
-                                    setError(checkData.error || 'Settlement UPI ID is already registered by another merchant.');
-                                  }
-                                } catch (e) {
-                                  // ignore
-                                }
-                              }
-                            }}
                             placeholder="e.g. merchant@okhdfcbank"
-                            className="w-full bg-transparent py-2.5 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans"
+                            className="auth-input w-full pl-10 pr-3.5 py-2.5 rounded-xl text-[13px] font-mono font-medium"
                           />
                         </div>
-                        <p className="text-[11px] text-[#64748d]">
+                        <p className="mt-1.5 text-[11px] theme-text-muted">
                           Direct settlement to your bank UPI address.
                         </p>
                       </div>
 
-                      {/* Mobile Phone Number (Mandatory - Verification disabled for now) */}
-                      <div className="flex flex-col space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-semibold text-[#0d253d] flex items-center gap-1">
-                            <span>Mobile Number (WhatsApp)</span>
-                            <span className="text-red-500">*</span>
-                          </label>
-                        </div>
-
-                        <div className="flex items-center rounded-lg px-3 transition-colors border bg-white border-[#e3e8ee] focus-within:ring-2 focus-within:ring-[#0EA5E9]/20 focus-within:border-[#0EA5E9] shadow-2xs">
-                          <div className="flex items-center gap-1.5 pr-2.5 py-2.5 text-[#0d253d] text-xs font-semibold border-r border-[#e3e8ee] shrink-0 select-none">
+                      {/* 5. Mobile Number (WhatsApp) * */}
+                      <div>
+                        <label className="block text-[12px] font-bold theme-text-primary mb-1.5">
+                          Mobile Number (WhatsApp) <span className="text-[#E11D48]">*</span>
+                        </label>
+                        <div className="flex items-stretch rounded-xl overflow-hidden border-[1.5px] theme-border focus-within:border-[#0F2BFF] dark:focus-within:border-[#60A5FA] transition-all">
+                          <div className="px-3.5 py-2.5 theme-bg-secondary border-r theme-border flex items-center gap-2 shrink-0 select-none">
                             <IndianFlag className="w-4 h-3" />
-                            <span>+91</span>
+                            <span className="font-mono text-[13px] font-bold theme-text-primary">+91</span>
                           </div>
                           <input
                             type="tel"
                             maxLength={10}
                             required
-                            disabled={loading}
                             value={phone}
                             onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                             placeholder="10-digit mobile number"
-                            className="w-full bg-transparent py-2.5 pl-3 text-xs text-[#0d253d] placeholder-[#64748d] focus:outline-none font-medium font-sans tracking-normal"
+                            className="w-full px-3.5 py-2.5 theme-bg-well text-[13px] font-mono font-semibold theme-text-primary focus:outline-none"
                           />
                         </div>
-                        <p className="text-[11px] text-[#64748d]">
+                        <p className="mt-1.5 text-[11px] theme-text-muted leading-relaxed">
                           10-digit Indian mobile number for critical transaction alerts and account security.
                         </p>
                       </div>
 
-                      {/* Legal Agreement & Operating Rules Acceptance */}
-                      <div className="p-3.5 rounded-2xl bg-[#f8fafc] border border-[#e2e8f0] space-y-2 shadow-2xs">
+                      {/* 6. Legal & Non-Custodial Compliance Card */}
+                      <div className="rounded-xl p-3.5 theme-bg-well border theme-border">
                         <label className="flex items-start gap-2.5 cursor-pointer select-none">
                           <input
                             type="checkbox"
                             checked={termsAccepted}
                             onChange={(e) => setTermsAccepted(e.target.checked)}
-                            className="mt-0.5 w-4 h-4 rounded text-[#0EA5E9] focus:ring-[#0EA5E9] border-[#cbd5e1] cursor-pointer"
+                            className="mt-0.5 w-4 h-4 rounded border-[#CBD5E1] text-[#0F2BFF] focus:ring-[#0F2BFF]"
                           />
-                          <span className="text-[11px] sm:text-xs text-[#0d253d] leading-snug">
+                          <span className="text-[11.5px] leading-relaxed theme-text-secondary">
                             I have read and agree to the{' '}
                             <button
                               type="button"
                               onClick={() => { setLegalModalTab('overview'); setShowLegalModal(true); }}
-                              className="font-bold text-[#0284C7] hover:underline cursor-pointer"
+                              className="font-bold theme-link hover:underline"
                             >
                               Terms of Service &amp; Legal Agreement
                             </button>
@@ -2868,48 +2951,44 @@ export default function LoginPage() {
                             <button
                               type="button"
                               onClick={() => { setLegalModalTab('prohibited'); setShowLegalModal(true); }}
-                              className="font-bold text-[#0284C7] hover:underline cursor-pointer"
+                              className="font-bold theme-link hover:underline"
                             >
                               Acceptable Use Rules
                             </button>
                             .
+                            <span className="block mt-1.5 font-mono text-[10px] theme-text-muted">
+                              RBI PSS Act 2007 (Non-Custodial) &bull; 0% Escrow &bull; Direct Settlement
+                            </span>
                           </span>
                         </label>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pl-6 text-[10px] text-[#64748d] font-medium">
-                          <span>RBI PSS Act 2007 (Non-Custodial)</span>
-                          <span>•</span>
-                          <span>0% Escrow</span>
-                          <span>•</span>
-                          <span>Direct Settlement</span>
-                        </div>
                       </div>
 
-                      {/* Submit Button */}
+                      {/* 7. Sign Up Submit Button */}
                       <button
                         type="submit"
                         disabled={loading || !isEmailVerified || !(passwordCriteria?.isValid || passwordCriteria?.allMet) || !businessName.trim() || !upiId.trim() || phone.replace(/\D/g, '').length !== 10 || !termsAccepted}
-                        className={`w-full h-11 rounded-full text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors duration-200 mt-2 cursor-pointer disabled:cursor-not-allowed ${
+                        className={`w-full h-12 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 transition-all ${
                           isEmailVerified && (passwordCriteria?.isValid || passwordCriteria?.allMet) && businessName.trim() && upiId.trim() && phone.replace(/\D/g, '').length === 10 && termsAccepted
-                            ? 'bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#075985] text-white shadow-sm'
-                            : 'bg-slate-100 text-[#64748d] border border-[#e3e8ee] opacity-80'
+                            ? 'btn-editorial bg-[#0F2BFF] hover:bg-[#081EC4] text-white shadow-md'
+                            : 'bg-[#E2E8F0] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] cursor-not-allowed opacity-80'
                         }`}
                       >
                         {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin text-white" />
+                          <span className="spinner-ring" aria-hidden="true"></span>
                         ) : !isEmailVerified ? (
                           <>
-                            <Mail className="w-4 h-4 text-slate-400" />
+                            <Mail className="w-4 h-4" />
                             <span>Verify Email to Continue</span>
                           </>
                         ) : !termsAccepted ? (
                           <>
-                            <Scale className="w-4 h-4 text-slate-500" />
+                            <Scale className="w-4 h-4" />
                             <span>Accept Agreement to Continue</span>
                           </>
                         ) : (
                           <>
                             <span>Create Merchant Account</span>
-                            <ArrowRight className="w-4 h-4" />
+                            <ArrowRight className="btn-arrow-icon w-4 h-4" />
                           </>
                         )}
                       </button>
@@ -2917,62 +2996,57 @@ export default function LoginPage() {
                   )
                 )}
 
-                {/* ── Mode: Reset Password ── */}
+                {/* ======================================================= */}
+                {/* VIEW 3: RESET PASSWORD CONTAINER                        */}
+                {/* ======================================================= */}
                 {mode === 'reset' && (
-                  <form onSubmit={handleUpdateNewPassword} className="space-y-4">
+                  <form onSubmit={handleUpdateNewPassword} className="mt-5 space-y-4">
                     <div>
-                      <label className="block text-[11px] font-bold text-[#64748d] mb-1.5">
+                      <label className="block text-[12px] font-bold theme-text-primary mb-1.5">
                         New Password
                       </label>
                       <div className="relative">
                         <input
                           type={showNewPassword ? 'text' : 'password'}
                           required
+                          minLength={6}
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
                           placeholder="••••••••••••"
-                          minLength={6}
-                          className="w-full h-11 px-3.5 bg-white border border-[#e3e8ee] rounded-xl text-xs text-[#0d253d] focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors outline-hidden pr-10 shadow-2xs"
+                          className="auth-input w-full pl-3.5 pr-10 py-2.5 rounded-xl text-[13px] font-medium"
                         />
                         <button
                           type="button"
                           onClick={() => setShowNewPassword(!showNewPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                          aria-label={showNewPassword ? "Hide password" : "Show password"}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 theme-text-muted hover:theme-text-primary p-1"
                         >
-                          <span className="t-icon-swap" data-state={showNewPassword ? 'b' : 'a'}>
-                            <Eye className="t-icon t-icon--a w-4 h-4" aria-hidden={showNewPassword} />
-                            <EyeOff className="t-icon t-icon--b w-4 h-4" aria-hidden={!showNewPassword} />
-                          </span>
+                          {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-[#64748d] mb-1.5">
+                      <label className="block text-[12px] font-bold theme-text-primary mb-1.5">
                         Confirm New Password
                       </label>
                       <input
                         type={showNewPassword ? 'text' : 'password'}
                         required
+                        minLength={6}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="••••••••••••"
-                        minLength={6}
-                        className="w-full h-11 px-3.5 bg-white border border-[#e3e8ee] rounded-xl text-xs text-[#0d253d] focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors outline-hidden shadow-2xs"
+                        className="auth-input w-full px-3.5 py-2.5 rounded-xl text-[13px] font-medium"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-11 bg-[#0EA5E9] hover:bg-[#432bc9] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+                      className="btn-editorial w-full h-12 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white font-bold text-[13.5px] flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
                     >
                       {loading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>Updating Password...</span>
-                        </>
+                        <span className="spinner-ring" aria-hidden="true"></span>
                       ) : (
                         <>
                           <Lock className="w-4 h-4" />
@@ -2983,50 +3057,49 @@ export default function LoginPage() {
                   </form>
                 )}
 
-                {/* Soft Divider */}
+                {/* Shared Divider: OR */}
                 {mode !== 'reset' && !isOAuthSignup && (
-                  <div className="relative my-6 flex items-center justify-center">
-                    <div className="w-full h-px bg-[#e3e8ee]"></div>
-                    <span className="absolute px-3 bg-white text-[#64748d] text-[10px] font-bold">
-                      OR
-                    </span>
+                  <div className="my-4 flex items-center gap-3">
+                    <div className="h-px flex-1 theme-border border-t"></div>
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest theme-text-muted">OR</span>
+                    <div className="h-px flex-1 theme-border border-t"></div>
                   </div>
                 )}
 
-                {/* Google Workspace Login */}
+                {/* Shared Continue with Google Button */}
                 {mode !== 'reset' && !isOAuthSignup && (
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
                     disabled={loading}
-                    className="w-full h-11 bg-white hover:bg-[#f6f9fc] text-[#0d253d] rounded-full text-xs font-medium flex items-center justify-center gap-3 transition-colors cursor-pointer disabled:opacity-50 border border-[#e3e8ee] shadow-2xs"
+                    className="btn-editorial w-full py-2.5 px-4 rounded-xl theme-bg-well border theme-border hover:border-[#0F2BFF] text-[12.5px] font-bold theme-text-primary flex items-center justify-center gap-2.5 transition-all cursor-pointer disabled:opacity-50"
                   >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24">
-                      <path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z" fill="#4285F4"></path>
-                      <path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.13C3.25 21.36 7.33 24 12 24z" fill="#34A853"></path>
-                      <path d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.26C.46 8.18 0 9.99 0 12s.46 3.82 1.26 5.42l4.02-3.13z" fill="#FBBC05"></path>
-                      <path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.25 2.64 1.26 6.58l4.02 3.13c.95-2.83 3.6-4.96 6.72-4.96z" fill="#EA4335"></path>
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
+                      <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
                     </svg>
                     <span>Continue with Google</span>
                   </button>
                 )}
 
-                {/* QR Code Express Login Bar (in Signin mode, desktop only) */}
+                {/* QR Express Login Bar */}
                 {mode === 'signin' && !isOAuthSignup && (
-                  <div className="mt-4 p-3.5 rounded-lg bg-[#f6f9fc] items-center justify-between gap-3 border border-[#e3e8ee]/60 hidden lg:flex">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center text-[#000d21] shadow-xs">
-                        <QrCode className="w-5 h-5 text-blue-600" />
+                  <div className="mt-3.5 p-3 rounded-xl theme-bg-well border theme-border flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg theme-bg-elevated border theme-border flex items-center justify-center text-[#0F2BFF] shadow-2xs">
+                        <QrCode className="w-4 h-4" />
                       </div>
-                      <div className="flex flex-col text-left">
-                        <span className="text-xs font-bold text-[#0d253d]">QR Express Login</span>
-                        <span className="text-[11px] text-[#64748d] leading-tight">Scan with mymobpay Merchant Mobile App</span>
+                      <div className="text-left">
+                        <span className="text-xs font-bold theme-text-primary block leading-tight">QR Express Login</span>
+                        <span className="text-[10.5px] theme-text-muted">Scan with MyMobPay merchant app</span>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => setShowQrModal(true)}
-                      className="px-3 py-1.5 rounded-md bg-white hover:bg-[#f6f9fc] text-[#0284C7] text-xs font-bold transition-colors cursor-pointer shadow-xs border border-slate-200/80"
+                      className="px-2.5 py-1 rounded-lg theme-bg-elevated border theme-border text-xs font-bold theme-link hover:border-[#0F2BFF] transition-all"
                     >
                       Show QR
                     </button>
@@ -3035,152 +3108,146 @@ export default function LoginPage() {
 
               </div>
 
-              {/* Card Promotional Footer: Registration / Signin Incentive */}
-              <div className="px-6 py-4 bg-[#f6f9fc] text-center border-t border-[#e3e8ee]/70">
+              {/* Card Bottom Switch Strip */}
+              <div className="px-6 py-3.5 theme-bg-secondary border-t theme-border text-center text-[12px] theme-text-secondary">
                 {mode === 'reset' ? (
-                  <p className="text-xs text-[#64748d]">
-                    Remembered your password?{' '}
+                  <>
+                    <span>Remembered your password?</span>
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
-                      className="font-bold text-[#0284C7] hover:underline cursor-pointer ml-1"
+                      className="ml-1 font-bold theme-link hover:underline"
                     >
                       Log In to Dashboard
                     </button>
-                  </p>
+                  </>
                 ) : mode === 'signin' ? (
-                  <p className="text-xs text-[#64748d]">
-                    New to mymobpay?{' '}
+                  <>
+                    <span>New to MyMobPay?</span>
                     <button
                       type="button"
                       onClick={() => { setMode('signup'); setError(''); setMessage(''); }}
-                      className="font-bold text-[#0284C7] hover:underline cursor-pointer ml-1"
+                      className="ml-1 font-bold theme-link hover:underline"
                     >
-                      Sign Up
+                      Create Merchant Account
                     </button>
-                  </p>
+                  </>
                 ) : (
-                  <p className="text-xs text-[#64748d]">
-                    Already have an account?{' '}
+                  <>
+                    <span>Already have an account?</span>
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setError(''); setMessage(''); }}
-                      className="font-bold text-[#0284C7] hover:underline cursor-pointer ml-1"
+                      className="ml-1 font-bold theme-link hover:underline"
                     >
                       Log In to Dashboard
                     </button>
-                  </p>
+                  </>
                 )}
               </div>
-
             </div>
 
-            {/* Security & Institutional Compliance Badges */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[#64748d] text-[11px] font-semibold">
-              <div className="flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-[#009d6d]" />
-                <span>256-Bit SSL Encryption</span>
+            {/* Trust Badges, Support Email & Legal Links Below Card */}
+            <div className="mt-5 text-center space-y-2.5">
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] font-semibold theme-text-secondary">
+                <span className="inline-flex items-center gap-1">
+                  <Lock className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span>256-Bit SSL Encryption</span>
+                </span>
+                <span className="theme-text-muted">&bull;</span>
+                <span className="inline-flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span>NPCI UPI Standard</span>
+                </span>
+                <span className="theme-text-muted">&bull;</span>
+                <span className="inline-flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span>Direct Bank Settlement</span>
+                </span>
               </div>
-              <span className="hidden sm:inline text-[#c4c6ce]">•</span>
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#0284C7]" />
-                <span>NPCI UPI Standard</span>
-              </div>
-              <span className="hidden sm:inline text-[#c4c6ce]">•</span>
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#009d6d]" />
-                <span>Direct Bank Settlement</span>
-              </div>
-            </div>
 
-            {/* Merchant Support Strip */}
-            <div className="mt-3.5 text-center">
-              <p className="text-xs text-[#64748d] flex items-center justify-center gap-1.5 flex-wrap">
-                <span>Need assistance? Contact support:</span>
-                <a
-                  className="font-semibold text-[#0284C7] hover:underline inline-flex items-center gap-1"
-                  href="mailto:support@mymobpay.tech"
-                >
+              <div className="text-[11.5px] theme-text-muted">
+                Need assistance? Contact support:
+                <a href="mailto:support@mymobpay.tech" className="font-bold theme-link hover:underline inline-flex items-center gap-1 ml-1">
                   <Mail className="w-3.5 h-3.5" />
-                  support@mymobpay.tech
+                  <span>support@mymobpay.tech</span>
                 </a>
-              </p>
-            </div>
+              </div>
 
-            {/* Legal Links Strip */}
-            <div className="mt-2 text-center text-[11px] text-[#64748d] flex items-center justify-center gap-3">
-              <Link href="/terms" className="hover:text-[#0d253d] transition-colors underline-offset-2 hover:underline">
-                Terms of Service
-              </Link>
-              <span>•</span>
-              <Link href="/privacy" className="hover:text-[#0d253d] transition-colors underline-offset-2 hover:underline">
-                Privacy Policy
-              </Link>
-              <span>•</span>
-              <button
-                type="button"
-                onClick={() => { setLegalModalTab('prohibited'); setShowLegalModal(true); }}
-                className="hover:text-[#0d253d] transition-colors underline-offset-2 hover:underline cursor-pointer"
-              >
-                Acceptable Use Rules
-              </button>
+              <div className="flex items-center justify-center gap-2.5 text-[11px] font-semibold theme-text-muted">
+                <Link href="/terms" className="hover:underline">Terms of Service</Link>
+                <span>&bull;</span>
+                <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
+                <span>&bull;</span>
+                <button
+                  type="button"
+                  onClick={() => { setLegalModalTab('prohibited'); setShowLegalModal(true); }}
+                  className="hover:underline cursor-pointer"
+                >
+                  Acceptable Use Rules
+                </button>
+              </div>
             </div>
 
           </div>
 
-        </div>
+          {/* Bottom Spacer */}
+          <div className="text-center text-[10.5px] font-mono theme-text-muted pt-2">
+            mymobpay.tech &bull; Non-Custodial Direct UPI &amp; IMPS Gateway
+          </div>
+
+        </section>
 
       </div>
 
-      {/* ── Interactive QR Code Modal (transitions-dev 06-modal.md) ── */}
+      {/* QR Code Express Login Modal */}
       {isQrModalMounted && (
         <div 
-          className={`fixed inset-0 z-50 bg-[#0d253d]/70 backdrop-blur-sm flex items-center justify-center p-4 ${qrOverlayClass}`}
+          className={`fixed inset-0 z-50 bg-[#090A10]/70 backdrop-blur-sm flex items-center justify-center p-4 ${qrOverlayClass}`}
           onClick={() => setShowQrModal(false)}
         >
           <div 
             role="dialog"
             aria-modal="true"
-            className={`w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 text-center relative border border-slate-200 ${qrModalClass}`}
+            className={`w-full max-w-sm theme-bg-elevated rounded-2xl shadow-2xl p-6 text-center relative border theme-border ${qrModalClass}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-3">
-              <span className="text-lg font-bold text-[#0d253d]">Scan to Log in</span>
+              <span className="headline-anton text-xl tracking-wide theme-text-primary">SCAN TO LOG IN</span>
               <button 
                 type="button" 
                 onClick={() => setShowQrModal(false)}
-                className="text-[#64748d] hover:text-[#0d253d] p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                className="theme-text-muted hover:theme-text-primary p-1 rounded-lg transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <p className="text-xs text-[#64748d] mb-4 leading-relaxed">
-              Open the mymobpay Merchant App, tap on <strong>Profile &gt; Scan Web QR</strong> to instantly sign in.
+            <p className="text-xs theme-text-muted mb-4 leading-relaxed">
+              Open the MyMobPay Merchant App, tap on <strong>Profile &gt; Scan Web QR</strong> to instantly sign in.
             </p>
 
-            {/* Dynamic QR Code */}
-            <div className="mx-auto w-48 h-48 bg-[#f6f9fc] p-3.5 rounded-xl flex items-center justify-center relative border border-[#e3e8ee]">
+            <div className="mx-auto w-48 h-48 bg-white p-3.5 rounded-xl flex items-center justify-center relative border theme-border shadow-xs">
               <QRCode 
                 value={`mymobpay://web-login?challenge=${qrChallenge}`} 
                 size={160} 
                 level="M" 
                 style={{ width: '100%', height: 'auto' }}
               />
-              <div className="absolute w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center">
-                <Zap className="w-4 h-4 text-[#0284C7]" />
+              <div className="absolute w-8 h-8 rounded-full bg-[#0F2BFF] text-white shadow-md flex items-center justify-center">
+                <Zap className="w-4 h-4" />
               </div>
             </div>
 
-            <p className="mt-4 text-xs font-semibold text-[#64748d] flex items-center justify-center gap-1.5">
-              <RefreshCw className="w-3.5 h-3.5 text-[#009d6d] animate-spin" style={{ animationDuration: '4s' }} />
+            <p className="mt-4 text-xs font-mono font-bold theme-text-muted flex items-center justify-center gap-1.5">
+              <RefreshCw className="w-3.5 h-3.5 text-[#10B981] animate-spin" style={{ animationDuration: '4s' }} />
               <span>QR refreshes in {qrTimer}s</span>
             </p>
           </div>
         </div>
       )}
 
-      {/* ── Merchant Legal Agreement & Guidelines Modal ── */}
+      {/* Merchant Legal Agreement & Guidelines Modal */}
       <LegalAgreementModal
         isOpen={showLegalModal}
         onClose={() => setShowLegalModal(false)}
