@@ -665,10 +665,10 @@ export default function LoginPage() {
   const [qrChallenge, setQrChallenge] = useState('mymob-auth-session');
   const { isMounted: isQrModalMounted, modalClass: qrModalClass, overlayClass: qrOverlayClass } = useModalTransition(showQrModal);
 
-  // Legal Agreement & Operational Guidelines Acceptance
-  const [termsAccepted, setTermsAccepted] = useState(true);
+  // Legal Agreement & Operational Guidelines Acceptance (Mandatory Explicit Consent)
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [showLegalModal, setShowLegalModal] = useState(false);
-  const [legalModalTab, setLegalModalTab] = useState('overview');
+  const [legalModalTab, setLegalModalTab] = useState('direct');
 
   // Synchronous refs
   const modeRef = useRef(mode);
@@ -1350,6 +1350,10 @@ export default function LoginPage() {
         setError('Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).');
         return;
       }
+      if (!termsAccepted) {
+        setError('Please review and accept the Terms of Service, Legal Agreement, and Merchant Operating Rules to continue.');
+        return;
+      }
       handleAuth('signup');
     }
   };
@@ -1511,7 +1515,7 @@ export default function LoginPage() {
             phone: phone.trim(),
             websiteUrl: noWebsite ? '' : websiteUrl.trim(),
             userId: oauthUserId || null,
-            termsAccepted: true,
+            termsAccepted: Boolean(termsAccepted),
             termsVersion: '2026-v2.5',
             termsAcceptedAt: new Date().toISOString(),
           }),
@@ -2638,7 +2642,7 @@ export default function LoginPage() {
                                   I agree to the{' '}
                                   <button
                                     type="button"
-                                    onClick={() => { setLegalModalTab('overview'); setShowLegalModal(true); }}
+                                    onClick={() => { setLegalModalTab('direct'); setShowLegalModal(true); }}
                                     className="font-bold theme-link hover:underline"
                                   >
                                     Terms of Service &amp; Legal Agreement
@@ -2942,7 +2946,7 @@ export default function LoginPage() {
                             I have read and agree to the{' '}
                             <button
                               type="button"
-                              onClick={() => { setLegalModalTab('overview'); setShowLegalModal(true); }}
+                              onClick={() => { setLegalModalTab('direct'); setShowLegalModal(true); }}
                               className="font-bold theme-link hover:underline"
                             >
                               Terms of Service &amp; Legal Agreement
