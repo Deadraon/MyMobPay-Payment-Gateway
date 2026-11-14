@@ -355,6 +355,19 @@ export default function DashboardPage() {
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isBusinessInfoModalOpen, setIsBusinessInfoModalOpen] = useState(false);
+  const hasDismissedBusinessModalRef = useRef(false);
+
+  const handleCloseBusinessModal = () => {
+    hasDismissedBusinessModalRef.current = true;
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('mmp_dismissed_profile_prompt', 'true');
+      } catch (e) {
+        // ignore storage errors
+      }
+    }
+    setIsBusinessInfoModalOpen(false);
+  };
 
   const [profileModalTab, setProfileModalTab] = useState('profile');
 
@@ -375,30 +388,33 @@ export default function DashboardPage() {
   }
   const activeHistoryOrder = selectedHistoryOrder || lastHistoryOrderRef.current;
 
-  // Unified modal/drawer open flag for scroll lock and background freezing
-  const isAnyModalOrDrawerOpen = Boolean(
-    isNotificationOpen ||
+  // Unified blocking modal/drawer open flag for background scroll freezing
+  // Excludes lightweight header dropdowns (notifications, profile pill) so page scroll is never locked unintentionally
+  const isAnyBlockingModalOpen = Boolean(
     isMobileMenuOpen ||
-    isProfileDropdownOpen ||
     isBusinessInfoModalOpen ||
     isProfileModalOpen ||
     isCommandPaletteOpen ||
     selectedHistoryOrder
   );
 
-  // Prevent background scrolling when any mobile drawer, notification flyout, or modal is active
+  const isAnyModalOrDrawerOpen = isAnyBlockingModalOpen;
+
+  // Prevent background scrolling ONLY when a full-screen drawer or modal is active
+  // Never sets touchAction = 'none' which freezes mobile single-finger scrolling
   useEffect(() => {
-    if (isAnyModalOrDrawerOpen) {
+    if (isAnyBlockingModalOpen) {
       const originalOverflow = document.body.style.overflow;
-      const originalTouchAction = document.body.style.touchAction;
       document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
       return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.touchAction = originalTouchAction;
+        document.body.style.overflow = originalOverflow || '';
+        document.body.style.touchAction = '';
       };
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
     }
-  }, [isAnyModalOrDrawerOpen]);
+  }, [isAnyBlockingModalOpen]);
 
   const [theme, setTheme] = useState('dark');
 
@@ -1217,8 +1233,9 @@ export default function DashboardPage() {
 
       setProfile(data);
 
-      // If profile is incomplete, smoothly prompt onboarding inside the dashboard rather than triggering an infinite redirect loop
-      if (isProfileIncomplete) {
+      // If profile is incomplete, smoothly prompt onboarding inside the dashboard once per session (guard against repeated popups)
+      const hasDismissedPrompt = hasDismissedBusinessModalRef.current || (typeof window !== 'undefined' && sessionStorage.getItem('mmp_dismissed_profile_prompt') === 'true');
+      if (isProfileIncomplete && !hasDismissedPrompt) {
         setIsBusinessInfoModalOpen(true);
       }
 
@@ -2839,7 +2856,7 @@ echo "Order Created: " . $data['orderId'];
 
   return (
 
-    <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-200 select-none ${theme === 'light' ? 'light-theme' : 'dark'}`} style={{ backgroundColor: 'var(--theme-bg-canvas, #F2F4FC)', color: 'var(--theme-text-primary, #090D18)' }}>
+    <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-200 ${theme === 'light' ? 'light-theme' : 'dark'}`} style={{ backgroundColor: 'var(--theme-bg-canvas, #F2F4FC)', color: 'var(--theme-text-primary, #090D18)' }}>
 
       {/* ═══════════════════════════════════════════════════════════
          DESKTOP SIDEBAR (Enterprise 0% MDR Command Center)
@@ -3348,7 +3365,6 @@ echo "Order Created: " . $data['orderId'];
                   <div
                     className={`fixed inset-0 z-[90] bg-slate-900/20 sm:bg-transparent transition-opacity duration-150 ${isNotificationOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                     onClick={() => setIsNotificationOpen(false)}
-                    onTouchMove={(e) => e.preventDefault()}
                   />
                   <div 
                     className={`fixed left-2.5 right-2.5 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+8px)] sm:w-96 w-auto max-w-[calc(100vw-20px)] bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col max-h-[82vh] sm:max-h-[520px] text-[var(--theme-text-primary,#090D18)] ${notificationDropdownClass}`}
@@ -3532,7 +3548,6 @@ echo "Order Created: " . $data['orderId'];
                   <div
                     className={`fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs sm:bg-transparent transition-opacity duration-150 ${isProfileDropdownOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                     onClick={() => setIsProfileDropdownOpen(false)}
-                    onTouchMove={(e) => e.preventDefault()}
                   />
                   <div 
                     className={`fixed right-2.5 top-[64px] sm:absolute sm:right-0 sm:top-full sm:mt-2.5 w-[calc(100vw-20px)] sm:w-64 max-w-xs bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] rounded-2xl shadow-2xl py-2 z-50 overflow-hidden text-[var(--theme-text-primary,#090D18)] ${profileDropdownClass}`}
@@ -3610,14 +3625,16 @@ echo "Order Created: " . $data['orderId'];
           <div 
             className="md:hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs transition-opacity animate-fade-in"
             onClick={() => setIsMobileMenuOpen(false)}
-            onTouchMove={(e) => e.preventDefault()}
             aria-hidden="true"
           />
         )}
 
         {/* Main Body */}
 
-        <div className={`flex-1 p-3.5 sm:p-6 md:p-10 pb-8 md:pb-10 ${isAnyModalOrDrawerOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+        <div 
+          className="flex-1 w-full p-3.5 sm:p-6 md:p-10 pb-8 md:pb-10 touch-pan-y" 
+          style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
+        >
 
           <div className={`${(activeTab === 'overview' || activeTab === 'payment-links' || activeTab === 'transactions' || activeTab === 'subscription' || activeTab === 'settings') ? 'max-w-[1520px]' : 'max-w-5xl'} mx-auto space-y-6`}>
             {/* Activation Success Celebration Banner */}
@@ -4607,10 +4624,20 @@ echo "Order Created: " . $data['orderId'];
       {/* Dedicated Profile & Business Info Panel */}
       <ProfileBusinessInfoModal
         isOpen={isBusinessInfoModalOpen}
-        onClose={() => setIsBusinessInfoModalOpen(false)}
+        onClose={handleCloseBusinessModal}
         profile={profile}
         user={user}
-        onProfileUpdated={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
+        onProfileUpdated={(updated) => {
+          hasDismissedBusinessModalRef.current = true;
+          if (typeof window !== 'undefined') {
+            try {
+              sessionStorage.setItem('mmp_dismissed_profile_prompt', 'true');
+            } catch (e) {
+              // ignore
+            }
+          }
+          setProfile(prev => ({ ...prev, ...updated }));
+        }}
         onOpenSettings={() => {
           setSettingsCategory('general');
           setActiveTab('settings');

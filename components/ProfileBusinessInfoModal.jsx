@@ -66,24 +66,9 @@ export default function ProfileBusinessInfoModal({
     setErrorMessage('');
   }, [profile, user, isOpen]);
 
-  // Lock background scrolling while modal is open
+  // Handle Escape key while modal is open (background scroll locking managed safely by dashboard)
   useEffect(() => {
     if (!isOpen) return;
-
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-
-    // Lock any dashboard overflow-y-auto containers behind the modal
-    const scrollContainers = document.querySelectorAll('.overflow-y-auto');
-    const lockedContainers = [];
-    scrollContainers.forEach((el) => {
-      if (!el.closest('#profile-business-modal-card')) {
-        lockedContainers.push({ el, prev: el.style.overflow });
-        el.style.overflow = 'hidden';
-      }
-    });
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -93,11 +78,6 @@ export default function ProfileBusinessInfoModal({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      lockedContainers.forEach(({ el, prev }) => {
-        el.style.overflow = prev;
-      });
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);

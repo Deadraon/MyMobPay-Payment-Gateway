@@ -252,16 +252,11 @@ export default function PaymentLinksRedesign({
     setMounted(true);
   }, []);
 
-  // Lock background and html scrolling when static QR modal is open
+  // Lock background scrolling when static QR modal is open (never set touchAction: none which freezes mobile panning)
   useEffect(() => {
     if (showStaticQrModal) {
       const prevBodyOverflow = document.body.style.overflow;
-      const prevBodyTouchAction = document.body.style.touchAction;
-      const prevHtmlOverflow = document.documentElement.style.overflow;
-
       document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-      document.documentElement.style.overflow = 'hidden';
 
       const handleKeyDown = (e) => {
         if (e.key === 'Escape') {
@@ -271,11 +266,12 @@ export default function PaymentLinksRedesign({
       window.addEventListener('keydown', handleKeyDown);
 
       return () => {
-        document.body.style.overflow = prevBodyOverflow;
-        document.body.style.touchAction = prevBodyTouchAction;
-        document.documentElement.style.overflow = prevHtmlOverflow;
+        document.body.style.overflow = prevBodyOverflow || '';
+        document.body.style.touchAction = '';
         window.removeEventListener('keydown', handleKeyDown);
       };
+    } else {
+      document.body.style.touchAction = '';
     }
   }, [showStaticQrModal]);
 
@@ -497,7 +493,7 @@ export default function PaymentLinksRedesign({
       }
       return item;
     });
-  }, [payLinkHistory, profile?.id, profile?.api_key, profile?.sandbox_mode, isSandbox, orders]);
+  }, [payLinkHistory, profile?.id, profile?.api_key, isSandbox, orders]);
 
   // Expose global preview update helpers for compatibility with mock script
   useEffect(() => {
