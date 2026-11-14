@@ -744,7 +744,8 @@ export default function LoginPage() {
           verifyData.allowed &&
           (
             verifyData.isAdmin ||
-            (verifyData.registered && (verifyData.isComplete || !verifyData.needsRegistration))
+            verifyData.registered ||
+            (verifyData.isComplete || !verifyData.needsRegistration)
           )
         );
 
@@ -778,13 +779,16 @@ export default function LoginPage() {
               return;
             }
 
-            try {
-              await supabase.auth.signOut();
-            } catch (e) {}
+            // Do not discard authentic sessions; let them enter signup wizard or dashboard
+            setMode('signup');
+            setIsOAuthSignup(true);
+            setOauthStep(1);
+            setOauthUserId(session.user.id);
+            setEmail(session.user.email || '');
+            setIsEmailVerified(true);
             setLoading(false);
             setMessage('');
             setError('');
-            setIsOAuthSignup(false);
             isRedirectingRef.current = false;
             return;
           }

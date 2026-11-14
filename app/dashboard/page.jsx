@@ -1202,12 +1202,12 @@ export default function DashboardPage() {
         data.setup_progress?.phone_needed === true
       );
 
-      if (isProfileIncomplete && data?.subscription_status !== 'active') {
-        router.replace('/login?googleAuth=true');
-        return;
-      }
-
       setProfile(data);
+
+      // If profile is incomplete, smoothly prompt onboarding inside the dashboard rather than triggering an infinite redirect loop
+      if (isProfileIncomplete) {
+        setIsBusinessInfoModalOpen(true);
+      }
 
       // Pre-fill wizard webhook URL from saved profile
       if (data?.webhook_url) setWizardWebhookUrl(data.webhook_url);
@@ -1237,11 +1237,7 @@ export default function DashboardPage() {
           metaBusiness !== 'My Business' &&
           metaPhone.length >= 10
         );
-
-        if (!hasMetaComplete && !isAdm) {
-          router.replace('/login?googleAuth=true');
-          return;
-        }
+        // Allow fallback profile to be provisioned so new merchants land safely in dashboard sandbox
 
         try {
 
