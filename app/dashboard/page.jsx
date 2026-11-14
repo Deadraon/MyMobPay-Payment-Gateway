@@ -20,7 +20,7 @@ import {
 
   Menu, TrendingUp, AlertCircle, Star, Crown, Shield, ShieldCheck, BarChart3, Calendar, Zap, ChevronDown,
   QrCode, Share2, Trash2, Plus, ExternalLink, Sparkles, Check, ArrowRight, Lock, Bell, LifeBuoy, HelpCircle,
-  Receipt, Layers
+  Receipt, Layers, Sun, Moon
 } from 'lucide-react';
 
 import QRCode from 'react-qr-code';
@@ -2835,14 +2835,20 @@ echo "Order Created: " . $data['orderId'];
       {/* ═══════════════════════════════════════════════════════════
          DESKTOP SIDEBAR (Enterprise 0% MDR Command Center)
          ═══════════════════════════════════════════════════════════ */}
-      <aside className="fixed left-0 top-0 h-full w-[264px] bg-[var(--theme-bg-sidebar,#FFFFFF)] border-r border-[var(--theme-border-color,#DCE2F2)] z-50 hidden md:flex flex-col justify-between shadow-2xs select-none text-[var(--theme-text-secondary,#2A3147)]">
+      <aside
+        id="sidebar-drawer"
+        className={`fixed left-0 top-0 h-full w-[264px] max-w-[85vw] bg-[var(--theme-bg-sidebar,#FFFFFF)] border-r border-[var(--theme-border-color,#DCE2F2)] z-50 flex flex-col justify-between shadow-2xl md:shadow-2xs select-none text-[var(--theme-text-secondary,#2A3147)] transition-transform duration-250 ease-out md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+      >
         {/* Top Scrollable Section containing Brand, License Pod & Nav Items */}
         <div className="flex flex-col flex-1 overflow-y-auto min-h-0 custom-sidebar-scroll">
           {/* Brand Header: Single Uncropped MyMobPay 3D Ribbon "M" Logo */}
           <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
             <button
               type="button"
-              onClick={() => setActiveTab('overview')}
+              onClick={() => {
+                setActiveTab('overview');
+                setIsMobileMenuOpen(false);
+              }}
               className="inline-flex items-center gap-2.5 group focus:outline-none cursor-pointer text-left"
             >
               <span className="w-8.5 h-8.5 rounded-xl bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center p-1 group-hover:scale-105 transition-transform shadow-2xs">
@@ -2883,6 +2889,16 @@ echo "Order Created: " . $data['orderId'];
                 </span>
               </div>
             </button>
+
+            {/* Mobile Close Button */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="md:hidden p-1.5 rounded-lg text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] hover:bg-[var(--theme-bg-secondary,#EAEEFA)] transition-colors cursor-pointer"
+              aria-label="Close navigation menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Unified Enterprise License & Privilege Control Pod */}
@@ -2890,7 +2906,7 @@ echo "Order Created: " . $data['orderId'];
             <div className="workspace-license-pod space-y-2 p-2.5">
               {/* Top Row: Premium Active Status + Live PRO Badge */}
               <div
-                onClick={() => setActiveTab('subscription')}
+                onClick={() => { setActiveTab('subscription'); setIsMobileMenuOpen(false); }}
                 className="flex items-center justify-between gap-2 p-1 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors cursor-pointer group"
                 title={isLiveUnlocked ? "Inspect 0% MDR License" : "Upgrade to Pro License"}
               >
@@ -2927,7 +2943,7 @@ echo "Order Created: " . $data['orderId'];
                 {isAdminUser ? (
                   <button
                     type="button"
-                    onClick={() => setActiveTab('admin')}
+                    onClick={() => { setActiveTab('admin'); setIsMobileMenuOpen(false); }}
                     className="py-1 px-2 rounded-lg bg-[var(--theme-bg-elevated,#FFFFFF)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-between transition-all cursor-pointer group"
                     title="Root Admin Access"
                   >
@@ -2976,7 +2992,7 @@ echo "Order Created: " . $data['orderId'];
               {/* Bottom CTA: + Create Payment Link Button */}
               <button
                 type="button"
-                onClick={() => setActiveTab('payment-links')}
+                onClick={() => { setActiveTab('payment-links'); setIsMobileMenuOpen(false); }}
                 className="btn-enterprise w-full py-2 px-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[11.5px] font-bold flex items-center justify-between shadow-xs cursor-pointer group"
               >
                 <span className="flex items-center gap-1.5">
@@ -2997,7 +3013,7 @@ echo "Order Created: " . $data['orderId'];
             </div>
 
             <button
-              onClick={() => setActiveTab('overview')}
+              onClick={() => { setActiveTab('overview'); setIsMobileMenuOpen(false); }}
               type="button"
               className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
             >
@@ -3027,7 +3043,7 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             <button
-              onClick={() => setActiveTab('verification')}
+              onClick={() => { setActiveTab('verification'); setIsMobileMenuOpen(false); }}
               type="button"
               className={`nav-item ${activeTab === 'verification' ? 'active' : ''}`}
             >
@@ -3039,7 +3055,7 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             <button
-              onClick={() => setActiveTab('transactions')}
+              onClick={() => { setActiveTab('transactions'); setIsMobileMenuOpen(false); }}
               type="button"
               className={`nav-item ${activeTab === 'transactions' ? 'active' : ''}`}
             >
@@ -3057,7 +3073,7 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             <button
-              onClick={() => setActiveTab('reports')}
+              onClick={() => { setActiveTab('reports'); setIsMobileMenuOpen(false); }}
               type="button"
               className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`}
             >
@@ -3078,7 +3094,7 @@ echo "Order Created: " . $data['orderId'];
 
             {isAdminUser && (
               <button
-                onClick={() => setActiveTab('saas-subscriptions')}
+                onClick={() => { setActiveTab('saas-subscriptions'); setIsMobileMenuOpen(false); }}
                 type="button"
                 className={`nav-item ${activeTab === 'saas-subscriptions' ? 'active' : ''}`}
               >
@@ -3097,7 +3113,7 @@ echo "Order Created: " . $data['orderId'];
             )}
 
             <button
-              onClick={() => setActiveTab('developer')}
+              onClick={() => { setActiveTab('developer'); setIsMobileMenuOpen(false); }}
               type="button"
               className={`nav-item ${activeTab === 'developer' ? 'active' : ''}`}
             >
@@ -3112,6 +3128,7 @@ echo "Order Created: " . $data['orderId'];
               onClick={() => {
                 setSettingsCategory('banking');
                 setActiveTab('settings');
+                setIsMobileMenuOpen(false);
               }}
               type="button"
               className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
@@ -3123,7 +3140,7 @@ echo "Order Created: " . $data['orderId'];
             </button>
 
             <button
-              onClick={() => setActiveTab('support')}
+              onClick={() => { setActiveTab('support'); setIsMobileMenuOpen(false); }}
               type="button"
               className={`nav-item ${activeTab === 'support' ? 'active' : ''}`}
             >
@@ -3186,7 +3203,29 @@ echo "Order Created: " . $data['orderId'];
             </div>
 
             {/* Live Mode | Test Mode Segmented Pill */}
-            <div className="inline-flex items-center p-1 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
+            {/* Mobile Compact Mode Indicator (< sm) */}
+            <button
+              type="button"
+              onClick={() => {
+                if (!isLiveUnlocked) {
+                  setActiveTab('subscription');
+                  setIsMobileMenuOpen(false);
+                  return;
+                }
+                toggleSandboxMode();
+              }}
+              className={`sm:hidden px-2 py-1 rounded-full text-[10.5px] font-bold inline-flex items-center gap-1.5 border border-[var(--theme-border-color,#DCE2F2)] bg-[var(--theme-bg-secondary,#EAEEFA)] transition-all cursor-pointer shrink-0 ${
+                !effectiveSandboxMode ? 'text-[#059669] dark:text-[#34D399]' : 'text-amber-600 dark:text-amber-400'
+              }`}
+              title={!isLiveUnlocked ? 'Live Mode locked — tap to subscribe' : 'Toggle Live / Test Mode'}
+            >
+              <span className={`w-2 h-2 rounded-full ${!effectiveSandboxMode ? 'bg-[#10B981]' : 'bg-amber-500 animate-pulse'}`}></span>
+              <span>{!effectiveSandboxMode ? 'Live' : 'Test'}</span>
+              {!isLiveUnlocked && <Lock className="w-2.5 h-2.5 text-slate-400" />}
+            </button>
+
+            {/* Desktop Mode Switcher (>= sm) */}
+            <div className="hidden sm:inline-flex items-center p-1 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
               <button
                 type="button"
                 onClick={() => {
@@ -3264,7 +3303,7 @@ echo "Order Created: " . $data['orderId'];
             <button
               type="button"
               onClick={() => setActiveTab('support')}
-              className="w-9 h-9 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer"
+              className="hidden sm:flex w-9 h-9 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] hover:border-[#0F2BFF] items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer"
               title="Help & Documentation"
             >
               <HelpCircle className="w-4 h-4" />
@@ -3382,14 +3421,41 @@ echo "Order Created: " . $data['orderId'];
             </div>
 
             {/* Light / Dark Theme Switcher */}
-            <div className="inline-flex items-center p-0.5 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)]">
+            {/* Mobile Theme Toggle Button (< md) */}
+            <button
+              type="button"
+              onClick={() => {
+                const nextTheme = theme === 'dark' ? 'light' : 'dark';
+                setTheme(nextTheme);
+                localStorage.setItem('theme', nextTheme);
+                if (nextTheme === 'dark') {
+                  document.documentElement.classList.remove('light-theme');
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.classList.add('light-theme');
+                }
+              }}
+              className="md:hidden w-8 h-8 rounded-full bg-[var(--theme-bg-well,#F7F9FE)] border border-[var(--theme-border-color,#DCE2F2)] flex items-center justify-center text-[var(--theme-text-muted,#5E6782)] hover:text-[var(--theme-text-primary,#090D18)] transition-colors cursor-pointer shrink-0"
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-[#0F2BFF]" />
+              )}
+            </button>
+
+            {/* Desktop Theme Switcher Pill (>= md) */}
+            <div className="hidden md:inline-flex items-center p-0.5 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] border border-[var(--theme-border-color,#DCE2F2)] shrink-0">
               <button
                 type="button"
                 onClick={() => {
                   setTheme('light');
                   localStorage.setItem('theme', 'light');
-                  document.documentElement.classList.add('light-theme');
                   document.documentElement.classList.remove('dark');
+                  document.documentElement.classList.add('light-theme');
                 }}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1 ${
                   theme === 'light'
@@ -3524,313 +3590,14 @@ echo "Order Created: " . $data['orderId'];
           </div>
         </header>
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile Navigation Drawer Backdrop Overlay */}
         {isMobileMenuOpen && (
           <div 
-            className="md:hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex transition-opacity animate-fade-in"
+            className="md:hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs transition-opacity animate-fade-in"
             onClick={() => setIsMobileMenuOpen(false)}
-            onTouchMove={(e) => { if (e.target === e.currentTarget) e.preventDefault(); }}
-          >
-            <div 
-              className="w-[88vw] max-w-[340px] sm:w-80 bg-[#0F172A] text-white h-[100dvh] max-h-[100dvh] shadow-2xl flex flex-col justify-between p-4 sm:p-5 select-none overflow-hidden animate-slide-right border-r border-slate-800 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex flex-col gap-3 min-h-0 flex-1">
-                {/* Drawer Header: Logo + Close */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0">
-                  <MyMobPayLogo markSize={28} textSize="text-xl" textColor="#FFFFFF" />
-                  <button
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 active:bg-slate-700 transition-colors cursor-pointer"
-                    type="button"
-                    aria-label="Close navigation menu"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Profile Card Quick Access */}
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setIsBusinessInfoModalOpen(true);
-                  }}
-                  className="w-full flex items-center gap-3 p-3 bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.12] border border-white/[0.08] rounded-2xl transition-colors text-left cursor-pointer group shrink-0"
-                  title="View Profile and Settings"
-                  type="button"
-                >
-                  <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0"
-                    style={{ backgroundColor: profile?.theme_color || '#0D9488' }}
-                  >
-                    {merchantInitials || 'M'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-white truncate group-hover:text-teal-400 transition-colors">
-                      {profile?.business_name || profile?.owner_name || 'My Business'}
-                    </p>
-                    <p className="text-[11px] font-mono text-slate-400 truncate">{user?.email || 'merchant@mymobpay.tech'}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-colors shrink-0" />
-                </button>
-
-                {/* Mobile Mode Switcher inside Drawer */}
-                <div className="flex items-center justify-between p-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl shrink-0">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${!effectiveSandboxMode ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-                    <span className="text-[11px] font-bold text-slate-200">
-                      {!effectiveSandboxMode ? 'Live Production Mode' : 'Sandbox Test Mode'}
-                    </span>
-                    {!isLiveUnlocked && (
-                      <span className="text-[8px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-bold border border-amber-400/30">
-                        Locked
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (!isLiveUnlocked) {
-                        setIsMobileMenuOpen(false);
-                        setActiveTab('subscription');
-                        return;
-                      }
-                      toggleSandboxMode();
-                    }}
-                    type="button"
-                    className="px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-colors cursor-pointer border border-white/10"
-                  >
-                    {!isLiveUnlocked ? 'Unlock' : 'Switch'}
-                  </button>
-                </div>
-
-                {/* Navigation Links */}
-                <nav className="flex-1 px-1 py-1 space-y-1 overflow-y-auto overflow-x-hidden overscroll-contain touch-pan-y [scrollbar-width:thin] [scrollbar-color:#334155_transparent]" style={{ WebkitOverflowScrolling: 'touch' }}>
-                  {/* Pinned: Premium Subscription Status Badge */}
-                  <PremiumTierBadge
-                    profile={profile}
-                    activeTab={activeTab}
-                    className="py-2.5"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      handleScrollToSubscription();
-                    }}
-                  />
-
-                  {/* Pinned: Super Admin Console (if Super Admin) */}
-                  {isAdminUser && (
-                    <button
-                      onClick={() => {
-                        setActiveTab('admin');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      type="button"
-                      className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-colors border font-bold cursor-pointer mt-1 ${
-                        activeTab === 'admin'
-                          ? 'bg-blue-600 text-white shadow-md border-blue-500 ring-2 ring-blue-400/40'
-                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs border-transparent'
-                      }`}
-                      title="Access SaaS Super Admin Console"
-                    >
-                      <Shield className="w-3.5 h-3.5 text-blue-200" />
-                      <span className="flex-1 text-left font-semibold tracking-wide text-[11px]">Admin Console</span>
-                      <span className="text-[8px] bg-white/20 px-1.5 py-0.5 rounded font-semibold">Root</span>
-                    </button>
-                  )}
-
-                  <div className="h-px bg-slate-800 my-2" />
-
-                  {/* Category: General */}
-                  <p className="px-3.5 pt-1.5 pb-1 text-[10px] font-semibold text-slate-400">
-                    Main
-                  </p>
-                  <button
-                    onClick={() => {
-                      setActiveTab('overview');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`t-sidebar-nav-item justify-between ${activeTab === 'overview' ? 'is-active' : ''}`}
-                  >
-                    {activeTab === 'overview' && <span className="t-sidebar-indicator" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <LayoutDashboard className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                      <span className="truncate">Dashboard</span>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setActiveTab('payment-links');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`t-sidebar-nav-item justify-between ${activeTab === 'payment-links' ? 'is-active' : ''}`}
-                  >
-                    {activeTab === 'payment-links' && <span className="t-sidebar-indicator" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <LinkIcon className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                      <span className="truncate">Payment Links</span>
-                    </div>
-                  </button>
-
-                  {/* Category: Operations */}
-                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
-                    Operations
-                  </p>
-                  <button
-                    onClick={() => {
-                      setActiveTab('verification');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`t-sidebar-nav-item justify-between ${activeTab === 'verification' ? 'is-active' : ''}`}
-                  >
-                    {activeTab === 'verification' && <span className="t-sidebar-indicator" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <ShieldCheck className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                      <span className="truncate">Verification</span>
-                    </div>
-                    {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0">
-                        {merchantOrders.filter(o => (o.status || '').toLowerCase() === 'pending').length}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Category: Reports & Analytics */}
-                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
-                    Reports &amp; Analytics
-                  </p>
-                  <button
-                    onClick={() => {
-                      setActiveTab('transactions');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`t-sidebar-nav-item justify-between ${activeTab === 'transactions' ? 'is-active' : ''}`}
-                  >
-                    {activeTab === 'transactions' && <span className="t-sidebar-indicator" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <CreditCard className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                      <span className="truncate">Transactions</span>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setActiveTab('reports');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`t-sidebar-nav-item justify-between ${activeTab === 'reports' ? 'is-active' : ''}`}
-                  >
-                    {activeTab === 'reports' && <span className="t-sidebar-indicator" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <BarChart3 className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                      <span className="truncate">Reports &amp; GST</span>
-                    </div>
-                  </button>
-
-                  {/* Category: Platform SaaS (Admin Only) */}
-                  {isAdminUser && (
-                    <>
-                      <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-indigo-400 flex items-center justify-between">
-                        <span>Platform SaaS</span>
-                        <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1 py-0.5 rounded font-mono font-bold">Admin</span>
-                      </p>
-                      <button
-                        onClick={() => {
-                          setActiveTab('saas-subscriptions');
-                          setIsMobileMenuOpen(false);
-                        }}
-                        type="button"
-                        className={`t-sidebar-nav-item justify-between ${activeTab === 'saas-subscriptions' ? 'is-active' : ''}`}
-                      >
-                        {activeTab === 'saas-subscriptions' && <span className="t-sidebar-indicator" />}
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Layers className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                          <span className="truncate">SaaS Subscriptions</span>
-                        </div>
-                        {subscriptionOrders.length > 0 && (
-                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
-                            {subscriptionOrders.length}
-                          </span>
-                        )}
-                      </button>
-                    </>
-                  )}
-
-                  {/* Category: Developer & Settings */}
-                  <p className="px-3.5 pt-2.5 pb-1 text-[10px] font-semibold text-slate-400">
-                    Others
-                  </p>
-                  <button
-                    onClick={() => {
-                      setActiveTab('developer');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`t-sidebar-nav-item justify-between ${activeTab === 'developer' ? 'is-active' : ''}`}
-                  >
-                    {activeTab === 'developer' && <span className="t-sidebar-indicator" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <Code className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                      <span className="truncate">Developer Hub</span>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSettingsCategory('banking');
-                      setActiveTab('settings');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`t-sidebar-nav-item justify-between ${activeTab === 'settings' ? 'is-active' : ''}`}
-                  >
-                    {activeTab === 'settings' && <span className="t-sidebar-indicator" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <Briefcase className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                      <span className="truncate">Settings</span>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setActiveTab('support');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    type="button"
-                    className={`t-sidebar-nav-item justify-between ${activeTab === 'support' ? 'is-active' : ''}`}
-                  >
-                    {activeTab === 'support' && <span className="t-sidebar-indicator" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <LifeBuoy className="w-4 h-4 shrink-0 t-sidebar-icon" />
-                      <span className="truncate">Support &amp; Help Desk</span>
-                    </div>
-                  </button>
-                </nav>
-              </div>
-
-              {/* Drawer Footer */}
-              <div className="shrink-0 pt-3 pb-2 border-t border-slate-800 flex flex-col gap-2.5">
-                <div className="flex items-center justify-between text-xs font-medium">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span className="text-white font-medium" style={{ color: '#ffffff' }}>API Live Rails</span>
-                  </div>
-                  <span className="text-[11px] font-mono text-slate-200 bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded-md">v2.1</span>
-                </div>
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleSignOut();
-                  }}
-                  type="button"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/10 active:bg-rose-500/20 hover:text-rose-200 rounded-xl transition-colors border border-rose-500/20 cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5" /> Sign Out
-                </button>
-              </div>
-            </div>
-          </div>
+            onTouchMove={(e) => e.preventDefault()}
+            aria-hidden="true"
+          />
         )}
 
         {/* Main Body */}
