@@ -251,14 +251,31 @@ function verifyWebhook(payload, signature, secret) {
 };
 
 export async function GET(request, { params }) {
-  const { slug } = await params;
-  const path = '/' + (slug ? slug.join('/') : '');
+  const resolvedParams = await params;
+  const slugArray = resolvedParams?.slug || [];
+  const rawPath = '/' + slugArray.join('/');
+
+  const isDirectMdFile = rawPath.endsWith('.md');
+  let cleanPath = rawPath;
+
+  if (isDirectMdFile) {
+    cleanPath = rawPath.slice(0, -3); // remove .md
+    if (cleanPath === '' || cleanPath === '/') {
+      cleanPath = '/';
+    } else if (cleanPath === '/developer-section') {
+      cleanPath = '/#developer-section';
+    } else if (cleanPath === '/pricing-section') {
+      cleanPath = '/#pricing-section';
+    }
+  }
 
   const accept = request.headers.get('accept') || '';
-  const wantsMarkdown = accept.includes('text/markdown') || accept.includes('text/x-markdown');
+  const wantsMarkdown = isDirectMdFile || accept.includes('text/markdown') || accept.includes('text/x-markdown');
 
-  if (wantsMarkdown && MARKDOWN_PAGES[path]) {
-    return new NextResponse(MARKDOWN_PAGES[path], {
+  const markdownContent = MARKDOWN_PAGES[cleanPath] || MARKDOWN_PAGES[rawPath];
+
+  if (wantsMarkdown && markdownContent) {
+    return new NextResponse(markdownContent, {
       status: 200,
       headers: {
         'Content-Type': 'text/markdown; charset=utf-8',

@@ -78,6 +78,7 @@ export default function ReportsRedesign({
   const [gstRate, setGstRate] = useState(profile?.gstin ? 18 : 0); // default 18% if GST registered
   const [copiedCsv, setCopiedCsv] = useState(false);
   const [emailNotificationScheduled, setEmailNotificationScheduled] = useState(true);
+  const [selectedHour, setSelectedHour] = useState(null);
 
   // ── 1. Filter Orders by Timeframe ───────────────────────────────
   const { currentOrders, previousOrders, periodLabel, prevPeriodLabel } = useMemo(() => {
@@ -512,10 +513,24 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
               Identifies peak payment hours for timing flash sales, marketing campaigns, or support staffing.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">
-              🔥 Peak Hour: {hourlyData.peakHour.label} ({hourlyData.peakHour.count} orders, {formatINR(hourlyData.peakHour.volume)})
-            </span>
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            {selectedHour ? (
+              <span className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800 flex items-center gap-1.5">
+                <span>{selectedHour.label}: {selectedHour.count} orders ({formatINR(selectedHour.volume)})</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedHour(null)}
+                  className="hover:text-blue-600 dark:hover:text-blue-200 cursor-pointer ml-1"
+                  title="Clear selection"
+                >
+                  &times;
+                </button>
+              </span>
+            ) : (
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">
+                🔥 Peak Hour: {hourlyData.peakHour.label} ({hourlyData.peakHour.count} orders, {formatINR(hourlyData.peakHour.volume)})
+              </span>
+            )}
           </div>
         </div>
 
@@ -527,12 +542,19 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
                 {hourlyData.hours.map(h => {
                   const heightPct = Math.round((h.count / hourlyData.maxCount) * 100);
                   const isPeak = h.hour === hourlyData.peakHour.hour && h.count > 0;
+                  const isSelected = selectedHour?.hour === h.hour;
 
                   return (
-                    <div key={h.hour} className="flex flex-col items-center gap-1 group relative h-full justify-end">
+                    <div
+                      key={h.hour}
+                      onClick={() => setSelectedHour(isSelected ? null : h)}
+                      className="flex flex-col items-center gap-1 group relative h-full justify-end cursor-pointer"
+                    >
                       <div
                         className={`w-full rounded-t-sm transition-colors duration-300 ${
-                          isPeak
+                          isSelected
+                            ? 'bg-blue-500 ring-2 ring-blue-400'
+                            : isPeak
                             ? 'bg-emerald-600'
                             : h.count > 0
                             ? 'bg-blue-600 hover:bg-blue-700'

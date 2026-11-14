@@ -579,7 +579,7 @@ export default function DashboardOverviewRedesign({
                       Beneficiary: <strong className="text-[var(--theme-text-primary)]">{attachedBank.bank_account_name || businessName}</strong>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[10px] font-bold">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[10px] font-bold whitespace-nowrap shrink-0">
                     Primary A/C
                   </span>
                 </div>
