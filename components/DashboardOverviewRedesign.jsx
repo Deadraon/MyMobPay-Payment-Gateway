@@ -77,8 +77,13 @@ export default function DashboardOverviewRedesign({
   setAnalyticsTimeframe,
   setActiveTab,
   setSettingsCategory,
-  onRefresh
+  onRefresh,
+  isSandbox,
 }) {
+  const effectiveIsSandbox = typeof isSandbox === 'boolean'
+    ? isSandbox
+    : (profile?.sandbox_mode !== false);
+
   const [vaultMasked, setVaultMasked] = useState(true);
   const [selectedTx, setSelectedTx] = useState(null);
   const [isCounterQrModalOpen, setIsCounterQrModalOpen] = useState(false);
@@ -411,7 +416,7 @@ export default function DashboardOverviewRedesign({
             <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
               Today Live Inflow
             </span>
-            {isSandbox ? (
+            {effectiveIsSandbox ? (
               <span className="px-2 py-0.5 rounded-md bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[9.5px] font-bold inline-flex items-center gap-1 group-hover:bg-[#0F2BFF] group-hover:text-white transition-colors">
                 <Zap className="w-3 h-3" />
                 <span>Test +₹500</span>
@@ -774,71 +779,131 @@ export default function DashboardOverviewRedesign({
         </div>
 
         {displayRecentOrders.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-[var(--theme-border-color)] bg-[var(--theme-bg-well)] font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
-                  <th className="py-3 px-6">Order &amp; Txn ID</th>
-                  <th className="py-3 px-4">Rail</th>
-                  <th className="py-3 px-4">Customer VPA / Phone</th>
-                  <th className="py-3 px-4">NPCI Bank UTR</th>
-                  <th className="py-3 px-4">Gross / Fee</th>
-                  <th className="py-3 px-6 text-right">Settlement</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--theme-border-color)] text-[12.5px]">
-                {displayRecentOrders.map((tx) => {
-                  const amt = parseFloat(tx.amount) || 0;
-                  const rail = (tx.rail || 'UPI').toUpperCase();
-                  const isImps = rail.includes('IMPS');
-                  const utr = tx.utr_number || tx.utr || '—';
-                  const orderId = tx.order_id || tx.id || 'ORD-2026';
-                  const customer = tx.customer_vpa || tx.customer_phone || tx.customer_name || 'buyer@upi';
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[var(--theme-border-color)] bg-[var(--theme-bg-well)] font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
+                    <th className="py-3 px-6">Order &amp; Txn ID</th>
+                    <th className="py-3 px-4">Rail</th>
+                    <th className="py-3 px-4">Customer VPA / Phone</th>
+                    <th className="py-3 px-4">NPCI Bank UTR</th>
+                    <th className="py-3 px-4">Gross / Fee</th>
+                    <th className="py-3 px-6 text-right">Settlement</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--theme-border-color)] text-[12.5px]">
+                  {displayRecentOrders.map((tx) => {
+                    const amt = parseFloat(tx.amount) || 0;
+                    const rail = (tx.rail || 'UPI').toUpperCase();
+                    const isImps = rail.includes('IMPS');
+                    const utr = tx.utr_number || tx.utr || '—';
+                    const orderId = tx.order_id || tx.id || 'ORD-2026';
+                    const customer = tx.customer_vpa || tx.customer_phone || tx.customer_name || 'buyer@upi';
 
-                  return (
-                    <tr
-                      key={tx.id || tx.order_id}
-                      onClick={() => setSelectedTx(tx)}
-                      className="hover:bg-[var(--theme-bg-secondary)]/50 transition-colors cursor-pointer group"
-                    >
-                      <td className="py-3.5 px-6">
-                        <div className="font-mono font-bold text-[var(--theme-text-primary)] group-hover:text-[#0F2BFF] transition-colors">
-                          {orderId}
-                        </div>
-                        {tx.gateway_id && tx.gateway_id !== orderId && (
-                          <div className="font-mono text-[10.5px] text-[var(--theme-text-muted)]">
-                            {tx.gateway_id}
+                    return (
+                      <tr
+                        key={tx.id || tx.order_id}
+                        onClick={() => setSelectedTx(tx)}
+                        className="hover:bg-[var(--theme-bg-secondary)]/50 transition-colors cursor-pointer group"
+                      >
+                        <td className="py-3.5 px-6">
+                          <div className="font-mono font-bold text-[var(--theme-text-primary)] group-hover:text-[#0F2BFF] transition-colors">
+                            {orderId}
                           </div>
-                        )}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
+                          {tx.gateway_id && tx.gateway_id !== orderId && (
+                            <div className="font-mono text-[10.5px] text-[var(--theme-text-muted)]">
+                              {tx.gateway_id}
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
+                            isImps
+                              ? 'bg-[#10B981]/15 text-[#059669] dark:text-[#34D399]'
+                              : 'bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA]'
+                          }`}>
+                            {rail}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-[12px] text-[var(--theme-text-secondary)]">
+                          {customer}
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-[11.5px] text-[var(--theme-text-muted)]">
+                          {utr}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="font-mono font-bold text-[var(--theme-text-primary)]">{formatINR(amt)}</span>
+                          <span className="block font-mono text-[10px] text-[#10B981] font-bold">₹0.00 FEE</span>
+                        </td>
+                        <td className="py-3.5 px-6 text-right">
+                          <StatusBadge status={tx.status} />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card Layout (Visible only on md:hidden) */}
+            <div className="md:hidden divide-y divide-[var(--theme-border-color)]">
+              {displayRecentOrders.map((tx) => {
+                const amt = parseFloat(tx.amount) || 0;
+                const rail = (tx.rail || 'UPI').toUpperCase();
+                const isImps = rail.includes('IMPS');
+                const utr = tx.utr_number || tx.utr || '—';
+                const orderId = tx.order_id || tx.id || 'ORD-2026';
+                const customer = tx.customer_vpa || tx.customer_phone || tx.customer_name || 'buyer@upi';
+
+                return (
+                  <div
+                    key={tx.id || tx.order_id}
+                    onClick={() => setSelectedTx(tx)}
+                    className="p-4 flex flex-col gap-2.5 hover:bg-[var(--theme-bg-secondary)]/50 transition-colors cursor-pointer active:bg-[var(--theme-bg-secondary)]"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="font-mono font-bold text-[var(--theme-text-primary)] text-xs truncate">
+                          {orderId}
+                        </span>
+                        <span className={`px-1.5 py-0.5 rounded font-mono text-[9px] font-bold shrink-0 ${
                           isImps
                             ? 'bg-[#10B981]/15 text-[#059669] dark:text-[#34D399]'
                             : 'bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA]'
                         }`}>
                           {rail}
                         </span>
-                      </td>
-                      <td className="py-3.5 px-4 font-mono text-[12px] text-[var(--theme-text-secondary)]">
-                        {customer}
-                      </td>
-                      <td className="py-3.5 px-4 font-mono text-[11.5px] text-[var(--theme-text-muted)]">
-                        {utr}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="font-mono font-bold text-[var(--theme-text-primary)]">{formatINR(amt)}</span>
-                        <span className="block font-mono text-[10px] text-[#10B981] font-bold">₹0.00 FEE</span>
-                      </td>
-                      <td className="py-3.5 px-6 text-right">
+                      </div>
+                      <div className="shrink-0">
                         <StatusBadge status={tx.status} />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-baseline justify-between gap-2">
+                      <div className="font-mono text-[11.5px] text-[var(--theme-text-secondary)] truncate">
+                        {customer}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="font-mono font-bold text-[var(--theme-text-primary)] text-sm">{formatINR(amt)}</span>
+                        <span className="block font-mono text-[9px] text-[#10B981] font-bold leading-tight">0% MDR • ₹0 FEE</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[10.5px] font-mono text-[var(--theme-text-muted)] pt-1 border-t border-[var(--theme-border-color)]/50">
+                      <span className="truncate max-w-[200px]">
+                        UTR: <span className="text-[var(--theme-text-secondary)] font-bold">{utr}</span>
+                      </span>
+                      <span className="text-[#059669] dark:text-[#34D399] font-bold shrink-0">
+                        Direct Bank Settled
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         ) : (
           /* Sleek Empty State for Clean New Signups */
           <div className="p-12 text-center space-y-3">

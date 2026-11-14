@@ -363,10 +363,10 @@ export default function SubscriptionRedesign({
             {/* Status Pill */}
             <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${
               subDetails.isActive
-                ? 'bg-slate-50 text-[#000d21] border-slate-200'
+                ? 'bg-slate-50 dark:bg-slate-800 text-[#000d21] dark:text-slate-100 border-slate-200 dark:border-slate-700'
                 : subDetails.isCancelled
-                ? 'bg-amber-50 text-amber-700 border-amber-200'
-                : 'bg-slate-100 text-slate-600 border-slate-200'
+                ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-700/60'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
             }`}>
               <span className={`w-2 h-2 rounded-full ${
                 subDetails.isActive
@@ -382,7 +382,7 @@ export default function SubscriptionRedesign({
                 : 'License Inactive'}
             </div>
 
-            <span className="text-lg font-bold text-[#000d21] tracking-tight">
+            <span className="text-lg font-bold text-[#000d21] dark:text-white tracking-tight">
               {profile?.subscription_plan === '3months'
                 ? 'Quarterly Tier'
                 : profile?.subscription_plan === '2months'
@@ -501,14 +501,14 @@ export default function SubscriptionRedesign({
       <div id="extend-plan-section" className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-lg font-bold text-[#000d21] tracking-tight">
+            <h2 className="text-lg font-bold text-[#000d21] dark:text-white tracking-tight">
               Extend or Upgrade Plan
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-300">
               Zero lock-in. Instant activation via dynamic UPI QR directly into your bank account.
             </p>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold border border-slate-200/70 self-start sm:self-auto">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-semibold border border-slate-200/70 dark:border-slate-700 self-start sm:self-auto">
             <CheckCircle className="w-3.5 h-3.5 text-blue-600" />
             Direct bank settlement · 0% MDR
           </div>

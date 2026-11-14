@@ -1092,7 +1092,7 @@ export default function SettingsRedesign({
             <span className="text-blue-600 font-semibold">Settings & Direct Routing</span>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-[#0c2340] tracking-tight">
+            <h1 className="text-2xl font-semibold text-[#0c2340] dark:text-white tracking-tight">
               Settings & Configuration
             </h1>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-500/20 text-emerald-600 text-xs font-semibold">
@@ -1186,7 +1186,7 @@ export default function SettingsRedesign({
         </div>
 
         {/* ─── LEFT MASTER NAVIGATION (260px, Solid White on Desktop) ─── */}
-        <aside className="hidden lg:flex w-[260px] shrink-0 bg-white rounded-2xl border border-slate-200 shadow-xs flex-col p-3.5 gap-4">
+        <aside className="hidden lg:flex w-[260px] xl:w-[280px] shrink-0 bg-white dark:bg-[#121826] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex-col p-3.5 gap-4">
           {/* Sub-menu Search */}
           <div className="relative">
             <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
@@ -1195,13 +1195,13 @@ export default function SettingsRedesign({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search settings..."
-              className="w-full h-8 pl-8 pr-3 bg-slate-50 hover:bg-slate-100 focus:bg-white rounded-lg text-xs text-slate-800 placeholder:text-slate-400 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors font-medium"
+              className="w-full h-8 pl-8 pr-3 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 focus:bg-white dark:focus:bg-[#121826] rounded-lg text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors font-medium"
             />
           </div>
 
           {/* Categories List */}
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-slate-400 px-2 pb-1">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 px-2 pb-1">
               System Sections
             </span>
 
@@ -1214,18 +1214,20 @@ export default function SettingsRedesign({
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   type="button"
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors text-xs font-medium group text-left w-full cursor-pointer ${
+                  className={`flex items-start justify-between px-3 py-2.5 rounded-xl transition-colors text-xs font-medium group text-left w-full cursor-pointer ${
                     isActive
-                      ? 'bg-blue-50 text-blue-600 font-semibold shadow-xs border border-blue-100'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
+                      ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold shadow-xs border border-blue-100 dark:border-blue-900/40'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white border border-transparent'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600'}`} />
-                    <div className="flex flex-col min-w-0">
-                      <span className={`text-xs font-semibold leading-tight ${isActive ? 'text-blue-700' : 'text-slate-800'}`}>{cat.label}</span>
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                    <Icon className={`w-4 h-4 shrink-0 mt-0.5 transition-colors ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 group-hover:text-blue-600'}`} />
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className={`text-xs font-semibold leading-tight whitespace-normal break-words ${isActive ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-slate-200'}`}>
+                        {cat.label}
+                      </span>
                       {cat.subtitle && (
-                        <span className={`text-[10px] leading-tight mt-0.5 ${isActive ? 'text-blue-600' : 'text-slate-500'}`}>
+                        <span className={`text-[10px] leading-tight mt-0.5 whitespace-normal break-words ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}>
                           {cat.subtitle}
                         </span>
                       )}
@@ -1233,12 +1235,12 @@ export default function SettingsRedesign({
                   </div>
 
                   {cat.badge && (
-                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 border ${cat.badgeColor || 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 border ml-1.5 self-start mt-0.5 ${cat.badgeColor || 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'}`}>
                       {cat.badge}
                     </span>
                   )}
                   {cat.dotColor && (
-                    <span className={`w-2 h-2 rounded-full shrink-0 ${cat.dotColor}`}></span>
+                    <span className={`w-2 h-2 rounded-full shrink-0 ml-1.5 self-start mt-1.5 ${cat.dotColor}`}></span>
                   )}
                 </button>
               );

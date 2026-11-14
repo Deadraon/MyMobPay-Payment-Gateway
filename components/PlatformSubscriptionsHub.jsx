@@ -28,6 +28,14 @@ const IST_TZ = 'Asia/Kolkata';
 
 function formatINR(n) {
   const val = Number(n) || 0;
+  if (val >= 10000000) {
+    const cr = val / 10000000;
+    return `₹${cr % 1 === 0 ? cr : cr.toFixed(2)}Cr`;
+  }
+  if (val >= 100000) {
+    const l = val / 100000;
+    return `₹${l % 1 === 0 ? l : l.toFixed(1)}L`;
+  }
   const hasDecimals = val % 1 !== 0;
   return `₹${val.toLocaleString('en-IN', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: 2 })}`;
 }
@@ -158,7 +166,7 @@ export default function PlatformSubscriptionsHub({
       {/* ── TOP HEADER ROW ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
             SaaS Subscriptions
           </h1>
           <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80 flex items-center gap-1.5">
@@ -181,114 +189,114 @@ export default function PlatformSubscriptionsHub({
       </div>
 
       {/* ── KPI METRICS CARDS (Total Subs, Active, Inactive, Revenue, Today, Avg Value) ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2.5 sm:gap-3.5">
         {/* 1. Total Subs */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#121826] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block truncate">Total Subs</span>
-              <span className="text-lg sm:text-2xl font-semibold text-slate-900 block mt-0.5 sm:mt-1 truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 block">Total Subs</span>
+              <span className="text-base sm:text-xl xl:text-2xl font-semibold text-slate-900 dark:text-white block mt-0.5 sm:mt-1">
                 {metrics.totalSubs}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-50 border border-indigo-200/60 text-indigo-600 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
               <Layers className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-indigo-700 font-semibold mt-2 sm:mt-2.5 truncate flex items-center gap-1">
+          <p className="text-[10px] sm:text-[11px] text-indigo-700 dark:text-indigo-300 font-semibold mt-2 sm:mt-2.5 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-            <span className="truncate">Subscriber Base</span>
+            <span>Subscriber Base</span>
           </p>
         </div>
 
         {/* 2. Active Subs */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#121826] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block truncate">Active Subs</span>
-              <span className="text-lg sm:text-2xl font-semibold text-emerald-600 block mt-0.5 sm:mt-1 truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 block">Active Subs</span>
+              <span className="text-base sm:text-xl xl:text-2xl font-semibold text-emerald-600 dark:text-emerald-400 block mt-0.5 sm:mt-1">
                 {metrics.activeSubs}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 border border-emerald-200/60 text-emerald-600 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
               <CheckCircle2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-emerald-700 font-semibold mt-2 sm:mt-2.5 truncate flex items-center gap-1">
+          <p className="text-[10px] sm:text-[11px] text-emerald-700 dark:text-emerald-300 font-semibold mt-2 sm:mt-2.5 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="truncate">Live &amp; Verified</span>
+            <span>Live &amp; Verified</span>
           </p>
         </div>
 
         {/* 3. Inactive Subs */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#121826] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
             <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block truncate">Inactive Subs</span>
-              <span className="text-lg sm:text-2xl font-semibold text-amber-600 block mt-0.5 sm:mt-1 truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 block">Inactive Subs</span>
+              <span className="text-base sm:text-xl xl:text-2xl font-semibold text-amber-600 dark:text-amber-400 block mt-0.5 sm:mt-1">
                 {metrics.inactiveSubs}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 border border-amber-200/60 text-amber-600 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
               <Clock className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-amber-700 font-semibold mt-2 sm:mt-2.5 truncate flex items-center gap-1">
+          <p className="text-[10px] sm:text-[11px] text-amber-700 dark:text-amber-300 font-semibold mt-2 sm:mt-2.5 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-            <span className="truncate">Pending / Expired</span>
+            <span>Pending / Expired</span>
           </p>
         </div>
 
         {/* 4. Total SaaS Revenue */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#121826] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block leading-tight">Total Revenue</span>
-              <span className="text-base sm:text-lg xl:text-xl font-bold text-slate-900 block mt-0.5 sm:mt-1 tracking-tight tabular-nums">
+            <div className="min-w-0 flex-1">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 block leading-tight">Total Revenue</span>
+              <span className="text-sm sm:text-base xl:text-lg font-bold text-slate-900 dark:text-white block mt-0.5 sm:mt-1 tracking-tight tabular-nums break-words">
                 {formatINR(metrics.totalRevenue)}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-teal-50 border border-teal-200/60 text-teal-600 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200/60 dark:border-teal-800/50 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
               <TrendingUp className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-teal-700 font-semibold mt-2 sm:mt-2.5 leading-tight">
+          <p className="text-[10px] sm:text-[11px] text-teal-700 dark:text-teal-300 font-semibold mt-2 sm:mt-2.5 leading-tight">
             {metrics.verifiedCount} verified orders
           </p>
         </div>
 
         {/* 5. Today's SaaS Inflow */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#121826] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block leading-tight">Today&apos;s Inflow</span>
-              <span className="text-base sm:text-lg xl:text-xl font-bold text-slate-900 block mt-0.5 sm:mt-1 tracking-tight tabular-nums">
+            <div className="min-w-0 flex-1">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 block leading-tight">Today&apos;s Inflow</span>
+              <span className="text-sm sm:text-base xl:text-lg font-bold text-slate-900 dark:text-white block mt-0.5 sm:mt-1 tracking-tight tabular-nums break-words">
                 {formatINR(metrics.todayRevenue)}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 border border-blue-200/60 text-blue-600 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
               <Calendar className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-2 sm:mt-2.5 leading-tight">
+          <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-2 sm:mt-2.5 leading-tight">
             {metrics.todayCount} renewals today
           </p>
         </div>
 
         {/* 6. Avg License Value */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#121826] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs hover:border-slate-300 transition-colors flex flex-col justify-between">
           <div className="flex items-start justify-between gap-1.5">
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 block leading-tight">Avg Plan Value</span>
-              <span className="text-base sm:text-lg xl:text-xl font-bold text-purple-900 block mt-0.5 sm:mt-1 tracking-tight tabular-nums">
+            <div className="min-w-0 flex-1">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 block leading-tight">Avg Plan Value</span>
+              <span className="text-sm sm:text-base xl:text-lg font-bold text-purple-900 dark:text-purple-300 block mt-0.5 sm:mt-1 tracking-tight tabular-nums break-words">
                 {formatINR(metrics.avgOrderValue)}
               </span>
             </div>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-50 border border-purple-200/60 text-purple-600 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/60 dark:border-purple-800/50 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
               <Receipt className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2]" />
             </div>
           </div>
-          <p className="text-[10px] sm:text-[11px] text-purple-700 font-semibold mt-2 sm:mt-2.5 leading-tight">
+          <p className="text-[10px] sm:text-[11px] text-purple-700 dark:text-purple-300 font-semibold mt-2 sm:mt-2.5 leading-tight">
             Across active tiers
           </p>
         </div>

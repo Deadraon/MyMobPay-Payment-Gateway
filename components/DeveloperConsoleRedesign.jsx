@@ -159,13 +159,13 @@ export default function DeveloperConsoleRedesign({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Developer & API Hub</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Developer & API Hub</h1>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
               <Code className="w-3.5 h-3.5 text-blue-600" />
               REST API v2.1
             </span>
           </div>
-          <p className="text-xs text-slate-500 font-medium mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-300 font-medium mt-1">
             Programmatic UPI checkout integration, HMAC SHA-256 webhooks, and live request inspector.
           </p>
         </div>
@@ -536,8 +536,8 @@ export default function DeveloperConsoleRedesign({
       {activeSubTab === 'logs' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900">Recent API Calls & Webhook Dispatches</h3>
-            <span className="text-xs text-slate-500 font-mono">Last 24 Hours</span>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Recent API Calls & Webhook Dispatches</h3>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">Last 24 Hours</span>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">

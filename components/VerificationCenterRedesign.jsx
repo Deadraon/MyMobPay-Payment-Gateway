@@ -474,13 +474,13 @@ export default function VerificationCenterRedesign({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Verification Center</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Verification Center</h1>
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${healthMetrics.statusColor}`}>
               <span className={`w-2 h-2 rounded-full ${healthMetrics.dotColor} animate-pulse`} />
               {healthMetrics.statusLabel}
             </span>
           </div>
-          <p className="text-xs text-slate-500 font-medium mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-300 font-medium mt-1">
             Real-time automated payment match engine. Direct-to-bank UPI reconciliation with zero middleman hold.
           </p>
         </div>

@@ -2481,13 +2481,13 @@ export default function PaymentLinksRedesign({
                             </span>
                           )}
                           {link.status === 'Expired' && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold border border-rose-200 w-fit">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold border border-rose-200 dark:border-rose-900/50 w-fit">
                               <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                               Expired
                             </span>
                           )}
                           {link.status === 'Cancelled' && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200 w-fit">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 w-fit">
                               <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                               Cancelled
                             </span>
@@ -2649,12 +2649,12 @@ export default function PaymentLinksRedesign({
                         </span>
                       )}
                       {link.status === 'Expired' && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 text-[11px] font-bold border border-rose-200">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-[11px] font-bold border border-rose-200 dark:border-rose-900/50">
                           Expired
                         </span>
                       )}
                       {link.status === 'Cancelled' && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold border border-slate-200">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold border border-slate-200 dark:border-slate-700">
                           Cancelled
                         </span>
                       )}

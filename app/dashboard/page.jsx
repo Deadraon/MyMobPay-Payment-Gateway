@@ -3302,7 +3302,7 @@ echo "Order Created: " . $data['orderId'];
               <Search className="absolute left-3.5 text-[var(--theme-text-muted,#5E6782)] w-4 h-4 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search transactions, orders..."
+                placeholder="Search transactions..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -3315,15 +3315,16 @@ echo "Order Created: " . $data['orderId'];
                     setActiveTab('transactions');
                   }
                 }}
-                className="console-input h-10 w-full pl-10 pr-20 rounded-full text-xs placeholder:text-[var(--theme-text-muted,#5E6782)] focus:outline-none transition-colors"
+                className="console-input h-10 w-full pl-9 pr-14 lg:pr-24 rounded-full text-xs placeholder:text-[var(--theme-text-muted,#5E6782)] focus:outline-none transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setIsCommandPaletteOpen(true)}
-                className="absolute right-1.5 px-2.5 py-1 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] hover:bg-[#0F2BFF] text-[10px] font-mono font-bold text-[var(--theme-text-secondary,#2A3147)] hover:text-white shrink-0 inline-flex items-center gap-1 transition-all cursor-pointer"
+                className="absolute right-1.5 px-2 py-1 rounded-full bg-[var(--theme-bg-secondary,#EAEEFA)] hover:bg-[#0F2BFF] text-[10px] font-mono font-bold text-[var(--theme-text-secondary,#2A3147)] hover:text-white shrink-0 inline-flex items-center gap-1 transition-all cursor-pointer"
                 title="Search (⌘ 1)"
               >
-                <span>Quick Jump</span>
+                <span className="hidden lg:inline">Quick Jump</span>
+                <span className="lg:hidden text-[9px]">⌘1</span>
                 <ArrowRight className="w-3 h-3" />
               </button>
             </div>
@@ -3854,6 +3855,7 @@ echo "Order Created: " . $data['orderId'];
                 setActiveTab={setActiveTab}
                 user={user}
                 setSettingsCategory={setSettingsCategory}
+                isSandbox={effectiveSandboxMode}
               />
             )}
 

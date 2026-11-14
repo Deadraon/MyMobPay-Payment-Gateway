@@ -127,13 +127,13 @@ export default function SupportHelpRedesign({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Support &amp; Help Desk</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Support &amp; Help Desk</h1>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
               <LifeBuoy className="w-3.5 h-3.5 text-blue-600" />
               Priority Founder Support
             </span>
           </div>
-          <p className="text-xs text-slate-500 font-medium mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-300 font-medium mt-1">
             Open engineering support tickets, diagnose UPI error codes, and check live bank switch health.
           </p>
         </div>

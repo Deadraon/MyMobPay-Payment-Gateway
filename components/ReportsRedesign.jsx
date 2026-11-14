@@ -343,13 +343,13 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Financial & Analytics Reports</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Financial & Analytics Reports</h1>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
               <Sparkles className="w-3 h-3 text-blue-600" />
               Tax & CA Ready
             </span>
           </div>
-          <p className="text-xs text-slate-500 font-medium mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-300 font-medium mt-1">
             Reconcile collections, export Indian CA/GST accounting journals, and analyze hourly UPI traffic.
           </p>
         </div>
