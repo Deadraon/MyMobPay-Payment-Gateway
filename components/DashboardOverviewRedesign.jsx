@@ -383,52 +383,52 @@ export default function DashboardOverviewRedesign({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2.5">
           <button
             type="button"
             onClick={() => setIsCounterQrModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] hover:border-[#0F2BFF] text-xs font-bold text-[var(--theme-text-primary)] inline-flex items-center gap-2 shadow-2xs transition-all cursor-pointer"
+            className="w-full sm:w-auto justify-center px-3 sm:px-4 py-2.5 rounded-xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] hover:border-[#0F2BFF] text-xs font-bold text-[var(--theme-text-primary)] inline-flex items-center gap-1.5 sm:gap-2 shadow-2xs transition-all cursor-pointer"
           >
-            <QrCode className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" />
-            <span>Counter Static QR</span>
+            <QrCode className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0" />
+            <span className="truncate">Static QR</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab?.('payment-links')}
-            className="btn-enterprise px-5 py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold inline-flex items-center gap-2 shadow-md cursor-pointer"
+            className="w-full sm:w-auto justify-center btn-enterprise px-3 sm:px-5 py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold inline-flex items-center gap-1.5 sm:gap-2 shadow-md cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>Create Payment Link</span>
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="truncate">Create Link</span>
           </button>
         </div>
       </div>
 
-      {/* ── ROW 1: 4 HIGH-IMPACT ENTERPRISE KPI BENTO CARDS ────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* ── ROW 1: 4 HIGH-IMPACT ENTERPRISE KPI BENTO CARDS (Compact 2x2 on Mobile, 4x1 on Desktop) ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
 
         {/* KPI 1: Total Direct Settled */}
         <div
           onClick={() => setActiveTab?.('transactions')}
-          className="bento-card bento-card-interactive stagger-1 p-5 cursor-pointer group"
+          className="bento-card bento-card-interactive stagger-1 p-3.5 sm:p-5 cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
-              Direct Bank Settled
+          <div className="flex items-center justify-between gap-1">
+            <span className="font-mono text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Direct Settled
             </span>
-            <span className="w-8 h-8 rounded-xl bg-[#10B981]/15 text-[#10B981] flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Landmark className="w-4 h-4" />
+            <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#10B981]/15 text-[#10B981] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <Landmark className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className={`tabular-nums-stat text-[38px] leading-none text-[var(--theme-text-primary)] mt-2.5 ${isKpiFlashing ? 'kpi-flash' : ''}`}>
+          <div className={`tabular-nums-stat text-[22px] sm:text-[38px] font-black leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate ${isKpiFlashing ? 'kpi-flash' : ''}`}>
             {formatINR(totalCollections + simulatedInflow)}
           </div>
-          <div className="mt-2.5 flex items-center justify-between text-[11px]">
-            <span className="font-bold text-[#059669] dark:text-[#34D399] inline-flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>+100% T+0 Settled</span>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="font-bold text-[#059669] dark:text-[#34D399] inline-flex items-center gap-1 shrink-0">
+              <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>T+0</span>
             </span>
-            <span className="font-mono text-[var(--theme-text-muted)] shrink-0">
+            <span className="font-mono text-[var(--theme-text-muted)] truncate text-right hidden sm:inline">
               {attachedBank ? `${attachedBank.bank_name?.split(' ')[0] || 'Bank'} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}` : 'Direct UPI Active'}
             </span>
           </div>
@@ -437,31 +437,31 @@ export default function DashboardOverviewRedesign({
         {/* KPI 2: Today Live Inflow (Simulation Test trigger) */}
         <div
           onClick={handleSimulatePayment}
-          className="bento-card bento-card-interactive stagger-2 p-5 cursor-pointer group"
+          className="bento-card bento-card-interactive stagger-2 p-3.5 sm:p-5 cursor-pointer group"
           title="Click to simulate incoming test payment"
         >
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
-              Today Live Inflow
+          <div className="flex items-center justify-between gap-1">
+            <span className="font-mono text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Today Inflow
             </span>
             {effectiveIsSandbox ? (
-              <span className="px-2 py-0.5 rounded-md bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[9.5px] font-bold inline-flex items-center gap-1 group-hover:bg-[#0F2BFF] group-hover:text-white transition-colors">
-                <Zap className="w-3 h-3" />
-                <span>Test +₹500</span>
+              <span className="px-1.5 sm:px-2 py-0.5 rounded-md bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[8.5px] sm:text-[9.5px] font-bold inline-flex items-center gap-1 shrink-0">
+                <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                <span>+₹500</span>
               </span>
             ) : (
-              <span className="px-2 py-0.5 rounded-md bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[9.5px] font-bold inline-flex items-center gap-1">
+              <span className="px-1.5 sm:px-2 py-0.5 rounded-md bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[8.5px] sm:text-[9.5px] font-bold inline-flex items-center gap-1 shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
-                <span>Live T+0</span>
+                <span>Live</span>
               </span>
             )}
           </div>
-          <div className={`tabular-nums-stat text-[38px] leading-none text-[var(--theme-text-primary)] mt-2.5 ${isKpiFlashing ? 'kpi-flash' : ''}`}>
+          <div className={`tabular-nums-stat text-[22px] sm:text-[38px] font-black leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate ${isKpiFlashing ? 'kpi-flash' : ''}`}>
             {formatINR(todayInflow + simulatedInflow)}
           </div>
-          <div className="mt-2.5 flex items-center justify-between text-[11px]">
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
             <span className="text-[var(--theme-text-muted)] truncate">
-              Listening on {merchantVpa}
+              UPI Active
             </span>
           </div>
         </div>
@@ -469,55 +469,55 @@ export default function DashboardOverviewRedesign({
         {/* KPI 3: Cleared Orders & Velocity */}
         <div
           onClick={() => setActiveTab?.('transactions')}
-          className="bento-card bento-card-interactive stagger-3 p-5 cursor-pointer group"
+          className="bento-card bento-card-interactive stagger-3 p-3.5 sm:p-5 cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
+          <div className="flex items-center justify-between gap-1">
+            <span className="font-mono text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Cleared Orders
             </span>
-            <span className="w-8 h-8 rounded-xl bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Activity className="w-4 h-4" />
+            <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="tabular-nums-stat text-[38px] leading-none text-[var(--theme-text-primary)] mt-2.5">
+          <div className="tabular-nums-stat text-[22px] sm:text-[38px] font-black leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate">
             {clearedOrdersCount + (simulatedInflow > 0 ? 1 : 0)}
           </div>
-          <div className="mt-2.5 flex items-center justify-between text-[11px]">
-            <span className="font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
-              {orders.length > 0 ? `${orders.length} Checkouts` : '22 Payment Links'}
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="font-bold text-[#0F2BFF] dark:text-[#60A5FA] truncate">
+              {orders.length > 0 ? `${orders.length} Txns` : '22 Links'}
             </span>
-            <span className="font-mono text-[#10B981] font-bold">142ms avg</span>
+            <span className="font-mono text-[#10B981] font-bold hidden sm:inline">142ms avg</span>
           </div>
         </div>
 
         {/* KPI 4: 0% MDR Gateway Commission Saved */}
         <div
           onClick={() => setActiveTab?.('subscription')}
-          className="bento-card bento-card-interactive stagger-4 p-5 cursor-pointer border-[#0F2BFF]/30 group"
+          className="bento-card bento-card-interactive stagger-4 p-3.5 sm:p-5 cursor-pointer border-[#0F2BFF]/30 group"
         >
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
-              Gateway Tax Deducted
+          <div className="flex items-center justify-between gap-1">
+            <span className="font-mono text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA] truncate">
+              Tax Deducted
             </span>
-            <span className="w-8 h-8 rounded-xl bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] flex items-center justify-center group-hover:scale-110 transition-transform">
-              <ShieldCheck className="w-4 h-4" />
+            <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="tabular-nums-stat text-[38px] leading-none text-[#10B981] mt-2.5">
+          <div className="tabular-nums-stat text-[22px] sm:text-[38px] font-black leading-none text-[#10B981] mt-2 sm:mt-2.5 truncate">
             ₹0.00 FEE
           </div>
-          <div className="mt-2.5 flex items-center justify-between text-[11px]">
-            <span className="text-[var(--theme-text-secondary)] font-semibold">100% Principal Kept</span>
-            <span className="font-mono font-bold text-[#059669] dark:text-[#34D399]">
-              ₹{commissionSaved} saved YTD
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="text-[var(--theme-text-secondary)] font-semibold truncate">100% Kept</span>
+            <span className="font-mono font-bold text-[#059669] dark:text-[#34D399] truncate hidden sm:inline">
+              ₹{commissionSaved} saved
             </span>
           </div>
         </div>
 
       </div>
 
-      {/* ── ROW 2: LIVE BANK PIPELINE VAULT (5 COLS) + TELEMETRY CHART (7 COLS) ─ */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      {/* ── ROW 2: LIVE BANK PIPELINE VAULT (5 COLS) + TELEMETRY CHART (7 COLS) ─ (DESKTOP ONLY) ─ */}
+      <div className="hidden lg:grid grid-cols-12 gap-6 items-stretch">
 
         {/* Left 5 Cols: Interactive Direct Bank Routing Vault */}
         <div className="lg:col-span-5 bento-card stagger-2 p-6 flex flex-col justify-between space-y-5">
@@ -791,21 +791,56 @@ export default function DashboardOverviewRedesign({
 
       </div>
 
+      {/* ── MOBILE-OPTIMIZED DIRECT BANK SETTLEMENT BAR (Clean, essential, non-cluttered) ── */}
+      <div className="lg:hidden p-3.5 rounded-2xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] flex items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="w-8 h-8 rounded-xl bg-[#10B981]/15 text-[#10B981] flex items-center justify-center shrink-0">
+            <Landmark className="w-4 h-4" />
+          </span>
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-[var(--theme-text-primary)] truncate">
+              {attachedBank ? (
+                `${attachedBank.bank_name} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}`
+              ) : (
+                'Direct Bank Settlement'
+              )}
+            </div>
+            <div className="text-[10px] sm:text-[10.5px] text-[var(--theme-text-muted)] font-mono flex items-center gap-1.5 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] shrink-0"></span>
+              <span className="truncate">0% Commission Escrow-Free &bull; T+0</span>
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setSettingsCategory?.('banking');
+            setActiveTab?.('settings');
+          }}
+          className="text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 hover:underline px-2 py-1"
+        >
+          Manage
+        </button>
+      </div>
+
       {/* ── ROW 3: LIVE RECENT TRANSACTIONS FEED (CLICK ROW TO OPEN DRAWER) ─ */}
       <div className="bento-card stagger-4 overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--theme-border-color)] flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="text-[14px] font-extrabold text-[var(--theme-text-primary)]">Recent Auto-Settled Transactions</span>
-            <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[10px] font-bold">
-              Click any row to inspect Webhook &amp; UTR
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[var(--theme-border-color)] flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-[13px] sm:text-[14px] font-extrabold text-[var(--theme-text-primary)] truncate">
+              Recent Transactions
+            </span>
+            <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[10px] font-bold shrink-0">
+              Live NPCI T+0
             </span>
           </div>
           <button
             type="button"
             onClick={() => setActiveTab?.('transactions')}
-            className="text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline inline-flex items-center gap-1 cursor-pointer"
+            className="text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline inline-flex items-center gap-1 cursor-pointer shrink-0"
           >
-            <span>Open Full Audit Ledger ({orders.length > 0 ? orders.length : 146})</span>
+            <span className="hidden sm:inline">Open Full Audit Ledger ({orders.length > 0 ? orders.length : 146})</span>
+            <span className="sm:hidden">View all ({orders.length > 0 ? orders.length : 146})</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

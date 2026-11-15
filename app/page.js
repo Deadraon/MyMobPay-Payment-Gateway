@@ -1606,8 +1606,8 @@ export default function HomePage() {
       <div className="max-w-[1060px] mx-auto px-5 sm:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-center">
 
-          {/* Left Column: Sculpted 3D iPhone 2 */}
-          <div className="md:col-span-6 flex justify-center">
+          {/* Left Column: Sculpted 3D iPhone 2 (Desktop Only - Mobile keeps content clean) */}
+          <div className="hidden md:flex md:col-span-6 justify-center">
             <div className="clay-iphone clay-float" data-tilt-phone>
               <div className="clay-side-silent"></div>
               <div className="clay-side-vol-up"></div>
@@ -1723,7 +1723,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={cycleWalletScenario}
-                className="mt-5 inline-flex items-center gap-2 text-[13px] font-bold theme-link hover:underline"
+                className="mt-5 hidden md:inline-flex items-center gap-2 text-[13px] font-bold theme-link hover:underline"
               >
                 <span>Cycle volume example on phone</span>
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1758,7 +1758,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={pulseYumCards}
-                className="mt-5 inline-flex items-center gap-2 text-[13px] font-bold theme-link hover:underline"
+                className="mt-5 hidden md:inline-flex items-center gap-2 text-[13px] font-bold theme-link hover:underline"
               >
                 <span>Inspect payment rail cards</span>
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1999,7 +1999,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={fireFlameWebhook}
-                className="mt-5 inline-flex items-center gap-2 text-[13px] font-bold theme-link hover:underline"
+                className="mt-5 hidden md:inline-flex items-center gap-2 text-[13px] font-bold theme-link hover:underline"
               >
                 <span>Trigger a live test webhook</span>
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -2175,9 +2175,9 @@ export default function HomePage() {
             See how Indian SaaS builders and digital product merchants simplify payment operations with flat subscription pricing.
           </p>
 
-          {/* 5-Card Horizontal Row */}
-          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-left">
-            <div className="theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px]">
+          {/* 5-Card Horizontal Row (Swipeable Carousel on Mobile, Clean Grid on Desktop) */}
+          <div className="mt-10 flex overflow-x-auto pb-4 -mx-5 px-5 sm:mx-0 sm:px-0 snap-x sm:grid sm:grid-cols-2 lg:grid-cols-5 gap-4 text-left no-scrollbar">
+            <div className="w-[280px] shrink-0 snap-start sm:w-auto theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px]">
               <p className="text-[11px] leading-[1.55] theme-text-secondary">
                 “Switched our SaaS checkout to flat subscription billing. Keeping 100% of every UPI payment changed our unit economics overnight.”
               </p>
@@ -2189,7 +2189,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px]">
+            <div className="w-[280px] shrink-0 snap-start sm:w-auto theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px]">
               <p className="text-[11px] leading-[1.55] theme-text-secondary">
                 “Dynamic UPI QR and IMPS collection in one clean dashboard without paying 2% on high-ticket annual invoices.”
               </p>
@@ -2201,7 +2201,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px]">
+            <div className="w-[280px] shrink-0 snap-start sm:w-auto theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px]">
               <p className="text-[11px] leading-[1.55] theme-text-secondary">
                 “Integration took a single afternoon. Create session, render QR or intent link, and verify the signed webhook.”
               </p>
@@ -2213,7 +2213,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px]">
+            <div className="w-[280px] shrink-0 snap-start sm:w-auto theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px]">
               <p className="text-[11px] leading-[1.55] theme-text-secondary">
                 “Predictable monthly software cost instead of unpredictable percentage taxes every time we run a product launch.”
               </p>
@@ -2225,7 +2225,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px] sm:col-span-2 lg:col-span-1">
+            <div className="w-[280px] shrink-0 snap-start sm:w-auto theme-bg-elevated rounded-xl p-5 border theme-border theme-card-shadow flex flex-col justify-between min-h-[168px] sm:col-span-2 lg:col-span-1">
               <p className="text-[11px] leading-[1.55] theme-text-secondary">
                 “Clean transaction ledger with instant status tracking and planned crypto settlement on the roadmap.”
               </p>
@@ -2440,8 +2440,60 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Interactive Dual-Pane API Sandbox */}
-        <div className="mt-10 rounded-2xl bg-[#0D111A] border border-[#232D42] shadow-2xl overflow-hidden text-white">
+        {/* Mobile-Only Developer Summary Card (Clean & essential on mobile, replacing heavy sandbox) */}
+        <div className="md:hidden mt-8 rounded-2xl theme-bg-elevated border theme-border p-5 space-y-4 shadow-sm text-left">
+          <div className="flex items-center justify-between pb-3 border-b theme-border">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+              <span className="font-mono text-xs font-bold theme-text-primary">REST API & Webhooks</span>
+            </div>
+            <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA]">v1 API</span>
+          </div>
+
+          <div className="space-y-3 text-xs">
+            <div className="flex items-start gap-2.5">
+              <span className="w-6 h-6 rounded-lg bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </span>
+              <div>
+                <strong className="block font-bold theme-text-primary">5-Minute Integration</strong>
+                <span className="text-[11.5px] theme-text-secondary leading-relaxed">Standard JSON payload to initiate UPI QR or intent payments.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <span className="w-6 h-6 rounded-lg bg-[#10B981]/15 text-[#10B981] flex items-center justify-center shrink-0 mt-0.5">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <div>
+                <strong className="block font-bold theme-text-primary">HMAC Signed Webhooks</strong>
+                <span className="text-[11.5px] theme-text-secondary leading-relaxed">Instant real-time payment success callbacks direct to your server.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <span className="w-6 h-6 rounded-lg bg-[#FF6E00]/15 text-[#FF6E00] flex items-center justify-center shrink-0 mt-0.5">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </span>
+              <div>
+                <strong className="block font-bold theme-text-primary">Zero SDK Bloat</strong>
+                <span className="text-[11.5px] theme-text-secondary leading-relaxed">Works with standard fetch, axios, Python requests, or cURL.</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => openApiDrawer('create')}
+            className="w-full mt-2 py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <span>View Full API Specification</span>
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        {/* Interactive Dual-Pane API Sandbox (Desktop Only) */}
+        <div className="hidden md:block mt-10 rounded-2xl bg-[#0D111A] border border-[#232D42] shadow-2xl overflow-hidden text-white">
           <div className="px-4 sm:px-6 py-3 bg-[#141B29] border-b border-[#232D42] flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <button
