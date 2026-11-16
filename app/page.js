@@ -1270,9 +1270,9 @@ export default function HomePage() {
       <nav className="hidden lg:flex items-center header-nav-pill px-2 py-1 rounded-full shadow-2xs" aria-label="Primary Navigation">
         <a href="#own-your-money" className="nav-pill-item">Product</a>
         <a href="#fees-drag" className="nav-pill-item">0% Model</a>
-        <a href="#gateway-comparison" className="nav-pill-item">Calculator</a>
-        <a href="#pick-plan" className="nav-pill-item">Pricing</a>
-        <a href="#clean-apis" className="nav-pill-item">Developers</a>
+        <Link href="/pricing" className="nav-pill-item">Pricing</Link>
+        <Link href="/docs" className="nav-pill-item">Developers</Link>
+        <Link href="/blog" className="nav-pill-item">Blog</Link>
         <a href="#faq-section" className="nav-pill-item">FAQ</a>
       </nav>
 
@@ -1310,9 +1310,9 @@ export default function HomePage() {
       <div className="grid grid-cols-2 gap-2 text-xs font-bold">
         <a href="#own-your-money" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Product</a>
         <a href="#fees-drag" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">0% Fee Model</a>
-        <a href="#gateway-comparison" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">0% Calculator</a>
-        <a href="#pick-plan" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Pricing Plans</a>
-        <a href="#clean-apis" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Developers</a>
+        <Link href="/pricing" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Pricing Plans</Link>
+        <Link href="/docs" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Developers</Link>
+        <Link href="/blog" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Engineering Blog</Link>
         <a href="#faq-section" onClick={toggleMobileNav} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Merchant FAQ</a>
       </div>
 
@@ -2722,27 +2722,38 @@ export default function HomePage() {
           </span>
         </div>
         <div className="font-mono text-[11px] theme-text-muted">
-          DIRECT-TO-BANK UPI & IMPS GATEWAY • MYMOB.TECH
+          DIRECT-TO-BANK UPI & IMPS GATEWAY • MYMOBPAY.TECH
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 py-10">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-8 py-10">
         <div>
           <h3 className="font-bold theme-text-primary mb-3">Product</h3>
           <ul className="space-y-2">
+            <li><Link href="/pricing" className="hover:underline">Pricing Plans (/pricing)</Link></li>
             <li><a href="#own-your-money" className="hover:underline">Zero-Commission Model</a></li>
             <li><a href="#fees-drag" className="hover:underline">Direct UPI & IMPS Rails</a></li>
             <li><a href="#gateway-comparison" className="hover:underline">0% vs 2% Savings Calculator</a></li>
-            <li><a href="#pick-plan" className="hover:underline">Subscription Plans</a></li>
           </ul>
         </div>
 
         <div>
           <h3 className="font-bold theme-text-primary mb-3">Developers</h3>
           <ul className="space-y-2">
-            <li><button type="button" onClick={() => openApiDrawer('create')} className="hover:underline">REST API Reference</button></li>
+            <li><Link href="/docs" className="hover:underline">REST API Documentation (/docs)</Link></li>
+            <li><button type="button" onClick={() => openApiDrawer('create')} className="hover:underline">Interactive API Drawer</button></li>
             <li><button type="button" onClick={() => openApiDrawer('webhook')} className="hover:underline">Signed HMAC Webhooks</button></li>
             <li><button type="button" onClick={() => openApiDrawer('status')} className="hover:underline">UTR Verification Spec</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-bold theme-text-primary mb-3">Resources & Guides</h3>
+          <ul className="space-y-2">
+            <li><Link href="/blog" className="hover:underline">Engineering Blog (/blog)</Link></li>
+            <li><Link href="/blog/uapi-integration-guide" className="hover:underline">Next.js UPI Guide</Link></li>
+            <li><Link href="/compare/razorpay" className="hover:underline">Compare vs Razorpay</Link></li>
+            <li><Link href="/compare/cashfree" className="hover:underline">Compare vs Cashfree</Link></li>
           </ul>
         </div>
 
@@ -2750,8 +2761,10 @@ export default function HomePage() {
           <h3 className="font-bold theme-text-primary mb-3">Merchant Portal</h3>
           <ul className="space-y-2">
             <li><Link href="/login" className="hover:underline">Merchant Login (/login)</Link></li>
-            <li><Link href="/login?mode=signup" className="hover:underline">Get Started (/signup)</Link></li>
+            <li><Link href="/login?mode=signup" className="hover:underline">Sign Up Free (/signup)</Link></li>
             <li><Link href="/dashboard" className="hover:underline">Dashboard (/dashboard)</Link></li>
+            <li><Link href="/terms" className="hover:underline">Terms of Service</Link></li>
+            <li><Link href="/privacy" className="hover:underline">Privacy Policy</Link></li>
           </ul>
         </div>
       </div>

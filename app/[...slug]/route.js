@@ -35,12 +35,13 @@ All standard UPI apps: Google Pay, PhonePe, Paytm, BHIM, Amazon Pay, WhatsApp Pa
 
 ## Links
 
-- [Home](https://mymobpay.tech/)
-- [Login / Sign Up](https://mymobpay.tech/login)
-- [Developer Documentation](https://mymobpay.tech/#developer-section)
-- [Pricing](https://mymobpay.tech/#pricing-section)
-- [Terms of Service](https://mymobpay.tech/terms)
-- [Privacy Policy](https://mymobpay.tech/privacy)
+- [Home](https://www.mymobpay.tech/)
+- [Pricing](https://www.mymobpay.tech/pricing)
+- [Developer Documentation](https://www.mymobpay.tech/docs)
+- [Blog & Guides](https://www.mymobpay.tech/blog)
+- [Login / Sign Up](https://www.mymobpay.tech/login)
+- [Terms of Service](https://www.mymobpay.tech/terms)
+- [Privacy Policy](https://www.mymobpay.tech/privacy)
 
 ## Schema.org Types Implemented
 

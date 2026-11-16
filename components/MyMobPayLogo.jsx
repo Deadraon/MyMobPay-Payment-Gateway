@@ -84,4 +84,36 @@ export function MyMobPayQrBadge({ size = 32, markSize = 22, className = '' }) {
   );
 }
 
+export function MyMobPayLogoMark({ className = "w-5 h-5", id = "mmp" }) {
+  return (
+    <svg className={`overflow-visible shrink-0 ${className}`} viewBox="115 225 790 530" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id={`mmp-g1-${id}`} x1="360" y1="280" x2="510" y2="660" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#004BFF" />
+          <stop offset="100%" stopColor="#0033B5" />
+        </linearGradient>
+        <linearGradient id={`mmp-g2-${id}`} x1="510" y1="630" x2="670" y2="280" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#E64400" />
+          <stop offset="50%" stopColor="#FF6D00" />
+          <stop offset="100%" stopColor="#FF9614" />
+        </linearGradient>
+        <linearGradient id={`mmp-g3-${id}`} x1="170" y1="710" x2="420" y2="280" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#0044E5" />
+          <stop offset="55%" stopColor="#0088FF" />
+          <stop offset="100%" stopColor="#00C8FF" />
+        </linearGradient>
+        <linearGradient id={`mmp-g4-${id}`} x1="600" y1="280" x2="830" y2="710" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FF9E1B" />
+          <stop offset="55%" stopColor="#FF7300" />
+          <stop offset="100%" stopColor="#F05A00" />
+        </linearGradient>
+      </defs>
+      <path d="M 470 575 L 555 340 C 585 260, 680 260, 710 340 L 625 575 C 595 655, 500 655, 470 575 Z" fill={`url(#mmp-g2-${id})`} />
+      <path d="M 310 340 L 395 575 C 425 655, 520 655, 550 575 L 465 340 C 435 260, 340 260, 310 340 Z" fill={`url(#mmp-g1-${id})`} />
+      <path d="M 168 645 L 290 340 C 320 260, 425 260, 455 340 L 332 645 C 308 725, 192 725, 168 645 Z" fill={`url(#mmp-g3-${id})`} />
+      <path d="M 565 340 C 595 260, 700 260, 730 340 L 852 645 C 828 725, 712 725, 688 645 L 565 340 Z" fill={`url(#mmp-g4-${id})`} />
+    </svg>
+  );
+}
+
 export default MyMobPayLogo;

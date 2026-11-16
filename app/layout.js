@@ -9,7 +9,7 @@ export const viewport = {
   colorScheme: "dark",
 };
 
-const BASE_URL = "https://mymobpay.tech";
+const BASE_URL = "https://www.mymobpay.tech";
 
 export const metadata = {
   // ── Core ─────────────────────────────────────────────────────
@@ -295,31 +295,38 @@ export default function RootLayout({ children }) {
               "@graph": [
                 {
                   "@type": "SiteNavigationElement",
+                  "@id": `${BASE_URL}/#nav-pricing`,
+                  name: "Pricing Plans",
+                  description: "Flat monthly subscription with 0% transaction fees. Calculate your merchant savings.",
+                  url: `${BASE_URL}/pricing`,
+                },
+                {
+                  "@type": "SiteNavigationElement",
                   "@id": `${BASE_URL}/#nav-login`,
-                  name: "Log in or sign up",
+                  name: "Merchant Login",
                   description: "Log in or sign up for a MyMobPay merchant account. Access your dashboard, API keys, and settings.",
                   url: `${BASE_URL}/login`,
                 },
                 {
                   "@type": "SiteNavigationElement",
-                  "@id": `${BASE_URL}/#nav-dashboard`,
-                  name: "Merchant Dashboard",
-                  description: "Monitor real-time UPI payments, live webhook events, and settlement analytics.",
-                  url: `${BASE_URL}/dashboard`,
+                  "@id": `${BASE_URL}/#nav-docs`,
+                  name: "Developer Documentation",
+                  description: "REST API reference, code snippets in cURL/Node/Python, and HMAC-SHA256 signed webhooks.",
+                  url: `${BASE_URL}/docs`,
                 },
                 {
                   "@type": "SiteNavigationElement",
-                  "@id": `${BASE_URL}/#nav-pricing`,
-                  name: "Pricing Plans",
-                  description: "Flat monthly subscription with 0% transaction fees. Calculate your merchant savings.",
-                  url: `${BASE_URL}#pricing-section`,
+                  "@id": `${BASE_URL}/#nav-blog`,
+                  name: "Engineering Blog",
+                  description: "In-depth tutorials on Next.js UPI integration, direct bank settlements, and SaaS economics.",
+                  url: `${BASE_URL}/blog`,
                 },
                 {
                   "@type": "SiteNavigationElement",
-                  "@id": `${BASE_URL}/#nav-dev`,
-                  name: "Developer Integration",
-                  description: "API documentation, code snippets in cURL/Node/Python, and signed HMAC webhooks.",
-                  url: `${BASE_URL}#developer-section`,
+                  "@id": `${BASE_URL}/#nav-compare`,
+                  name: "Compare Razorpay",
+                  description: "Compare MyMobPay 0% commission direct settlement against traditional 2% aggregators.",
+                  url: `${BASE_URL}/compare/razorpay`,
                 },
               ],
             }),

@@ -9,10 +9,28 @@ export default function sitemap() {
       priority: 1.0,
     },
     {
+      url: `${BASE_URL}/pricing`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/docs`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: `${BASE_URL}/login`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
       url: `${BASE_URL}/terms`,
@@ -63,6 +81,13 @@ export default function sitemap() {
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.7,
+    },
+    // Brand Assets
+    {
+      url: `${BASE_URL}/download-logo`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
   ];
 }
