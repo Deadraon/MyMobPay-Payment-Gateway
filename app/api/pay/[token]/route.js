@@ -59,7 +59,7 @@ export async function GET(request, { params }) {
     const safeMerchantName = merchant?.business_name || 'Verified Merchant';
     const safeUpiId = (merchant?.upi_id && merchant.upi_id !== 'pending@upi' && merchant.upi_id.includes('@'))
       ? merchant.upi_id
-      : (CONFIG.upiId || '9410181307@okbizaxis');
+      : (CONFIG.upiId || '');
 
     // 3. Real-time Server-Side Verification: Check if order in orders table has ALREADY been paid
     // Prevents checkout page from ever flashing or asking for payment when order is already settled.
@@ -391,7 +391,7 @@ export async function POST(request, { params }) {
 
     const safeUpiId = (merchant?.upi_id && merchant.upi_id !== 'pending@upi' && merchant.upi_id.includes('@'))
       ? merchant.upi_id
-      : (CONFIG.upiId || '9410181307@okbizaxis');
+      : (CONFIG.upiId || '');
 
     return NextResponse.json({
       success: true,

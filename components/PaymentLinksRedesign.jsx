@@ -3020,7 +3020,7 @@ export default function PaymentLinksRedesign({
                         type="text"
                         value={standeeBusinessName || profile?.business_name || profile?.owner_name || ''}
                         onChange={(e) => setStandeeBusinessName(e.target.value)}
-                        placeholder="e.g. Deadraon Enterprise"
+                        placeholder="e.g. Acme Tech Studio"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       />
                     </div>

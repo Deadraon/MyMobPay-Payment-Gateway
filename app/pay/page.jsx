@@ -41,7 +41,7 @@ function getValidUpiId(merchant) {
   if (vpa && vpa !== 'pending@upi' && vpa.includes('@') && !vpa.startsWith('pending@')) {
     return vpa;
   }
-  return CONFIG.upiId || '9410181307@okbizaxis';
+  return CONFIG.upiId || '';
 }
 
 /* ── UPI deep-link builder ──────────────────────────────────── */

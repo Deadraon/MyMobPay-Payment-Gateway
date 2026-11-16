@@ -455,7 +455,7 @@ export default function PlatformSubscriptionsHub({
                           <span className="font-mono text-[11px] text-slate-700 dark:text-slate-300 font-semibold">
                             {order.utr || order.customer_utr || 'Awaiting Bank UTR'}
                           </span>
-                          <span className="text-[10px] text-slate-400">Direct IndusInd UPI Rail</span>
+                          <span className="text-[10px] text-slate-400">Direct UPI Rail</span>
                         </div>
                       </td>
 

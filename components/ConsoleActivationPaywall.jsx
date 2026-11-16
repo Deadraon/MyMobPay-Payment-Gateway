@@ -110,7 +110,7 @@ export default function ConsoleActivationPaywall({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const merchantVpa = CONFIG.upiId || '9410181307@okbizaxis';
+  const merchantVpa = CONFIG.upiId || 'billing@mymobpay';
   const callbackUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'https://www.mymobpay.tech/dashboard';
   const merchantId = formatMerchantId(profile?.id);
 

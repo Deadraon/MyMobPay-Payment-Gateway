@@ -558,7 +558,7 @@ export default function MerchantOnboardingWizard({
                             setUpiId(e.target.value.toLowerCase().trim());
                             setUpiError('');
                           }}
-                          placeholder="e.g. 9410181307@okbizaxis"
+                          placeholder="e.g. merchant@okhdfcbank"
                           className="bg-transparent font-mono text-sm sm:text-base font-bold text-white placeholder:text-slate-500 focus:outline-none w-full tracking-wide"
                           autoFocus
                         />

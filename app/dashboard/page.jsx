@@ -135,7 +135,7 @@ export default function DashboardPage() {
     return profile?.sandbox_mode !== false;
   }, [isLiveUnlocked, profile?.sandbox_mode]);
 
-  // Primary Bank Account Resolution (localStorage or profile or Deadraon account)
+  // Primary Bank Account Resolution (localStorage or profile)
   const attachedBank = useMemo(() => {
     if (typeof window !== 'undefined' && user?.id) {
       try {
@@ -160,19 +160,6 @@ export default function DashboardPage() {
         bank_account_name: profile.bank_account_name || profile.business_name || profile.owner_name || 'MyMobPay Merchant',
         bank_account_number: profile.bank_account_number || '',
         bank_ifsc: profile.bank_ifsc || '',
-        account_type: 'Current Account',
-        is_primary: true
-      };
-    }
-    const isDeadraon = (profile?.business_name?.toLowerCase().includes('deadraon')) ||
-                        (user?.email?.toLowerCase().includes('deadraon'));
-    if (isDeadraon) {
-      return {
-        id: 'deadraon_primary_bank',
-        bank_name: 'IndusInd Bank',
-        bank_account_name: 'MyMobPay PvLT.',
-        bank_account_number: '916396714325',
-        bank_ifsc: 'INDB0001077',
         account_type: 'Current Account',
         is_primary: true
       };
@@ -1586,11 +1573,13 @@ export default function DashboardPage() {
   };
 
   const handleSignOut = async () => {
-
+    try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.clear();
+      }
+    } catch (_) {}
     await supabase.auth.signOut();
-
     router.push('/login');
-
   };
 
   const handleSaveProfileModal = async () => {
@@ -3229,7 +3218,7 @@ echo "Order Created: " . $data['orderId'];
               <span className="font-mono text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-[var(--theme-bg-secondary,#EAEEFA)] text-[#0F2BFF] dark:text-[#60A5FA]">v2.1</span>
             </div>
             <div className="mt-1 flex items-center justify-between font-mono text-[9.5px] text-[var(--theme-text-muted,#5E6782)]">
-              <span>{attachedBank ? `${attachedBank.bank_name.split(' ')[0]} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}` : 'UPI Direct'}</span>
+              <span>{attachedBank ? `${attachedBank.bank_name.split(' ')[0]} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '••••'}` : 'UPI Direct'}</span>
               <span className="text-[#10B981] font-bold">142ms T+0</span>
             </div>
           </div>
@@ -3499,7 +3488,7 @@ echo "Order Created: " . $data['orderId'];
               className="hidden md:inline-flex"
             />
 
-            {/* Merchant Profile Pill: Deadraon */}
+            {/* Merchant Profile Pill */}
             <div className="relative select-none shrink-0">
               <button
                 type="button"
@@ -3517,7 +3506,7 @@ echo "Order Created: " . $data['orderId'];
                 </div>
                 <div className="hidden sm:block text-left leading-tight">
                   <div className="text-[11.5px] font-extrabold text-[var(--theme-text-primary,#090D18)] flex items-center gap-1">
-                    <span className="truncate max-w-[105px]">{profile?.business_name || profile?.owner_name || 'Deadraon'}</span>
+                    <span className="truncate max-w-[105px]">{profile?.business_name || profile?.owner_name || 'My Account'}</span>
                     <ChevronDown className="w-3 h-3 text-[var(--theme-text-muted,#5E6782)]" />
                   </div>
                   <div className="font-mono text-[9px] text-[var(--theme-text-muted,#5E6782)] truncate max-w-[105px]">

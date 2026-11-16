@@ -401,7 +401,7 @@ export async function GET(request) {
 
     if (merchant) {
       if (!merchant.upi_id || merchant.upi_id === 'pending@upi' || !merchant.upi_id.includes('@')) {
-        merchant.upi_id = CONFIG.upiId || '9410181307@okbizaxis';
+        merchant.upi_id = CONFIG.upiId || '';
       }
     }
 

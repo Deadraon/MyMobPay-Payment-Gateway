@@ -21,7 +21,7 @@ if (existsSync(envLocalPath)) {
   });
 }
 
-const targetPhone = process.argv[2] || '6396714325';
+const targetPhone = process.argv[2] || '9876543210';
 
 console.log('====================================================');
 console.log('📱 MyMobPay WhatsApp Gateway Service Diagnostic');

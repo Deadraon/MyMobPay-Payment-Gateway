@@ -162,40 +162,22 @@ export default function DashboardOverviewRedesign({
       };
     }
 
-    // 3. Fallback for the user's specific account (Deadraon) if not yet filled in DB
-    const isDeadraon = (profile?.business_name?.toLowerCase().includes('deadraon')) ||
-                        (user?.email?.toLowerCase().includes('deadraon'));
-    if (isDeadraon) {
-      return {
-        id: 'deadraon_primary_bank',
-        bank_name: 'IndusInd Bank',
-        bank_account_name: 'MyMobPay PvLT.',
-        bank_account_number: '916396714325',
-        bank_ifsc: 'INDB0001077',
-        account_type: 'Current Account',
-        is_primary: true
-      };
-    }
-
     return null;
   }, [profile, user]);
 
   // Merchant display identity
   const businessName = profile?.business_name || profile?.owner_name || 'My Business';
-  const merchantVpa = profile?.upi_id || '9410181307@okbizaxis';
+  const merchantVpa = (profile?.upi_id && profile.upi_id !== 'pending@upi' && profile.upi_id.includes('@'))
+    ? profile.upi_id
+    : 'Not Configured';
   const merchantId = formatMerchantId(user?.id || profile?.id);
 
   // Verified Orders and Inflow Calculations
   const verifiedOrders = useMemo(() => orders.filter(isVerified), [orders]);
   
   const totalCollections = useMemo(() => {
-    const sum = verifiedOrders.reduce((acc, o) => acc + (parseFloat(o.amount) || 0), 0);
-    // If the user is Deadraon and orders are not yet in state, fallback to the design mockup baseline 68.03
-    if (sum === 0 && (profile?.business_name?.toLowerCase().includes('deadraon') || user?.email?.toLowerCase().includes('deadraon'))) {
-      return 68.03;
-    }
-    return sum;
-  }, [verifiedOrders, profile, user]);
+    return verifiedOrders.reduce((acc, o) => acc + (parseFloat(o.amount) || 0), 0);
+  }, [verifiedOrders]);
 
   const todayStart = useMemo(() => todayIST(), []);
   const todayVerified = useMemo(() => {
@@ -226,21 +208,15 @@ export default function DashboardOverviewRedesign({
     const hasRealOrders = verifiedOrders.length > 0;
 
     if (!hasRealOrders) {
-      // Mockup benchmark distribution from redesign reference (Oct peak: ₹68.03, 29 txns)
-      return [
-        { m: 'Jan', upi: 12, imps: 8, total: '₹4.20', txns: 2, isPeak: false },
-        { m: 'Feb', upi: 15, imps: 10, total: '₹6.50', txns: 3, isPeak: false },
-        { m: 'Mar', upi: 14, imps: 9, total: '₹5.80', txns: 2, isPeak: false },
-        { m: 'Apr', upi: 18, imps: 12, total: '₹8.10', txns: 4, isPeak: false },
-        { m: 'May', upi: 42, imps: 24, total: '₹18.40', txns: 8, isPeak: false },
-        { m: 'Jun', upi: 26, imps: 16, total: '₹11.00', txns: 5, isPeak: false },
-        { m: 'Jul', upi: 16, imps: 10, total: '₹7.20', txns: 3, isPeak: false },
-        { m: 'Aug', upi: 22, imps: 15, total: '₹9.90', txns: 4, isPeak: false },
-        { m: 'Sep', upi: 36, imps: 28, total: '₹19.50', txns: 9, isPeak: false },
-        { m: 'Oct', upi: 92, imps: 76, total: '₹68.03', txns: 29, isPeak: true },
-        { m: 'Nov', upi: 38, imps: 22, total: '₹14.20', txns: 6, isLive: true },
-        { m: 'Dec', upi: 14, imps: 10, total: 'Projected', txns: 0, isProjected: true }
-      ];
+      return months.map((m, idx) => ({
+        m,
+        upi: 0,
+        imps: 0,
+        total: '₹0.00',
+        txns: 0,
+        isPeak: false,
+        isLive: idx === now.getMonth()
+      }));
     }
 
     // Compute monthly volume dynamically from real orders
@@ -295,27 +271,17 @@ export default function DashboardOverviewRedesign({
     if (hoveredMonth) {
       return `${hoveredMonth.m} Telemetry: UPI ${hoveredMonth.upi}% • IMPS ${hoveredMonth.imps}% • ${hoveredMonth.total} (${hoveredMonth.txns} txns)`;
     }
-    const peak = monthlyTelemetry.find(m => m.isPeak) || monthlyTelemetry[9];
-    return `Hover or click any month bar to inspect rail breakdown • ${peak.m} Peak: UPI ${peak.upi}% / IMPS ${peak.imps}% • ${peak.total} (${peak.txns} txns)`;
+    const peak = monthlyTelemetry.find(m => m.isPeak);
+    if (peak) {
+      return `Hover or click any month bar to inspect rail breakdown • ${peak.m} Peak: UPI ${peak.upi}% / IMPS ${peak.imps}% • ${peak.total} (${peak.txns} txns)`;
+    }
+    return 'Hover or click any month bar to inspect rail breakdown • Real-Time Direct UPI & IMPS Telemetry';
   }, [hoveredMonth, monthlyTelemetry]);
 
   // Recent Display Orders (up to 5 for Overview)
   const displayRecentOrders = useMemo(() => {
-    if (orders.length > 0) {
-      return orders.slice(0, 5);
-    }
-    // Fallback standard sample dataset for Deadraon matching the redesign HTML
-    if (profile?.business_name?.toLowerCase().includes('deadraon') || user?.email?.toLowerCase().includes('deadraon')) {
-      return [
-        { id: 'txn_8849201', order_id: 'ORD-2026-029', rail: 'UPI', customer_vpa: 'rahul.sharma@okicici', utr_number: '431988210492', amount: 25.00, status: 'settled', created_at: new Date(Date.now() - 2 * 60000).toISOString() },
-        { id: 'txn_8849198', order_id: 'ORD-2026-028', rail: 'IMPS', customer_vpa: 'acme.studio@hdfcbank', utr_number: '431977109381', amount: 18.03, status: 'settled', created_at: new Date(Date.now() - 19 * 60000).toISOString() },
-        { id: 'txn_8849174', order_id: 'ORD-2026-027', rail: 'UPI', customer_vpa: 'priya.verma@ybl', utr_number: '431965001928', amount: 15.00, status: 'settled', created_at: new Date(Date.now() - 60 * 60000).toISOString() },
-        { id: 'txn_8849150', order_id: 'ORD-2026-026', rail: 'UPI', customer_vpa: 'kiran.dev@okaxis', utr_number: '431954992011', amount: 10.00, status: 'settled', created_at: new Date(Date.now() - 180 * 60000).toISOString() },
-        { id: 'txn_8849112', order_id: 'ORD-2026-025', rail: 'UPI', customer_vpa: 'timeout.user@paytm', utr_number: '', amount: 500.00, status: 'failed', created_at: new Date(Date.now() - 300 * 60000).toISOString() }
-      ];
-    }
-    return [];
-  }, [orders, profile, user]);
+    return orders.slice(0, 5);
+  }, [orders]);
 
   // Copy helper
   const copyText = (text, label) => {
@@ -374,10 +340,10 @@ export default function DashboardOverviewRedesign({
           <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
             Zero platform custody or escrow &bull; Direct NPCI settlement to{' '}
             <strong className="text-[var(--theme-text-primary)]">
-              {attachedBank ? (
-                `${attachedBank.bank_name} (•••• ${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'})`
+              {attachedBank?.bank_name ? (
+                `${attachedBank.bank_name} (•••• ${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '••••'})`
               ) : (
-                merchantVpa
+                merchantVpa !== 'Not Configured' ? merchantVpa : 'Direct Bank Settlement'
               )}
             </strong>
           </p>
@@ -429,7 +395,7 @@ export default function DashboardOverviewRedesign({
               <span>T+0</span>
             </span>
             <span className="font-mono text-[var(--theme-text-muted)] truncate text-right hidden sm:inline">
-              {attachedBank ? `${attachedBank.bank_name?.split(' ')[0] || 'Bank'} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}` : 'Direct UPI Active'}
+              {attachedBank?.bank_name ? `${attachedBank.bank_name.split(' ')[0] || 'Bank'} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '••••'}` : 'Direct UPI Active'}
             </span>
           </div>
         </div>
@@ -557,10 +523,10 @@ export default function DashboardOverviewRedesign({
                     <Landmark className="w-4 h-4 text-[#10B981]" />
                   </div>
                   <span className="text-[var(--theme-text-primary)] truncate max-w-[90px]">
-                    {attachedBank ? (
-                      `${attachedBank.bank_name.split(' ')[0]} ..${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}`
+                    {attachedBank?.bank_name ? (
+                      `${attachedBank.bank_name.split(' ')[0]} ..${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '••••'}`
                     ) : (
-                      'Settlement VPA'
+                      'Settlement'
                     )}
                   </span>
                 </div>
@@ -568,7 +534,7 @@ export default function DashboardOverviewRedesign({
             </div>
 
             {/* Bank Account Details Card or New Account Connect Prompt */}
-            {attachedBank ? (
+            {attachedBank && attachedBank.bank_name ? (
               <div className="mt-4 rounded-2xl p-4 bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
@@ -590,8 +556,8 @@ export default function DashboardOverviewRedesign({
                     <div className="mt-0.5 flex items-center gap-1.5">
                       <span className="font-mono text-xs font-bold text-[var(--theme-text-primary)]">
                         {vaultMasked
-                          ? `•••• •••• ${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}`
-                          : attachedBank.bank_account_number || '•••• 4325'}
+                          ? `•••• •••• ${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '••••'}`
+                          : attachedBank.bank_account_number || '•••• ••••'}
                       </span>
                       <button
                         type="button"
@@ -608,16 +574,18 @@ export default function DashboardOverviewRedesign({
                     <div className="text-[10px] font-semibold text-[var(--theme-text-muted)]">IFSC Code</div>
                     <div className="mt-0.5 flex items-center gap-1.5">
                       <span className="font-mono text-xs font-bold text-[var(--theme-text-primary)]">
-                        {attachedBank.bank_ifsc || 'INDB0001077'}
+                        {attachedBank.bank_ifsc || '—'}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => copyText(attachedBank.bank_ifsc || 'INDB0001077', `IFSC ${attachedBank.bank_ifsc || 'INDB0001077'} copied`)}
-                        className="text-[var(--theme-text-muted)] hover:text-[#0F2BFF] p-0.5 cursor-pointer"
-                        title="Copy IFSC"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
+                      {attachedBank.bank_ifsc && (
+                        <button
+                          type="button"
+                          onClick={() => copyText(attachedBank.bank_ifsc, `IFSC ${attachedBank.bank_ifsc} copied`)}
+                          className="text-[var(--theme-text-muted)] hover:text-[#0F2BFF] p-0.5 cursor-pointer"
+                          title="Copy IFSC"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -627,13 +595,15 @@ export default function DashboardOverviewRedesign({
                   <span className="font-mono text-[11px] font-semibold text-[var(--theme-text-primary)] truncate">
                     VPA: <strong>{merchantVpa}</strong>
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => copyText(merchantVpa, 'Merchant VPA copied to clipboard')}
-                    className="font-mono text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline shrink-0 cursor-pointer"
-                  >
-                    Copy VPA
-                  </button>
+                  {merchantVpa !== 'Not Configured' && (
+                    <button
+                      type="button"
+                      onClick={() => copyText(merchantVpa, 'Merchant VPA copied to clipboard')}
+                      className="font-mono text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline shrink-0 cursor-pointer"
+                    >
+                      Copy VPA
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
@@ -799,8 +769,8 @@ export default function DashboardOverviewRedesign({
           </span>
           <div className="min-w-0">
             <div className="text-xs font-bold text-[var(--theme-text-primary)] truncate">
-              {attachedBank ? (
-                `${attachedBank.bank_name} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '4325'}`
+              {attachedBank?.bank_name ? (
+                `${attachedBank.bank_name} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '••••'}`
               ) : (
                 'Direct Bank Settlement'
               )}
@@ -839,8 +809,8 @@ export default function DashboardOverviewRedesign({
             onClick={() => setActiveTab?.('transactions')}
             className="text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline inline-flex items-center gap-1 cursor-pointer shrink-0"
           >
-            <span className="hidden sm:inline">Open Full Audit Ledger ({orders.length > 0 ? orders.length : 146})</span>
-            <span className="sm:hidden">View all ({orders.length > 0 ? orders.length : 146})</span>
+            <span className="hidden sm:inline">Open Full Audit Ledger ({orders.length})</span>
+            <span className="sm:hidden">View all ({orders.length})</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
+import { CONFIG } from '@/lib/config';
 import { MyMobPayLogo, MyMobPayMark } from '@/components/MyMobPayLogo';
 import { formatRefId, generateOrderId } from '@/lib/orderId';
 import PaymentSuccessTick from '@/components/PaymentSuccessTick';
@@ -231,7 +232,7 @@ export default function DesktopCheckoutView({
   const safeBizName = (bizName && bizName !== 'Demo Store') ? bizName : 'Merchant';
   const safeActiveId = activeId ? String(activeId) : (paramRef ? String(paramRef) : generateOrderId('order'));
   const safeUpiId = (!upiId || upiId === 'pending@upi' || !upiId.includes('@')) 
-    ? '9410181307@okbizaxis' 
+    ? (CONFIG.upiId || '') 
     : upiId;
   const rawOrderRef = safeActiveId.startsWith('#')
     ? safeActiveId.replace(/^#+/, '')
