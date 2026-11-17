@@ -120,7 +120,7 @@ export default function LegalAgreementModal({
                 </div>
 
                 {/* Modal Main Heading */}
-                <h2 id="legal-modal-title" className="headline-anton text-[22px] sm:text-[28px] mt-1.5 leading-none">
+                <h2 id="legal-modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--theme-text-primary)] mt-1.5 leading-tight">
                   MERCHANT OPERATING RULES &amp; LEGAL TERMS
                 </h2>
               </div>

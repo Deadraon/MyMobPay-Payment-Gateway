@@ -326,15 +326,15 @@ export default function DashboardOverviewRedesign({
       {/* ── TOP HEADER BANNER ────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 font-mono text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
+          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
             <span>Overview</span>
             <span>/</span>
-            <span className="text-[var(--accent-link,#0F2BFF)]">Direct UPI &amp; IMPS Inflow</span>
-            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px]">
+            <span className="text-[var(--accent-link,#0F2BFF)] font-bold">Direct UPI &amp; IMPS Inflow</span>
+            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px] font-bold">
               Direct to Bank &bull; T+0
             </span>
           </div>
-          <h1 className="headline-anton text-[32px] sm:text-[40px] mt-1 text-[var(--theme-text-primary)]">
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
             BUSINESS INFLOW &amp; SETTLEMENTS
           </h1>
           <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
@@ -379,14 +379,14 @@ export default function DashboardOverviewRedesign({
           className="bento-card bento-card-interactive stagger-1 p-3.5 sm:p-5 cursor-pointer group"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-mono text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Direct Settled
             </span>
             <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#10B981]/15 text-[#10B981] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
               <Landmark className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className={`tabular-nums-stat text-[22px] sm:text-[38px] font-black leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate ${isKpiFlashing ? 'kpi-flash' : ''}`}>
+          <div className={`text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums ${isKpiFlashing ? 'kpi-flash' : ''}`}>
             {formatINR(totalCollections + simulatedInflow)}
           </div>
           <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
@@ -394,7 +394,7 @@ export default function DashboardOverviewRedesign({
               <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>T+0</span>
             </span>
-            <span className="font-mono text-[var(--theme-text-muted)] truncate text-right hidden sm:inline">
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate text-right hidden sm:inline">
               {attachedBank?.bank_name ? `${attachedBank.bank_name.split(' ')[0] || 'Bank'} ••${attachedBank.bank_account_number ? String(attachedBank.bank_account_number).slice(-4) : '••••'}` : 'Direct UPI Active'}
             </span>
           </div>
@@ -407,22 +407,22 @@ export default function DashboardOverviewRedesign({
           title="Click to simulate incoming test payment"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-mono text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Today Inflow
             </span>
             {effectiveIsSandbox ? (
-              <span className="px-1.5 sm:px-2 py-0.5 rounded-md bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[8.5px] sm:text-[9.5px] font-bold inline-flex items-center gap-1 shrink-0">
+              <span className="px-1.5 sm:px-2 py-0.5 rounded-md bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] text-[8.5px] sm:text-[9.5px] font-bold inline-flex items-center gap-1 shrink-0">
                 <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 <span>+₹500</span>
               </span>
             ) : (
-              <span className="px-1.5 sm:px-2 py-0.5 rounded-md bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[8.5px] sm:text-[9.5px] font-bold inline-flex items-center gap-1 shrink-0">
+              <span className="px-1.5 sm:px-2 py-0.5 rounded-md bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[8.5px] sm:text-[9.5px] font-bold inline-flex items-center gap-1 shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
                 <span>Live</span>
               </span>
             )}
           </div>
-          <div className={`tabular-nums-stat text-[22px] sm:text-[38px] font-black leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate ${isKpiFlashing ? 'kpi-flash' : ''}`}>
+          <div className={`text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums ${isKpiFlashing ? 'kpi-flash' : ''}`}>
             {formatINR(todayInflow + simulatedInflow)}
           </div>
           <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
@@ -438,21 +438,21 @@ export default function DashboardOverviewRedesign({
           className="bento-card bento-card-interactive stagger-3 p-3.5 sm:p-5 cursor-pointer group"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-mono text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Cleared Orders
             </span>
             <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
               <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="tabular-nums-stat text-[22px] sm:text-[38px] font-black leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate">
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
             {clearedOrdersCount + (simulatedInflow > 0 ? 1 : 0)}
           </div>
           <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
             <span className="font-bold text-[#0F2BFF] dark:text-[#60A5FA] truncate">
               {orders.length > 0 ? `${orders.length} Txns` : '22 Links'}
             </span>
-            <span className="font-mono text-[#10B981] font-bold hidden sm:inline">142ms avg</span>
+            <span className="text-[#10B981] font-semibold text-[10.5px] hidden sm:inline">142ms avg</span>
           </div>
         </div>
 
@@ -462,19 +462,19 @@ export default function DashboardOverviewRedesign({
           className="bento-card bento-card-interactive stagger-4 p-3.5 sm:p-5 cursor-pointer border-[#0F2BFF]/30 group"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-mono text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA] truncate">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA] truncate">
               Tax Deducted
             </span>
             <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
               <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="tabular-nums-stat text-[22px] sm:text-[38px] font-black leading-none text-[#10B981] mt-2 sm:mt-2.5 truncate">
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[#10B981] mt-2 sm:mt-2.5 truncate tabular-nums">
             ₹0.00 FEE
           </div>
           <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
             <span className="text-[var(--theme-text-secondary)] font-semibold truncate">100% Kept</span>
-            <span className="font-mono font-bold text-[#059669] dark:text-[#34D399] truncate hidden sm:inline">
+            <span className="font-semibold text-[#059669] dark:text-[#34D399] text-[10.5px] truncate hidden sm:inline">
               ₹{commissionSaved} saved
             </span>
           </div>
@@ -493,7 +493,7 @@ export default function DashboardOverviewRedesign({
                 <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
                 <span className="text-[14px] font-extrabold text-[var(--theme-text-primary)]">Direct-to-Bank Routing Vault</span>
               </div>
-              <span className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[var(--theme-bg-secondary)] text-[#0F2BFF] dark:text-[#60A5FA]">
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[var(--theme-bg-secondary)] text-[#0F2BFF] dark:text-[#60A5FA]">
                 Zero Escrow
               </span>
             </div>
@@ -513,7 +513,7 @@ export default function DashboardOverviewRedesign({
                   <div className="w-full h-[2px] bg-[#0F2BFF]/25 relative overflow-hidden rounded-full"></div>
                   <div className="pipeline-packet"></div>
                   <div className="pipeline-packet-delayed"></div>
-                  <span className="pipeline-core-pill absolute -top-1.5 left-1/2 -translate-x-1/2 font-mono text-[8.5px] font-bold px-2 py-0.5 rounded-full bg-[#0F2BFF] text-white shadow-xs">
+                  <span className="pipeline-core-pill absolute -top-1.5 left-1/2 -translate-x-1/2 text-[8.5px] font-bold px-2 py-0.5 rounded-full bg-[#0F2BFF] text-white shadow-xs">
                     0% CUT
                   </span>
                 </div>
@@ -545,7 +545,7 @@ export default function DashboardOverviewRedesign({
                       Beneficiary: <strong className="text-[var(--theme-text-primary)]">{attachedBank.bank_account_name || businessName}</strong>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[10px] font-bold whitespace-nowrap shrink-0">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[10px] font-bold whitespace-nowrap shrink-0">
                     Primary A/C
                   </span>
                 </div>
@@ -599,7 +599,7 @@ export default function DashboardOverviewRedesign({
                     <button
                       type="button"
                       onClick={() => copyText(merchantVpa, 'Merchant VPA copied to clipboard')}
-                      className="font-mono text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline shrink-0 cursor-pointer"
+                      className="text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline shrink-0 cursor-pointer"
                     >
                       Copy VPA
                     </button>
@@ -613,10 +613,10 @@ export default function DashboardOverviewRedesign({
                   <div>
                     <div className="text-[13px] font-extrabold text-[var(--theme-text-primary)]">Direct UPI Routing Active</div>
                     <div className="text-[11px] text-[var(--theme-text-muted)]">
-                      Collections route directly to: <strong className="text-[var(--theme-text-primary)]">{merchantVpa}</strong>
+                      Collections route directly to: <strong className="text-[var(--theme-text-primary)] font-mono">{merchantVpa}</strong>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[10px] font-bold">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] text-[10px] font-bold">
                     UPI Active
                   </span>
                 </div>
@@ -664,12 +664,12 @@ export default function DashboardOverviewRedesign({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--theme-border-color)]">
             <div>
               <div className="text-[14px] font-extrabold text-[var(--theme-text-primary)]">Settlement Velocity &amp; Rail Telemetry</div>
-              <div className="font-mono text-[11px] text-[#0F2BFF] dark:text-[#60A5FA] mt-0.5 whitespace-normal break-words leading-relaxed">
+              <div className="text-[11.5px] text-[#0F2BFF] dark:text-[#60A5FA] mt-0.5 whitespace-normal break-words leading-relaxed font-medium">
                 {chartReadoutText}
               </div>
             </div>
 
-            <div className="flex items-center gap-3 font-mono text-[10.5px]">
+            <div className="flex items-center gap-3 text-[10.5px] font-semibold">
               <span className="inline-flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-xs bg-[#0F2BFF]"></span>
                 <span className="text-[var(--theme-text-secondary)]">UPI QR</span>
@@ -684,7 +684,7 @@ export default function DashboardOverviewRedesign({
           {/* Interactive 12-Month Bar Chart */}
           <div className="overflow-x-auto no-scrollbar pt-2">
             <div className="min-w-[420px] sm:min-w-0 relative h-[220px] flex flex-col justify-end pt-6 pb-2">
-              <div className="pointer-events-none absolute inset-x-0 top-6 bottom-8 flex flex-col justify-between text-[9.5px] font-mono text-[var(--theme-text-muted)]">
+              <div className="pointer-events-none absolute inset-x-0 top-6 bottom-8 flex flex-col justify-between text-[9.5px] font-medium text-[var(--theme-text-muted)]">
                 <div className="border-b border-dashed border-[var(--theme-border-color)] pb-0.5 flex justify-between">
                   <span>100%</span>
                   <span className="hidden sm:inline">100% T+0 Rail Capacity</span>
@@ -721,7 +721,7 @@ export default function DashboardOverviewRedesign({
                 ))}
               </div>
 
-              <div className="grid grid-cols-12 gap-1.5 sm:gap-2 text-center font-mono text-[10px] text-[var(--theme-text-muted)] pt-2.5 px-2">
+              <div className="grid grid-cols-12 gap-1.5 sm:gap-2 text-center text-[10px] font-semibold text-[var(--theme-text-muted)] pt-2.5 px-2">
                 {monthlyTelemetry.map((item) => (
                   <span
                     key={item.m}
@@ -752,7 +752,7 @@ export default function DashboardOverviewRedesign({
             </div>
             <button
               type="submit"
-              className="px-4 py-2 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white font-mono text-xs font-bold shrink-0 cursor-pointer transition-colors"
+              className="px-4 py-2 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold shrink-0 cursor-pointer transition-colors"
             >
               Verify UTR
             </button>
@@ -775,7 +775,7 @@ export default function DashboardOverviewRedesign({
                 'Direct Bank Settlement'
               )}
             </div>
-            <div className="text-[10px] sm:text-[10.5px] text-[var(--theme-text-muted)] font-mono flex items-center gap-1.5 truncate">
+            <div className="text-[10px] sm:text-[10.5px] text-[var(--theme-text-muted)] font-medium flex items-center gap-1.5 truncate">
               <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] shrink-0"></span>
               <span className="truncate">0% Commission Escrow-Free &bull; T+0</span>
             </div>
@@ -800,7 +800,7 @@ export default function DashboardOverviewRedesign({
             <span className="text-[13px] sm:text-[14px] font-extrabold text-[var(--theme-text-primary)] truncate">
               Recent Transactions
             </span>
-            <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[10px] font-bold shrink-0">
+            <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[10px] font-bold shrink-0">
               Live NPCI T+0
             </span>
           </div>
@@ -821,7 +821,7 @@ export default function DashboardOverviewRedesign({
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[var(--theme-border-color)] bg-[var(--theme-bg-well)] font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
+                  <tr className="border-b border-[var(--theme-border-color)] bg-[var(--theme-bg-well)] text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
                     <th className="py-3 px-6">Order &amp; Txn ID</th>
                     <th className="py-3 px-4">Rail</th>
                     <th className="py-3 px-4">Customer VPA / Phone</th>
@@ -987,7 +987,7 @@ export default function DashboardOverviewRedesign({
             <div className="space-y-5">
               <div className="flex items-center justify-between pb-4 border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40]">
                 <div>
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
                     T+0 SETTLEMENT INSPECTOR
                   </span>
                   <h3 className="font-mono text-base font-extrabold text-[var(--theme-text-primary)] mt-0.5">
@@ -1010,7 +1010,7 @@ export default function DashboardOverviewRedesign({
                   <div className="text-xs font-semibold text-[var(--theme-text-muted)]">
                     Net Settled to {attachedBank?.bank_name || 'Bank'} (0% MDR)
                   </div>
-                  <div className="tabular-nums-stat text-4xl text-[var(--theme-text-primary)] mt-1">
+                  <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums text-[var(--theme-text-primary)] mt-1 font-sans">
                     {formatINR(selectedTx.amount || 25.00)}
                   </div>
                 </div>
@@ -1019,7 +1019,7 @@ export default function DashboardOverviewRedesign({
 
               {/* 3-Step Routing Timeline */}
               <div className="space-y-3 text-xs">
-                <div className="font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
                   NPCI Direct Routing Timeline
                 </div>
                 <div className="p-3 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] flex items-center justify-between">
@@ -1122,7 +1122,7 @@ export default function DashboardOverviewRedesign({
         >
           <div className="bg-[var(--theme-bg-elevated,#FFFFFF)] dark:bg-[#121826] border border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40] rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative max-h-[92vh] overflow-y-auto animate-fade-in">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--theme-border-color,#DCE2F2)] dark:border-[#1F2A40]">
-              <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
+              <span className="text-[10.5px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
                 DIRECT BANK STATIC QR
               </span>
               <button
@@ -1153,7 +1153,7 @@ export default function DashboardOverviewRedesign({
               />
             </div>
 
-            <div className="font-mono text-[11px] font-bold text-[#10B981]">
+            <div className="text-[11px] font-semibold text-[#10B981]">
               0% MDR &bull; Instant T+0 Direct Credit
             </div>
 
