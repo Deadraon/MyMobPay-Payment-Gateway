@@ -53,6 +53,29 @@ const FAQ_ITEMS = [
 
 const plans = [
   {
+    name: "Free Link Starter",
+    description:
+      "Great for creators and small sellers looking to get started with 0% fee payments",
+    price: 0,
+    yearlyPrice: 0,
+    isFreeForever: true,
+    buttonText: "Get started",
+    buttonVariant: "outline",
+    popular: false,
+    features: [
+      { text: "Up to 100 txns per month", icon: <Briefcase size={20} /> },
+      { text: "Dynamic UPI QR & Intent", icon: <Database size={20} /> },
+      { text: "Direct bank settlement", icon: <Server size={20} /> },
+    ],
+    includes: [
+      "Free includes:",
+      "0% Gateway commission",
+      "Instant T+0 bank settlement",
+      "Up to 10 payment links",
+      "Printable counter QR standee",
+    ],
+  },
+  {
     name: "Starter",
     description:
       "Great for small businesses and startups looking to get started with flat-rate payments",
@@ -68,11 +91,11 @@ const plans = [
       { text: "CSV statement downloads", icon: <Server size={20} /> },
     ],
     includes: [
-      "Free includes:",
-      "Direct bank settlement (T+0)",
-      "Dynamic UPI QR & Intent links",
-      "Printable counter QR standee",
-      "Live merchant analytics dashboard",
+      "Everything in Free, plus:",
+      "300 Monthly transactions",
+      "Unlimited payment links",
+      "Custom link slugs & notes",
+      "CSV financial statement exports",
     ],
   },
   {
@@ -491,16 +514,6 @@ export default function PricingClient() {
       </header>
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-8 pb-16 sm:pt-14 sm:pb-24" ref={pricingRef}>
-        {/* Radial glow background aura from design */}
-        <div
-          className="absolute top-0 left-[10%] right-[10%] w-[80%] h-[550px] z-0 pointer-events-none"
-          style={{
-            backgroundImage: `radial-gradient(circle at center, #206ce8 0%, transparent 70%)`,
-            opacity: 0.55,
-            mixBlendMode: "multiply",
-          }}
-        />
-
         <div className="text-center mb-6 max-w-3xl mx-auto relative z-10">
           <h2 className="md:text-6xl sm:text-4xl text-3xl font-medium text-gray-900 dark:text-white mb-4">
             Plans that works best for your{" "}
@@ -513,20 +526,11 @@ export default function PricingClient() {
           </p>
         </div>
 
-        <div className="relative z-10 mb-4">
+        <div className="relative z-10 mb-8">
           <PricingSwitch onSwitch={togglePricingPeriod} />
         </div>
 
-        <div className="text-center mb-4 relative z-10">
-          <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
-            Looking for zero-cost testing?{" "}
-            <Link href="/login?mode=signup" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-              Try Free Link Starter (₹0 forever &bull; 100 txns/mo) &rarr;
-            </Link>
-          </span>
-        </div>
-
-        <div className="grid md:grid-cols-3 max-w-7xl gap-4 py-6 mx-auto relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-7xl gap-4 py-6 mx-auto relative z-10">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -538,7 +542,7 @@ export default function PricingClient() {
             >
               <div>
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-3xl font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white">
                     {plan.name}
                   </h3>
                   {plan.popular && (
@@ -557,7 +561,7 @@ export default function PricingClient() {
                     ₹{isYearly ? plan.yearlyPrice : plan.price}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400 ml-1 text-sm font-medium">
-                    /{isYearly ? (plan.isMonthlyOnly ? "month" : "year") : "month"}
+                    /{plan.isFreeForever ? "forever" : isYearly ? (plan.isMonthlyOnly ? "month" : "year") : "month"}
                   </span>
                 </div>
 
