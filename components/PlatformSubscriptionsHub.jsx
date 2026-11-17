@@ -144,7 +144,15 @@ export default function PlatformSubscriptionsHub({
 
       // Plan
       const note = (o.note || '').toLowerCase();
-      if (planFilter !== 'all' && !note.includes(planFilter)) return false;
+      const amt = String(o.amount || '');
+      if (planFilter !== 'all') {
+        const matchesNote = note.includes(planFilter);
+        const matchesAmt = (planFilter === 'starter' && amt === '99') ||
+                           (planFilter === 'growth' && amt === '299') ||
+                           (planFilter === 'pro' && (amt === '499' || amt === '599')) ||
+                           (planFilter === 'flagship' && amt === '999');
+        if (!matchesNote && !matchesAmt) return false;
+      }
 
       // Search Query
       if (searchQuery.trim()) {
@@ -353,9 +361,10 @@ export default function PlatformSubscriptionsHub({
             className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1a2236] text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer"
           >
             <option value="all">All Plans</option>
-            <option value="1month">1 Month (₹499)</option>
-            <option value="2month">2 Months (₹998)</option>
-            <option value="3month">3 Months (₹1,497)</option>
+            <option value="starter">Starter (₹99)</option>
+            <option value="growth">Growth (₹299)</option>
+            <option value="pro">Pro Business (₹499)</option>
+            <option value="flagship">Flagship (₹999)</option>
           </select>
 
           {/* Refresh Button */}

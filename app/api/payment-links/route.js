@@ -58,7 +58,7 @@ export async function POST(request) {
     const isLiveMode = isLiveKey || (merchant.sandbox_mode === false && !isTestKey);
     const isPlatformAdmin = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292';
 
-    // 1b. Enforce Active Subscription for Live Mode
+    // 1b. Enforce Subscription or Free Plan (Up to 100 Link Txns/mo) for Live Mode
     if (isLiveMode) {
       let isSubActive = merchant.subscription_status === 'active';
       if (isSubActive && merchant.subscription_expires_at) {
@@ -68,10 +68,22 @@ export async function POST(request) {
       }
 
       if (!isSubActive) {
-        return NextResponse.json({
-          error: 'Your subscription has expired or is inactive. Live payment link generation is locked. Please renew or upgrade your plan in the Subscription tab.',
-          code: 'SUBSCRIPTION_EXPIRED'
-        }, { status: 403 });
+        // Free Plan: Payment Links allowed up to 100 transactions per month!
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+        const { count } = await supabaseAdmin
+          .from('orders')
+          .select('id', { count: 'exact', head: true })
+          .eq('merchant_id', merchant.id)
+          .in('status', ['verified', 'paid', 'completed'])
+          .gte('created_at', startOfMonth);
+
+        const currentMonthTxnCount = count || 0;
+        if (currentMonthTxnCount >= 100) {
+          return NextResponse.json({
+            error: 'You have reached your Free Plan limit of 100 link transactions this month. Upgrade to Starter (₹99) or Growth (₹299) in the Subscription tab to continue accepting payments.',
+            code: 'FREE_PLAN_LIMIT_REACHED'
+          }, { status: 403 });
+        }
       }
     }
 

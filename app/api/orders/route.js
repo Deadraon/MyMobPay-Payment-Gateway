@@ -78,7 +78,10 @@ export async function POST(request) {
 
     if (!isTestMode && !isAdminMerchant) {
       if (!isSubActive) {
-        return NextResponse.json({ error: 'Merchant account is inactive or expired. Please subscribe or activate trial to accept live payments.' }, { status: 403 });
+        return NextResponse.json({ 
+          error: 'Developer REST API and automated checkout orders require a Growth Plan (₹299/mo) or higher. Payment links are free up to 100 txns/mo. Please subscribe in the Subscription tab.',
+          code: 'API_SUBSCRIPTION_REQUIRED' 
+        }, { status: 403 });
       }
       if (!merchant.phone_verified) {
         return NextResponse.json({ error: 'Live payments require a verified mobile number. Please verify your phone number in Settings.', code: 'PHONE_VERIFICATION_REQUIRED' }, { status: 403 });

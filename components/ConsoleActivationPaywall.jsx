@@ -24,7 +24,7 @@ export default function ConsoleActivationPaywall({
   handleSignOut,
   onActivationComplete,
 }) {
-  const [selectedPlan, setSelectedPlan] = useState('1m'); // '1m' | '3m' | 'custom'
+  const [selectedPlan, setSelectedPlan] = useState('pro'); // 'starter' | 'growth' | 'pro' | 'flagship' | 'custom'
 
   const [copiedVpa, setCopiedVpa] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
@@ -59,10 +59,9 @@ export default function ConsoleActivationPaywall({
   // Also check if historyOrders has verified subscription order
   useEffect(() => {
     if (historyOrders && historyOrders.length > 0) {
-      const SUBSCRIPTION_NOTES = ['Subscription_1Month', 'Subscription_2Month', 'Subscription_3Month', 'Custom_Enterprise'];
       const verifiedSubOrder = historyOrders.find(o => 
         (o.status === 'verified' || o.status === 'completed' || o.status === 'success') &&
-        SUBSCRIPTION_NOTES.some(n => o.note?.includes(n))
+        (o.note?.startsWith('Subscription_') || o.note?.includes('Subscription'))
       );
       if (verifiedSubOrder && profile?.subscription_status === 'active') {
         setPaymentConfirmed(true);
@@ -114,33 +113,86 @@ export default function ConsoleActivationPaywall({
   const callbackUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'https://www.mymobpay.tech/dashboard';
   const merchantId = formatMerchantId(profile?.id);
 
-  // Plans config
+  // Plans config (4 Tiers: ₹99, ₹299, ₹499, ₹999)
   const plans = {
-    '1m': {
-      id: '1m',
-      title: language === 'hi' ? '1 महीना स्टार्टर' : '1 Month Starter',
-      badge: language === 'hi' ? 'अनुशंसित' : 'Recommended',
+    'starter': {
+      id: 'starter',
+      title: language === 'hi' ? 'स्टार्टर (100 Txns)' : 'Starter (100 Txns)',
+      badge: language === 'hi' ? 'किफायती ₹99' : 'Try Live at ₹99',
       badgeColor: 'bg-emerald-100 text-emerald-800 font-semibold',
-      priceText: '₹499.00',
-      priceSub: '₹499 / mo',
-      desc: language === 'hi' ? 'पूर्ण डैशबोर्ड और लाइव वेबहुक एक्सेस' : 'Full dashboard & live webhook access',
-      amount: 499,
-      note: 'Subscription_1Month',
+      priceText: '₹99.00',
+      priceSub: '₹99 / mo',
+      desc: language === 'hi' ? '100 ट्रांजैक्शन/माह • सीधा बैंक सेटलमेंट' : '100 transactions/mo • Live UPI Direct Settlement',
+      amount: 99,
+      note: 'Subscription_1Month_Starter',
+      icon: Zap,
+      iconColor: 'bg-emerald-50 text-emerald-600',
+    },
+    'growth': {
+      id: 'growth',
+      title: language === 'hi' ? 'ग्रोथ (500 Txns)' : 'Growth (500 Txns)',
+      badge: language === 'hi' ? 'वैल्यू' : 'Value',
+      badgeColor: 'bg-blue-100 text-blue-800 font-semibold',
+      priceText: '₹299.00',
+      priceSub: '₹299 / mo',
+      desc: language === 'hi' ? '500 ट्रांजैक्शन/माह • ऑटो UTR व असीमित लिंक्स' : '500 transactions/mo • Auto UTR & Unlimited Links',
+      amount: 299,
+      note: 'Subscription_1Month_Growth',
       icon: Calendar,
       iconColor: 'bg-sky-50 text-sky-600',
     },
-    '3m': {
-      id: '3m',
-      title: language === 'hi' ? '3 महीने ग्रोथ' : '3 Months Growth',
-      badge: language === 'hi' ? '5% छूट' : 'Save 5%',
-      badgeColor: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-      priceText: '₹1,497.00',
-      priceSub: '₹1,497 (₹499/mo)',
-      desc: language === 'hi' ? '3 महीने का संपूर्ण फिनटेक सूट' : 'Complete 3-month fintech suite',
-      amount: 1497,
-      note: 'Subscription_3Month',
+    'pro': {
+      id: 'pro',
+      title: language === 'hi' ? 'प्रो बिज़नेस (2K Txns)' : 'Pro Business (2K Txns)',
+      badge: language === 'hi' ? 'सबसे लोकप्रिय' : 'Most Popular',
+      badgeColor: 'bg-indigo-100 text-indigo-800 font-semibold',
+      priceText: '₹499.00',
+      priceSub: '₹499 / mo',
+      desc: language === 'hi' ? '2,000 ट्रांजैक्शन/माह • रियल-टाइम बैंक मिलान' : '2,000 transactions/mo • Real-time Polling & 3 Staff',
+      amount: 499,
+      note: 'Subscription_1Month_Pro',
       icon: Rocket,
-      iconColor: 'bg-slate-100 text-slate-700',
+      iconColor: 'bg-indigo-50 text-indigo-600',
+    },
+    'flagship': {
+      id: 'flagship',
+      title: language === 'hi' ? 'फ्लैगशिप अनलिमिटेड' : 'Flagship Unlimited',
+      badge: language === 'hi' ? 'अनलिमिटेड' : 'Unlimited Everything',
+      badgeColor: 'bg-purple-100 text-purple-800 font-semibold',
+      priceText: '₹999.00',
+      priceSub: '₹999 / mo',
+      desc: language === 'hi' ? 'असीमित वॉल्यूम • 24/7 VIP सपोर्ट और मासिक स्टेटमेंट' : 'Unlimited volume • 24/7 WhatsApp Hotline & Monthly Email Statements',
+      amount: 999,
+      note: 'Subscription_1Month_Flagship',
+      icon: Building2,
+      iconColor: 'bg-purple-50 text-purple-600',
+    },
+    // Backwards compatibility mappings for legacy stored selections
+    '1m': {
+      id: 'pro',
+      title: 'Pro Business (2K Txns)',
+      badge: 'Most Popular',
+      badgeColor: 'bg-indigo-100 text-indigo-800 font-semibold',
+      priceText: '₹499.00',
+      priceSub: '₹499 / mo',
+      desc: '2,000 transactions/mo • Real-time Polling & 3 Staff',
+      amount: 499,
+      note: 'Subscription_1Month_Pro',
+      icon: Rocket,
+      iconColor: 'bg-indigo-50 text-indigo-600',
+    },
+    '3m': {
+      id: 'flagship',
+      title: 'Flagship Unlimited',
+      badge: 'Unlimited Everything',
+      badgeColor: 'bg-purple-100 text-purple-800 font-semibold',
+      priceText: '₹999.00',
+      priceSub: '₹999 / mo',
+      desc: 'Unlimited volume • 24/7 WhatsApp Hotline & Monthly Email Statements',
+      amount: 999,
+      note: 'Subscription_1Month_Flagship',
+      icon: Building2,
+      iconColor: 'bg-purple-50 text-purple-600',
     },
     custom: {
       id: 'custom',
@@ -157,7 +209,7 @@ export default function ConsoleActivationPaywall({
     }
   };
 
-  const currentPlan = plans[selectedPlan] || plans['1m'];
+  const currentPlan = plans[selectedPlan] || plans['pro'];
   const payUrl = currentPlan.amount > 0 
     ? `/pay?api_key=${CONFIG.platformApiKey}&amount=${currentPlan.amount}&ref=${profile?.id || ''}&note=${currentPlan.note}&callback=${encodeURIComponent(callbackUrl)}`
     : '#';
@@ -303,11 +355,10 @@ export default function ConsoleActivationPaywall({
   };
 
   // Only show past subscription if there's a verified/completed subscription order
-  const SUBSCRIPTION_NOTES = ['Subscription_1Month', 'Subscription_2Month', 'Subscription_3Month', 'Custom_Enterprise'];
   const latestPastOrder = historyOrders && historyOrders.length > 0
     ? historyOrders.find(o =>
         (o.status === 'verified' || o.status === 'completed' || o.status === 'success') &&
-        SUBSCRIPTION_NOTES.some(n => o.note?.includes(n))
+        (o.note?.startsWith('Subscription_') || o.note?.includes('Subscription'))
       ) || null
     : null;
 
@@ -572,92 +623,128 @@ export default function ConsoleActivationPaywall({
                 {language === 'hi' ? 'सक्रियण योजना चुनें' : 'Select Activation Plan'}
               </p>
 
-              {/* Option 1: 1 Month Starter */}
+              {/* Option 1: Starter (₹99) */}
               <div 
-                onClick={() => setSelectedPlan('1m')}
-                className={`w-full text-left p-3.5 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
-                  selectedPlan === '1m' 
-                    ? 'bg-white border-2 border-sky-500 shadow-sm' 
-                    : 'bg-white hover:bg-slate-50 border border-slate-200'
-                }`}
-                id="plan-1m"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-sky-50 flex items-center justify-center text-sky-600 shrink-0">
-                    <Calendar className="w-6 h-6 text-sky-600" />
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-1.5">
-                      <span className="text-sm font-bold text-slate-900">{plans['1m'].title}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 font-bold">
-                        {plans['1m'].badge}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-0.5">{plans['1m'].desc}</p>
-                  </div>
-                </div>
-                {selectedPlan === '1m' ? (
-                  <CheckCircle2 className="w-5 h-5 text-sky-600 font-bold" />
-                ) : (
-                  <ChevronRight className="w-5 h-5 text-slate-300 font-bold" />
-                )}
-              </div>
-
-              {/* Option 3: 3 Months Growth */}
-              <div 
-                onClick={() => setSelectedPlan('3m')}
-                className={`w-full text-left p-3.5 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
-                  selectedPlan === '3m' 
+                onClick={() => setSelectedPlan('starter')}
+                className={`w-full text-left p-3 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
+                  selectedPlan === 'starter' 
                     ? 'bg-white border-2 border-emerald-500 shadow-sm' 
                     : 'bg-white hover:bg-slate-50 border border-slate-200'
                 }`}
-                id="plan-3m"
+                id="plan-starter"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700 shrink-0">
-                    <Rocket className="w-6 h-6 text-slate-700" />
+                  <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
+                    <Zap className="w-5 h-5 text-emerald-600" />
                   </div>
                   <div>
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-sm font-bold text-slate-900">{plans['3m'].title}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
-                        {plans['3m'].badge}
+                      <span className="text-xs sm:text-sm font-bold text-slate-900">{plans.starter.title}</span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-bold">
+                        {plans.starter.badge}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-900 font-semibold mt-0.5">
-                      ₹1,497 <span className="text-slate-400 font-normal text-[11px]">(₹499/mo)</span>
-                    </p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">{plans.starter.desc}</p>
                   </div>
                 </div>
-                {selectedPlan === '3m' ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 font-bold" />
+                {selectedPlan === 'starter' ? (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 font-bold shrink-0 ml-1" />
                 ) : (
-                  <ChevronRight className="w-5 h-5 text-slate-300 font-bold" />
+                  <ChevronRight className="w-4 h-4 text-slate-300 shrink-0 ml-1" />
                 )}
               </div>
 
-              {/* Option 4: Custom Enterprise */}
+              {/* Option 2: Growth (₹299) */}
               <div 
-                onClick={() => { setSelectedPlan('custom'); setShowEnterpriseModal(true); }}
+                onClick={() => setSelectedPlan('growth')}
                 className={`w-full text-left p-3 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
-                  selectedPlan === 'custom'
-                    ? 'bg-white border-2 border-slate-700 shadow-sm'
-                    : 'bg-white/60 hover:bg-white border border-dashed border-slate-300'
+                  selectedPlan === 'growth' 
+                    ? 'bg-white border-2 border-sky-500 shadow-sm' 
+                    : 'bg-white hover:bg-slate-50 border border-slate-200'
                 }`}
-                id="plan-custom"
+                id="plan-growth"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
-                    <Building2 className="w-6 h-6 text-slate-600" />
+                  <div className="w-9 h-9 rounded-lg bg-sky-50 flex items-center justify-center text-sky-600 shrink-0">
+                    <Calendar className="w-5 h-5 text-sky-600" />
                   </div>
                   <div>
-                    <span className="text-sm font-bold text-slate-800">{plans.custom.title}</span>
-                    <p className="text-[11px] text-slate-500">{plans.custom.desc}</p>
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-xs sm:text-sm font-bold text-slate-900">{plans.growth.title}</span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-sky-100 text-sky-800 font-bold">
+                        {plans.growth.badge}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-0.5">{plans.growth.desc}</p>
                   </div>
                 </div>
-                <span className="text-[11px] font-semibold text-sky-600 hover:underline">
-                  {plans.custom.badge}
-                </span>
+                {selectedPlan === 'growth' ? (
+                  <CheckCircle2 className="w-5 h-5 text-sky-600 font-bold shrink-0 ml-1" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-slate-300 shrink-0 ml-1" />
+                )}
+              </div>
+
+              {/* Option 3: Pro Business (₹499 - Recommended) */}
+              <div 
+                onClick={() => setSelectedPlan('pro')}
+                className={`w-full text-left p-3 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
+                  selectedPlan === 'pro' || selectedPlan === '1m'
+                    ? 'bg-white border-2 border-indigo-500 shadow-sm' 
+                    : 'bg-white hover:bg-slate-50 border border-slate-200'
+                }`}
+                id="plan-pro"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
+                    <Rocket className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-xs sm:text-sm font-bold text-slate-900">{plans.pro.title}</span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 font-bold">
+                        {plans.pro.badge}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-0.5">{plans.pro.desc}</p>
+                  </div>
+                </div>
+                {(selectedPlan === 'pro' || selectedPlan === '1m') ? (
+                  <CheckCircle2 className="w-5 h-5 text-indigo-600 font-bold shrink-0 ml-1" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-slate-300 shrink-0 ml-1" />
+                )}
+              </div>
+
+              {/* Option 4: Flagship Unlimited (₹999) */}
+              <div 
+                onClick={() => setSelectedPlan('flagship')}
+                className={`w-full text-left p-3 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
+                  selectedPlan === 'flagship' || selectedPlan === '3m'
+                    ? 'bg-white border-2 border-purple-500 shadow-sm' 
+                    : 'bg-white hover:bg-slate-50 border border-slate-200'
+                }`}
+                id="plan-flagship"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                    <Building2 className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-xs sm:text-sm font-bold text-slate-900">{plans.flagship.title}</span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-800 font-bold">
+                        {plans.flagship.badge}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-0.5">{plans.flagship.desc}</p>
+                  </div>
+                </div>
+                {(selectedPlan === 'flagship' || selectedPlan === '3m') ? (
+                  <CheckCircle2 className="w-5 h-5 text-purple-600 font-bold shrink-0 ml-1" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-slate-300 shrink-0 ml-1" />
+                )}
               </div>
             </div>
 

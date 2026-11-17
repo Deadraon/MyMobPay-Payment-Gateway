@@ -36,7 +36,7 @@ export default function SubscriptionRedesign({
   setActiveTab
 }) {
   // ── Modal & Flow States ───────────────────────────────────────
-  const [selectedPlanId, setSelectedPlanId] = useState('1month');
+  const [selectedPlanId, setSelectedPlanId] = useState('pro');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showContactSalesModal, setShowContactSalesModal] = useState(false);
   const { isMounted: isDetailsModalMounted, modalClass: detailsModalClass, overlayClass: detailsOverlayClass } = useModalTransition(showDetailsModal);
@@ -116,16 +116,25 @@ export default function SubscriptionRedesign({
     const totalDays = profile?.subscription_plan === '3months' ? 90 : profile?.subscription_plan === '2months' ? 60 : 30;
     const percentRemaining = totalDays > 0 ? Math.min(100, Math.max(0, Math.round((daysLeft / totalDays) * 100))) : 0;
 
-    const planTitle = profile?.subscription_plan === '3months'
-      ? '3 Months Plan (Quarterly)'
-      : profile?.subscription_plan === '2months'
-      ? '2 Months Plan (Bi-Monthly)'
-      : 'Standard Plan (1 Month)';
+    const planTypeStr = String(profile?.subscription_plan || profile?.setup_progress?.plan_type || '').toLowerCase();
+    const planTitle = planTypeStr.includes('flagship') || planTypeStr.includes('999')
+      ? 'Flagship Unlimited Plan'
+      : planTypeStr.includes('pro') || planTypeStr.includes('499')
+      ? 'Pro Business Plan'
+      : planTypeStr.includes('growth') || planTypeStr.includes('299')
+      ? 'Growth Plan'
+      : planTypeStr.includes('starter') || planTypeStr.includes('99')
+      ? 'Starter Plan'
+      : 'Active Subscription Plan';
 
-    const planAmount = profile?.subscription_plan === '3months'
-      ? 1497
-      : profile?.subscription_plan === '2months'
-      ? 998
+    const planAmount = planTypeStr.includes('flagship') || planTypeStr.includes('999')
+      ? 999
+      : planTypeStr.includes('pro') || planTypeStr.includes('499')
+      ? 499
+      : planTypeStr.includes('growth') || planTypeStr.includes('299')
+      ? 299
+      : planTypeStr.includes('starter') || planTypeStr.includes('99')
+      ? 99
       : 499;
 
     const paymentMethodUsed = historyOrders?.[0]?.payment_mode || historyOrders?.[0]?.payment_method || 'Direct UPI Settlement (0% MDR)';
@@ -164,68 +173,77 @@ export default function SubscriptionRedesign({
     return Math.max(0, Math.round(totalVerifiedVolume * 0.02));
   }, [totalVerifiedVolume]);
 
-  // ── Plan Definitions ──────────────────────────────────────────
+  // ── Plan Definitions (4 Tiers: ₹99, ₹299, ₹499, ₹999) ─────────
   const plans = useMemo(() => {
     return [
       {
-        id: '1month',
-        title: '1 Month',
-        subtitle: 'Standard monthly billing',
+        id: 'starter',
+        title: 'Starter',
+        subtitle: '100 Transactions / Month',
+        amount: 99,
+        durationDays: 30,
+        badge: 'Try Live at ₹99',
+        badgeClass: 'bg-emerald-600 text-white',
+        features: [
+          'Up to 100 txns / month (₹25K vol)',
+          'Direct Bank Settlement (0% MDR)',
+          'Universal UPI Intent & Dynamic QR',
+          'Up to 10 Payment Links',
+          '2 Signed Webhook Endpoints',
+          'Standard Email Support (48h)'
+        ]
+      },
+      {
+        id: 'growth',
+        title: 'Growth',
+        subtitle: '500 Transactions / Month',
+        amount: 299,
+        durationDays: 30,
+        badge: 'Value',
+        badgeClass: 'bg-sky-600 text-white',
+        features: [
+          'Up to 500 txns / month (₹1L vol)',
+          'Everything in Starter',
+          'Automated UTR Bank Matching',
+          'Unlimited Payment Links & Counter QR',
+          '5 Webhooks with Auto-Retry',
+          'Priority Email Support (24h)'
+        ]
+      },
+      {
+        id: 'pro',
+        title: 'Pro Business',
+        subtitle: '2,000 Transactions / Month',
         amount: 499,
         durationDays: 30,
-        badge: 'Active / Most Popular',
-        badgeClass: 'bg-blue-600 text-white',
+        badge: 'Most Popular',
+        badgeClass: 'bg-indigo-600 text-white',
         features: [
-          'Direct Bank Settlement (0% MDR)',
-          'Real-time UPI QR Generation',
-          'HMAC SHA-256 Webhooks',
-          'Automated Bank Reconciliation'
+          'Up to 2,000 txns / month (₹5L vol)',
+          'Everything in Growth',
+          'Real-Time Automated Bank Polling',
+          'High Concurrency Webhooks (Zero drops)',
+          'Up to 3 Staff / Team Member Seats',
+          'Full GST & Inflow Accounting Reports',
+          'Fast Priority Support (12h SLA)'
         ]
       },
       {
-        id: '2months',
-        title: '2 Months',
-        subtitle: 'Bi-monthly discounted renewal',
-        amount: 998,
-        durationDays: 60,
-        badge: 'Saver',
-        badgeClass: 'bg-blue-50 text-blue-700 border border-blue-200',
+        id: 'flagship',
+        title: 'Flagship Unlimited',
+        subtitle: 'Unlimited Volume & 24/7 VIP',
+        amount: 999,
+        durationDays: 30,
+        badge: 'Unlimited Power',
+        badgeClass: 'bg-purple-600 text-white',
         features: [
-          'All Standard Plan features',
-          'Direct Bank Settlement (0% MDR)',
-          'Priority statement parsing',
-          'Zero setup or hidden fees'
-        ]
-      },
-      {
-        id: '3months',
-        title: '3 Months',
-        subtitle: 'Quarterly bulk billing',
-        amount: 1497,
-        durationDays: 90,
-        badge: 'Quarterly',
-        badgeClass: 'bg-blue-50 text-blue-700 border border-blue-200',
-        features: [
-          'All Standard Plan features',
-          'Direct Bank Settlement (0% MDR)',
-          'Multi-account routing support',
-          'Priority email & chat support'
-        ]
-      },
-      {
-        id: 'custom',
-        title: 'Custom Plan',
-        subtitle: 'Enterprise high throughput',
-        amount: 0,
-        durationDays: 365,
-        badge: 'High Volume',
-        badgeClass: 'bg-[#0c2340] text-white',
-        isCustom: true,
-        features: [
-          'Bespoke high-volume routing',
-          'Dedicated matching worker instances',
-          'Custom SLA & account manager',
-          'Sub-merchant console controls'
+          'UNLIMITED Transactions & Revenue Volume',
+          'Everything in Pro Business',
+          '24/7 Dedicated WhatsApp & Phone Hotline (<1h)',
+          'Automated Monthly PDF Bank Statements (via Email)',
+          'White-Label Checkout (Remove MyMobPay branding)',
+          'Unlimited Staff Accounts (RBAC)',
+          'Dedicated Webhook Rail & Replay Logs'
         ]
       }
     ];
