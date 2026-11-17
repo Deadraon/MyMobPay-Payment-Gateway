@@ -2,14 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import {
   Check,
+  CheckCheck,
   ArrowRight,
   Zap,
   Shield,
+  ShieldCheck,
   Sparkles,
   Lock,
-  ChevronDown
+  ChevronDown,
+  QrCode,
+  Code2,
+  Server,
+  FileText,
+  Headphones
 } from 'lucide-react';
 import { MyMobPayLogoMark } from '@/components/MyMobPayLogo';
 import ThemeToggleButton from '@/components/ThemeToggleButton';
@@ -38,6 +46,120 @@ const FAQ_ITEMS = [
   {
     q: 'What payment rails are supported across all plans?',
     a: 'All plans include direct-to-bank UPI (Google Pay, PhonePe, Paytm, BHIM, Cred, and all bank UPI apps) plus IMPS bank rails with real-time automated UTR verification.',
+  },
+];
+
+const PLANS = [
+  {
+    id: 'free',
+    name: 'Free Link Starter',
+    description: 'Ideal for creators, social sellers and zero-cost live testing.',
+    monthlyPrice: 0,
+    annualPrice: 0,
+    monthlySuffix: '/ forever',
+    annualSuffix: '/ forever',
+    monthlyNote: 'Up to 100 transactions / month',
+    annualNote: 'Free forever with 0% gateway commission',
+    buttonText: 'Start Free Forever',
+    buttonVariant: 'ghost',
+    href: '/login?mode=signup',
+    features: [
+      { text: '100 Transactions / month', icon: <Zap className="w-4 h-4 text-emerald-500" /> },
+      { text: 'Dynamic UPI QR & Intent links', icon: <QrCode className="w-4 h-4 text-emerald-500" /> },
+      { text: 'Direct Bank Settlement (T+0)', icon: <ShieldCheck className="w-4 h-4 text-emerald-500" /> },
+    ],
+    includesTitle: 'Free includes:',
+    includes: [
+      '0% Gateway transaction commission',
+      'Direct peer-to-peer bank settlement',
+      'Printable counter standee QR',
+      'Up to 10 active payment links',
+      'Live merchant analytics dashboard',
+    ],
+  },
+  {
+    id: 'starter',
+    name: 'Starter',
+    description: 'Higher volume, custom slugs and CSV financial statement exports.',
+    monthlyPrice: 99,
+    annualPrice: 99,
+    monthlySuffix: '/ month',
+    annualSuffix: '/ month',
+    monthlyNote: 'Up to 300 transactions / month',
+    annualNote: 'Billed monthly at ₹99/month',
+    buttonText: 'Get Starter (₹99)',
+    buttonVariant: 'secondary',
+    href: '/login?mode=signup',
+    features: [
+      { text: '300 Transactions / month', icon: <Zap className="w-4 h-4 text-blue-500" /> },
+      { text: 'Unlimited Payment Links', icon: <QrCode className="w-4 h-4 text-blue-500" /> },
+      { text: 'Custom Slugs & CSV Exports', icon: <FileText className="w-4 h-4 text-blue-500" /> },
+    ],
+    includesTitle: 'Everything in Free, plus:',
+    includes: [
+      '300 monthly transactions',
+      'Unlimited payment links and QR',
+      'Custom link slugs and payee notes',
+      'Instant CSV statement exports',
+      'Standard email support (48h SLA)',
+    ],
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    description: 'Full Developer REST API & webhooks for applications & checkouts.',
+    monthlyPrice: 299,
+    annualPrice: 2990,
+    monthlySuffix: '/ month',
+    annualSuffix: '/ year',
+    monthlyNote: 'Up to 1,000 transactions / month (API + Links)',
+    annualNote: '₹249/mo effective (Save ₹598/yr • 2 Months Free)',
+    buttonText: 'Choose Growth (₹299/mo)',
+    buttonTextAnnual: 'Choose Growth (₹2,990/yr)',
+    buttonVariant: 'growth',
+    href: '/login?mode=signup',
+    features: [
+      { text: 'Full Developer REST API Access', icon: <Code2 className="w-4 h-4 text-sky-500" /> },
+      { text: '5 Webhooks with Auto-Retry', icon: <Server className="w-4 h-4 text-sky-500" /> },
+      { text: '1,000 Verified Transactions / mo', icon: <Zap className="w-4 h-4 text-sky-500" /> },
+    ],
+    includesTitle: 'Everything in Starter, plus:',
+    includes: [
+      'Production REST API credentials',
+      'Automated UTR bank matching',
+      'High-speed webhook dispatches',
+      'Up to 1,000 verified transactions',
+      'Priority email support (24h SLA)',
+    ],
+  },
+  {
+    id: 'pro',
+    name: 'Pro Flagship',
+    description: 'Zero limits, 24/7 WhatsApp VIP hotline and PDF bank statements.',
+    monthlyPrice: 499,
+    annualPrice: 4990,
+    monthlySuffix: '/ month',
+    annualSuffix: '/ year',
+    monthlyNote: 'Unlimited transactions and volume',
+    annualNote: '₹415/mo effective (Save ₹998/yr • 2 Months Free)',
+    buttonText: 'Get Pro Flagship (₹499/mo)',
+    buttonTextAnnual: 'Get Pro Flagship (₹4,990/yr)',
+    buttonVariant: 'pro',
+    href: '/login?mode=signup',
+    features: [
+      { text: 'Unlimited Volume & Transactions', icon: <Zap className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" /> },
+      { text: '24/7 WhatsApp VIP (under 1h SLA)', icon: <Headphones className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" /> },
+      { text: 'Automated Monthly PDF Statements', icon: <FileText className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" /> },
+    ],
+    includesTitle: 'Everything in Growth, plus:',
+    includes: [
+      'Uncapped transaction quota & volume',
+      'Dedicated 24/7 WhatsApp VIP hotline',
+      'Automated monthly PDF bank statements',
+      'Real-time zero-latency bank polling',
+      'White-label (remove MyMobPay badge)',
+      'Multi-staff team accounts (3 seats)',
+    ],
   },
 ];
 
@@ -387,34 +509,51 @@ export default function PricingClient() {
             </span>
           </div>
 
-          {/* ── Billing Cycle Selector (Borderless, Sticker-Free Clean Tab) ── */}
-          <div className="mt-8 inline-flex items-center p-1.5 rounded-full theme-bg-elevated shadow-xs">
-            <button
-              type="button"
-              onClick={() => setBillingCycle('monthly')}
-              className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                billingCycle === 'monthly'
-                  ? 'bg-[#0F2BFF] text-white shadow-xs'
-                  : 'theme-text-muted hover:theme-text-primary'
-              }`}
-            >
-              Monthly Billing
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingCycle('annually')}
-              className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                billingCycle === 'annually'
-                  ? 'bg-[#0F2BFF] text-white shadow-xs'
-                  : 'theme-text-muted hover:theme-text-primary'
-              }`}
-            >
-              Annual Billing (2 Months Free)
-            </button>
+          {/* ── Billing Cycle Selector (Borderless, Sticker-Free Clean Tab with Smooth Motion) ── */}
+          <div className="mt-8 flex justify-center">
+            <div className="relative mx-auto flex w-fit rounded-full theme-bg-elevated p-1.5 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setBillingCycle('monthly')}
+                className={`relative z-10 w-fit h-11 rounded-full px-5 sm:px-6 py-2 text-xs sm:text-sm font-bold transition-colors cursor-pointer ${
+                  billingCycle === 'monthly'
+                    ? 'text-white'
+                    : 'theme-text-muted hover:theme-text-primary'
+                }`}
+              >
+                {billingCycle === 'monthly' && (
+                  <motion.span
+                    layoutId="pricing-switch-pill"
+                    className="absolute inset-0 rounded-full bg-[#0F2BFF] shadow-md"
+                    transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                  />
+                )}
+                <span className="relative z-10">Monthly Billing</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setBillingCycle('annually')}
+                className={`relative z-10 w-fit h-11 rounded-full px-5 sm:px-6 py-2 text-xs sm:text-sm font-bold transition-colors cursor-pointer ${
+                  billingCycle === 'annually'
+                    ? 'text-white'
+                    : 'theme-text-muted hover:theme-text-primary'
+                }`}
+              >
+                {billingCycle === 'annually' && (
+                  <motion.span
+                    layoutId="pricing-switch-pill"
+                    className="absolute inset-0 rounded-full bg-[#0F2BFF] shadow-md"
+                    transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                  />
+                )}
+                <span className="relative z-10">Annual (2 Months Free)</span>
+              </button>
+            </div>
           </div>
 
           {isAnnual && (
-            <p className="mt-2.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+            <p className="mt-3 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
               Annual billing available for Growth and Pro Flagship (Pay for 10 months, get 12 months)
             </p>
           )}
@@ -423,256 +562,103 @@ export default function PricingClient() {
         {/* ── THE 4 PRICING MODELS (BORDERLESS, STICKER-FREE FINTECH DESIGN) ── */}
         <div className="mt-10 sm:mt-14">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-            
-            {/* ── Card 1: Free Link Starter (₹0) ── */}
-            <div className="theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all duration-300 relative">
-              <div>
-                <h3 className="text-2xl font-black theme-text-primary tracking-tight">Free Link Starter</h3>
-                <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
-                  Ideal for creators, social sellers &amp; zero-cost live testing.
-                </p>
+            {PLANS.map((plan) => {
+              const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+              const suffix = isAnnual ? plan.annualSuffix : plan.monthlySuffix;
+              const note = isAnnual ? plan.annualNote : plan.monthlyNote;
+              const btnLabel =
+                isAnnual && plan.buttonTextAnnual
+                  ? plan.buttonTextAnnual
+                  : plan.buttonText;
 
-                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹0</span>
-                    <span className="theme-text-muted text-xs font-semibold">/ forever</span>
-                  </div>
-                  <div className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                    Up to 100 link transactions / month
-                  </div>
-                </div>
-
-                <div className="mt-7 space-y-3.5 text-xs sm:text-[13px] theme-text-secondary">
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span><strong className="theme-text-primary">0% Gateway Commission</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Instant Direct Bank Settlement (T+0)</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Dynamic UPI QR &amp; Intent Links</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Up to 10 Active Payment Links</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Printable Counter Standee QR</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Live Merchant Dashboard</span>
-                  </div>
-                </div>
-              </div>
-
-              <Link
-                href="/login?mode=signup"
-                className="mt-8 w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 theme-text-primary text-xs font-bold text-center block transition-all cursor-pointer"
-              >
-                Start Free Forever
-              </Link>
-            </div>
-
-            {/* ── Card 2: Starter Plan (₹99/mo) ── */}
-            <div className="theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all duration-300 relative">
-              <div>
-                <h3 className="text-2xl font-black theme-text-primary tracking-tight">Starter</h3>
-                <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
-                  Higher link quota, custom slugs &amp; statement downloads.
-                </p>
-
-                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹99</span>
-                    <span className="theme-text-muted text-xs font-semibold">/ month</span>
-                  </div>
-                  <div className="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
-                    {isAnnual ? 'Billed monthly at ₹99' : 'Up to 300 link transactions / month'}
-                  </div>
-                </div>
-
-                <div className="mt-7 space-y-3.5 text-xs sm:text-[13px] theme-text-secondary">
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span><strong className="theme-text-primary">Everything in Free</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Up to 300 Link Txns / month</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Unlimited Payment Links</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Custom Link Slugs &amp; Payee Notes</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>CSV Statement Exports</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Standard Support (48h SLA)</span>
-                  </div>
-                </div>
-              </div>
-
-              <Link
-                href="/login?mode=signup"
-                className="mt-8 w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 theme-text-primary text-xs font-bold text-center block transition-all cursor-pointer"
-              >
-                Get Started for ₹99
-              </Link>
-            </div>
-
-            {/* ── Card 3: Growth Plan (₹299/mo or ₹2,990/yr) — BORDERLESS, ELEVATED ── */}
-            <div className="theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative">
-              <div>
-                <h3 className="text-2xl font-black theme-text-primary tracking-tight">Growth</h3>
-                <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
-                  Full Developer REST API &amp; webhooks for apps &amp; checkouts.
-                </p>
-
-                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
-                  {isAnnual ? (
+              return (
+                <div
+                  key={plan.id}
+                  className={`theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 relative border-0 ${
+                    plan.id === 'pro'
+                      ? 'shadow-lg hover:shadow-2xl hover:-translate-y-1'
+                      : plan.id === 'growth'
+                      ? 'shadow-md hover:shadow-2xl hover:-translate-y-1'
+                      : 'shadow-sm hover:shadow-lg'
+                  }`}
+                >
+                  <div className="flex flex-col justify-between h-full">
                     <div>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹2,990</span>
-                        <span className="theme-text-muted text-xs font-semibold">/ year</span>
+                      {/* Plan Header */}
+                      <h3 className="text-2xl font-black theme-text-primary tracking-tight font-sans">
+                        {plan.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
+                        {plan.description}
+                      </p>
+
+                      {/* Price Lockup */}
+                      <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/60">
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">
+                            ₹{price.toLocaleString('en-IN')}
+                          </span>
+                          <span className="theme-text-muted text-xs sm:text-sm font-semibold">
+                            {suffix}
+                          </span>
+                        </div>
+                        <div className="mt-2 text-xs font-semibold min-h-[18px] text-slate-500 dark:text-slate-400">
+                          {note}
+                        </div>
                       </div>
-                      <div className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        ₹249/month effective (Save ₹598/yr • 2 Months Free)
+
+                      {/* CTA Button Directly Under Price (Inspiration Pattern) */}
+                      <div className="mt-6">
+                        <Link
+                          href={plan.href}
+                          className={`w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-center flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                            plan.buttonVariant === 'pro'
+                              ? 'bg-[#0F2BFF] hover:bg-[#081EC4] text-white shadow-md hover:shadow-lg'
+                              : plan.buttonVariant === 'growth'
+                              ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sm hover:shadow-md'
+                              : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 theme-text-primary'
+                          }`}
+                        >
+                          <span>{btnLabel}</span>
+                          {(plan.buttonVariant === 'growth' || plan.buttonVariant === 'pro') && (
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          )}
+                        </Link>
+                      </div>
+
+                      {/* Primary Features Highlight (with dedicated icons) */}
+                      <ul className="mt-7 space-y-3 font-medium">
+                        {plan.features.map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-center gap-2.5">
+                            <span className="shrink-0 p-1.5 rounded-lg theme-bg-well">
+                              {feature.icon}
+                            </span>
+                            <span className="text-xs sm:text-[13px] theme-text-primary font-semibold leading-snug">
+                              {feature.text}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {/* Divider and Secondary "Includes:" Checklist */}
+                      <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
+                        <p className="text-xs font-bold uppercase tracking-wider theme-text-muted mb-3">
+                          {plan.includesTitle}
+                        </p>
+                        <ul className="space-y-2.5 text-xs sm:text-[13px] theme-text-secondary">
+                          {plan.includes.map((include, includeIndex) => (
+                            <li key={includeIndex} className="flex items-center gap-2">
+                              <CheckCheck className="w-4 h-4 text-emerald-500 shrink-0 stroke-[2.2]" />
+                              <span className="leading-snug">{include}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
-                  ) : (
-                    <div>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹299</span>
-                        <span className="theme-text-muted text-xs font-semibold">/ month</span>
-                      </div>
-                      <div className="mt-2 text-xs font-semibold text-sky-600 dark:text-sky-400">
-                        Up to 1,000 transactions / month (API + Links)
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-7 space-y-3.5 text-xs sm:text-[13px] theme-text-secondary">
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span><strong className="theme-text-primary">Full Developer REST API Access</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span><strong className="theme-text-primary">5 Webhooks with Auto-Retry</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Automated UTR Bank Matching</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Up to 1,000 Verified Transactions</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Unlimited Links &amp; Standee QR</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Priority Support (24h SLA)</span>
                   </div>
                 </div>
-              </div>
-
-              <Link
-                href="/login?mode=signup"
-                className="mt-8 w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-md cursor-pointer"
-              >
-                <span>{isAnnual ? 'Choose Growth (₹2,990/yr)' : 'Choose Growth (₹299/mo)'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* ── Card 4: Pro Flagship (₹499/mo or ₹4,990/yr) — BORDERLESS, ROYAL ELEVATED ── */}
-            <div className="theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative">
-              <div>
-                <h3 className="text-2xl font-black theme-text-primary tracking-tight">Pro Flagship</h3>
-                <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
-                  Zero limits, 24/7 WhatsApp VIP hotline &amp; PDF bank statements.
-                </p>
-
-                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
-                  {isAnnual ? (
-                    <div>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹4,990</span>
-                        <span className="theme-text-muted text-xs font-semibold">/ year</span>
-                      </div>
-                      <div className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        ₹415/month effective (Save ₹998/yr • 2 Months Free)
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹499</span>
-                        <span className="theme-text-muted text-xs font-semibold">/ month</span>
-                      </div>
-                      <div className="mt-2 text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
-                        Unlimited Transactions &amp; Volume
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-7 space-y-3.5 text-xs sm:text-[13px] theme-text-secondary">
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span><strong className="theme-text-primary">UNLIMITED Transactions &amp; Volume</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span><strong className="theme-text-primary">24/7 Dedicated WhatsApp Hotline (&lt;1h SLA)</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span><strong className="theme-text-primary">Automated Monthly PDF Bank Statements</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Full REST API &amp; High-Speed Webhooks</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Real-Time Bank Polling (Zero Latency)</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>White-Label (Remove MyMobPay branding)</span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
-                    <span>Multi-Staff Team Accounts (3 Seats)</span>
-                  </div>
-                </div>
-              </div>
-
-              <Link
-                href="/login?mode=signup"
-                className="mt-8 w-full py-3 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg cursor-pointer"
-              >
-                <span>{isAnnual ? 'Get Pro Flagship (₹4,990/yr)' : 'Get Pro Flagship (₹499/mo)'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+              );
+            })}
           </div>
         </div>
 
