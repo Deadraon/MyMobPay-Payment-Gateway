@@ -113,16 +113,16 @@ export default function ConsoleActivationPaywall({
   const callbackUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'https://www.mymobpay.tech/dashboard';
   const merchantId = formatMerchantId(profile?.id);
 
-  // Plans config (4 Tiers: ₹99, ₹299, ₹499, ₹999)
+  // Plans config (3 Paid Tiers: ₹99, ₹299, ₹499 Unlimited)
   const plans = {
     'starter': {
       id: 'starter',
-      title: language === 'hi' ? 'स्टार्टर (100 Txns)' : 'Starter (100 Txns)',
+      title: language === 'hi' ? 'स्टार्टर (300 Txns)' : 'Starter (300 Txns)',
       badge: language === 'hi' ? 'किफायती ₹99' : 'Try Live at ₹99',
       badgeColor: 'bg-emerald-100 text-emerald-800 font-semibold',
       priceText: '₹99.00',
       priceSub: '₹99 / mo',
-      desc: language === 'hi' ? '100 ट्रांजैक्शन/माह • सीधा बैंक सेटलमेंट' : '100 transactions/mo • Live UPI Direct Settlement',
+      desc: language === 'hi' ? '300 ट्रांजैक्शन/माह • सीधा बैंक सेटलमेंट' : 'Up to 300 link txns/mo • Live UPI Direct Settlement',
       amount: 99,
       note: 'Subscription_1Month_Starter',
       icon: Zap,
@@ -130,12 +130,12 @@ export default function ConsoleActivationPaywall({
     },
     'growth': {
       id: 'growth',
-      title: language === 'hi' ? 'ग्रोथ (500 Txns)' : 'Growth (500 Txns)',
-      badge: language === 'hi' ? 'वैल्यू' : 'Value',
+      title: language === 'hi' ? 'ग्रोथ (API अनलॉक)' : 'Growth (API Unlock)',
+      badge: language === 'hi' ? 'API एक्सेस' : 'Unlocks API',
       badgeColor: 'bg-blue-100 text-blue-800 font-semibold',
       priceText: '₹299.00',
       priceSub: '₹299 / mo',
-      desc: language === 'hi' ? '500 ट्रांजैक्शन/माह • ऑटो UTR व असीमित लिंक्स' : '500 transactions/mo • Auto UTR & Unlimited Links',
+      desc: language === 'hi' ? '1,000 ट्रांजैक्शन/माह • पूर्ण REST API व 5 वेबहुक' : '1,000 txns/mo • Full REST API & 5 Webhooks',
       amount: 299,
       note: 'Subscription_1Month_Growth',
       icon: Calendar,
@@ -143,56 +143,43 @@ export default function ConsoleActivationPaywall({
     },
     'pro': {
       id: 'pro',
-      title: language === 'hi' ? 'प्रो बिज़नेस (2K Txns)' : 'Pro Business (2K Txns)',
-      badge: language === 'hi' ? 'सबसे लोकप्रिय' : 'Most Popular',
+      title: language === 'hi' ? 'प्रो फ्लैगशिप (अनलिमिटेड)' : 'Pro Flagship (Unlimited)',
+      badge: language === 'hi' ? 'सर्वश्रेष्ठ मूल्य' : 'Max Value • Unlimited',
       badgeColor: 'bg-indigo-100 text-indigo-800 font-semibold',
       priceText: '₹499.00',
       priceSub: '₹499 / mo',
-      desc: language === 'hi' ? '2,000 ट्रांजैक्शन/माह • रियल-टाइम बैंक मिलान' : '2,000 transactions/mo • Real-time Polling & 3 Staff',
+      desc: language === 'hi' ? 'असीमित वॉल्यूम • 24/7 व्हाट्सएप सपोर्ट और मासिक स्टेटमेंट' : 'UNLIMITED Volume • 24/7 WhatsApp Hotline & Monthly Email Statements',
       amount: 499,
       note: 'Subscription_1Month_Pro',
       icon: Rocket,
       iconColor: 'bg-indigo-50 text-indigo-600',
     },
-    'flagship': {
-      id: 'flagship',
-      title: language === 'hi' ? 'फ्लैगशिप अनलिमिटेड' : 'Flagship Unlimited',
-      badge: language === 'hi' ? 'अनलिमिटेड' : 'Unlimited Everything',
-      badgeColor: 'bg-purple-100 text-purple-800 font-semibold',
-      priceText: '₹999.00',
-      priceSub: '₹999 / mo',
-      desc: language === 'hi' ? 'असीमित वॉल्यूम • 24/7 VIP सपोर्ट और मासिक स्टेटमेंट' : 'Unlimited volume • 24/7 WhatsApp Hotline & Monthly Email Statements',
-      amount: 999,
-      note: 'Subscription_1Month_Flagship',
-      icon: Building2,
-      iconColor: 'bg-purple-50 text-purple-600',
-    },
     // Backwards compatibility mappings for legacy stored selections
     '1m': {
       id: 'pro',
-      title: 'Pro Business (2K Txns)',
-      badge: 'Most Popular',
+      title: 'Pro Flagship (Unlimited)',
+      badge: 'Max Value • Unlimited',
       badgeColor: 'bg-indigo-100 text-indigo-800 font-semibold',
       priceText: '₹499.00',
       priceSub: '₹499 / mo',
-      desc: '2,000 transactions/mo • Real-time Polling & 3 Staff',
+      desc: 'UNLIMITED Volume • 24/7 WhatsApp Hotline & Monthly Email Statements',
       amount: 499,
       note: 'Subscription_1Month_Pro',
       icon: Rocket,
       iconColor: 'bg-indigo-50 text-indigo-600',
     },
     '3m': {
-      id: 'flagship',
-      title: 'Flagship Unlimited',
-      badge: 'Unlimited Everything',
-      badgeColor: 'bg-purple-100 text-purple-800 font-semibold',
-      priceText: '₹999.00',
-      priceSub: '₹999 / mo',
-      desc: 'Unlimited volume • 24/7 WhatsApp Hotline & Monthly Email Statements',
-      amount: 999,
-      note: 'Subscription_1Month_Flagship',
-      icon: Building2,
-      iconColor: 'bg-purple-50 text-purple-600',
+      id: 'pro',
+      title: 'Pro Flagship (Unlimited)',
+      badge: 'Max Value • Unlimited',
+      badgeColor: 'bg-indigo-100 text-indigo-800 font-semibold',
+      priceText: '₹499.00',
+      priceSub: '₹499 / mo',
+      desc: 'UNLIMITED Volume • 24/7 WhatsApp Hotline & Monthly Email Statements',
+      amount: 499,
+      note: 'Subscription_1Month_Pro',
+      icon: Rocket,
+      iconColor: 'bg-indigo-50 text-indigo-600',
     },
     custom: {
       id: 'custom',
@@ -685,11 +672,11 @@ export default function ConsoleActivationPaywall({
                 )}
               </div>
 
-              {/* Option 3: Pro Business (₹499 - Recommended) */}
+              {/* Option 3: Pro Flagship (₹499 - Unlimited) */}
               <div 
                 onClick={() => setSelectedPlan('pro')}
                 className={`w-full text-left p-3 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
-                  selectedPlan === 'pro' || selectedPlan === '1m'
+                  selectedPlan === 'pro' || selectedPlan === '1m' || selectedPlan === '3m' || selectedPlan === 'flagship'
                     ? 'bg-white border-2 border-indigo-500 shadow-sm' 
                     : 'bg-white hover:bg-slate-50 border border-slate-200'
                 }`}
@@ -709,39 +696,8 @@ export default function ConsoleActivationPaywall({
                     <p className="text-[10px] text-slate-500 mt-0.5">{plans.pro.desc}</p>
                   </div>
                 </div>
-                {(selectedPlan === 'pro' || selectedPlan === '1m') ? (
+                {(selectedPlan === 'pro' || selectedPlan === '1m' || selectedPlan === '3m' || selectedPlan === 'flagship') ? (
                   <CheckCircle2 className="w-5 h-5 text-indigo-600 font-bold shrink-0 ml-1" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-slate-300 shrink-0 ml-1" />
-                )}
-              </div>
-
-              {/* Option 4: Flagship Unlimited (₹999) */}
-              <div 
-                onClick={() => setSelectedPlan('flagship')}
-                className={`w-full text-left p-3 rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
-                  selectedPlan === 'flagship' || selectedPlan === '3m'
-                    ? 'bg-white border-2 border-purple-500 shadow-sm' 
-                    : 'bg-white hover:bg-slate-50 border border-slate-200'
-                }`}
-                id="plan-flagship"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
-                    <Building2 className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-1.5">
-                      <span className="text-xs sm:text-sm font-bold text-slate-900">{plans.flagship.title}</span>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-800 font-bold">
-                        {plans.flagship.badge}
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-slate-500 mt-0.5">{plans.flagship.desc}</p>
-                  </div>
-                </div>
-                {(selectedPlan === 'flagship' || selectedPlan === '3m') ? (
-                  <CheckCircle2 className="w-5 h-5 text-purple-600 font-bold shrink-0 ml-1" />
                 ) : (
                   <ChevronRight className="w-4 h-4 text-slate-300 shrink-0 ml-1" />
                 )}

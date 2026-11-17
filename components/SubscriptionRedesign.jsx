@@ -117,19 +117,15 @@ export default function SubscriptionRedesign({
     const percentRemaining = totalDays > 0 ? Math.min(100, Math.max(0, Math.round((daysLeft / totalDays) * 100))) : 0;
 
     const planTypeStr = String(profile?.subscription_plan || profile?.setup_progress?.plan_type || '').toLowerCase();
-    const planTitle = planTypeStr.includes('flagship') || planTypeStr.includes('999')
-      ? 'Flagship Unlimited Plan'
-      : planTypeStr.includes('pro') || planTypeStr.includes('499')
-      ? 'Pro Business Plan'
+    const planTitle = planTypeStr.includes('pro') || planTypeStr.includes('499') || planTypeStr.includes('flagship') || planTypeStr.includes('999')
+      ? 'Pro Flagship Plan (Unlimited)'
       : planTypeStr.includes('growth') || planTypeStr.includes('299')
-      ? 'Growth Plan'
+      ? 'Growth Plan (REST API)'
       : planTypeStr.includes('starter') || planTypeStr.includes('99')
       ? 'Starter Plan'
       : 'Active Subscription Plan';
 
-    const planAmount = planTypeStr.includes('flagship') || planTypeStr.includes('999')
-      ? 999
-      : planTypeStr.includes('pro') || planTypeStr.includes('499')
+    const planAmount = planTypeStr.includes('pro') || planTypeStr.includes('499') || planTypeStr.includes('flagship') || planTypeStr.includes('999')
       ? 499
       : planTypeStr.includes('growth') || planTypeStr.includes('299')
       ? 299
@@ -173,77 +169,58 @@ export default function SubscriptionRedesign({
     return Math.max(0, Math.round(totalVerifiedVolume * 0.02));
   }, [totalVerifiedVolume]);
 
-  // ── Plan Definitions (4 Tiers: ₹99, ₹299, ₹499, ₹999) ─────────
+  // ── Plan Definitions (3 Paid Tiers: ₹99, ₹299, ₹499 Cap) ─────
   const plans = useMemo(() => {
     return [
       {
         id: 'starter',
         title: 'Starter',
-        subtitle: '100 Transactions / Month',
+        subtitle: 'High-Volume Payment Links',
         amount: 99,
         durationDays: 30,
-        badge: 'Try Live at ₹99',
+        badge: 'Link Starter',
         badgeClass: 'bg-emerald-600 text-white',
         features: [
-          'Up to 100 txns / month (₹25K vol)',
+          'Up to 300 link txns / month',
           'Direct Bank Settlement (0% MDR)',
           'Universal UPI Intent & Dynamic QR',
-          'Up to 10 Payment Links',
-          '2 Signed Webhook Endpoints',
+          'Payment Links & Counter Standee QR',
+          'CSV Statement Exports',
           'Standard Email Support (48h)'
         ]
       },
       {
         id: 'growth',
         title: 'Growth',
-        subtitle: '500 Transactions / Month',
+        subtitle: 'Developer REST API + 1,000 Txns',
         amount: 299,
         durationDays: 30,
-        badge: 'Value',
+        badge: 'Unlocks REST API',
         badgeClass: 'bg-sky-600 text-white',
         features: [
-          'Up to 500 txns / month (₹1L vol)',
-          'Everything in Starter',
-          'Automated UTR Bank Matching',
+          'Up to 1,000 txns / month',
+          'Full Developer REST API & SDK Access',
+          'Automated UTR Bank Matching Rail',
           'Unlimited Payment Links & Counter QR',
-          '5 Webhooks with Auto-Retry',
+          '5 Webhook Endpoints with Auto-Retry',
           'Priority Email Support (24h)'
         ]
       },
       {
         id: 'pro',
-        title: 'Pro Business',
-        subtitle: '2,000 Transactions / Month',
+        title: 'Pro Flagship',
+        subtitle: 'UNLIMITED Everything & 24/7 VIP',
         amount: 499,
         durationDays: 30,
-        badge: 'Most Popular',
-        badgeClass: 'bg-indigo-600 text-white',
-        features: [
-          'Up to 2,000 txns / month (₹5L vol)',
-          'Everything in Growth',
-          'Real-Time Automated Bank Polling',
-          'High Concurrency Webhooks (Zero drops)',
-          'Up to 3 Staff / Team Member Seats',
-          'Full GST & Inflow Accounting Reports',
-          'Fast Priority Support (12h SLA)'
-        ]
-      },
-      {
-        id: 'flagship',
-        title: 'Flagship Unlimited',
-        subtitle: 'Unlimited Volume & 24/7 VIP',
-        amount: 999,
-        durationDays: 30,
-        badge: 'Unlimited Power',
-        badgeClass: 'bg-purple-600 text-white',
+        badge: 'Unlimited Everything',
+        badgeClass: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs',
         features: [
           'UNLIMITED Transactions & Revenue Volume',
-          'Everything in Pro Business',
-          '24/7 Dedicated WhatsApp & Phone Hotline (<1h)',
+          'Full Developer REST API & High-Speed Rails',
+          '24/7 Dedicated WhatsApp Hotline (<1h)',
           'Automated Monthly PDF Bank Statements (via Email)',
-          'White-Label Checkout (Remove MyMobPay branding)',
-          'Unlimited Staff Accounts (RBAC)',
-          'Dedicated Webhook Rail & Replay Logs'
+          'White-Label Checkout (Custom Branding)',
+          'Unlimited Staff Accounts (RBAC) & Webhook Replays'
         ]
       }
     ];
@@ -533,7 +510,7 @@ export default function SubscriptionRedesign({
         </div>
 
         {/* Plan Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {plans.map((plan) => {
             const isSelected = selectedPlanId === plan.id;
             return (
@@ -643,61 +620,75 @@ export default function SubscriptionRedesign({
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-[10px]">
               <tr>
                 <th className="px-4 py-3">Feature / Capability</th>
-                <th className="px-4 py-3">Monthly Starter (₹499)</th>
-                <th className="px-4 py-3 bg-blue-50/50 text-blue-900">Quarterly Pro (₹1,299) ★</th>
-                <th className="px-4 py-3">Semi-Annual Scale (₹2,299)</th>
-                <th className="px-4 py-3">Annual Enterprise</th>
+                <th className="px-4 py-3">Free Link (₹0)</th>
+                <th className="px-4 py-3">Starter (₹99/mo)</th>
+                <th className="px-4 py-3">Growth (₹299/mo)</th>
+                <th className="px-4 py-3 bg-blue-50/50 text-blue-900">Pro Flagship (₹499/mo) ★</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Direct Bank UPI Settlement</td>
+                <td className="px-4 py-3 font-semibold text-slate-800">Direct Bank Settlement</td>
+                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
+                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
                 <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
                 <td className="px-4 py-3 bg-blue-50/30 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
-                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
-                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Monthly Direct Volume (GMV)</td>
-                <td className="px-4 py-3 font-medium text-slate-700">Unlimited</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-medium text-slate-700">Unlimited</td>
-                <td className="px-4 py-3 font-medium text-slate-700">Unlimited</td>
-                <td className="px-4 py-3 font-medium text-slate-700">Unlimited</td>
               </tr>
               <tr>
                 <td className="px-4 py-3 font-semibold text-slate-800">Monthly Transactions (Quota)</td>
-                <td className="px-4 py-3 font-mono text-slate-600">700 trx/mo</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-mono font-bold text-blue-900">2,000 trx/mo</td>
-                <td className="px-4 py-3 font-mono text-slate-600">5,000 trx/mo</td>
-                <td className="px-4 py-3 font-mono text-slate-600">Custom / Unlimited</td>
+                <td className="px-4 py-3 font-mono text-slate-600">100 links/mo</td>
+                <td className="px-4 py-3 font-mono text-slate-600">300 links/mo</td>
+                <td className="px-4 py-3 font-mono text-slate-600">1,000 txns/mo</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-mono font-bold text-blue-900">UNLIMITED</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Multi-Counter Outlets</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Up to 3 Counters</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Up to 10 Counters</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Up to 25 Counters</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Outlets</td>
+                <td className="px-4 py-3 font-semibold text-slate-800">Developer REST API &amp; SDKs</td>
+                <td className="px-4 py-3 text-slate-400">❌ Not Included</td>
+                <td className="px-4 py-3 text-slate-400">❌ Not Included</td>
+                <td className="px-4 py-3 text-blue-600 font-bold">✅ Full REST API</td>
+                <td className="px-4 py-3 bg-blue-50/30 text-blue-900 font-bold">✅ High-Speed Rails</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Staff Team Seats</td>
-                <td className="px-4 py-3 font-medium text-slate-600">3 Seats</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">10 Seats</td>
-                <td className="px-4 py-3 font-medium text-slate-600">25 Seats</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Seats</td>
+                <td className="px-4 py-3 font-semibold text-slate-800">Payment Links &amp; Counter QR</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Up to 10 Links</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Links</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Links</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Unlimited Links</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Webhook Retry Engine</td>
-                <td className="px-4 py-3 font-medium text-slate-600">3 Retries (Backoff)</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">10 Retries + Manual Re-send</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Retries</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Dedicated Relay Engine</td>
+                <td className="px-4 py-3 font-semibold text-slate-800">Automated UTR Verification</td>
+                <td className="px-4 py-3 text-slate-400">Manual Check</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Live UTR Rail</td>
+                <td className="px-4 py-3 text-blue-600 font-bold">Auto-UTR Engine</td>
+                <td className="px-4 py-3 bg-blue-50/30 text-blue-900 font-bold">Zero-Latency Matching</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Webhook Endpoints &amp; Retries</td>
+                <td className="px-4 py-3 text-slate-400">❌ None</td>
+                <td className="px-4 py-3 text-slate-400">❌ None</td>
+                <td className="px-4 py-3 font-medium text-slate-600">5 Webhooks (Auto-retry)</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Dedicated Replay Rail</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">Bank Statements &amp; GST Invoices</td>
+                <td className="px-4 py-3 text-slate-400">Live Dashboard</td>
+                <td className="px-4 py-3 font-medium text-slate-600">CSV Export</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Full CSV + Inflow Analytics</td>
+                <td className="px-4 py-3 bg-blue-50/30 text-blue-900 font-bold">Monthly PDF via Email</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-semibold text-slate-800">White-Label Custom Branding</td>
+                <td className="px-4 py-3 text-slate-400">❌ Powered by MyMobPay</td>
+                <td className="px-4 py-3 text-slate-400">❌ Powered by MyMobPay</td>
+                <td className="px-4 py-3 text-slate-400">❌ Powered by MyMobPay</td>
+                <td className="px-4 py-3 bg-blue-50/30 text-emerald-600 font-bold">✅ 100% White-Label</td>
               </tr>
               <tr>
                 <td className="px-4 py-3 font-semibold text-slate-800">Support &amp; SLA</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Email (24h SLA)</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Priority WhatsApp &amp; Ticket (4h SLA)</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Dedicated Slack &amp; Phone (1h SLA)</td>
-                <td className="px-4 py-3 font-medium text-slate-600">24/7 Dedicated Account Mgr</td>
+                <td className="px-4 py-3 font-medium text-slate-500">Docs &amp; Community</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Email (48h)</td>
+                <td className="px-4 py-3 font-medium text-slate-600">Priority Email (24h)</td>
+                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">24/7 Dedicated WhatsApp (&lt;1h)</td>
               </tr>
             </tbody>
           </table>

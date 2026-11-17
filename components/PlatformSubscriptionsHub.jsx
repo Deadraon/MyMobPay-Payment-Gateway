@@ -149,8 +149,7 @@ export default function PlatformSubscriptionsHub({
         const matchesNote = note.includes(planFilter);
         const matchesAmt = (planFilter === 'starter' && amt === '99') ||
                            (planFilter === 'growth' && amt === '299') ||
-                           (planFilter === 'pro' && (amt === '499' || amt === '599')) ||
-                           (planFilter === 'flagship' && amt === '999');
+                           (planFilter === 'pro' && (amt === '499' || amt === '599' || amt === '999'));
         if (!matchesNote && !matchesAmt) return false;
       }
 
@@ -363,8 +362,7 @@ export default function PlatformSubscriptionsHub({
             <option value="all">All Plans</option>
             <option value="starter">Starter (₹99)</option>
             <option value="growth">Growth (₹299)</option>
-            <option value="pro">Pro Business (₹499)</option>
-            <option value="flagship">Flagship (₹999)</option>
+            <option value="pro">Pro Flagship (₹499)</option>
           </select>
 
           {/* Refresh Button */}

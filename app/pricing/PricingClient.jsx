@@ -33,7 +33,7 @@ export default function PricingClient() {
     },
     {
       q: 'What happens when I reach the monthly transaction limit?',
-      a: 'If you exceed your plan’s transaction limit (e.g. 100 txns on Starter, 500 on Growth, or 2,000 on Pro), you can instantly upgrade your plan from the Merchant Dashboard to keep collecting smoothly, or choose Flagship for unlimited volume.',
+      a: 'If you exceed your plan’s transaction limit (e.g. 100 txns on Free, 300 on Starter, or 1,000 on Growth), you can instantly upgrade your plan from the Merchant Dashboard to keep collecting smoothly, or choose Pro Flagship (₹499) for unlimited volume.',
     },
     {
       q: 'Can I test the integration before purchasing a plan?',
@@ -175,28 +175,28 @@ export default function PricingClient() {
           </Link>
         </div>
 
-        {/* Pricing Cards Grid (4 Tiers: ₹99, ₹299, ₹499, ₹999) */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Pricing Cards Grid (3 Tiers: ₹99, ₹299, ₹499 Unlimited) */}
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-7">
           {/* Card 1: Starter */}
-          <div className="rounded-2xl bg-[#0E131F] border border-white/10 p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-xl">
+          <div className="rounded-2xl bg-[#0E131F] border border-white/10 p-7 flex flex-col justify-between hover:border-white/20 transition-all shadow-xl">
             <div>
               <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#34D399]">
                 STARTER &bull; 300 TXNS
               </div>
-              <h3 className="text-lg font-bold text-white mt-1">High-Volume Links</h3>
-              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+              <h3 className="text-xl font-bold text-white mt-1">High-Volume Links</h3>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
                 For sellers and creators who want higher link volume, custom slugs, and CSV downloads.
               </p>
 
-              <div className="mt-5 flex items-baseline gap-1.5">
-                <span className="text-3xl font-black text-white">₹99</span>
+              <div className="mt-6 flex items-baseline gap-1.5">
+                <span className="text-4xl font-black text-white">₹99</span>
                 <span className="text-slate-400 text-xs font-semibold">/ month</span>
               </div>
-              <div className="font-mono text-[10px] text-[#34D399] font-bold mt-0.5">
+              <div className="font-mono text-[10.5px] text-[#34D399] font-bold mt-1">
                 Up to 300 link txns / month
               </div>
 
-              <div className="mt-5 pt-5 border-t border-white/10 space-y-2.5 text-xs text-slate-300">
+              <div className="mt-6 pt-6 border-t border-white/10 space-y-3 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#34D399] shrink-0" />
                   <span><strong>0% Commission</strong> Direct T+0</span>
@@ -226,15 +226,15 @@ export default function PricingClient() {
 
             <Link
               href="/login?mode=signup"
-              className="mt-6 w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold text-center block transition-colors"
+              className="mt-8 w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold text-center block transition-colors"
             >
               Get Started for ₹99
             </Link>
           </div>
 
           {/* Card 2: Growth */}
-          <div className="rounded-2xl bg-[#0E131F] border border-sky-500/40 p-6 flex flex-col justify-between hover:border-sky-500 transition-all shadow-xl relative">
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-sky-600 text-white font-mono text-[9px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md whitespace-nowrap">
+          <div className="rounded-2xl bg-[#0E131F] border border-sky-500/40 p-7 flex flex-col justify-between hover:border-sky-500 transition-all shadow-xl relative">
+            <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-sky-600 text-white font-mono text-[9.5px] font-bold uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md whitespace-nowrap">
               UNLOCKS API
             </span>
 
@@ -242,20 +242,20 @@ export default function PricingClient() {
               <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#60A5FA]">
                 GROWTH &bull; 1,000 TXNS
               </div>
-              <h3 className="text-lg font-bold text-white mt-1">Developer API Tier</h3>
-              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+              <h3 className="text-xl font-bold text-white mt-1">Developer API Tier</h3>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
                 Unlocks full REST API keys &amp; webhooks for your website, app, or SaaS checkout.
               </p>
 
-              <div className="mt-5 flex items-baseline gap-1.5">
-                <span className="text-3xl font-black text-white">₹299</span>
+              <div className="mt-6 flex items-baseline gap-1.5">
+                <span className="text-4xl font-black text-white">₹299</span>
                 <span className="text-slate-400 text-xs font-semibold">/ month</span>
               </div>
-              <div className="font-mono text-[10px] text-[#60A5FA] font-bold mt-0.5">
+              <div className="font-mono text-[10.5px] text-[#60A5FA] font-bold mt-1">
                 Up to 1,000 txns / month (API + Links)
               </div>
 
-              <div className="mt-5 pt-5 border-t border-white/10 space-y-2.5 text-xs text-slate-300">
+              <div className="mt-6 pt-6 border-t border-white/10 space-y-3 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#34D399] shrink-0" />
                   <span><strong>Full Developer REST API Access</strong></span>
@@ -285,39 +285,51 @@ export default function PricingClient() {
 
             <Link
               href="/login?mode=signup"
-              className="mt-6 w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold text-center block transition-colors shadow-md"
+              className="mt-8 w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold text-center block transition-colors shadow-md"
             >
               Choose Growth (₹299)
             </Link>
           </div>
 
-          {/* Card 3: Pro (Recommended) */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#131B33] to-[#0E131F] border-2 border-[#0F2BFF] p-6 flex flex-col justify-between relative shadow-2xl">
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0F2BFF] text-white font-mono text-[9px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md whitespace-nowrap">
-              MOST POPULAR
+          {/* Card 3: Pro Flagship (Unlimited - Top Tier) */}
+          <div className="rounded-2xl bg-gradient-to-b from-[#161D3A] via-[#0E131F] to-[#0E131F] border-2 border-[#0F2BFF] p-7 flex flex-col justify-between relative shadow-2xl">
+            <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#0F2BFF] text-white font-mono text-[9.5px] font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-md whitespace-nowrap">
+              MAX VALUE &bull; UNLIMITED
             </span>
 
             <div>
               <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#93C5FD]">
-                PRO BUSINESS &bull; 3K TXNS
+                PRO FLAGSHIP &bull; UNLIMITED
               </div>
-              <h3 className="text-lg font-bold text-white mt-1">Scaling SaaS &amp; Shops</h3>
-              <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
-                Built for established digital businesses collecting high-velocity transactions.
+              <h3 className="text-xl font-bold text-white mt-1">Unlimited Enterprise</h3>
+              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                Zero volume caps, 24/7 dedicated WhatsApp support, and automated monthly PDF statements.
               </p>
 
-              <div className="mt-5 flex items-baseline gap-1.5">
-                <span className="text-3xl font-black text-white">₹499</span>
+              <div className="mt-6 flex items-baseline gap-1.5">
+                <span className="text-4xl font-black text-white">₹499</span>
                 <span className="text-slate-400 text-xs font-semibold">/ month</span>
               </div>
-              <div className="font-mono text-[10px] text-[#93C5FD] font-bold mt-0.5">
-                Up to 3,000 txns / month
+              <div className="font-mono text-[10.5px] text-[#93C5FD] font-bold mt-1">
+                UNLIMITED Transactions &amp; Revenue Volume
               </div>
 
-              <div className="mt-5 pt-5 border-t border-white/10 space-y-2.5 text-xs text-slate-200">
+              <div className="mt-6 pt-6 border-t border-white/10 space-y-3 text-xs text-slate-200">
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#34D399] shrink-0" />
                   <span><strong>Everything in Growth</strong></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#34D399] shrink-0" />
+                  <span><strong>UNLIMITED Transactions &amp; Volume</strong></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#60A5FA] shrink-0" />
+                  <span><strong>24/7 Priority WhatsApp Hotline (&lt;1h)</strong></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#60A5FA] shrink-0" />
+                  <span><strong>Automated Monthly PDF Bank Statements</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#34D399] shrink-0" />
@@ -325,87 +337,24 @@ export default function PricingClient() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#34D399] shrink-0" />
-                  <span>High Concurrency Webhooks</span>
+                  <span>High Concurrency Webhooks (Zero Drops)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#34D399] shrink-0" />
-                  <span>Up to 3 Staff / Team Seats</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-[#34D399] shrink-0" />
-                  <span>Full GST &amp; Inflow Accounting Reports</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-[#34D399] shrink-0" />
-                  <span>Fast Priority Support (12h SLA)</span>
-                </div>
-              </div>
-            </div>
-
-            <Link
-              href="/login?mode=signup"
-              className="mt-6 w-full py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold text-center block transition-colors shadow-lg"
-            >
-              Choose Pro (₹499)
-            </Link>
-          </div>
-
-          {/* Card 4: Flagship */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#1C1335] to-[#0E131F] border border-purple-500/40 p-6 flex flex-col justify-between hover:border-purple-500 transition-all shadow-xl relative">
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white font-mono text-[9px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md whitespace-nowrap">
-              UNLIMITED POWER
-            </span>
-
-            <div>
-              <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#C084FC]">
-                FLAGSHIP &bull; UNLIMITED
-              </div>
-              <h3 className="text-lg font-bold text-white mt-1">Enterprise &amp; VIP</h3>
-              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                Zero limits, 24/7 dedicated ops support, and automated monthly financial statements.
-              </p>
-
-              <div className="mt-5 flex items-baseline gap-1.5">
-                <span className="text-3xl font-black text-white">₹999</span>
-                <span className="text-slate-400 text-xs font-semibold">/ month</span>
-              </div>
-              <div className="font-mono text-[10px] text-[#C084FC] font-bold mt-0.5">
-                UNLIMITED Transactions &amp; Volume
-              </div>
-
-              <div className="mt-5 pt-5 border-t border-white/10 space-y-2.5 text-xs text-slate-300">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-[#34D399] shrink-0" />
-                  <span><strong>Everything in Pro</strong></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-[#C084FC] shrink-0" />
-                  <span><strong>24/7 Priority WhatsApp Hotline (&lt;1h)</strong></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-[#C084FC] shrink-0" />
-                  <span><strong>Automated Monthly PDF Bank Statements</strong></span>
+                  <span>Multi-Staff Team Accounts (Up to 3 seats)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#34D399] shrink-0" />
                   <span>White-Label (Remove MyMobPay branding)</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-[#34D399] shrink-0" />
-                  <span>Unlimited Staff Accounts (RBAC)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-[#34D399] shrink-0" />
-                  <span>Dedicated Webhook Queue &amp; Replay</span>
-                </div>
               </div>
             </div>
 
             <Link
               href="/login?mode=signup"
-              className="mt-6 w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold text-center block transition-colors shadow-lg"
+              className="mt-8 w-full py-3 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold text-center block transition-colors shadow-lg"
             >
-              Get Flagship (₹999)
+              Get Pro Flagship (₹499)
             </Link>
           </div>
         </div>
