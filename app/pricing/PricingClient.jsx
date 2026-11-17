@@ -538,7 +538,7 @@ export default function PricingClient() {
               key={plan.name}
               className={`relative rounded-3xl border text-left p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 shadow-sm ${
                 plan.popular
-                  ? "ring-2 ring-blue-500 border-blue-500 bg-blue-50/70 dark:bg-[#0D1F38]"
+                  ? "ring-2 ring-blue-500 border-2 border-blue-500 theme-bg-elevated dark:bg-[#0D1F38] shadow-lg shadow-blue-500/10"
                   : "theme-bg-elevated theme-border"
               }`}
             >

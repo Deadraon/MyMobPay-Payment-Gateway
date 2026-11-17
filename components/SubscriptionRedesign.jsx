@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useModalTransition } from './useModalTransition';
 import {
   CheckCircle,
@@ -11,6 +12,10 @@ import {
   Download,
   Copy,
   Check,
+  CheckCheck,
+  Briefcase,
+  Database,
+  Server,
   ExternalLink,
   Info,
   Calendar,
@@ -37,6 +42,7 @@ export default function SubscriptionRedesign({
 }) {
   // ── Modal & Flow States ───────────────────────────────────────
   const [selectedPlanId, setSelectedPlanId] = useState('pro');
+  const [isYearly, setIsYearly] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showContactSalesModal, setShowContactSalesModal] = useState(false);
   const { isMounted: isDetailsModalMounted, modalClass: detailsModalClass, overlayClass: detailsOverlayClass } = useModalTransition(showDetailsModal);
@@ -169,64 +175,105 @@ export default function SubscriptionRedesign({
     return Math.max(0, Math.round(totalVerifiedVolume * 0.02));
   }, [totalVerifiedVolume]);
 
-  // ── Plan Definitions (3 Paid Tiers: ₹99, ₹299, ₹499 Cap) ─────
+  // Determine current active subscription tier index (0: Free, 1: Starter, 2: Growth, 3: Pro)
+  const currentTierIndex = useMemo(() => {
+    if (!subDetails.isActive) return 0;
+    const planStr = String(profile?.subscription_plan || profile?.setup_progress?.plan_type || '').toLowerCase();
+    if (planStr.includes('pro') || planStr.includes('499') || planStr.includes('flagship')) return 3;
+    if (planStr.includes('growth') || planStr.includes('299')) return 2;
+    if (planStr.includes('starter') || planStr.includes('99')) return 1;
+    return 0;
+  }, [subDetails.isActive, profile?.subscription_plan, profile?.setup_progress?.plan_type]);
+
+  // ── Plan Definitions (4 Tiers Matching /pricing) ─────────────
   const plans = useMemo(() => {
     return [
       {
-        id: 'starter',
-        title: 'Starter',
-        subtitle: 'High-Volume Payment Links',
-        amount: 99,
-        durationDays: 30,
-        badge: 'Link Starter',
-        badgeClass: 'bg-emerald-600 text-white',
+        id: 'free',
+        name: 'Free Link Starter',
+        description: 'Great for creators and small sellers looking to get started with 0% fee payments',
+        price: 0,
+        yearlyPrice: 0,
+        isFreeForever: true,
+        popular: false,
         features: [
-          'Up to 300 link txns / month',
-          'Direct Bank Settlement (0% MDR)',
-          'Universal UPI Intent & Dynamic QR',
-          'Payment Links & Counter Standee QR',
-          'CSV Statement Exports',
-          'Standard Email Support (48h)'
-        ]
+          { text: 'Up to 100 txns per month', icon: <Briefcase size={16} /> },
+          { text: 'Dynamic UPI QR & Intent', icon: <Database size={16} /> },
+          { text: 'Direct bank settlement', icon: <Server size={16} /> },
+        ],
+        includes: [
+          'Free includes:',
+          '0% Gateway commission',
+          'Instant T+0 bank settlement',
+          'Up to 10 payment links',
+          'Printable counter QR standee',
+        ],
+      },
+      {
+        id: 'starter',
+        name: 'Starter',
+        description: 'Great for small businesses and startups looking to get started with flat-rate payments',
+        price: 99,
+        yearlyPrice: 99,
+        isMonthlyOnly: true,
+        popular: false,
+        features: [
+          { text: 'Up to 300 txns per month', icon: <Briefcase size={16} /> },
+          { text: 'Unlimited payment links', icon: <Database size={16} /> },
+          { text: 'CSV statement downloads', icon: <Server size={16} /> },
+        ],
+        includes: [
+          'Everything in Free, plus:',
+          '300 Monthly transactions',
+          'Unlimited payment links',
+          'Custom link slugs & notes',
+          'CSV financial statement exports',
+        ],
       },
       {
         id: 'growth',
-        title: 'Growth',
-        subtitle: 'Developer REST API + 1,000 Txns',
-        amount: 299,
-        durationDays: 30,
-        badge: 'Unlocks REST API',
-        badgeClass: 'bg-sky-600 text-white',
+        name: 'Growth',
+        description: 'Best value for growing businesses that need developer REST API and webhooks',
+        price: 299,
+        yearlyPrice: 2990,
+        popular: true,
         features: [
-          'Up to 1,000 txns / month',
-          'Full Developer REST API & SDK Access',
-          'Automated UTR Bank Matching Rail',
-          'Unlimited Payment Links & Counter QR',
-          '5 Webhook Endpoints with Auto-Retry',
-          'Priority Email Support (24h)'
-        ]
+          { text: 'Full Developer REST API', icon: <Briefcase size={16} /> },
+          { text: '5 Webhooks with auto-retry', icon: <Database size={16} /> },
+          { text: '1,000 verified txns/month', icon: <Server size={16} /> },
+        ],
+        includes: [
+          'Everything in Starter, plus:',
+          'Automated UTR bank matching',
+          'High-speed webhook retries',
+          'Custom slug & payee notes',
+          'Priority email support (24h SLA)',
+        ],
       },
       {
         id: 'pro',
-        title: 'Pro Flagship',
-        subtitle: 'UNLIMITED Everything & 24/7 VIP',
-        amount: 499,
-        durationDays: 30,
-        badge: 'Unlimited Everything',
-        badgeClass: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs',
+        name: 'Pro Flagship',
+        description: 'Advanced plan with enhanced security, VIP hotline and unlimited access',
+        price: 499,
+        yearlyPrice: 4990,
+        popular: false,
         features: [
-          'UNLIMITED Transactions & Revenue Volume',
-          'Full Developer REST API & High-Speed Rails',
-          '24/7 Dedicated WhatsApp Hotline (<1h)',
-          'Automated Monthly PDF Bank Statements (via Email)',
-          'White-Label Checkout (Custom Branding)',
-          'Unlimited Staff Accounts (RBAC) & Webhook Replays'
-        ]
-      }
+          { text: 'Unlimited txns & volume', icon: <Briefcase size={16} /> },
+          { text: '24/7 WhatsApp VIP hotline', icon: <Database size={16} /> },
+          { text: 'Automated monthly PDF statements', icon: <Server size={16} /> },
+        ],
+        includes: [
+          'Everything in Growth, plus:',
+          'Dedicated VIP support (under 1h SLA)',
+          'Automated monthly PDF statements',
+          'White-label (zero MyMobPay branding)',
+          'Multi-staff team accounts (3 seats)',
+        ],
+      },
     ];
   }, []);
 
-  const selectedPlan = plans.find(p => p.id === selectedPlanId) || plans[0];
+  const selectedPlan = plans.find(p => p.id === selectedPlanId) || plans[2];
 
   // ── Helper: Copy to Clipboard ─────────────────────────────────
   const handleCopy = (text, key) => {
@@ -257,12 +304,8 @@ export default function SubscriptionRedesign({
   };
 
   // ── Directly open Real Checkout Page with Subscription Details ──
-  const handleProceedToCheckout = async (planToUse = selectedPlan) => {
-    if (!planToUse) return;
-    if (planToUse.isCustom) {
-      setShowContactSalesModal(true);
-      return;
-    }
+  const handleProceedToCheckout = async (planToUse = selectedPlan, yearly = isYearly) => {
+    if (!planToUse || planToUse.isFreeForever) return;
 
     const platformKey = CONFIG.platformApiKey || '677d9312-a53f-4b96-815f-53e0eee1b292';
     const merchantId = profile?.id || '';
@@ -270,7 +313,14 @@ export default function SubscriptionRedesign({
     const callbackUrl = `${currentOrigin}/dashboard#subscription`;
     const newOrderId = generateOrderId('order');
 
+    const effectiveAmount = yearly && !planToUse.isMonthlyOnly ? planToUse.yearlyPrice : planToUse.price;
+    const planNote = yearly && !planToUse.isMonthlyOnly
+      ? `Subscription_${planToUse.id}_annual`
+      : `Subscription_${planToUse.id}`;
+
     setIsCheckingOut(true);
+    setSelectedPlanId(planToUse.id);
+
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
@@ -278,9 +328,9 @@ export default function SubscriptionRedesign({
         body: JSON.stringify({
           order_id: newOrderId,
           api_key: platformKey,
-          amount: planToUse.amount,
-          note: `Subscription_${planToUse.id}`,
-          project: `MyMobPay Platform License (${planToUse.title})`,
+          amount: effectiveAmount,
+          note: planNote,
+          project: `MyMobPay Platform License (${planToUse.name} ${yearly && !planToUse.isMonthlyOnly ? 'Annual' : 'Monthly'})`,
           customer_name: profile?.business_name || profile?.user_metadata?.full_name || 'Merchant Owner',
           customer_phone: profile?.phone || '',
           callback_url: callbackUrl,
@@ -295,10 +345,10 @@ export default function SubscriptionRedesign({
       const params = new URLSearchParams({
         order_id: newOrderId,
         api_key: platformKey,
-        amount: String(planToUse.amount),
+        amount: String(effectiveAmount),
         ref: merchantId,
-        note: `Subscription_${planToUse.id}`,
-        project: `MyMobPay Platform License (${planToUse.title})`,
+        note: planNote,
+        project: `MyMobPay Platform License (${planToUse.name} ${yearly && !planToUse.isMonthlyOnly ? 'Annual' : 'Monthly'})`,
         name: profile?.business_name || profile?.user_metadata?.full_name || 'Merchant Owner',
         phone: profile?.phone || '',
         callback: callbackUrl,
@@ -493,13 +543,13 @@ export default function SubscriptionRedesign({
       {/* ═══════════════════════════════════════════════════════════
          2. EXTEND OR UPGRADE PLAN SECTION
          ═══════════════════════════════════════════════════════════ */}
-      <div id="extend-plan-section" className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div id="extend-plan-section" className="flex flex-col gap-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold text-[#000d21] dark:text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#000d21] dark:text-white tracking-tight">
               Extend or Upgrade Plan
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-300">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
               Zero lock-in. Instant activation via dynamic UPI QR directly into your bank account.
             </p>
           </div>
@@ -509,95 +559,172 @@ export default function SubscriptionRedesign({
           </div>
         </div>
 
-        {/* Plan Cards */}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-          {plans.map((plan) => {
-            const isSelected = selectedPlanId === plan.id;
+        {/* Pricing Period Switcher (Monthly / Yearly with 2 Months Free) */}
+        <div className="flex justify-center my-1">
+          <div className="relative z-20 mx-auto flex w-fit rounded-full bg-slate-100 dark:bg-[#161D2B] border border-slate-200 dark:border-[#232D42] p-1 shadow-xs">
+            <button
+              type="button"
+              onClick={() => setIsYearly(false)}
+              className={`relative z-10 w-fit sm:h-11 h-9 rounded-full sm:px-6 px-3 py-1 text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
+                !isYearly
+                  ? "text-white"
+                  : "text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white"
+              }`}
+            >
+              {!isYearly && (
+                <motion.span
+                  layoutId={"dash_sub_switch_pill"}
+                  className="absolute top-0 left-0 sm:h-11 h-9 w-full rounded-full border-2 sm:border-4 shadow-sm shadow-blue-600 border-blue-600 bg-gradient-to-t from-blue-500 via-blue-400 to-blue-600"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+              <span className="relative">Monthly</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsYearly(true)}
+              className={`relative z-10 w-fit sm:h-11 h-9 flex-shrink-0 rounded-full sm:px-6 px-3 py-1 text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
+                isYearly
+                  ? "text-white"
+                  : "text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white"
+              }`}
+            >
+              {isYearly && (
+                <motion.span
+                  layoutId={"dash_sub_switch_pill"}
+                  className="absolute top-0 left-0 sm:h-11 h-9 w-full rounded-full border-2 sm:border-4 shadow-sm shadow-blue-600 border-blue-600 bg-gradient-to-t from-blue-500 via-blue-400 to-blue-600"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+              <span className="relative flex items-center gap-2">
+                Yearly
+                <span className="rounded-full bg-blue-100 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-700/50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
+                  Save 20%
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* 4 Plan Cards (Exact Match to /pricing UI & Adaptive to Merchant Account) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 py-2">
+          {plans.map((plan, planIndex) => {
+            const isCurrent = currentTierIndex === planIndex;
+            const isUpgrade = planIndex > currentTierIndex;
+            const isDowngrade = planIndex < currentTierIndex;
+            const effectivePrice = isYearly ? plan.yearlyPrice : plan.price;
+            const periodLabel = plan.isFreeForever
+              ? "forever"
+              : isYearly
+              ? (plan.isMonthlyOnly ? "month" : "year")
+              : "month";
+
+            let buttonLabel = `Subscribe (${plan.name})`;
+            if (isCurrent) {
+              buttonLabel = plan.isFreeForever ? "Current Active Plan" : `Extend License (₹${effectivePrice.toLocaleString('en-IN')})`;
+            } else if (isUpgrade) {
+              buttonLabel = `Upgrade to ${plan.name} (₹${effectivePrice.toLocaleString('en-IN')})`;
+            } else if (isDowngrade) {
+              buttonLabel = `Downgrade to ${plan.name}`;
+            }
+
             return (
               <div
                 key={plan.id}
-                onClick={() => setSelectedPlanId(plan.id)}
-                className={`cursor-pointer p-5 rounded-2xl bg-white border-2 transition-colors flex flex-col justify-between gap-4 relative overflow-hidden group ${
-                  isSelected
-                    ? 'border-blue-600 shadow-md shadow-blue-500/10'
-                    : 'border-slate-200/80 hover:border-blue-300 shadow-xs'
+                className={`relative rounded-3xl border text-left p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 shadow-sm ${
+                  plan.popular
+                    ? "ring-2 ring-blue-500 border-2 border-blue-500 bg-white dark:bg-[#0D1F38] shadow-lg shadow-blue-500/10"
+                    : "bg-white dark:bg-[#161D2B] border-slate-200 dark:border-[#232D42]"
                 }`}
               >
-                {/* Accent Corner Bubble matching Plan Color */}
-                <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full pointer-events-none group- transition-transform duration-300 ${
-                  plan.isCustom
-                    ? 'bg-amber-500/10'
-                    : plan.id === '3months' || plan.id === '2months'
-                    ? 'bg-indigo-500/10'
-                    : 'bg-blue-500/10'
-                }`} />
-                <div className="flex flex-col gap-3 relative z-10">
-                  <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${plan.badgeClass}`}>
-                      {plan.badge}
-                    </span>
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                      isSelected ? 'bg-blue-600' : 'bg-slate-100'
-                    }`}>
-                      <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-white' : 'bg-transparent'}`} />
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
+                      {plan.name}
+                    </h3>
+                    <div>
+                      {isCurrent ? (
+                        <span className="bg-emerald-500/10 dark:bg-emerald-950/60 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full text-xs font-bold">
+                          Current Plan
+                        </span>
+                      ) : plan.popular ? (
+                        <span className="bg-blue-500 text-white px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                          Popular
+                        </span>
+                      ) : null}
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-base font-bold text-[#000d21]">{plan.title}</h3>
-                    <p className="text-xs text-slate-400">{plan.subtitle}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-4 min-h-[38px] leading-relaxed">
+                    {plan.description}
+                  </p>
+
+                  <div className="flex items-baseline mb-5">
+                    <span className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-white">
+                      ₹{effectivePrice.toLocaleString('en-IN')}
+                    </span>
+                    <span className="text-gray-500 dark:text-gray-400 ml-1 text-xs font-medium">
+                      /{periodLabel}
+                    </span>
                   </div>
 
-                  <div className="flex items-baseline gap-1 py-1">
-                    <span className="text-2xl font-bold text-[#000d21]">
-                      {plan.isCustom ? 'Custom' : `₹${plan.amount.toLocaleString('en-IN')}`}
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      {plan.isCustom ? '/ tailored volume' : `/ ${plan.durationDays} days`}
-                    </span>
-                  </div>
+                  <button
+                    type="button"
+                    disabled={isActivating || isCheckingOut || (isCurrent && plan.isFreeForever)}
+                    onClick={() => {
+                      if (!plan.isFreeForever) {
+                        handleProceedToCheckout(plan, isYearly);
+                      }
+                    }}
+                    className={`w-full mb-5 p-3.5 text-sm sm:text-base rounded-xl text-center font-semibold transition-all cursor-pointer ${
+                      isCurrent && plan.isFreeForever
+                        ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 cursor-default"
+                        : plan.popular
+                        ? "bg-gradient-to-t from-blue-500 to-blue-600 shadow-lg shadow-blue-500/50 border border-blue-400 text-white hover:opacity-95"
+                        : "bg-gradient-to-t from-neutral-900 to-neutral-700 dark:from-[#232D42] dark:to-[#161D2B] shadow-lg shadow-neutral-900/30 dark:shadow-black/60 border border-neutral-700 dark:border-[#384663] text-white hover:opacity-95"
+                    }`}
+                  >
+                    {isCheckingOut && selectedPlanId === plan.id
+                      ? "Redirecting to Checkout..."
+                      : buttonLabel}
+                  </button>
 
-                  <ul className="flex flex-col gap-2 pt-3 border-t border-slate-100 text-xs text-slate-600">
-                    {plan.features.map((feat, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-blue-600" />
-                        <span className="leading-tight">{feat}</span>
+                  <ul className="space-y-2.5 font-medium py-3 text-xs">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center">
+                        <span className="text-neutral-700 dark:text-neutral-300 grid place-content-center mt-0.5 mr-2.5 shrink-0">
+                          {feature.icon}
+                        </span>
+                        <span className="text-gray-600 dark:text-gray-300 font-medium">
+                          {feature.text}
+                        </span>
                       </li>
                     ))}
                   </ul>
-                </div>
 
-                <button
-                  type="button"
-                  disabled={isActivating || isCheckingOut}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedPlanId(plan.id);
-                    if (plan.isCustom) {
-                      setShowContactSalesModal(true);
-                    } else {
-                      handleProceedToCheckout(plan);
-                    }
-                  }}
-                  className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-colors cursor-pointer ${
-                    isSelected
-                      ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-xs shadow-blue-500/20'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-                >
-                  {plan.isCustom
-                    ? 'Contact Sales'
-                    : (isCheckingOut && selectedPlanId === plan.id)
-                    ? 'Redirecting to Checkout...'
-                    : isSelected
-                    ? `Subscribe & Pay ₹${plan.amount.toLocaleString('en-IN')}`
-                    : `Subscribe (${plan.title})`}
-                </button>
+                  <div className="space-y-2.5 pt-3.5 border-t border-slate-200 dark:border-[#232D42]">
+                    <h4 className="font-semibold text-xs text-gray-900 dark:text-white mb-2">
+                      {plan.includes[0]}
+                    </h4>
+                    <ul className="space-y-2 font-medium text-xs">
+                      {plan.includes.slice(1).map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-center">
+                          <span className="h-5 w-5 bg-blue-50 dark:bg-blue-950/60 border border-blue-500/40 dark:border-blue-400/40 rounded-full grid place-content-center mt-0.5 mr-2.5 shrink-0">
+                            <CheckCheck className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                          </span>
+                          <span className="text-gray-600 dark:text-gray-300 font-medium">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
             );
           })}
         </div>
-
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
@@ -623,7 +750,7 @@ export default function SubscriptionRedesign({
                 <th className="px-4 py-3">Free Link (₹0)</th>
                 <th className="px-4 py-3">Starter (₹99/mo)</th>
                 <th className="px-4 py-3">Growth (₹299/mo)</th>
-                <th className="px-4 py-3 bg-blue-50/50 text-blue-900">Pro Flagship (₹499/mo) ★</th>
+                <th className="px-4 py-3 bg-blue-50/50 text-blue-900">Pro Flagship (₹499/mo)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -643,10 +770,10 @@ export default function SubscriptionRedesign({
               </tr>
               <tr>
                 <td className="px-4 py-3 font-semibold text-slate-800">Developer REST API &amp; SDKs</td>
-                <td className="px-4 py-3 text-slate-400">❌ Not Included</td>
-                <td className="px-4 py-3 text-slate-400">❌ Not Included</td>
-                <td className="px-4 py-3 text-blue-600 font-bold">✅ Full REST API</td>
-                <td className="px-4 py-3 bg-blue-50/30 text-blue-900 font-bold">✅ High-Speed Rails</td>
+                <td className="px-4 py-3 text-slate-400">-</td>
+                <td className="px-4 py-3 text-slate-400">-</td>
+                <td className="px-4 py-3 text-blue-600 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-blue-600" />Full REST API</td>
+                <td className="px-4 py-3 bg-blue-50/30 text-blue-900 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-blue-600" />High-Speed Rails</td>
               </tr>
               <tr>
                 <td className="px-4 py-3 font-semibold text-slate-800">Payment Links &amp; Counter QR</td>
@@ -664,8 +791,8 @@ export default function SubscriptionRedesign({
               </tr>
               <tr>
                 <td className="px-4 py-3 font-semibold text-slate-800">Webhook Endpoints &amp; Retries</td>
-                <td className="px-4 py-3 text-slate-400">❌ None</td>
-                <td className="px-4 py-3 text-slate-400">❌ None</td>
+                <td className="px-4 py-3 text-slate-400">-</td>
+                <td className="px-4 py-3 text-slate-400">-</td>
                 <td className="px-4 py-3 font-medium text-slate-600">5 Webhooks (Auto-retry)</td>
                 <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Dedicated Replay Rail</td>
               </tr>
@@ -678,10 +805,10 @@ export default function SubscriptionRedesign({
               </tr>
               <tr>
                 <td className="px-4 py-3 font-semibold text-slate-800">White-Label Custom Branding</td>
-                <td className="px-4 py-3 text-slate-400">❌ Powered by MyMobPay</td>
-                <td className="px-4 py-3 text-slate-400">❌ Powered by MyMobPay</td>
-                <td className="px-4 py-3 text-slate-400">❌ Powered by MyMobPay</td>
-                <td className="px-4 py-3 bg-blue-50/30 text-emerald-600 font-bold">✅ 100% White-Label</td>
+                <td className="px-4 py-3 text-slate-400">Powered by MyMobPay</td>
+                <td className="px-4 py-3 text-slate-400">Powered by MyMobPay</td>
+                <td className="px-4 py-3 text-slate-400">Powered by MyMobPay</td>
+                <td className="px-4 py-3 bg-blue-50/30 text-emerald-600 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-emerald-600" />100% White-Label</td>
               </tr>
               <tr>
                 <td className="px-4 py-3 font-semibold text-slate-800">Support &amp; SLA</td>
