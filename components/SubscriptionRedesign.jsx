@@ -146,6 +146,7 @@ export default function SubscriptionRedesign({
       isAnnual: false
     });
 
+    const isAnnual = isActive ? Boolean(activeTier?.isAnnual) : false;
     const tierIndex = isActive ? activeTier.tierIndex : 0;
     const planTitle = isActive ? activeTier.title : 'No Active Plan';
     const planTierLabel = isActive ? activeTier.tierLabel : 'Free Sandbox Tier';
@@ -167,6 +168,7 @@ export default function SubscriptionRedesign({
       expiresAt,
       activatedAtStr,
       tierIndex,
+      isAnnual,
       planTitle,
       planTierLabel,
       planAmount,
@@ -313,7 +315,7 @@ export default function SubscriptionRedesign({
   };
 
   // ── Directly open Real Checkout Page with Subscription Details ──
-  const handleProceedToCheckout = async (planToUse = selectedPlan, yearly = isYearly) => {
+  const handleProceedToCheckout = async (planToUse = selectedPlan, yearly = isYearly, overrideAmount = null) => {
     if (!planToUse || planToUse.isFreeForever) return;
 
     const platformKey = CONFIG.platformApiKey || '677d9312-a53f-4b96-815f-53e0eee1b292';
@@ -322,7 +324,14 @@ export default function SubscriptionRedesign({
     const callbackUrl = `${currentOrigin}/dashboard#subscription`;
     const newOrderId = generateOrderId('order');
 
-    const effectiveAmount = yearly && !planToUse.isMonthlyOnly ? planToUse.yearlyPrice : planToUse.price;
+    const hasActiveMonthlySub = subDetails.isActive && !subDetails.isAnnual && subDetails.tierIndex > 0;
+    const monthlyCredit = (yearly && !planToUse.isMonthlyOnly && hasActiveMonthlySub)
+      ? (subDetails.planAmount || 0)
+      : 0;
+
+    const baseAmount = yearly && !planToUse.isMonthlyOnly ? planToUse.yearlyPrice : planToUse.price;
+    const effectiveAmount = overrideAmount !== null ? overrideAmount : Math.max(0, baseAmount - monthlyCredit);
+
     const planNote = yearly && !planToUse.isMonthlyOnly
       ? `Subscription_${planToUse.id}_annual`
       : `Subscription_${planToUse.id}`;
@@ -639,10 +648,36 @@ export default function SubscriptionRedesign({
         {/* 4 Plan Cards (Exact Match to /pricing UI & Adaptive to Merchant Account) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 py-2">
           {plans.map((plan, planIndex) => {
-            const isCurrent = currentTierIndex === planIndex;
-            const isUpgrade = planIndex > currentTierIndex;
-            const isDowngrade = planIndex < currentTierIndex;
-            const effectivePrice = isYearly ? plan.yearlyPrice : plan.price;
+            // Determine active monthly subscription proration context universally for any account
+            const hasActiveMonthlySub = subDetails.isActive && !subDetails.isAnnual && subDetails.tierIndex > 0;
+            const currentMonthlyCredit = hasActiveMonthlySub ? (subDetails.planAmount || 0) : 0;
+
+            // When user is on a monthly plan, yearly plans are an UPGRADE to annual
+            const isCurrent = isYearly
+              ? (subDetails.isActive && subDetails.isAnnual && currentTierIndex === planIndex)
+              : (subDetails.isActive ? (!subDetails.isAnnual && currentTierIndex === planIndex) : planIndex === 0);
+
+            // Upgrades:
+            // - On Yearly view when on monthly sub: any annual tier >= currentTier is an upgrade to Annual
+            // - On Yearly view when on annual sub: higher tier is upgrade
+            // - On Monthly view: higher tier is upgrade
+            const isUpgrade = isYearly
+              ? (hasActiveMonthlySub ? (!plan.isMonthlyOnly && !plan.isFreeForever && planIndex >= currentTierIndex) : (planIndex > currentTierIndex && !plan.isMonthlyOnly))
+              : (planIndex > currentTierIndex);
+
+            // Downgrades:
+            const isDowngrade = isYearly
+              ? (plan.isFreeForever || plan.isMonthlyOnly || planIndex < currentTierIndex)
+              : (planIndex < currentTierIndex);
+
+            // Pricing deduction: If upgrading from monthly to annual, minus the current month amount already paid
+            const monthlyCreditApplied = (isYearly && isUpgrade && hasActiveMonthlySub && !plan.isMonthlyOnly && !plan.isFreeForever)
+              ? currentMonthlyCredit
+              : 0;
+
+            const basePrice = isYearly ? plan.yearlyPrice : plan.price;
+            const effectivePrice = Math.max(0, basePrice - monthlyCreditApplied);
+
             const periodLabel = plan.isFreeForever
               ? "forever"
               : isYearly
@@ -691,13 +726,25 @@ export default function SubscriptionRedesign({
                     {plan.description}
                   </p>
 
-                  <div className="flex items-baseline mb-5">
-                    <span className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-white">
-                      ₹{effectivePrice.toLocaleString('en-IN')}
-                    </span>
-                    <span className="text-gray-500 dark:text-gray-400 ml-1 text-xs font-medium">
-                      /{periodLabel}
-                    </span>
+                  <div className="flex flex-col mb-5">
+                    <div className="flex items-baseline">
+                      <span className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-white">
+                        ₹{effectivePrice.toLocaleString('en-IN')}
+                      </span>
+                      <span className="text-gray-500 dark:text-gray-400 ml-1 text-xs font-medium">
+                        /{periodLabel}
+                      </span>
+                      {monthlyCreditApplied > 0 && (
+                        <span className="ml-2 text-xs font-semibold text-gray-400 dark:text-gray-500 line-through">
+                          ₹{plan.yearlyPrice.toLocaleString('en-IN')}
+                        </span>
+                      )}
+                    </div>
+                    {monthlyCreditApplied > 0 && (
+                      <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span>₹{monthlyCreditApplied} current month credit applied</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Plan Action Selection: Hide downgrade options when subscription is active. Current subscription card selection is grayed out with text "Current" */}
@@ -707,7 +754,7 @@ export default function SubscriptionRedesign({
                       disabled={isActivating || isCheckingOut || isCurrent}
                       onClick={() => {
                         if (!isCurrent && !plan.isFreeForever) {
-                          handleProceedToCheckout(plan, isYearly);
+                          handleProceedToCheckout(plan, isYearly, effectivePrice);
                         }
                       }}
                       className={`w-full mb-5 p-3.5 text-sm sm:text-base rounded-xl text-center font-semibold transition-all ${
