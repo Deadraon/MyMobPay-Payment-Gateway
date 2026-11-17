@@ -161,6 +161,51 @@ export default function PricingClient() {
           border-color: rgba(255, 158, 27, 0.26);
         }
 
+        .site-header {
+          background-color: var(--bg-header);
+          border-bottom: 1px solid var(--border-color);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+        }
+
+        .header-nav-pill {
+          background-color: var(--bg-pill-nav);
+          border: 1px solid var(--border-color);
+        }
+
+        .nav-pill-item {
+          font-size: 12.5px;
+          font-weight: 600;
+          color: var(--text-secondary);
+          padding: 6px 12px;
+          border-radius: 9999px;
+          white-space: nowrap;
+          transition: all 0.18s ease;
+        }
+        .nav-pill-item:hover {
+          color: var(--accent-link);
+          background-color: rgba(15, 43, 255, 0.07);
+        }
+        html.dark .nav-pill-item:hover {
+          background-color: rgba(96, 165, 250, 0.12);
+        }
+        .nav-pill-item.active {
+          color: var(--accent-link);
+          background-color: rgba(15, 43, 255, 0.09);
+        }
+        html.dark .nav-pill-item.active {
+          background-color: rgba(96, 165, 250, 0.16);
+        }
+
+        .btn-editorial {
+          box-shadow: 0 4px 12px rgba(15, 43, 255, 0.22);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-editorial:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(15, 43, 255, 0.32);
+        }
+
         .headline-anton {
           font-family: 'Anton', 'Barlow Condensed', Impact, sans-serif;
           font-weight: 400;
@@ -180,42 +225,48 @@ export default function PricingClient() {
         <div className="orbit-ring-ccw w-[920px] h-[920px] -z-10 opacity-20 dark:opacity-15"></div>
       </div>
 
-      {/* ── Navigation Header ── */}
-      <header className="border-b theme-border sticky top-0 z-40 backdrop-blur-md transition-colors" style={{ backgroundColor: 'var(--bg-header)' }}>
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="w-8 h-8 flex items-center justify-center shrink-0">
-              <MyMobPayLogoMark className="w-full h-full" id="pricing-nav-logo" />
+      {/* ── Navigation Header (Matching Homepage Header with Floating Nav Pill) ── */}
+      <header className="site-header sticky top-0 z-40 w-full transition-colors">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-8 h-16 sm:h-[72px] flex items-center justify-between gap-3">
+          {/* Zone 1 (Left): Logo */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 focus:outline-none group" aria-label="MyMobPay Home">
+            <span className="w-8 h-8 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <MyMobPayLogoMark className="w-full h-full" id="pricing-master-header" />
             </span>
-            <span className="font-sans font-extrabold text-xl tracking-tight theme-text-primary">
+            <span className="font-sans font-extrabold text-[20px] tracking-tight theme-text-primary">
               MyMob<span className="text-[#0F2BFF]">Pay</span>
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold theme-text-secondary">
-            <Link href="/" className="hover:text-[#0F2BFF] transition-colors">Home</Link>
-            <Link href="/pricing" className="text-[#0F2BFF] font-bold">Pricing</Link>
-            <Link href="/docs" className="hover:text-[#0F2BFF] transition-colors">Developers</Link>
-            <Link href="/blog" className="hover:text-[#0F2BFF] transition-colors">Blog</Link>
+          {/* Zone 2 (Center): Floating Navigation Pill */}
+          <nav className="hidden lg:flex items-center header-nav-pill px-2 py-1 rounded-full shadow-2xs" aria-label="Primary Navigation">
+            <Link href="/#own-your-money" className="nav-pill-item">Product</Link>
+            <Link href="/#fees-drag" className="nav-pill-item">0% Model</Link>
+            <Link href="/pricing" className="nav-pill-item active">Pricing</Link>
+            <Link href="/docs" className="nav-pill-item">Developers</Link>
+            <Link href="/blog" className="nav-pill-item">Blog</Link>
+            <Link href="/#faq-section" className="nav-pill-item">FAQ</Link>
           </nav>
 
-          <div className="hidden md:flex items-center gap-3">
-            <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
-            <Link href="/login" className="text-xs sm:text-sm font-bold theme-text-secondary hover:text-[#0F2BFF] px-3 py-1.5 transition-colors">
-              Log in
-            </Link>
-            <Link href="/login?mode=signup" className="bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-full transition-colors shadow-sm">
-              Get started
-            </Link>
+          {/* Zone 3 (Right): Animated Theme Switcher + Auth CTAs */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
+            <ThemeToggleButton
+              theme={theme}
+              onToggle={toggleTheme}
+            />
+
+            <Link href="/login" className="text-[13px] font-bold theme-link hover:underline px-2 py-1">Log in</Link>
+
+            <Link href="/login?mode=signup" className="btn-editorial bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[12.5px] font-bold px-4 py-2 rounded-full">Get started</Link>
           </div>
 
           {/* Mobile Right Controls */}
           <div className="flex md:hidden items-center gap-2">
-            <ThemeToggleButton theme={theme} onToggle={toggleTheme} showLabel={false} />
+            <Link href="/login?mode=signup" className="bg-[#0F2BFF] text-white text-[11.5px] font-bold px-3 py-1.5 rounded-full">Start free</Link>
             <button
               type="button"
               onClick={() => setMobileNavOpen(!mobileNavOpen)}
-              className="p-2 rounded-xl theme-bg-elevated border theme-border theme-text-primary cursor-pointer"
+              className="p-2 rounded-lg theme-bg-elevated border theme-border theme-text-primary cursor-pointer"
               aria-label="Toggle Menu"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -227,16 +278,27 @@ export default function PricingClient() {
 
         {/* Mobile Navigation Drawer */}
         {mobileNavOpen && (
-          <div className="md:hidden theme-bg-elevated border-b theme-border px-5 py-4 space-y-3">
+          <div className="md:hidden theme-bg-elevated border-b theme-border px-4 py-4 space-y-4">
             <div className="grid grid-cols-2 gap-2 text-xs font-bold">
-              <Link href="/" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-xl theme-bg-well border theme-border theme-text-primary">Home</Link>
-              <Link href="/pricing" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-[#0F2BFF] font-bold">Pricing</Link>
-              <Link href="/docs" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-xl theme-bg-well border theme-border theme-text-primary">Developers</Link>
-              <Link href="/blog" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-xl theme-bg-well border theme-border theme-text-primary">Blog</Link>
+              <Link href="/#own-your-money" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Product</Link>
+              <Link href="/#fees-drag" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">0% Fee Model</Link>
+              <Link href="/pricing" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-[#0F2BFF] font-bold">Pricing Plans</Link>
+              <Link href="/docs" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Developers</Link>
+              <Link href="/blog" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">Blog</Link>
+              <Link href="/#faq-section" onClick={() => setMobileNavOpen(false)} className="p-2.5 rounded-lg theme-bg-well border theme-border theme-text-primary">FAQ</Link>
             </div>
-            <div className="grid grid-cols-2 gap-2 pt-2 border-t theme-border">
-              <Link href="/login" onClick={() => setMobileNavOpen(false)} className="py-2.5 rounded-xl border theme-border theme-text-primary text-xs font-bold text-center block">Log in</Link>
-              <Link href="/login?mode=signup" onClick={() => setMobileNavOpen(false)} className="py-2.5 rounded-xl bg-[#0F2BFF] text-white text-xs font-bold text-center block">Get started</Link>
+
+            <div className="flex items-center justify-between pt-2 border-t theme-border">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-wider theme-text-muted">Appearance</span>
+              <ThemeToggleButton
+                theme={theme}
+                onToggle={toggleTheme}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 pt-1">
+              <Link href="/login" onClick={() => setMobileNavOpen(false)} className="py-2.5 rounded-lg border border-[#0F2BFF] theme-link text-xs font-bold text-center block">Log in</Link>
+              <Link href="/login?mode=signup" onClick={() => setMobileNavOpen(false)} className="py-2.5 rounded-lg bg-[#0F2BFF] text-white text-xs font-bold text-center block">Get started free</Link>
             </div>
           </div>
         )}
