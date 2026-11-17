@@ -4,20 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Check,
-  X,
   ArrowRight,
   Zap,
   Shield,
   Sparkles,
   Lock,
-  ChevronDown,
-  HelpCircle,
-  Award,
-  Layers,
-  Code2,
-  Clock,
-  PhoneCall,
-  FileSpreadsheet
+  ChevronDown
 } from 'lucide-react';
 import { MyMobPayLogoMark } from '@/components/MyMobPayLogo';
 import ThemeToggleButton from '@/components/ThemeToggleButton';
@@ -356,9 +348,9 @@ export default function PricingClient() {
       </header>
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-8 pb-16 sm:pt-14 sm:pb-24">
-        {/* ── Sleek Hero Section ── */}
+        {/* ── Sleek Clean Hero Section (No Border on Pill) ── */}
         <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full theme-bg-elevated border theme-border shadow-xs">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full theme-bg-elevated shadow-xs">
             <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
             <span className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] theme-text-primary">
               DIRECT-TO-BANK UPI &amp; IMPS • 0% COMMISSION
@@ -375,7 +367,7 @@ export default function PricingClient() {
             Stop paying 2% on every checkout. Switch to flat, predictable software subscriptions. Direct UPI &amp; IMPS settlement into your own merchant bank account.
           </p>
 
-          {/* Micro-Trust Highlights */}
+          {/* Micro-Trust Highlights (Clean text with color dots, no stickers, no emojis) */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-y-2 gap-x-5 text-xs font-semibold theme-text-muted">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -395,12 +387,12 @@ export default function PricingClient() {
             </span>
           </div>
 
-          {/* ── Billing Cycle Selector (Monthly vs Annually with 2 Months Free) ── */}
-          <div className="mt-8 inline-flex items-center p-1 rounded-full theme-bg-elevated border theme-border shadow-xs">
+          {/* ── Billing Cycle Selector (Borderless, Sticker-Free Clean Tab) ── */}
+          <div className="mt-8 inline-flex items-center p-1.5 rounded-full theme-bg-elevated shadow-xs">
             <button
               type="button"
               onClick={() => setBillingCycle('monthly')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 billingCycle === 'monthly'
                   ? 'bg-[#0F2BFF] text-white shadow-xs'
                   : 'theme-text-muted hover:theme-text-primary'
@@ -411,16 +403,13 @@ export default function PricingClient() {
             <button
               type="button"
               onClick={() => setBillingCycle('annually')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 billingCycle === 'annually'
                   ? 'bg-[#0F2BFF] text-white shadow-xs'
                   : 'theme-text-muted hover:theme-text-primary'
               }`}
             >
-              <span>Annual Billing</span>
-              <span className="font-mono text-[9px] uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">
-                2 Months Free
-              </span>
+              Annual Billing (2 Months Free)
             </button>
           </div>
 
@@ -431,26 +420,21 @@ export default function PricingClient() {
           )}
         </div>
 
-        {/* ── THE 4 PRICING MODELS (CLEAN FINTECH ARCHITECTURE) ── */}
+        {/* ── THE 4 PRICING MODELS (BORDERLESS, STICKER-FREE FINTECH DESIGN) ── */}
         <div className="mt-10 sm:mt-14">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             
             {/* ── Card 1: Free Link Starter (₹0) ── */}
-            <div className="theme-bg-elevated border theme-border rounded-2xl p-6 sm:p-7 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 theme-card-shadow relative">
+            <div className="theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all duration-300 relative">
               <div>
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-xl font-bold theme-text-primary">Free Link Starter</h3>
-                  <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                    Free Forever
-                  </span>
-                </div>
-                <p className="text-xs theme-text-muted mt-2 leading-relaxed min-h-[34px]">
-                  Ideal for creators, social sellers &amp; zero-cost testing.
+                <h3 className="text-2xl font-black theme-text-primary tracking-tight">Free Link Starter</h3>
+                <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
+                  Ideal for creators, social sellers &amp; zero-cost live testing.
                 </p>
 
-                <div className="mt-5 pt-4 border-t theme-border">
+                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹0</span>
+                    <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹0</span>
                     <span className="theme-text-muted text-xs font-semibold">/ forever</span>
                   </div>
                   <div className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
@@ -458,214 +442,151 @@ export default function PricingClient() {
                   </div>
                 </div>
 
-                <div className="mt-6 space-y-3 text-xs theme-text-secondary">
+                <div className="mt-7 space-y-3.5 text-xs sm:text-[13px] theme-text-secondary">
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span><strong className="theme-text-primary">0% Gateway Commission</strong></span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Instant Direct Bank Settlement (T+0)</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Dynamic UPI QR &amp; Intent Links</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Up to 10 Active Payment Links</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Printable Counter Standee QR</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Live Merchant Dashboard</span>
-                  </div>
-                  <div className="flex items-start gap-2.5 text-slate-400 dark:text-slate-500">
-                    <div className="w-4 h-4 rounded-full bg-slate-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <X className="w-3 h-3 stroke-[2.2]" />
-                    </div>
-                    <span>Developer REST API &amp; Webhooks</span>
                   </div>
                 </div>
               </div>
 
               <Link
                 href="/login?mode=signup"
-                className="mt-8 w-full py-2.5 rounded-xl border theme-border hover:border-emerald-600 hover:text-emerald-600 dark:hover:text-emerald-400 theme-text-primary text-xs font-bold text-center block transition-all cursor-pointer shadow-2xs"
+                className="mt-8 w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 theme-text-primary text-xs font-bold text-center block transition-all cursor-pointer"
               >
                 Start Free Forever
               </Link>
             </div>
 
             {/* ── Card 2: Starter Plan (₹99/mo) ── */}
-            <div className="theme-bg-elevated border theme-border rounded-2xl p-6 sm:p-7 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 theme-card-shadow relative">
+            <div className="theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all duration-300 relative">
               <div>
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-xl font-bold theme-text-primary">Starter</h3>
-                  <span className="font-mono text-[10px] font-bold theme-text-muted bg-slate-500/10 px-2 py-0.5 rounded-full">
-                    {isAnnual ? 'Monthly Only' : 'Links Scale'}
-                  </span>
-                </div>
-                <p className="text-xs theme-text-muted mt-2 leading-relaxed min-h-[34px]">
-                  Higher link quota, custom slugs &amp; statement exports.
+                <h3 className="text-2xl font-black theme-text-primary tracking-tight">Starter</h3>
+                <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
+                  Higher link quota, custom slugs &amp; statement downloads.
                 </p>
 
-                <div className="mt-5 pt-4 border-t theme-border">
+                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹99</span>
+                    <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹99</span>
                     <span className="theme-text-muted text-xs font-semibold">/ month</span>
                   </div>
                   <div className="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
-                    Up to 300 link transactions / month
+                    {isAnnual ? 'Billed monthly at ₹99' : 'Up to 300 link transactions / month'}
                   </div>
-                  {isAnnual && (
-                    <div className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                      Billed monthly at ₹99
-                    </div>
-                  )}
                 </div>
 
-                <div className="mt-6 space-y-3 text-xs theme-text-secondary">
+                <div className="mt-7 space-y-3.5 text-xs sm:text-[13px] theme-text-secondary">
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span><strong className="theme-text-primary">Everything in Free</strong></span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Up to 300 Link Txns / month</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Unlimited Payment Links</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Custom Link Slugs &amp; Payee Notes</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>CSV Statement Exports</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Standard Support (48h SLA)</span>
-                  </div>
-                  <div className="flex items-start gap-2.5 text-slate-400 dark:text-slate-500">
-                    <div className="w-4 h-4 rounded-full bg-slate-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <X className="w-3 h-3 stroke-[2.2]" />
-                    </div>
-                    <span>Developer REST API &amp; Webhooks</span>
                   </div>
                 </div>
               </div>
 
               <Link
                 href="/login?mode=signup"
-                className="mt-8 w-full py-2.5 rounded-xl border theme-border hover:border-[#0F2BFF] theme-bg-well theme-text-primary hover:text-[#0F2BFF] text-xs font-bold text-center block transition-all cursor-pointer shadow-2xs"
+                className="mt-8 w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 theme-text-primary text-xs font-bold text-center block transition-all cursor-pointer"
               >
                 Get Started for ₹99
               </Link>
             </div>
 
-            {/* ── Card 3: Growth Plan (₹299/mo or ₹2,990/yr) — RECOMMENDED API TIER ── */}
-            <div className="theme-bg-elevated border-2 border-sky-500 dark:border-sky-400 rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-xl shadow-sky-500/10 relative">
+            {/* ── Card 3: Growth Plan (₹299/mo or ₹2,990/yr) — BORDERLESS, ELEVATED ── */}
+            <div className="theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative">
               <div>
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-xl font-bold theme-text-primary">Growth</h3>
-                  <span className="font-mono text-[10px] font-bold text-white bg-sky-600 px-2.5 py-0.5 rounded-full shadow-2xs">
-                    Popular &bull; REST API
-                  </span>
-                </div>
-                <p className="text-xs theme-text-muted mt-2 leading-relaxed min-h-[34px]">
+                <h3 className="text-2xl font-black theme-text-primary tracking-tight">Growth</h3>
+                <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
                   Full Developer REST API &amp; webhooks for apps &amp; checkouts.
                 </p>
 
-                <div className="mt-5 pt-4 border-t theme-border">
+                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
                   {isAnnual ? (
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹2,990</span>
+                        <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹2,990</span>
                         <span className="theme-text-muted text-xs font-semibold">/ year</span>
                       </div>
                       <div className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        ₹249/mo &bull; Save ₹598/yr (2 Months Free)
+                        ₹249/month effective (Save ₹598/yr • 2 Months Free)
                       </div>
                     </div>
                   ) : (
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹299</span>
+                        <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹299</span>
                         <span className="theme-text-muted text-xs font-semibold">/ month</span>
                       </div>
                       <div className="mt-2 text-xs font-semibold text-sky-600 dark:text-sky-400">
-                        Up to 1,000 transactions / month
+                        Up to 1,000 transactions / month (API + Links)
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-6 space-y-3 text-xs theme-text-secondary">
+                <div className="mt-7 space-y-3.5 text-xs sm:text-[13px] theme-text-secondary">
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span><strong className="theme-text-primary">Full Developer REST API Access</strong></span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span><strong className="theme-text-primary">5 Webhooks with Auto-Retry</strong></span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Automated UTR Bank Matching</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Up to 1,000 Verified Transactions</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Unlimited Links &amp; Standee QR</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Priority Support (24h SLA)</span>
                   </div>
                 </div>
@@ -673,91 +594,72 @@ export default function PricingClient() {
 
               <Link
                 href="/login?mode=signup"
-                className="mt-8 w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-xs hover:shadow-md cursor-pointer"
+                className="mt-8 w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-md cursor-pointer"
               >
                 <span>{isAnnual ? 'Choose Growth (₹2,990/yr)' : 'Choose Growth (₹299/mo)'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
-            {/* ── Card 4: Pro Flagship (₹499/mo or ₹4,990/yr) — UNLIMITED TIER ── */}
-            <div className="theme-bg-elevated border-2 border-[#0F2BFF] dark:border-[#3B82F6] rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-2xl shadow-blue-500/15 relative">
+            {/* ── Card 4: Pro Flagship (₹499/mo or ₹4,990/yr) — BORDERLESS, ROYAL ELEVATED ── */}
+            <div className="theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative">
               <div>
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-xl font-bold theme-text-primary">Pro Flagship</h3>
-                  <span className="font-mono text-[10px] font-bold text-white bg-gradient-to-r from-[#0F2BFF] to-[#2563EB] px-2.5 py-0.5 rounded-full shadow-2xs">
-                    Unlimited
-                  </span>
-                </div>
-                <p className="text-xs theme-text-muted mt-2 leading-relaxed min-h-[34px]">
+                <h3 className="text-2xl font-black theme-text-primary tracking-tight">Pro Flagship</h3>
+                <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
                   Zero limits, 24/7 WhatsApp VIP hotline &amp; PDF bank statements.
                 </p>
 
-                <div className="mt-5 pt-4 border-t theme-border">
+                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
                   {isAnnual ? (
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹4,990</span>
+                        <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹4,990</span>
                         <span className="theme-text-muted text-xs font-semibold">/ year</span>
                       </div>
                       <div className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        ₹415/mo &bull; Save ₹998/yr (2 Months Free)
+                        ₹415/month effective (Save ₹998/yr • 2 Months Free)
                       </div>
                     </div>
                   ) : (
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹499</span>
+                        <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">₹499</span>
                         <span className="theme-text-muted text-xs font-semibold">/ month</span>
                       </div>
                       <div className="mt-2 text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
-                        UNLIMITED Transactions &amp; Volume
+                        Unlimited Transactions &amp; Volume
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-6 space-y-3 text-xs theme-text-secondary">
+                <div className="mt-7 space-y-3.5 text-xs sm:text-[13px] theme-text-secondary">
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
                     <span><strong className="theme-text-primary">UNLIMITED Transactions &amp; Volume</strong></span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
                     <span><strong className="theme-text-primary">24/7 Dedicated WhatsApp Hotline (&lt;1h SLA)</strong></span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
                     <span><strong className="theme-text-primary">Automated Monthly PDF Bank Statements</strong></span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Full REST API &amp; High-Speed Webhooks</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Real-Time Bank Polling (Zero Latency)</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>White-Label (Remove MyMobPay branding)</span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 stroke-[2.8]" />
-                    </div>
+                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5 stroke-[2.5]" />
                     <span>Multi-Staff Team Accounts (3 Seats)</span>
                   </div>
                 </div>
@@ -765,7 +667,7 @@ export default function PricingClient() {
 
               <Link
                 href="/login?mode=signup"
-                className="mt-8 w-full py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg cursor-pointer"
+                className="mt-8 w-full py-3 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg cursor-pointer"
               >
                 <span>{isAnnual ? 'Get Pro Flagship (₹4,990/yr)' : 'Get Pro Flagship (₹499/mo)'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -774,52 +676,52 @@ export default function PricingClient() {
           </div>
         </div>
 
-        {/* ── Trust & Settlement Guarantees Banner ── */}
-        <div className="mt-14 p-6 sm:p-7 rounded-2xl theme-bg-elevated border theme-border theme-card-shadow max-w-5xl mx-auto">
+        {/* ── Trust & Settlement Guarantees Banner (Borderless, Elevated) ── */}
+        <div className="mt-16 p-7 sm:p-8 rounded-3xl theme-bg-elevated shadow-sm max-w-5xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <Shield className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold theme-text-primary">0% Commission</h4>
-                <p className="text-[11.5px] theme-text-muted mt-0.5 leading-snug">
+                <h4 className="text-xs sm:text-sm font-bold theme-text-primary">0% Commission</h4>
+                <p className="text-xs theme-text-muted mt-0.5 leading-snug">
                   100% of revenue goes directly into your bank. Zero gateway tax.
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                 <Lock className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold theme-text-primary">Zero Fund Escrow</h4>
-                <p className="text-[11.5px] theme-text-muted mt-0.5 leading-snug">
+                <h4 className="text-xs sm:text-sm font-bold theme-text-primary">Zero Fund Escrow</h4>
+                <p className="text-xs theme-text-muted mt-0.5 leading-snug">
                   Money never touches our accounts. Direct P2P bank settlement.
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
                 <Zap className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold theme-text-primary">T+0 Instant Rails</h4>
-                <p className="text-[11.5px] theme-text-muted mt-0.5 leading-snug">
+                <h4 className="text-xs sm:text-sm font-bold theme-text-primary">T+0 Instant Rails</h4>
+                <p className="text-xs theme-text-muted mt-0.5 leading-snug">
                   Instant credit into your merchant account via high-speed UPI.
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold theme-text-primary">No Lock-in Contracts</h4>
-                <p className="text-[11.5px] theme-text-muted mt-0.5 leading-snug">
+                <h4 className="text-xs sm:text-sm font-bold theme-text-primary">No Lock-in Contracts</h4>
+                <p className="text-xs theme-text-muted mt-0.5 leading-snug">
                   Simple predictable software billing. Upgrade or cancel anytime.
                 </p>
               </div>
@@ -827,7 +729,7 @@ export default function PricingClient() {
           </div>
         </div>
 
-        {/* ── Feature Comparison Matrix Table ── */}
+        {/* ── Feature Comparison Matrix Table (Borderless Container) ── */}
         <section className="mt-20 max-w-5xl mx-auto">
           <div className="text-center mb-8">
             <span className="font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] theme-link">
@@ -841,11 +743,11 @@ export default function PricingClient() {
             </p>
           </div>
 
-          <div className="theme-bg-elevated border theme-border rounded-2xl overflow-hidden theme-card-shadow">
+          <div className="theme-bg-elevated rounded-3xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b theme-border theme-bg-well">
+                  <tr className="border-b border-slate-100 dark:border-slate-800/60 theme-bg-well">
                     <th className="py-4 px-4 sm:px-6 font-bold theme-text-primary w-2/5">Feature</th>
                     <th className="py-4 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400">Free (₹0)</th>
                     <th className="py-4 px-3 text-center font-bold text-slate-700 dark:text-slate-300">Starter (₹99)</th>
@@ -853,7 +755,7 @@ export default function PricingClient() {
                     <th className="py-4 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Pro Flagship (₹499)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y theme-border">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                   {/* Category: Pricing & Limits */}
                   <tr className="theme-bg-well/60">
                     <td colSpan={5} className="py-2.5 px-4 sm:px-6 font-mono font-bold text-[10px] uppercase tracking-wider theme-text-muted">
@@ -861,32 +763,32 @@ export default function PricingClient() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Monthly Subscription</td>
-                    <td className="py-3 px-3 text-center font-mono font-bold text-emerald-600 dark:text-emerald-400">₹0</td>
-                    <td className="py-3 px-3 text-center font-mono font-bold theme-text-primary">₹99/mo</td>
-                    <td className="py-3 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">₹299/mo</td>
-                    <td className="py-3 px-3 text-center font-mono font-black text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">₹499/mo</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Monthly Subscription</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-bold text-emerald-600 dark:text-emerald-400">₹0</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-bold theme-text-primary">₹99/mo</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">₹299/mo</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-black text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">₹499/mo</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Annual Billing (2 Months Free)</td>
-                    <td className="py-3 px-3 text-center font-mono text-emerald-600 dark:text-emerald-400">Free</td>
-                    <td className="py-3 px-3 text-center font-mono text-slate-400">Monthly Only</td>
-                    <td className="py-3 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">₹2,990/yr</td>
-                    <td className="py-3 px-3 text-center font-mono font-black text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">₹4,990/yr</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Annual Billing (2 Months Free)</td>
+                    <td className="py-3.5 px-3 text-center font-mono text-emerald-600 dark:text-emerald-400">Free</td>
+                    <td className="py-3.5 px-3 text-center font-mono text-slate-400">Monthly Only</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">₹2,990/yr</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-black text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">₹4,990/yr</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Gateway Commission</td>
-                    <td className="py-3 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400">0%</td>
-                    <td className="py-3 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400">0%</td>
-                    <td className="py-3 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-sky-500/5">0%</td>
-                    <td className="py-3 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-[#0F2BFF]/5">0%</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Gateway Commission</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400">0%</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400">0%</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-sky-500/5">0%</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-[#0F2BFF]/5">0%</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Monthly Transaction Cap</td>
-                    <td className="py-3 px-3 text-center font-mono theme-text-secondary">100 txns</td>
-                    <td className="py-3 px-3 text-center font-mono theme-text-secondary">300 txns</td>
-                    <td className="py-3 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">1,000 txns</td>
-                    <td className="py-3 px-3 text-center font-mono font-black text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">UNLIMITED</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Monthly Transaction Cap</td>
+                    <td className="py-3.5 px-3 text-center font-mono theme-text-secondary">100 txns</td>
+                    <td className="py-3.5 px-3 text-center font-mono theme-text-secondary">300 txns</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">1,000 txns</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-black text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">UNLIMITED</td>
                   </tr>
 
                   {/* Category: Collection Rails */}
@@ -896,39 +798,39 @@ export default function PricingClient() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Direct Bank Settlement (T+0)</td>
-                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Direct Bank Settlement (T+0)</td>
+                    <td className="py-3.5 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Dynamic UPI QR &amp; Intent</td>
-                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Dynamic UPI QR &amp; Intent</td>
+                    <td className="py-3.5 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Payment Links Limit</td>
-                    <td className="py-3 px-3 text-center theme-text-secondary">Up to 10</td>
-                    <td className="py-3 px-3 text-center font-bold text-blue-600 dark:text-blue-400">Unlimited</td>
-                    <td className="py-3 px-3 text-center font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">Unlimited</td>
-                    <td className="py-3 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Unlimited</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Payment Links Limit</td>
+                    <td className="py-3.5 px-3 text-center theme-text-secondary">Up to 10</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-blue-600 dark:text-blue-400">Unlimited</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">Unlimited</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Unlimited</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Custom Slugs &amp; Payee Notes</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Custom Slugs &amp; Payee Notes</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">CSV Statement Exports</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
-                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">CSV Statement Exports</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
+                    <td className="py-3.5 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto stroke-[2.5]" /></td>
                   </tr>
 
                   {/* Category: Developer & Integration */}
@@ -938,42 +840,42 @@ export default function PricingClient() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Developer REST API Access</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">Full Access</td>
-                    <td className="py-3 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Full Access</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Developer REST API Access</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">Full Access</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Full Access</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Signed Webhooks with Auto-Retry</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">5 Endpoints</td>
-                    <td className="py-3 px-3 text-center font-mono font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Unlimited</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Signed Webhooks with Auto-Retry</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">5 Endpoints</td>
+                    <td className="py-3.5 px-3 text-center font-mono font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Unlimited</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Automated UTR Bank Matching</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center bg-sky-500/5">
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Automated UTR Bank Matching</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center bg-sky-500/5">
                       <span className="inline-flex items-center gap-1 justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
-                        <Check className="w-3.5 h-3.5 text-emerald-500" /> Standard
+                        <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[2.5]" /> Standard
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5">
+                    <td className="py-3.5 px-3 text-center bg-[#0F2BFF]/5">
                       <span className="inline-flex items-center gap-1 justify-center text-[#0F2BFF] dark:text-[#60A5FA] font-bold">
-                        <Check className="w-3.5 h-3.5" /> Priority SLA
+                        <Check className="w-3.5 h-3.5 stroke-[2.5]" /> Priority SLA
                       </span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">White-Labeling (Remove Badge)</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
-                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5">
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">White-Label (Remove Badge)</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
+                    <td className="py-3.5 px-3 text-center bg-[#0F2BFF]/5">
                       <span className="inline-flex items-center gap-1 justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
-                        <Check className="w-3.5 h-3.5 text-emerald-500" /> Included
+                        <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[2.5]" /> Included
                       </span>
                     </td>
                   </tr>
@@ -985,40 +887,40 @@ export default function PricingClient() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Support Response SLA</td>
-                    <td className="py-3 px-3 text-center theme-text-muted">Community</td>
-                    <td className="py-3 px-3 text-center theme-text-secondary">48h Email</td>
-                    <td className="py-3 px-3 text-center font-semibold text-sky-600 dark:text-sky-400 bg-sky-500/5">24h Priority Email</td>
-                    <td className="py-3 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">&lt;1h Priority SLA</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Support Response SLA</td>
+                    <td className="py-3.5 px-3 text-center theme-text-muted">Community</td>
+                    <td className="py-3.5 px-3 text-center theme-text-secondary">48h Email</td>
+                    <td className="py-3.5 px-3 text-center font-semibold text-sky-600 dark:text-sky-400 bg-sky-500/5">24h Priority Email</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">&lt;1h Priority SLA</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">24/7 Dedicated WhatsApp Hotline</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
-                    <td className="py-3 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-[#0F2BFF]/5">
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">24/7 Dedicated WhatsApp Hotline</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-[#0F2BFF]/5">
                       <span className="inline-flex items-center gap-1 justify-center">
-                        <Check className="w-3.5 h-3.5 text-emerald-500" /> 24/7 VIP Access
+                        <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[2.5]" /> 24/7 VIP Access
                       </span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Automated PDF Bank Statements</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400">-</td>
-                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
-                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5">
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Automated PDF Bank Statements</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3.5 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
+                    <td className="py-3.5 px-3 text-center bg-[#0F2BFF]/5">
                       <span className="inline-flex items-center gap-1 justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
-                        <Check className="w-3.5 h-3.5 text-emerald-500" /> Monthly Automated
+                        <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[2.5]" /> Monthly Automated
                       </span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Staff Team Accounts</td>
-                    <td className="py-3 px-3 text-center theme-text-secondary">1 Seat</td>
-                    <td className="py-3 px-3 text-center theme-text-secondary">1 Seat</td>
-                    <td className="py-3 px-3 text-center theme-text-secondary bg-sky-500/5">1 Seat</td>
-                    <td className="py-3 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">3 Seats</td>
+                    <td className="py-3.5 px-4 sm:px-6 font-medium theme-text-primary">Staff Team Accounts</td>
+                    <td className="py-3.5 px-3 text-center theme-text-secondary">1 Seat</td>
+                    <td className="py-3.5 px-3 text-center theme-text-secondary">1 Seat</td>
+                    <td className="py-3.5 px-3 text-center theme-text-secondary bg-sky-500/5">1 Seat</td>
+                    <td className="py-3.5 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">3 Seats</td>
                   </tr>
                 </tbody>
               </table>
@@ -1026,7 +928,7 @@ export default function PricingClient() {
           </div>
         </section>
 
-        {/* ── Frequently Asked Questions (FAQ) Section ── */}
+        {/* ── Frequently Asked Questions (FAQ) Section (Borderless Accordions) ── */}
         <section className="mt-20 max-w-3xl mx-auto">
           <div className="text-center mb-8">
             <span className="font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] theme-link">
@@ -1046,12 +948,12 @@ export default function PricingClient() {
               return (
                 <div
                   key={index}
-                  className="theme-bg-elevated border theme-border rounded-xl overflow-hidden transition-colors"
+                  className="theme-bg-elevated rounded-2xl shadow-xs overflow-hidden transition-colors"
                 >
                   <button
                     type="button"
                     onClick={() => toggleFaq(index)}
-                    className="w-full py-4 px-5 flex items-center justify-between text-left gap-4 cursor-pointer"
+                    className="w-full py-4 px-6 flex items-center justify-between text-left gap-4 cursor-pointer"
                     aria-expanded={isOpen}
                   >
                     <span className="text-xs sm:text-sm font-bold theme-text-primary">
@@ -1064,7 +966,7 @@ export default function PricingClient() {
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-4 pt-1 text-xs theme-text-secondary leading-relaxed border-t theme-border">
+                    <div className="px-6 pb-5 pt-1 text-xs theme-text-secondary leading-relaxed border-t border-slate-100 dark:border-slate-800/60">
                       {item.a}
                     </div>
                   )}
@@ -1074,7 +976,7 @@ export default function PricingClient() {
           </div>
         </section>
 
-        {/* ── High-Converting Bottom CTA Card ── */}
+        {/* ── High-Converting Bottom CTA Card (Borderless, Rounded-3xl) ── */}
         <div className="mt-20 max-w-4xl mx-auto rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden bg-gradient-to-br from-[#0F2BFF] to-[#0A1A8F] text-white shadow-2xl">
           <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
           <div className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none"></div>
