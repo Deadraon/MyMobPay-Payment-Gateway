@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MyMobPay Merchant Dashboard</title>
+  <title>Merchant Dashboard | MyMobPay</title>
   
-  <!-- Fonts -->
+  <!-- Google Fonts: Outfit for display headers, Inter for UI, JetBrains Mono for codes/amounts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,6 +20,7 @@
           fontFamily: {
             sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace'],
+            display: ['Outfit', 'Inter', 'sans-serif'],
           },
           colors: {
             brand: {
@@ -35,50 +36,83 @@
     }
   </script>
 
+  <!-- MyMobPay Official Project Design System Styles -->
   <style>
     :root {
-      --theme-bg-base: #f8fafc;
-      --theme-bg-surface: #ffffff;
-      --theme-bg-elevated: #ffffff;
-      --theme-border-color: #e2e8f0;
-      --theme-text-primary: #0f172a;
-      --theme-text-muted: #64748b;
-      --theme-sidebar-bg: #ffffff;
-      --theme-sidebar-border: #f1f5f9;
-      --accent-primary: #0F2BFF;
+      --theme-bg-canvas: #F2F4FC;
+      --theme-bg-sidebar: #FFFFFF;
+      --theme-bg-backdrop: #EAEEFA;
+      --theme-bg-elevated: #FFFFFF;
+      --theme-bg-secondary: #EAEEFA;
+      --theme-bg-well: #F7F9FE;
+      --theme-text-primary: #090D18;
+      --theme-text-secondary: #2A3147;
+      --theme-text-muted: #5E6782;
+      --theme-accent-link: #0F2BFF;
+      --theme-border-color: #DCE2F2;
+      --theme-card-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.06), 0 2px 10px -3px rgba(15, 43, 255, 0.03);
+      --theme-bento-hover-shadow: 0 22px 44px -12px rgba(15, 43, 255, 0.14);
+      --theme-modal-shadow: 0 28px 64px -14px rgba(15, 23, 42, 0.16), 0 6px 20px -6px rgba(15, 43, 255, 0.06);
     }
 
-    .dark {
-      --theme-bg-base: #070b14;
-      --theme-bg-surface: #0e1424;
-      --theme-bg-elevated: #151d33;
-      --theme-border-color: #1e293b;
-      --theme-text-primary: #f8fafc;
-      --theme-text-muted: #94a3b8;
-      --theme-sidebar-bg: #090e1a;
-      --theme-sidebar-border: #162035;
-      --accent-primary: #3b82f6;
+    html.dark {
+      --theme-bg-canvas: #080B12;
+      --theme-bg-sidebar: #0C101B;
+      --theme-bg-backdrop: #0A0E17;
+      --theme-bg-elevated: #121826;
+      --theme-bg-secondary: #172033;
+      --theme-bg-well: #0B0F1A;
+      --theme-text-primary: #F8FAFC;
+      --theme-text-secondary: #CBD5E1;
+      --theme-text-muted: #8E9BB5;
+      --theme-accent-link: #60A5FA;
+      --theme-border-color: #1F2A40;
+      --theme-card-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.65);
+      --theme-bento-hover-shadow: 0 22px 48px -12px rgba(59, 130, 246, 0.24);
+      --theme-modal-shadow: 0 32px 72px -12px rgba(0, 0, 0, 0.78);
     }
 
     body {
-      background-color: var(--theme-bg-base);
+      background-color: var(--theme-bg-canvas);
       color: var(--theme-text-primary);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
+    .bg-arch-grid {
+      background-image: 
+        radial-gradient(rgba(15, 43, 255, 0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    html.dark .bg-arch-grid {
+      background-image: 
+        radial-gradient(rgba(96, 165, 250, 0.06) 1px, transparent 1px);
+    }
+
     .bento-card {
-      background-color: var(--theme-bg-surface);
+      background-color: var(--theme-bg-elevated);
       border: 1px solid var(--theme-border-color);
       border-radius: 1rem;
-      transition: all 0.2s ease;
+      box-shadow: var(--theme-card-shadow);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .bento-card-interactive:hover {
+      transform: translateY(-2px);
+      border-color: #0F2BFF;
+      box-shadow: var(--theme-bento-hover-shadow);
+    }
+    html.dark .bento-card-interactive:hover {
+      border-color: #3B82F6;
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.625rem 0.875rem;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.5rem 0.625rem;
       border-radius: 0.75rem;
       font-size: 0.8125rem;
       font-weight: 600;
@@ -89,545 +123,890 @@
     }
 
     .nav-item:hover {
-      background-color: rgba(15, 43, 255, 0.05);
+      background-color: var(--theme-bg-secondary);
       color: var(--theme-text-primary);
-    }
-
-    .dark .nav-item:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      color: #ffffff;
     }
 
     .nav-item.active {
       background-color: #0F2BFF;
-      color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(15, 43, 255, 0.25);
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 14px -3px rgba(15, 43, 255, 0.45);
     }
 
-    .nav-item.active svg {
-      color: #ffffff !important;
+    .btn-enterprise {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-enterprise:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px -4px rgba(15, 43, 255, 0.35);
+    }
+    .btn-enterprise:active {
+      transform: translateY(0);
     }
 
+    .topbar-pill {
+      border-radius: 9999px;
+    }
+
+    .topbar-control {
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--theme-bg-well);
+      border: 1px solid var(--theme-border-color);
+      color: var(--theme-text-primary);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .topbar-control:hover {
+      border-color: #0F2BFF;
+      color: #0F2BFF;
+    }
+    html.dark .topbar-control:hover {
+      border-color: #60A5FA;
+      color: #60A5FA;
+    }
+
+    .console-input {
+      background-color: var(--theme-bg-well);
+      border: 1px solid var(--theme-border-color);
+      color: var(--theme-text-primary);
+    }
+    .console-input:focus {
+      border-color: #0F2BFF;
+      outline: none;
+    }
+
+    /* Pipeline Animated Track */
+    .pipeline-packet {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #0F2BFF;
+      transform: translateY(-50%);
+      animation: packetFlow 2.4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 8px #0F2BFF;
+    }
+    .pipeline-packet-delayed {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      transform: translateY(-50%);
+      animation: packetFlow 2.4s infinite cubic-bezier(0.4, 0, 0.2, 1) 1.2s;
+      box-shadow: 0 0 8px #10B981;
+    }
+    @keyframes packetFlow {
+      0% { left: 5%; opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { left: 95%; opacity: 0; }
+    }
+
+    /* Chart Bar Animation */
+    .chart-bar-anim {
+      transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.15s ease;
+    }
+
+    /* Tab Transition */
     .tab-content {
       display: none;
+      animation: fadeIn 0.25s ease-out forwards;
     }
-
     .tab-content.active {
       display: block;
-      animation: fadeIn 0.25s ease-out;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    .kpi-flash {
+      animation: kpiFlash 0.5s ease;
+    }
+    @keyframes kpiFlash {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); color: #10B981; }
+    }
   </style>
 </head>
-<body class="min-h-screen flex antialiased">
+<body class="min-h-screen flex flex-col antialiased selection:bg-[#0F2BFF] selection:text-white">
 
-  <!-- ============================================================ -->
-  <!-- SIDEBAR NAVIGATION                                           -->
-  <!-- ============================================================ -->
-  <aside class="w-64 border-r border-[var(--theme-sidebar-border)] bg-[var(--theme-sidebar-bg)] flex flex-col justify-between shrink-0 h-screen sticky top-0 z-30 transition-colors">
-    <div class="p-5 flex flex-col gap-6">
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-[200] max-w-sm px-4 py-3 rounded-2xl bg-[#090D18] dark:bg-[#1E293B] text-white text-xs font-semibold shadow-2xl flex items-center gap-2.5 transition-all duration-300 opacity-0 pointer-events-none translate-y-3">
+    <svg class="w-4 h-4 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toast-text">Notification message</span>
+  </div>
+
+  <!-- Layout Wrapper -->
+  <div class="flex min-h-screen relative">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         LEFT SIDEBAR (Fixed 264px Desktop, Drawer on Mobile)
+         ═══════════════════════════════════════════════════════════ -->
+    <aside id="sidebar" class="fixed top-0 bottom-0 left-0 w-[264px] bg-[var(--theme-bg-sidebar)] border-r border-[var(--theme-border-color)] flex flex-col z-50 transition-transform duration-300 md:translate-x-0 -translate-x-full">
       
-      <!-- Brand Logo -->
-      <div class="flex items-center gap-2.5 px-2">
-        <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-blue-500/30">
-          M
-        </div>
-        <div>
-          <div class="font-extrabold text-lg tracking-tight text-[var(--theme-text-primary)] leading-none">
-            MyMob<span class="text-blue-600 dark:text-blue-400">Pay</span>
+      <!-- Top Brand Header -->
+      <div class="h-16 px-4 border-b border-[var(--theme-border-color)] flex items-center justify-between shrink-0">
+        <a href="#overview" onclick="switchTab('overview')" class="flex items-center gap-2.5 group">
+          <!-- Official MyMobPay Multi-Color Vector M Ribbon Logo -->
+          <div class="w-9 h-9 rounded-xl bg-[var(--theme-bg-secondary)] border border-[var(--theme-border-color)] p-1 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+            <svg class="w-full h-full overflow-visible" viewBox="115 225 790 530" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="mmp-side-g1" x1="360" y1="280" x2="510" y2="660" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#004BFF" /><stop offset="100%" stop-color="#0033B5" /></linearGradient>
+                <linearGradient id="mmp-side-g2" x1="510" y1="630" x2="670" y2="280" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#E64400" /><stop offset="50%" stop-color="#FF6D00" /><stop offset="100%" stop-color="#FF9614" /></linearGradient>
+                <linearGradient id="mmp-side-g3" x1="170" y1="710" x2="420" y2="280" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0044E5" /><stop offset="55%" stop-color="#0088FF" /><stop offset="100%" stop-color="#00C8FF" /></linearGradient>
+                <linearGradient id="mmp-side-g4" x1="600" y1="280" x2="830" y2="710" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FF9E1B" /><stop offset="55%" stop-color="#FF7300" /><stop offset="100%" stop-color="#F05A00" /></linearGradient>
+              </defs>
+              <path d="M 470 575 L 555 340 C 585 260, 680 260, 710 340 L 625 575 C 595 655, 500 655, 470 575 Z" fill="url(#mmp-side-g2)" />
+              <path d="M 310 340 L 395 575 C 425 655, 520 655, 550 575 L 465 340 C 435 260, 340 260, 310 340 Z" fill="url(#mmp-side-g1)" />
+              <path d="M 168 645 L 290 340 C 320 260, 425 260, 455 340 L 332 645 C 308 725, 192 725, 168 645 Z" fill="url(#mmp-side-g3)" />
+              <path d="M 565 340 C 595 260, 700 260, 730 340 L 852 645 C 828 725, 712 725, 688 645 L 565 340 Z" fill="url(#mmp-side-g4)" />
+            </svg>
           </div>
-          <span class="text-[9.5px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">
-            0% MDR Enterprise
-          </span>
-        </div>
-      </div>
-
-      <!-- Quick Action / License Widget -->
-      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-[var(--theme-border-color)] flex flex-col gap-3">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="text-xs font-bold text-[var(--theme-text-primary)]">Premium Active</span>
+          <div class="flex flex-col">
+            <span class="font-display font-black text-[17px] tracking-tight text-[var(--theme-text-primary)] leading-none">
+              MyMob<span class="text-[#0F2BFF] dark:text-[#60A5FA]">Pay</span>
+            </span>
+            <span class="font-mono text-[8px] font-extrabold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA] mt-1">
+              0% MDR ENTERPRISE
+            </span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-            GROWTH
-          </span>
-        </div>
-        <div class="text-[11px] text-[var(--theme-text-muted)]">
-          Growth Tier &bull; 30 Days Left
-        </div>
-        <div class="flex items-center gap-1.5 pt-1 border-t border-[var(--theme-border-color)] text-[11px]">
-          <span class="px-2 py-0.5 rounded bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono text-[9.5px] font-bold">ROOT</span>
-          <span class="text-[var(--theme-text-muted)] font-medium">Extend &bull; &#8377;299</span>
-        </div>
-      </div>
-
-      <!-- Create Link Primary CTA -->
-      <button onclick="switchTab('payment-links')" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-between shadow-sm shadow-blue-600/30 transition-all cursor-pointer">
-        <span class="flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-          Create Payment Link
-        </span>
-        <kbd class="px-1.5 py-0.5 rounded bg-blue-700/80 text-[10px] font-mono">N</kbd>
-      </button>
-
-      <!-- Nav Links: Workspace -->
-      <div class="flex flex-col gap-1">
-        <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
-          Core Workspace
-        </span>
-        <div class="nav-item active" onclick="switchTab('overview')" id="nav-overview">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-          <span class="flex-1">Dashboard</span>
-          <span class="font-mono text-[9px] font-bold opacity-80">T+0</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('payment-links')" id="nav-payment-links">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-          <span class="flex-1">Payment Links</span>
-          <span class="font-mono text-[9px] font-bold opacity-80">22</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('verification')" id="nav-verification">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-          <span class="flex-1">Verification</span>
-          <span class="font-mono text-[9px] font-bold text-emerald-600 dark:text-emerald-400">UTR</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('transactions')" id="nav-transactions">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <span class="flex-1">Transactions</span>
-          <span class="font-mono text-[9px] font-bold opacity-80">148</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('reports')" id="nav-reports">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-          <span class="flex-1">Reports &amp; GST</span>
-          <span class="font-mono text-[9px] font-bold opacity-80">CSV</span>
-        </div>
-      </div>
-
-      <!-- Nav Links: Platform & Dev -->
-      <div class="flex flex-col gap-1">
-        <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
-          Platform &amp; Dev
-        </span>
-        <div class="nav-item" onclick="switchTab('subscriptions')" id="nav-subscriptions">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-          <span class="flex-1">SaaS Subscriptions</span>
-          <span class="font-mono text-[9px] font-bold text-blue-600 dark:text-blue-400">PLAN</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('developer')" id="nav-developer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-          <span class="flex-1">Developer Hub</span>
-          <span class="font-mono text-[9px] font-bold opacity-80">v2.1</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('settings')" id="nav-settings">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          <span class="flex-1">Settings &amp; Routing</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom Status Strip -->
-    <div class="p-4 border-t border-[var(--theme-border-color)] flex flex-col gap-2">
-      <div class="flex items-center justify-between text-xs font-semibold text-[var(--theme-text-muted)]">
-        <div class="flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>API Live Rails</span>
-        </div>
-        <span class="font-mono text-[10px]">142ms T+0</span>
-      </div>
-      <div class="text-[11px] font-mono text-slate-500 truncate">
-        IndusInd Bank &bull;&bull;&bull;&bull; 4325
-      </div>
-    </div>
-  </aside>
-
-  <!-- ============================================================ -->
-  <!-- MAIN APP CONTAINER                                           -->
-  <!-- ============================================================ -->
-  <div class="flex-1 flex flex-col min-w-0">
-    
-    <!-- Top Global Header -->
-    <header class="h-16 border-b border-[var(--theme-border-color)] bg-[var(--theme-bg-surface)] px-6 flex items-center justify-between gap-4 sticky top-0 z-20 transition-colors">
-      
-      <!-- Left: Mode Switcher & Search Bar -->
-      <div class="flex items-center gap-4 flex-1 max-w-xl">
-        
-        <!-- Live / Test Switcher Pill -->
-        <div class="flex items-center p-1 rounded-full bg-slate-100 dark:bg-slate-900 border border-[var(--theme-border-color)] text-xs font-bold">
-          <button id="mode-live" onclick="setMode('live')" class="px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-[var(--theme-text-primary)] shadow-xs flex items-center gap-1.5 cursor-pointer">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>Live</span>
-          </button>
-          <button id="mode-test" onclick="setMode('test')" class="px-3 py-1 rounded-full text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] flex items-center gap-1.5 cursor-pointer">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-            <span>Test</span>
-          </button>
-        </div>
-
-        <!-- Global Search Bar -->
-        <div class="relative flex-1">
-          <input type="text" placeholder="Search transactions, UTR, or links..." class="w-full bg-slate-50 dark:bg-slate-900 border border-[var(--theme-border-color)] rounded-xl pl-9 pr-14 py-2 text-xs text-[var(--theme-text-primary)] placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-all">
-          <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <kbd class="absolute right-2.5 top-2 px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono text-slate-500">Ctrl K</kbd>
-        </div>
-      </div>
-
-      <!-- Right: Utility Controls & User Profile -->
-      <div class="flex items-center gap-3">
-        
-        <!-- Theme Toggle Button -->
-        <button onclick="toggleTheme()" class="p-2 rounded-xl border border-[var(--theme-border-color)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] transition-all cursor-pointer" title="Toggle Dark / Light Mode">
-          <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-          <svg id="theme-icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        </a>
+        <button onclick="toggleMobileSidebar()" class="md:hidden text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
+      </div>
 
-        <!-- Notification Bell -->
-        <div class="relative p-2 rounded-xl border border-[var(--theme-border-color)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--theme-text-muted)] cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600"></span>
+      <!-- Scrollable Navigation Area -->
+      <div class="flex-1 overflow-y-auto py-3 space-y-4 px-3">
+
+        <!-- Merchant Status Widget Card -->
+        <div class="p-3 rounded-2xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-5 h-5 rounded-md bg-[#10B981]/15 text-[#10B981] flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+              </span>
+              <span class="text-[11.5px] font-bold text-[var(--theme-text-primary)] truncate">Premium Active</span>
+            </div>
+            <span class="px-1.5 py-0.5 rounded bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] font-mono text-[8.5px] font-extrabold uppercase">
+              GROWTH
+            </span>
+          </div>
+
+          <div class="text-[10px] text-[var(--theme-text-muted)] font-medium flex items-center justify-between">
+            <span>Growth &bull; 30d left</span>
+            <span class="text-[#10B981] font-bold">100% Direct</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-1.5 pt-1">
+            <button onclick="switchTab('developer')" class="py-1 px-2 rounded-lg bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] hover:border-[#0F2BFF] flex items-center justify-between transition-all cursor-pointer">
+              <span class="text-[10px] font-bold text-[var(--theme-text-primary)]">Admin</span>
+              <span class="px-1 py-0.2 rounded bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] font-mono text-[7.5px] font-extrabold">ROOT</span>
+            </button>
+            <button onclick="switchTab('subscriptions')" class="py-1 px-2 rounded-lg bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] hover:border-[#10B981] flex items-center justify-between transition-all cursor-pointer">
+              <span class="text-[10px] font-bold text-[var(--theme-text-primary)]">Extend</span>
+              <span class="font-mono text-[8px] font-bold text-[var(--theme-text-muted)]">₹299</span>
+            </button>
+          </div>
+
+          <button onclick="openModal('create-link-modal')" class="btn-enterprise w-full py-2 px-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[11px] font-bold flex items-center justify-between shadow-xs cursor-pointer">
+            <span class="flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-md bg-white/20 flex items-center justify-center">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+              </span>
+              <span>Create Payment Link</span>
+            </span>
+            <kbd class="px-1.5 py-0.2 rounded bg-white/20 font-mono text-[9px] font-extrabold">N</kbd>
+          </button>
         </div>
 
-        <!-- User Profile Pill -->
-        <div class="flex items-center gap-2.5 pl-2 border-l border-[var(--theme-border-color)]">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-800 to-slate-950 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-            AR
+        <!-- Section: CORE WORKSPACE -->
+        <div class="space-y-0.5">
+          <div class="px-2 pt-1 pb-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)]">
+            Core Workspace
           </div>
-          <div class="hidden md:flex flex-col text-left">
-            <span class="text-xs font-bold text-[var(--theme-text-primary)] leading-tight">Acme Retail</span>
-            <span class="text-[10px] font-mono text-slate-400">MID: 89410_DEMO</span>
+
+          <button onclick="switchTab('overview')" id="nav-overview" class="nav-item active">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+              <span>Dashboard</span>
+            </span>
+            <span class="font-mono text-[9px] font-bold text-white/80">T+0</span>
+          </button>
+
+          <button onclick="switchTab('payment-links')" id="nav-payment-links" class="nav-item">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+              <span>Payment Links</span>
+            </span>
+            <span class="px-1.5 py-0.5 rounded-md font-mono text-[9.5px] font-bold bg-[var(--theme-bg-secondary)] text-[var(--theme-text-muted)]">17</span>
+          </button>
+
+          <button onclick="switchTab('verification')" id="nav-verification" class="nav-item">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+              <span>Verification</span>
+            </span>
+            <span class="font-mono text-[9px] font-bold text-[#10B981]">UTR</span>
+          </button>
+
+          <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-item">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+              <span>Transactions</span>
+            </span>
+            <span class="px-1.5 py-0.5 rounded-md font-mono text-[9.5px] font-bold bg-[#10B981]/15 text-[#059669] dark:text-[#34D399]">148</span>
+          </button>
+
+          <button onclick="switchTab('reports')" id="nav-reports" class="nav-item">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+              <span>Reports &amp; GST</span>
+            </span>
+            <span class="font-mono text-[9px] text-[var(--theme-text-muted)]">CSV</span>
+          </button>
+        </div>
+
+        <!-- Section: PLATFORM & DEV -->
+        <div class="space-y-0.5">
+          <div class="px-2 pt-2 pb-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--theme-text-muted)] flex items-center justify-between">
+            <span>Platform &amp; Dev</span>
+            <span class="px-1.5 py-0.2 rounded bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] text-[8px]">ADMIN</span>
           </div>
+
+          <button onclick="switchTab('subscriptions')" id="nav-subscriptions" class="nav-item">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+              <span>SaaS Subscriptions</span>
+            </span>
+            <span class="px-1.5 py-0.5 rounded-full font-mono text-[9.5px] font-bold bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA]">60</span>
+          </button>
+
+          <button onclick="switchTab('developer')" id="nav-developer" class="nav-item">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+              <span>Developer Hub</span>
+            </span>
+            <span class="font-mono text-[9px] opacity-75">v2.1</span>
+          </button>
+
+          <button onclick="switchTab('settings')" id="nav-settings" class="nav-item">
+            <span class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+              <span>Settings &amp; Routing</span>
+            </span>
+          </button>
         </div>
 
       </div>
-    </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full">
+      <!-- Sidebar Footer -->
+      <div class="p-3 border-t border-[var(--theme-border-color)] space-y-2 shrink-0 bg-[var(--theme-bg-sidebar)]">
+        <div class="p-2.5 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)]">
+          <div class="flex items-center justify-between">
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--theme-text-primary)]">
+              <span class="w-2 h-2 rounded-full bg-[#10B981] animate-ping"></span>
+              <span>API Live Rails</span>
+            </span>
+            <span class="font-mono text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-[var(--theme-bg-secondary)] text-[#0F2BFF] dark:text-[#60A5FA]">v2.1</span>
+          </div>
+          <div class="mt-1 flex items-center justify-between font-mono text-[9.5px] text-[var(--theme-text-muted)]">
+            <span>IndusInd &bull;&bull;&bull;&bull; 4325</span>
+            <span class="text-[#10B981] font-bold">142ms T+0</span>
+          </div>
+        </div>
 
-      <!-- ======================================================== -->
-      <!-- TAB 1: OVERVIEW DASHBOARD                                 -->
-      <!-- ======================================================== -->
-      <section id="tab-overview" class="tab-content active space-y-6">
+        <button onclick="showToast('Signed out of Merchant Console')" class="w-full py-2 px-3 rounded-xl text-[12px] font-bold text-[#E11D48] hover:bg-[#E11D48]/10 flex items-center justify-center gap-2 transition-colors cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         MAIN CONTENT AREA
+         ═══════════════════════════════════════════════════════════ -->
+    <main class="md:pl-[264px] flex-1 flex flex-col min-w-0 min-h-screen bg-[var(--theme-bg-canvas)] bg-arch-grid pt-16">
+
+      <!-- ═══════════════════════════════════════════════════════════
+           TOPBAR HEADER
+           ═══════════════════════════════════════════════════════════ -->
+      <header class="fixed top-0 left-0 md:left-[264px] right-0 bg-[var(--theme-bg-elevated)] border-b border-[var(--theme-border-color)] z-40 flex items-center justify-between gap-3 px-4 sm:px-6 h-16 shadow-2xs">
         
-        <!-- Header Banner -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
+        <!-- Left: Mobile Menu Toggle & Mode Switcher -->
+        <div class="flex items-center gap-3">
+          <button onclick="toggleMobileSidebar()" class="md:hidden topbar-control" title="Toggle Navigation Menu">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+
+          <!-- Desktop Live / Test Pill Switcher -->
+          <div class="inline-flex topbar-pill items-center p-1 bg-[var(--theme-bg-secondary)] border border-[var(--theme-border-color)] shrink-0">
+            <button id="btn-live-mode" onclick="setMode('live')" class="px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 bg-white dark:bg-[#121826] text-[#059669] dark:text-[#34D399] shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+              <span>Live</span>
+            </button>
+            <button id="btn-test-mode" onclick="setMode('test')" class="px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)]">
+              <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+              <span>Test</span>
+            </button>
+          </div>
+
+          <!-- Quick Jump Search -->
+          <div class="relative hidden lg:flex items-center w-72">
+            <svg class="w-4 h-4 text-[var(--theme-text-muted)] absolute left-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input type="text" placeholder="Search transactions..." onkeydown="if(event.key==='Enter'){switchTab('transactions');showToast('Filtered transactions');}" class="console-input h-9 w-full pl-9 pr-20 rounded-full text-xs placeholder:text-[var(--theme-text-muted)]">
+            <span class="absolute right-2 px-2 py-0.5 rounded-full bg-[var(--theme-bg-secondary)] text-[10px] font-mono font-bold text-[var(--theme-text-secondary)]">Quick Jump &rarr;</span>
+          </div>
+        </div>
+
+        <!-- Right: Actions & Profile -->
+        <div class="flex items-center gap-2.5">
+          <!-- Help Button -->
+          <button onclick="switchTab('developer')" class="topbar-control" title="Help & Documentation">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </button>
+
+          <!-- Notification Bell with Dot -->
+          <div class="relative">
+            <button onclick="toggleNotifications()" class="topbar-control relative" title="Notifications & Settlement Alerts">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+              <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#0F2BFF] ring-2 ring-white dark:ring-[#121826]"></span>
+            </button>
+            <!-- Notification Dropdown -->
+            <div id="notifications-panel" class="hidden absolute right-0 mt-2 w-80 bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] rounded-2xl shadow-2xl z-50 p-3 space-y-2">
+              <div class="flex items-center justify-between pb-2 border-b border-[var(--theme-border-color)]">
+                <span class="text-xs font-bold">Activity &amp; Settlements</span>
+                <span class="text-[10px] font-mono font-bold text-[#10B981]">Live T+0</span>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="p-2 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] flex items-start gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#10B981] mt-1 shrink-0"></span>
+                  <div>
+                    <div class="font-bold">Payment Settled: ₹10.00</div>
+                    <div class="text-[10px] text-[var(--theme-text-muted)]">UTR: 430982716290 &bull; IndusInd Bank</div>
+                  </div>
+                </div>
+                <div class="p-2 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] flex items-start gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#0F2BFF] mt-1 shrink-0"></span>
+                  <div>
+                    <div class="font-bold">Webhook Dispatched</div>
+                    <div class="text-[10px] text-[var(--theme-text-muted)]">HTTP 200 OK &bull; latency 142ms</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Theme Toggle Button (Light <-> Dark) -->
+          <button onclick="toggleTheme()" class="px-3 h-10 rounded-full bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] text-[var(--theme-text-primary)] hover:border-[#0F2BFF] flex items-center gap-1.5 text-xs font-bold cursor-pointer transition-colors">
+            <svg id="theme-icon-moon" class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            <svg id="theme-icon-sun" class="w-4 h-4 text-amber-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <span id="theme-text">Dark</span>
+          </button>
+
+          <!-- Merchant Profile Pill -->
+          <div class="flex items-center gap-2 pl-2 border-l border-[var(--theme-border-color)]">
+            <div class="w-8 h-8 rounded-full bg-[#090D18] dark:bg-[#0F2BFF] text-white font-mono text-[11px] font-extrabold flex items-center justify-center shrink-0">
+              DE
+            </div>
+            <div class="hidden sm:block text-left leading-tight">
+              <div class="text-[11.5px] font-extrabold text-[var(--theme-text-primary)]">Deadraon</div>
+              <div class="text-[10px] text-[var(--theme-text-muted)] font-mono">MTD: 53cTFMhw</div>
+            </div>
+          </div>
+        </div>
+
+      </header>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           TAB 1: DASHBOARD OVERVIEW (Default View)
+           ═══════════════════════════════════════════════════════════ -->
+      <section id="tab-overview" class="tab-content active p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        
+        <!-- Header & Breadcrumbs -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] mb-2.5">
+            <div class="flex items-center gap-2 text-[11px] font-mono font-bold text-[var(--theme-text-muted)] uppercase tracking-wider">
               <span>Overview</span>
               <span>/</span>
-              <span class="text-blue-600 dark:text-blue-400 font-bold">Direct UPI &amp; IMPS Inflow</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
-                Direct to Bank &bull; T+0
+              <span>Direct UPI &amp; IMPS Inflow</span>
+              <span class="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px]">
+                DIRECT TO BANK &bull; T+0
               </span>
             </div>
-            <h1 class="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-[0.025em] text-[var(--theme-text-primary)] uppercase leading-snug">
+            <h1 class="font-display font-black text-2xl sm:text-3xl text-[var(--theme-text-primary)] tracking-tight mt-1">
               BUSINESS INFLOW &amp; SETTLEMENTS
             </h1>
-            <p class="text-[13px] sm:text-[13.5px] text-[var(--theme-text-muted)] mt-2 leading-relaxed">
-              Zero platform custody or escrow &bull; Direct NPCI settlement to IndusInd Bank (•••• 4325)
+            <p class="text-xs sm:text-[13px] text-[var(--theme-text-muted)] mt-0.5 font-medium">
+              Zero platform custody or escrow &bull; Direct NPCI settlement to IndusInd Bank (&bull;&bull;&bull;&bull; 4325)
             </p>
           </div>
+
+          <!-- Top-Right Actions -->
           <div class="flex items-center gap-2.5">
-            <button class="px-3.5 py-2 rounded-xl border border-[var(--theme-border-color)] bg-[var(--theme-bg-surface)] text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors flex items-center gap-2 cursor-pointer shadow-xs">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-              Static QR
+            <button onclick="openModal('static-qr-modal')" class="px-4 py-2.5 rounded-xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] hover:border-[#0F2BFF] text-xs font-bold text-[var(--theme-text-primary)] inline-flex items-center gap-2 shadow-2xs transition-all cursor-pointer">
+              <svg class="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+              <span>Static QR</span>
             </button>
-            <button onclick="switchTab('payment-links')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-2 cursor-pointer">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-              Create Link
+            <button onclick="openModal('create-link-modal')" class="btn-enterprise px-4 py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold inline-flex items-center gap-2 shadow-md cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Create Link</span>
             </button>
           </div>
         </div>
 
-        <!-- 4 Bento KPI Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- 4 BENTO METRIC CARDS -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
           
-          <!-- Card 1 -->
-          <div class="bento-card p-5 sm:p-6 flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
-              <span>Direct Settled</span>
-              <span class="p-1 rounded-lg bg-emerald-500/10 text-emerald-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          <!-- KPI 1: DIRECT SETTLED -->
+          <div onclick="switchTab('transactions')" class="bento-card bento-card-interactive p-4 sm:p-5 cursor-pointer">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+                Direct Settled
+              </span>
+              <span class="w-8 h-8 rounded-xl bg-[#10B981]/15 text-[#10B981] flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
               </span>
             </div>
-            <div class="text-[22px] sm:text-[30px] lg:text-[34px] font-bold text-[var(--theme-text-primary)] my-2 sm:my-3 tabular-nums">
-              &#8377;68.03
+            <div id="kpi-direct-settled" class="font-mono text-2xl sm:text-3xl lg:text-[34px] font-bold text-[var(--theme-text-primary)] my-2.5 tracking-tight">
+              ₹68.03
             </div>
-            <div class="flex items-center justify-between text-xs text-[var(--theme-text-muted)] font-medium">
-              <span class="text-emerald-600 dark:text-emerald-400 font-semibold">&bull; T+0 Real-time</span>
-              <span class="font-mono text-[11px]">IndusInd &bull;&bull;&bull;&bull; 4325</span>
+            <div class="flex items-center justify-between text-[10.5px]">
+              <span class="font-bold text-[#059669] dark:text-[#34D399] flex items-center gap-1">
+                <span>&uarr;</span> <span>T+0</span>
+              </span>
+              <span class="text-[var(--theme-text-muted)]">IndusInd &bull;&bull;4325</span>
             </div>
           </div>
 
-          <!-- Card 2 -->
-          <div class="bento-card p-5 sm:p-6 flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
-              <span>Today Inflow</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-300">
-                Live
+          <!-- KPI 2: TODAY INFLOW -->
+          <div onclick="simulateIncomingPayment()" class="bento-card bento-card-interactive p-4 sm:p-5 cursor-pointer" title="Click to test simulate incoming payment (+₹500.00)">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+                Today Inflow
+              </span>
+              <span class="px-2 py-0.5 rounded-md bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px] font-bold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                <span>Live</span>
               </span>
             </div>
-            <div class="text-[22px] sm:text-[30px] lg:text-[34px] font-bold text-[var(--theme-text-primary)] my-2 sm:my-3 tabular-nums">
-              &#8377;0.00
+            <div id="kpi-today-inflow" class="font-mono text-2xl sm:text-3xl lg:text-[34px] font-bold text-[var(--theme-text-primary)] my-2.5 tracking-tight">
+              ₹0.00
             </div>
-            <div class="flex items-center gap-1.5 text-xs text-[var(--theme-text-muted)] font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              <span>UPI Instant Gateway Active</span>
+            <div class="flex items-center justify-between text-[10.5px]">
+              <span class="text-[var(--theme-text-muted)]">UPI Active</span>
+              <span class="text-[#0F2BFF] dark:text-[#60A5FA] font-bold text-[9.5px]">+ Tap to test</span>
             </div>
           </div>
 
-          <!-- Card 3 -->
-          <div class="bento-card p-5 sm:p-6 flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
-              <span>Cleared Orders</span>
-              <span class="p-1 rounded-lg bg-indigo-500/10 text-indigo-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          <!-- KPI 3: CLEARED ORDERS -->
+          <div onclick="switchTab('transactions')" class="bento-card bento-card-interactive p-4 sm:p-5 cursor-pointer">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+                Cleared Orders
+              </span>
+              <span class="w-8 h-8 rounded-xl bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
               </span>
             </div>
-            <div class="text-[22px] sm:text-[30px] lg:text-[34px] font-bold text-[var(--theme-text-primary)] my-2 sm:my-3 tabular-nums">
+            <div id="kpi-cleared-orders" class="font-mono text-2xl sm:text-3xl lg:text-[34px] font-bold text-[var(--theme-text-primary)] my-2.5 tracking-tight">
               29
             </div>
-            <div class="flex items-center justify-between text-xs text-[var(--theme-text-muted)] font-medium">
-              <span>148 Total Txns</span>
-              <span class="font-mono text-[11px] text-emerald-600 font-semibold">142ms avg</span>
+            <div class="flex items-center justify-between text-[10.5px]">
+              <span class="font-bold text-[#0F2BFF] dark:text-[#60A5FA]">148 Txns</span>
+              <span class="text-[#10B981] font-semibold">142ms avg</span>
             </div>
           </div>
 
-          <!-- Card 4 -->
-          <div class="bento-card p-5 sm:p-6 flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
-              <span>Tax Deducted</span>
-              <span class="p-1 rounded-lg bg-emerald-500/10 text-emerald-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <!-- KPI 4: TAX DEDUCTED -->
+          <div onclick="switchTab('subscriptions')" class="bento-card bento-card-interactive p-4 sm:p-5 cursor-pointer border-[#0F2BFF]/30">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
+                Tax Deducted
+              </span>
+              <span class="w-8 h-8 rounded-xl bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
               </span>
             </div>
-            <div class="text-[22px] sm:text-[30px] lg:text-[34px] font-bold text-emerald-600 dark:text-emerald-400 my-2 sm:my-3 tabular-nums">
-              &#8377;0.00 FEE
+            <div class="font-mono text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#10B981] my-2.5 tracking-tight">
+              ₹0.00 FEE
             </div>
-            <div class="flex items-center justify-between text-xs text-[var(--theme-text-muted)] font-medium">
-              <span>100% Kept</span>
-              <span class="text-emerald-600 font-bold">&#8377;1,420 saved YTD</span>
+            <div class="flex items-center justify-between text-[10.5px]">
+              <span class="text-[var(--theme-text-secondary)] font-semibold">100% Kept</span>
+              <span class="font-semibold text-[#059669] dark:text-[#34D399]">₹1 saved</span>
             </div>
           </div>
 
         </div>
 
-        <!-- 2 Large Bento Grid Modules -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- ROW 2: ROUTING VAULT (5 cols) + TELEMETRY CHART (7 cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
-          <!-- Routing Vault Card (5 Cols) -->
-          <div class="lg:col-span-5 bento-card p-6 flex flex-col justify-between space-y-6">
+          <!-- Left 5 Cols: Direct-to-Bank Routing Vault -->
+          <div class="lg:col-span-5 bento-card p-6 flex flex-col justify-between space-y-5">
             <div>
-              <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                  <h3 class="text-sm font-bold text-[var(--theme-text-primary)]">Direct-to-Bank Routing Vault</h3>
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+                  <span class="text-[14px] font-extrabold text-[var(--theme-text-primary)]">Direct-to-Bank Routing Vault</span>
                 </div>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300">
+                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[var(--theme-bg-secondary)] text-[#0F2BFF] dark:text-[#60A5FA]">
                   Zero Escrow
                 </span>
               </div>
 
-              <!-- Animated Rail Visual -->
-              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-[var(--theme-border-color)] flex items-center justify-between mb-5">
-                <div class="text-center">
-                  <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-[var(--theme-border-color)] mx-auto flex items-center justify-center text-xs font-bold mb-1 shadow-xs">
-                    UPI
+              <!-- Animated Flow Diagram -->
+              <div class="mt-4 rounded-2xl p-4 bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)]">
+                <div class="flex items-center justify-between text-[10.5px] font-bold">
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="w-9 h-9 rounded-xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] flex items-center justify-center text-[#0F2BFF] dark:text-[#60A5FA] shadow-2xs">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                    </div>
+                    <span class="text-[var(--theme-text-muted)]">Buyer UPI</span>
                   </div>
-                  <span class="text-[10px] font-semibold text-[var(--theme-text-muted)]">Buyer UPI</span>
-                </div>
-                <div class="flex-1 mx-3 flex flex-col items-center">
-                  <span class="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] font-bold mb-1">0% CUT</span>
-                  <div class="w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 rounded-full"></div>
-                </div>
-                <div class="text-center">
-                  <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-[var(--theme-border-color)] mx-auto flex items-center justify-center text-xs font-bold mb-1 shadow-xs">
-                    BANK
+
+                  <div class="flex-1 mx-3 relative h-7 flex items-center">
+                    <div class="w-full h-[2px] bg-[#0F2BFF]/25 relative overflow-hidden rounded-full"></div>
+                    <div class="pipeline-packet"></div>
+                    <div class="pipeline-packet-delayed"></div>
+                    <span class="absolute -top-1.5 left-1/2 -translate-x-1/2 text-[8.5px] font-bold px-2 py-0.5 rounded-full bg-[#0F2BFF] text-white shadow-xs">
+                      0% CUT
+                    </span>
                   </div>
-                  <span class="text-[10px] font-semibold text-[var(--theme-text-muted)]">IndusInd</span>
+
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="w-9 h-9 rounded-xl bg-[#090D18] dark:bg-[#1E293B] text-white flex items-center justify-center shadow-2xs">
+                      <svg class="w-4 h-4 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <span class="text-[var(--theme-text-primary)]">IndusInd..4325</span>
+                  </div>
                 </div>
               </div>
 
-              <!-- Bank Account Specs -->
-              <div class="space-y-3 text-xs">
-                <div class="flex justify-between items-center py-1.5 border-b border-[var(--theme-border-color)]">
-                  <span class="text-[var(--theme-text-muted)]">Target Bank</span>
-                  <span class="font-bold text-[var(--theme-text-primary)]">IndusInd Bank &bull; Current Account</span>
+              <!-- Bank Account Details Card -->
+              <div class="mt-4 rounded-2xl p-4 bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] space-y-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-[13px] font-extrabold text-[var(--theme-text-primary)]">
+                      IndusInd Bank &bull; Current Account
+                    </div>
+                    <div class="text-[11px] text-[var(--theme-text-muted)]">
+                      Beneficiary: <strong class="text-[var(--theme-text-primary)]">MyMobPay PvLT.</strong>
+                    </div>
+                  </div>
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[10px] font-bold whitespace-nowrap">
+                    Primary A/C
+                  </span>
                 </div>
-                <div class="flex justify-between items-center py-1.5 border-b border-[var(--theme-border-color)]">
-                  <span class="text-[var(--theme-text-muted)]">Beneficiary Name</span>
-                  <span class="font-bold text-[var(--theme-text-primary)]">Acme Retail PvLT.</span>
+
+                <div class="grid grid-cols-2 gap-2.5 pt-2 border-t border-[var(--theme-border-color)]">
+                  <div>
+                    <div class="text-[10px] font-semibold text-[var(--theme-text-muted)]">Account Number</div>
+                    <div class="mt-0.5 flex items-center gap-1.5">
+                      <span id="vault-acc-num" class="font-mono text-xs font-bold text-[var(--theme-text-primary)]">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4325</span>
+                      <button onclick="toggleMaskVault()" class="text-[var(--theme-text-muted)] hover:text-[#0F2BFF] p-0.5 cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="text-[10px] font-semibold text-[var(--theme-text-muted)]">IFSC Code</div>
+                    <div class="mt-0.5 flex items-center gap-1.5">
+                      <span class="font-mono text-xs font-bold text-[var(--theme-text-primary)]">INDB0001077</span>
+                      <button onclick="copyToClipboard('INDB0001077', 'IFSC INDB0001077 copied')" class="text-[var(--theme-text-muted)] hover:text-[#0F2BFF] p-0.5 cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div class="flex justify-between items-center py-1.5 border-b border-[var(--theme-border-color)]">
-                  <span class="text-[var(--theme-text-muted)]">Account Number</span>
-                  <span class="font-mono font-bold text-[var(--theme-text-primary)]">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4325</span>
-                </div>
-                <div class="flex justify-between items-center py-1.5">
-                  <span class="text-[var(--theme-text-muted)]">IFSC Code</span>
-                  <span class="font-mono font-bold text-[var(--theme-text-primary)]">INDB0001077</span>
+
+                <!-- Active VPA -->
+                <div class="pt-2.5 border-t border-[var(--theme-border-color)] flex items-center justify-between gap-2">
+                  <span class="font-mono text-[11px] font-semibold text-[var(--theme-text-primary)] truncate">
+                    VPA: <strong>9410181307@okbizaxis</strong>
+                  </span>
+                  <button onclick="copyToClipboard('9410181307@okbizaxis', 'VPA copied to clipboard')" class="text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline cursor-pointer">
+                    Copy VPA
+                  </button>
                 </div>
               </div>
             </div>
 
-            <!-- VPA Strip -->
-            <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 flex items-center justify-between text-xs">
-              <div>
-                <span class="text-[10px] text-slate-400 block font-semibold">Live Primary VPA</span>
-                <span class="font-mono font-bold text-[var(--theme-text-primary)]">acme@okbizaxis</span>
-              </div>
-              <button onclick="copyText('acme@okbizaxis', 'vpa-btn')" id="vpa-btn" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-[var(--theme-border-color)] text-xs font-bold hover:bg-slate-50 transition-all cursor-pointer">
-                Copy VPA
+            <div class="grid grid-cols-2 gap-2.5">
+              <button onclick="openModal('create-link-modal')" class="py-2.5 px-3 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] hover:border-[#0F2BFF] text-xs font-bold text-[var(--theme-text-primary)] flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-[#0F2BFF] dark:text-[#60A5FA]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                <span>Payment Link</span>
+              </button>
+              <button onclick="openModal('static-qr-modal')" class="py-2.5 px-3 rounded-xl bg-[#090D18] dark:bg-[#0F2BFF] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                <span>Counter QR</span>
               </button>
             </div>
           </div>
 
-          <!-- Rail Telemetry Bar Chart (7 Cols) -->
-          <div class="lg:col-span-7 bento-card p-6 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <h3 class="text-sm font-bold text-[var(--theme-text-primary)]">Settlement Velocity &amp; Rail Telemetry</h3>
-                <div class="flex items-center gap-3 text-xs font-semibold">
-                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>UPI Intent</span>
-                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>IMPS Direct</span>
+          <!-- Right 7 Cols: Settlement Velocity & Rail Telemetry Chart -->
+          <div class="lg:col-span-7 bento-card p-6 flex flex-col justify-between space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--theme-border-color)]">
+              <div>
+                <div class="text-[14px] font-extrabold text-[var(--theme-text-primary)]">Settlement Velocity &amp; Rail Telemetry</div>
+                <div id="chart-readout" class="text-[11.5px] text-[#0F2BFF] dark:text-[#60A5FA] mt-0.5 font-medium">
+                  Hover or click any month bar to inspect rail breakdown &bull; Oct Peak: UPI 90% / IMPS 6% &bull; ₹34.01 (15 txns)
                 </div>
               </div>
-              <p class="text-xs text-[var(--theme-text-muted)] mb-6">
-                Hover or click any month bar to inspect rail breakdown &bull; Oct Peak: UPI 92% / IMPS 8%
-              </p>
 
-              <!-- Monthly Telemetry CSS Bar Chart -->
-              <div class="h-44 flex items-end justify-between gap-2 pt-6 border-b border-[var(--theme-border-color)] pb-2">
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/30 rounded-t h-[15%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Jan</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/40 rounded-t h-[28%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Feb</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/40 rounded-t h-[22%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Mar</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/50 rounded-t h-[35%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Apr</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/50 rounded-t h-[30%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">May</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/60 rounded-t h-[45%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Jun</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/60 rounded-t h-[40%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Jul</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/70 rounded-t h-[55%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Aug</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/80 rounded-t h-[65%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Sep</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600 rounded-t h-[100%] group-hover:bg-blue-500 transition-all shadow-md shadow-blue-500/20"></div>
-                  <span class="text-[10px] font-mono text-blue-600 font-bold">Oct</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/70 rounded-t h-[75%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Nov</span>
-                </div>
-                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <div class="w-full bg-blue-600/50 rounded-t h-[48%] group-hover:bg-blue-600 transition-all"></div>
-                  <span class="text-[10px] font-mono text-slate-400">Dec</span>
-                </div>
+              <div class="flex items-center gap-3 text-[10.5px] font-semibold shrink-0">
+                <span class="inline-flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-xs bg-[#0F2BFF]"></span>
+                  <span class="text-[var(--theme-text-secondary)]">UPI QR</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-xs bg-[#10B981]"></span>
+                  <span class="text-[var(--theme-text-secondary)]">IMPS Direct</span>
+                </span>
               </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs text-[var(--theme-text-muted)] pt-3">
-              <span>NPCI Switch Status: <strong class="text-emerald-600">Operational (99.98%)</strong></span>
-              <span class="font-mono">Next Auto-Reconciliation: 23:59 IST</span>
+            <!-- Bar Chart Component -->
+            <div class="relative h-[210px] flex flex-col justify-end pt-4 pb-2">
+              <!-- Dotted Guidelines -->
+              <div class="pointer-events-none absolute inset-x-0 top-4 bottom-8 flex flex-col justify-between text-[9.5px] font-medium text-[var(--theme-text-muted)]">
+                <div class="border-b border-dashed border-[var(--theme-border-color)] pb-0.5 flex justify-between">
+                  <span>100%</span>
+                  <span>100% T+0 Rail Capacity</span>
+                </div>
+                <div class="border-b border-dashed border-[var(--theme-border-color)] pb-0.5">50%</div>
+                <div class="border-b border-[var(--theme-border-color)] pb-0.5">0%</div>
+              </div>
+
+              <!-- 12 Month Bar Stacks -->
+              <div class="relative z-10 grid grid-cols-12 gap-1.5 sm:gap-2 items-end h-[145px] px-2" id="bars-container">
+                <!-- Jan -->
+                <div onmouseenter="updateChartReadout('Jan', 8, 2, '₹2.00', 3)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 8%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 2%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Feb -->
+                <div onmouseenter="updateChartReadout('Feb', 10, 4, '₹3.50', 4)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 10%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 4%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Mar -->
+                <div onmouseenter="updateChartReadout('Mar', 12, 3, '₹4.00', 5)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 12%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 3%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Apr -->
+                <div onmouseenter="updateChartReadout('Apr', 14, 5, '₹5.50', 6)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 14%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 5%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- May -->
+                <div onmouseenter="updateChartReadout('May', 25, 4, '₹8.00', 8)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 25%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 4%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Jun -->
+                <div onmouseenter="updateChartReadout('Jun', 10, 2, '₹3.00', 4)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 10%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 2%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Jul -->
+                <div onmouseenter="updateChartReadout('Jul', 12, 3, '₹4.02', 5)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 12%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 3%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Aug -->
+                <div onmouseenter="updateChartReadout('Aug', 9, 2, '₹3.00', 4)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 9%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 2%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Sep -->
+                <div onmouseenter="updateChartReadout('Sep', 18, 5, '₹7.00', 9)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 18%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 5%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Oct (Peak) -->
+                <div onmouseenter="updateChartReadout('Oct', 90, 6, '₹34.01', 15)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 90%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125 ring-2 ring-[#0F2BFF]/30"></div>
+                    <div style="height: 6%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Nov -->
+                <div onmouseenter="updateChartReadout('Nov', 22, 5, '₹8.00', 7)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 22%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 5%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+                <!-- Dec -->
+                <div onmouseenter="updateChartReadout('Dec', 14, 4, '₹5.00', 6)" class="flex flex-col items-center justify-end h-full group cursor-pointer">
+                  <div class="w-full flex items-end justify-center gap-0.5 h-full">
+                    <div style="height: 14%" class="w-1/2 max-w-[10px] bg-[#0F2BFF] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                    <div style="height: 4%" class="w-1/2 max-w-[10px] bg-[#10B981] rounded-t-xs chart-bar-anim group-hover:brightness-125"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Month Labels -->
+              <div class="grid grid-cols-12 gap-1.5 sm:gap-2 text-center text-[10px] font-semibold text-[var(--theme-text-muted)] pt-2.5 px-2">
+                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                <span>Jul</span><span>Aug</span><span>Sep</span><span class="font-bold text-[#0F2BFF] dark:text-[#60A5FA]">Oct</span><span>Nov</span><span>Dec</span>
+              </div>
             </div>
+
+            <!-- Inline 12-Digit UTR Verifier -->
+            <form onsubmit="event.preventDefault(); verifyUtr();" class="pt-3 border-t border-[var(--theme-border-color)] flex items-center gap-2">
+              <div class="relative flex-1">
+                <svg class="w-3.5 h-3.5 text-[var(--theme-text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <input id="inline-utr-input" type="text" maxlength="12" placeholder="Enter 12-digit UTR" class="console-input w-full pl-9 pr-3 py-2 rounded-xl font-mono text-xs">
+              </div>
+              <button type="submit" class="px-4 py-2 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold cursor-pointer transition-colors">
+                Verify UTR
+              </button>
+            </form>
           </div>
 
         </div>
 
-        <!-- Recent Transactions Table -->
+        <!-- ROW 3: RECENT TRANSACTIONS TABLE -->
         <div class="bento-card overflow-hidden">
-          <div class="p-5 border-b border-[var(--theme-border-color)] flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-bold text-[var(--theme-text-primary)]">Recent Live Settlements</h3>
-              <p class="text-xs text-[var(--theme-text-muted)] mt-0.5">Real-time webhook and bank confirmation stream</p>
+          <div class="px-6 py-4 border-b border-[var(--theme-border-color)] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-[14px] font-extrabold text-[var(--theme-text-primary)]">Recent Transactions</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[10px] font-bold">
+                Live NPCI T+0
+              </span>
             </div>
-            <button onclick="switchTab('transactions')" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-              View All &rarr;
+            <button onclick="switchTab('transactions')" class="text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA] hover:underline flex items-center gap-1 cursor-pointer">
+              <span>Open Full Audit Ledger (148)</span>
+              <span>&rarr;</span>
             </button>
           </div>
+
           <div class="overflow-x-auto">
-            <table class="w-full text-xs text-left">
-              <thead class="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--theme-border-color)] text-[var(--theme-text-muted)] font-semibold uppercase tracking-wider">
-                <tr>
-                  <th class="px-5 py-3">Order Ref</th>
-                  <th class="px-5 py-3">Payer Details</th>
-                  <th class="px-5 py-3">Method</th>
-                  <th class="px-5 py-3">Settlement</th>
-                  <th class="px-5 py-3">Amount</th>
-                  <th class="px-5 py-3">Status</th>
-                  <th class="px-5 py-3 text-right">Timestamp</th>
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-[var(--theme-border-color)] bg-[var(--theme-bg-well)] text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+                  <th class="py-3 px-6">Order &amp; Txn ID</th>
+                  <th class="py-3 px-4">Rail</th>
+                  <th class="py-3 px-4">Customer VPA / Phone</th>
+                  <th class="py-3 px-4">NPCI Bank UTR</th>
+                  <th class="py-3 px-4">Gross / Fee</th>
+                  <th class="py-3 px-6 text-right">Settlement</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[var(--theme-border-color)] font-medium">
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/40">
-                  <td class="px-5 py-3.5 font-mono font-bold text-blue-600">ord_984128f7</td>
-                  <td class="px-5 py-3.5 text-[var(--theme-text-primary)]">Rohan Sharma &bull; 9876543210</td>
-                  <td class="px-5 py-3.5">
-                    <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-semibold text-[10px]">Google Pay</span>
+              <tbody class="divide-y divide-[var(--theme-border-color)] text-[12.5px]">
+                <tr class="hover:bg-[var(--theme-bg-secondary)]/50 transition-colors">
+                  <td class="py-3.5 px-6 font-mono font-bold text-[var(--theme-text-primary)]">ORD-8714-9921</td>
+                  <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA]">UPI</span></td>
+                  <td class="py-3.5 px-4 font-mono text-xs">deadraon@okaxis</td>
+                  <td class="py-3.5 px-4 font-mono text-xs text-[var(--theme-text-muted)]">431092817291</td>
+                  <td class="py-3.5 px-4">
+                    <span class="font-mono font-bold text-[var(--theme-text-primary)]">₹1.00</span>
+                    <span class="block font-mono text-[10px] text-[#10B981] font-bold">₹0.00 FEE</span>
                   </td>
-                  <td class="px-5 py-3.5 font-mono text-[var(--theme-text-muted)]">UTR: 432190871234</td>
-                  <td class="px-5 py-3.5 font-bold text-[var(--theme-text-primary)] tabular-nums">&#8377;1,499.00</td>
-                  <td class="px-5 py-3.5">
-                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[11px] font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Verified
+                  <td class="py-3.5 px-6 text-right">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E6F4EA] dark:bg-[#064E3B]/40 text-[#137333] dark:text-[#34D399]">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#137333] dark:bg-[#10B981]"></span>
+                      Settled
                     </span>
                   </td>
-                  <td class="px-5 py-3.5 text-right font-mono text-[var(--theme-text-muted)]">Just now</td>
                 </tr>
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/40">
-                  <td class="px-5 py-3.5 font-mono font-bold text-blue-600">ord_77192a01</td>
-                  <td class="px-5 py-3.5 text-[var(--theme-text-primary)]">Kavita Verma &bull; 9123456780</td>
-                  <td class="px-5 py-3.5">
-                    <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 font-semibold text-[10px]">PhonePe</span>
+                <tr class="hover:bg-[var(--theme-bg-secondary)]/50 transition-colors">
+                  <td class="py-3.5 px-6 font-mono font-bold text-[var(--theme-text-primary)]">ORD-7629-1044</td>
+                  <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA]">UPI</span></td>
+                  <td class="py-3.5 px-4 font-mono text-xs">rohit.sharma@paytm</td>
+                  <td class="py-3.5 px-4 font-mono text-xs text-[var(--theme-text-muted)]">430982716290</td>
+                  <td class="py-3.5 px-4">
+                    <span class="font-mono font-bold text-[var(--theme-text-primary)]">₹10.00</span>
+                    <span class="block font-mono text-[10px] text-[#10B981] font-bold">₹0.00 FEE</span>
                   </td>
-                  <td class="px-5 py-3.5 font-mono text-[var(--theme-text-muted)]">UTR: 432190871235</td>
-                  <td class="px-5 py-3.5 font-bold text-[var(--theme-text-primary)] tabular-nums">&#8377;2,990.00</td>
-                  <td class="px-5 py-3.5">
-                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[11px] font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Verified
+                  <td class="py-3.5 px-6 text-right">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E6F4EA] dark:bg-[#064E3B]/40 text-[#137333] dark:text-[#34D399]">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#137333] dark:bg-[#10B981]"></span>
+                      Settled
                     </span>
                   </td>
-                  <td class="px-5 py-3.5 text-right font-mono text-[var(--theme-text-muted)]">12m ago</td>
                 </tr>
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/40">
-                  <td class="px-5 py-3.5 font-mono font-bold text-blue-600">ord_552199b4</td>
-                  <td class="px-5 py-3.5 text-[var(--theme-text-primary)]">Ankit Gupta &bull; 9811223344</td>
-                  <td class="px-5 py-3.5">
-                    <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 font-semibold text-[10px]">Paytm UPI</span>
+                <tr class="hover:bg-[var(--theme-bg-secondary)]/50 transition-colors">
+                  <td class="py-3.5 px-6 font-mono font-bold text-[var(--theme-text-primary)]">ORD-6512-3841</td>
+                  <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#10B981]/15 text-[#059669] dark:text-[#34D399]">IMPS</span></td>
+                  <td class="py-3.5 px-4 font-mono text-xs">kunal.chauhan@hdfcbank</td>
+                  <td class="py-3.5 px-4 font-mono text-xs text-[var(--theme-text-muted)]">430872615482</td>
+                  <td class="py-3.5 px-4">
+                    <span class="font-mono font-bold text-[var(--theme-text-primary)]">₹29.00</span>
+                    <span class="block font-mono text-[10px] text-[#10B981] font-bold">₹0.00 FEE</span>
                   </td>
-                  <td class="px-5 py-3.5 font-mono text-[var(--theme-text-muted)]">UTR: 432190871236</td>
-                  <td class="px-5 py-3.5 font-bold text-[var(--theme-text-primary)] tabular-nums">&#8377;499.00</td>
-                  <td class="px-5 py-3.5">
-                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[11px] font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Verified
+                  <td class="py-3.5 px-6 text-right">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E6F4EA] dark:bg-[#064E3B]/40 text-[#137333] dark:text-[#34D399]">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#137333] dark:bg-[#10B981]"></span>
+                      Settled
                     </span>
                   </td>
-                  <td class="px-5 py-3.5 text-right font-mono text-[var(--theme-text-muted)]">45m ago</td>
+                </tr>
+                <tr class="hover:bg-[var(--theme-bg-secondary)]/50 transition-colors">
+                  <td class="py-3.5 px-6 font-mono font-bold text-[var(--theme-text-primary)]">ORD-5491-0192</td>
+                  <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA]">UPI</span></td>
+                  <td class="py-3.5 px-4 font-mono text-xs">priya.verma@oksbi</td>
+                  <td class="py-3.5 px-4 font-mono text-xs text-[var(--theme-text-muted)]">430761524371</td>
+                  <td class="py-3.5 px-4">
+                    <span class="font-mono font-bold text-[var(--theme-text-primary)]">₹15.00</span>
+                    <span class="block font-mono text-[10px] text-[#10B981] font-bold">₹0.00 FEE</span>
+                  </td>
+                  <td class="py-3.5 px-6 text-right">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E6F4EA] dark:bg-[#064E3B]/40 text-[#137333] dark:text-[#34D399]">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#137333] dark:bg-[#10B981]"></span>
+                      Settled
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-[var(--theme-bg-secondary)]/50 transition-colors">
+                  <td class="py-3.5 px-6 font-mono font-bold text-[var(--theme-text-primary)]">ORD-4380-9281</td>
+                  <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA]">UPI</span></td>
+                  <td class="py-3.5 px-4 font-mono text-xs">vikram.mehta@icici</td>
+                  <td class="py-3.5 px-4 font-mono text-xs text-[var(--theme-text-muted)]">430650413260</td>
+                  <td class="py-3.5 px-4">
+                    <span class="font-mono font-bold text-[var(--theme-text-primary)]">₹13.03</span>
+                    <span class="block font-mono text-[10px] text-[#10B981] font-bold">₹0.00 FEE</span>
+                  </td>
+                  <td class="py-3.5 px-6 text-right">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E6F4EA] dark:bg-[#064E3B]/40 text-[#137333] dark:text-[#34D399]">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#137333] dark:bg-[#10B981]"></span>
+                      Settled
+                    </span>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -636,227 +1015,232 @@
 
       </section>
 
-      <!-- ======================================================== -->
-      <!-- TAB 2: SAAS SUBSCRIPTIONS & PLATFORM LICENSES            -->
-      <!-- ======================================================== -->
-      <section id="tab-subscriptions" class="tab-content space-y-6">
+      <!-- ═══════════════════════════════════════════════════════════
+           TAB 2: SAAS SUBSCRIPTIONS & PLATFORM LICENSES
+           ═══════════════════════════════════════════════════════════ -->
+      <section id="tab-subscriptions" class="tab-content p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
         
-        <!-- Header Banner -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
-          <div>
-            <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] mb-2.5">
-              <span>Subscriptions</span>
-              <span>/</span>
-              <span class="text-blue-600 dark:text-blue-400 font-bold">Platform Licenses</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
-                0% MDR &bull; Direct Settlement
-              </span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-[0.025em] text-[var(--theme-text-primary)] uppercase leading-snug">
-              SAAS SUBSCRIPTIONS &amp; PLATFORM LICENSES
-            </h1>
-            <p class="text-[13px] sm:text-[13.5px] text-[var(--theme-text-muted)] mt-2 leading-relaxed">
-              Flat pricing with zero commission fees &bull; Instant activation via dynamic UPI QR directly into your bank
-            </p>
+        <!-- Header -->
+        <div>
+          <div class="flex items-center gap-2 text-[11px] font-mono font-bold text-[var(--theme-text-muted)] uppercase tracking-wider">
+            <span>Subscriptions</span>
+            <span>/</span>
+            <span>Platform Licenses</span>
+            <span class="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px]">
+              0% MDR &bull; DIRECT SETTLEMENT
+            </span>
           </div>
+          <h1 class="font-display font-black text-2xl sm:text-3xl text-[var(--theme-text-primary)] tracking-tight mt-1">
+            SAAS SUBSCRIPTIONS &amp; PLATFORM LICENSES
+          </h1>
+          <p class="text-xs sm:text-[13px] text-[var(--theme-text-muted)] mt-0.5 font-medium">
+            Flat pricing with zero commission fees &bull; Instant activation via dynamic UPI QR directly into your bank
+          </p>
         </div>
 
-        <!-- Hero Active License Card -->
-        <div class="bento-card p-6 sm:p-7 flex flex-col gap-6 shadow-sm">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[var(--theme-border-color)]">
-            <div class="flex flex-wrap items-center gap-3.5">
-              <div class="flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold border bg-slate-50 dark:bg-slate-800 text-[var(--theme-text-primary)] border-slate-200 dark:border-slate-700">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>Active License</span>
-              </div>
-              <span class="text-xl font-bold text-[var(--theme-text-primary)]">Growth Tier</span>
-              <span class="text-xl font-extrabold text-blue-600 dark:text-blue-400">
-                &#8377;299<span class="text-xs text-[var(--theme-text-muted)] font-normal"> / month</span>
-              </span>
-            </div>
+        <!-- Active License Banner Card -->
+        <div class="bento-card p-6 space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--theme-border-color)]">
             <div class="flex items-center gap-2.5">
-              <button class="px-3.5 py-2 rounded-xl border border-[var(--theme-border-color)] bg-[var(--theme-bg-surface)] text-xs font-bold hover:bg-slate-50 transition-all flex items-center gap-2 cursor-pointer shadow-xs">
-                Download Invoice
+              <span class="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+              <span class="text-sm font-bold text-[var(--theme-text-muted)]">Active License</span>
+              <span class="font-display font-black text-lg text-[var(--theme-text-primary)]">Growth Tier ₹299 / month</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="showToast('Tax invoice PDF downloaded')" class="px-3.5 py-1.5 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] text-xs font-bold text-[var(--theme-text-primary)] flex items-center gap-1.5 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <span>Download Invoice</span>
               </button>
-              <button class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-2 cursor-pointer">
+              <button onclick="showToast('Opened Subscription Management')" class="btn-enterprise px-4 py-1.5 rounded-xl bg-[#0F2BFF] text-white text-xs font-bold cursor-pointer">
                 Manage Subscription
               </button>
             </div>
           </div>
 
-          <!-- 4 Metric Tiles -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="p-5 rounded-2xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-[var(--theme-border-color)] flex flex-col justify-between min-h-[120px]">
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">Current Plan</span>
-              <span class="text-[18px] sm:text-[20px] font-extrabold text-[var(--theme-text-primary)] my-2">Growth Plan (REST API)</span>
-              <span class="text-[11px] text-[var(--theme-text-muted)] font-medium">30 Days rolling cycle</span>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="p-3.5 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)]">
+              <div class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Current Plan</div>
+              <div class="text-sm font-extrabold text-[var(--theme-text-primary)] mt-1">Growth Plan (REST API)</div>
+              <div class="text-[10px] text-[var(--theme-text-muted)] mt-0.5">30 Days rolling cycle</div>
             </div>
-            <div class="p-5 rounded-2xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-[var(--theme-border-color)] flex flex-col justify-between min-h-[120px]">
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">Next Renewal Date</span>
-              <span class="text-[18px] sm:text-[20px] font-extrabold text-[var(--theme-text-primary)] my-2">17 Dec 2026</span>
-              <span class="text-[11px] text-blue-600 dark:text-blue-400 font-bold">&bull; 30 Days remaining</span>
+            <div class="p-3.5 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)]">
+              <div class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Next Renewal Date</div>
+              <div class="text-sm font-extrabold text-[var(--theme-text-primary)] mt-1">17 Dec 2026</div>
+              <div class="text-[10px] text-[#10B981] font-bold mt-0.5">&bull; 30 Days remaining</div>
             </div>
-            <div class="p-5 rounded-2xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-[var(--theme-border-color)] flex flex-col justify-between min-h-[120px]">
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">Settlement Target</span>
-              <span class="text-[15px] sm:text-[16px] font-extrabold text-[var(--theme-text-primary)] my-2 truncate">IndusInd Bank &bull;&bull;&bull;&bull; 4325</span>
-              <span class="text-[11px] text-[var(--theme-text-muted)] font-medium truncate">acme@okbizaxis</span>
+            <div class="p-3.5 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)]">
+              <div class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Direct Settlement Target</div>
+              <div class="text-sm font-extrabold text-[var(--theme-text-primary)] mt-1 truncate">IndusInd Bank &bull;&bull;&bull;&bull; 4325</div>
+              <div class="text-[10px] text-[var(--theme-text-muted)] mt-0.5 font-mono truncate">9410181307@okbizaxis</div>
             </div>
-            <div class="p-5 rounded-2xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-[var(--theme-border-color)] flex flex-col justify-between min-h-[120px]">
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">Gateway Fee Saved</span>
-              <span class="text-[18px] sm:text-[20px] font-extrabold text-emerald-600 dark:text-emerald-400 my-2">0% MDR Direct</span>
-              <span class="text-[11px] text-emerald-600 font-bold">&#8377;1,420 saved YTD</span>
+            <div class="p-3.5 rounded-xl bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)]">
+              <div class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Gateway Fee Saved</div>
+              <div class="text-sm font-extrabold text-[#10B981] mt-1">0% MDR Direct UPI</div>
+              <div class="text-[10px] text-[#10B981] font-bold mt-0.5">₹1 saved YTD</div>
             </div>
           </div>
         </div>
 
-        <!-- Extend or Upgrade Section -->
-        <div class="mt-8 flex flex-col gap-6">
+        <!-- Section: Extend or Upgrade Plan -->
+        <div class="space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 class="text-xl sm:text-2xl font-bold text-[var(--theme-text-primary)] tracking-tight">
-                Extend or Upgrade Plan
-              </h2>
-              <p class="text-[13px] text-[var(--theme-text-muted)] mt-1">
+              <h2 class="font-display font-black text-xl text-[var(--theme-text-primary)]">Extend or Upgrade Plan</h2>
+              <p class="text-xs text-[var(--theme-text-muted)] mt-0.5">
                 Zero lock-in. Instant activation via dynamic UPI QR directly into your bank account.
               </p>
             </div>
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-[11px] font-semibold border border-blue-200 dark:border-blue-800">
-              Direct bank settlement &bull; 0% MDR
+            <div class="flex items-center gap-3">
+              <span class="text-[11px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] px-3 py-1 rounded-full bg-[#0F2BFF]/10">
+                Direct bank settlement - 0% MDR
+              </span>
+              <!-- Monthly / Yearly Switcher -->
+              <div class="inline-flex p-1 rounded-full bg-[var(--theme-bg-secondary)] border border-[var(--theme-border-color)]">
+                <button id="billing-monthly" onclick="setBillingCycle('monthly')" class="px-3.5 py-1 rounded-full text-xs font-bold bg-[#0F2BFF] text-white shadow-xs transition-all">
+                  Monthly
+                </button>
+                <button id="billing-yearly" onclick="setBillingCycle('yearly')" class="px-3.5 py-1 rounded-full text-xs font-bold text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] transition-all flex items-center gap-1">
+                  <span>Yearly</span>
+                  <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold">Save 20%</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Monthly / Yearly Switcher -->
-          <div class="flex justify-center my-6">
-            <div class="p-1 rounded-full bg-slate-100 dark:bg-[#161D2B] border border-[var(--theme-border-color)] flex items-center text-xs font-bold">
-              <button id="cycle-monthly" onclick="setBillingCycle('monthly')" class="px-5 py-2 rounded-full bg-blue-600 text-white shadow-sm transition-all cursor-pointer">
-                Monthly
-              </button>
-              <button id="cycle-yearly" onclick="setBillingCycle('yearly')" class="px-5 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-[var(--theme-text-primary)] flex items-center gap-2 transition-all cursor-pointer">
-                <span>Yearly</span>
-                <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold">Save 20%</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 4 Pricing Cards Grid (With Universal Proration Credit on Yearly) -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 py-2">
+          <!-- 4 Pricing Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             
-            <!-- Card 1: Free Link Starter -->
-            <div class="bento-card p-6 sm:p-7 flex flex-col justify-between">
-              <div>
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="text-xl sm:text-2xl font-semibold text-[var(--theme-text-primary)]">Free Link Starter</h3>
+            <!-- Plan 1: Free Link Starter -->
+            <div class="bento-card p-5 flex flex-col justify-between space-y-4">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-display font-black text-lg text-[var(--theme-text-primary)]">Free Link Starter</h3>
                 </div>
-                <p class="text-xs text-[var(--theme-text-muted)] mb-4 min-h-[38px] leading-relaxed">
+                <p class="text-xs text-[var(--theme-text-muted)] leading-relaxed">
                   Great for creators and small sellers looking to get started with 0% fee payments
                 </p>
-                <div class="flex flex-col mb-5">
-                  <div class="flex items-baseline">
-                    <span class="text-3xl sm:text-4xl font-semibold text-[var(--theme-text-primary)]">&#8377;0</span>
-                    <span class="text-slate-400 ml-1 text-xs font-medium">/forever</span>
-                  </div>
+                <div class="font-display font-black text-3xl text-[var(--theme-text-primary)]">
+                  ₹0<span class="text-xs font-normal text-[var(--theme-text-muted)]">/forever</span>
                 </div>
-                <!-- Downgrade hidden during active plan -->
-                <div id="btn-free" class="hidden"></div>
-                <ul class="space-y-2.5 font-medium py-3 text-xs text-[var(--theme-text-muted)] border-t border-[var(--theme-border-color)]">
-                  <li>&bull; Up to 100 txns per month</li>
-                  <li>&bull; Dynamic UPI QR &amp; Intent</li>
-                  <li>&bull; Direct bank settlement</li>
-                </ul>
+              </div>
+              <button disabled class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 text-xs font-bold cursor-not-allowed">
+                Included Base Tier
+              </button>
+              <div class="space-y-2 text-xs border-t border-[var(--theme-border-color)] pt-3">
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Up to 100 txns per month</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Dynamic UPI QR &amp; Intent</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Direct bank settlement</span>
+                </div>
               </div>
             </div>
 
-            <!-- Card 2: Starter -->
-            <div class="bento-card p-6 sm:p-7 flex flex-col justify-between">
-              <div>
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="text-xl sm:text-2xl font-semibold text-[var(--theme-text-primary)]">Starter</h3>
-                </div>
-                <p class="text-xs text-[var(--theme-text-muted)] mb-4 min-h-[38px] leading-relaxed">
+            <!-- Plan 2: Starter -->
+            <div class="bento-card p-5 flex flex-col justify-between space-y-4">
+              <div class="space-y-3">
+                <h3 class="font-display font-black text-lg text-[var(--theme-text-primary)]">Starter</h3>
+                <p class="text-xs text-[var(--theme-text-muted)] leading-relaxed">
                   Great for small businesses and startups looking to get started with flat-rate payments
                 </p>
-                <div class="flex flex-col mb-5">
-                  <div class="flex items-baseline">
-                    <span class="text-3xl sm:text-4xl font-semibold text-[var(--theme-text-primary)]">&#8377;99</span>
-                    <span class="text-slate-400 ml-1 text-xs font-medium">/month</span>
-                  </div>
+                <div class="font-display font-black text-3xl text-[var(--theme-text-primary)]">
+                  <span id="price-starter">₹99</span><span id="cycle-starter" class="text-xs font-normal text-[var(--theme-text-muted)]">/month</span>
                 </div>
-                <!-- Downgrade hidden during active Growth plan -->
-                <div id="btn-starter" class="hidden"></div>
-                <ul class="space-y-2.5 font-medium py-3 text-xs text-[var(--theme-text-muted)] border-t border-[var(--theme-border-color)]">
-                  <li>&bull; Up to 300 txns per month</li>
-                  <li>&bull; Unlimited payment links</li>
-                  <li>&bull; CSV statement downloads</li>
-                </ul>
+              </div>
+              <button disabled class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 text-xs font-bold cursor-not-allowed">
+                Active in Higher Plan
+              </button>
+              <div class="space-y-2 text-xs border-t border-[var(--theme-border-color)] pt-3">
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Up to 300 txns per month</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Unlimited payment links</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>CSV statement downloads</span>
+                </div>
               </div>
             </div>
 
-            <!-- Card 3: Growth (Current Plan on Monthly, Upgrade with &#8377;299 Credit on Yearly) -->
-            <div class="bento-card p-6 sm:p-7 flex flex-col justify-between ring-2 ring-blue-500 border-2 border-blue-500 shadow-lg shadow-blue-500/10">
-              <div>
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="text-xl sm:text-2xl font-semibold text-[var(--theme-text-primary)]">Growth</h3>
-                  <span id="badge-growth" class="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-500/30">
-                    Current Plan
-                  </span>
+            <!-- Plan 3: Growth (CURRENT PLAN) -->
+            <div class="bento-card p-5 flex flex-col justify-between space-y-4 border-2 border-[#0F2BFF] relative shadow-lg">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-display font-black text-lg text-[var(--theme-text-primary)]">Growth</h3>
+                  <span class="px-2 py-0.5 rounded-full bg-[#0F2BFF] text-white text-[9.5px] font-bold">Popular</span>
                 </div>
-                <p class="text-xs text-[var(--theme-text-muted)] mb-4 min-h-[38px] leading-relaxed">
+                <p class="text-xs text-[var(--theme-text-muted)] leading-relaxed">
                   Best value for growing businesses that need developer REST API and webhooks
                 </p>
-                <div class="flex flex-col mb-5">
-                  <div class="flex items-baseline">
-                    <span id="price-growth" class="text-3xl sm:text-4xl font-semibold text-[var(--theme-text-primary)]">&#8377;299</span>
-                    <span id="period-growth" class="text-slate-400 ml-1 text-xs font-medium">/month</span>
-                    <span id="strike-growth" class="ml-2 text-xs font-semibold text-slate-400 line-through hidden">&#8377;2,990</span>
-                  </div>
-                  <div id="credit-growth" class="mt-1 text-[11px] font-semibold text-emerald-600 hidden">
-                    &#8377;299 current month credit applied
-                  </div>
+                <div class="font-display font-black text-3xl text-[var(--theme-text-primary)]">
+                  <span id="price-growth">₹299</span><span id="cycle-growth" class="text-xs font-normal text-[var(--theme-text-muted)]">/month</span>
+                  <div id="credit-growth" class="hidden text-[10px] font-semibold text-[#10B981] mt-0.5">₹299 month proration credit applied</div>
                 </div>
-                
-                <!-- Action Button -->
-                <button id="btn-growth" disabled class="w-full mb-5 p-3.5 text-sm rounded-xl text-center font-semibold bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700 cursor-not-allowed select-none">
-                  Current
-                </button>
-
-                <ul class="space-y-2.5 font-medium py-3 text-xs text-[var(--theme-text-muted)] border-t border-[var(--theme-border-color)]">
-                  <li>&bull; Full Developer REST API</li>
-                  <li>&bull; 5 Webhooks with auto-retry</li>
-                  <li>&bull; 1,000 verified txns/month</li>
-                </ul>
+              </div>
+              <button id="btn-growth-action" onclick="showToast('Extending Growth License')" class="w-full py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold cursor-pointer transition-colors">
+                Extend License (₹299)
+              </button>
+              <div class="space-y-2 text-xs border-t border-[var(--theme-border-color)] pt-3">
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Full Developer REST API</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>5 Webhooks with auto-retry</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>1,000 verified txns/month</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Automated UTR bank matching</span>
+                </div>
               </div>
             </div>
 
-            <!-- Card 4: Pro Flagship (Upgrade Tier) -->
-            <div class="bento-card p-6 sm:p-7 flex flex-col justify-between">
-              <div>
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="text-xl sm:text-2xl font-semibold text-[var(--theme-text-primary)]">Pro Flagship</h3>
-                </div>
-                <p class="text-xs text-[var(--theme-text-muted)] mb-4 min-h-[38px] leading-relaxed">
+            <!-- Plan 4: Pro Flagship -->
+            <div class="bento-card p-5 flex flex-col justify-between space-y-4">
+              <div class="space-y-3">
+                <h3 class="font-display font-black text-lg text-[var(--theme-text-primary)]">Pro Flagship</h3>
+                <p class="text-xs text-[var(--theme-text-muted)] leading-relaxed">
                   Advanced plan with enhanced security, VIP hotline and unlimited access
                 </p>
-                <div class="flex flex-col mb-5">
-                  <div class="flex items-baseline">
-                    <span id="price-pro" class="text-3xl sm:text-4xl font-semibold text-[var(--theme-text-primary)]">&#8377;499</span>
-                    <span id="period-pro" class="text-slate-400 ml-1 text-xs font-medium">/month</span>
-                    <span id="strike-pro" class="ml-2 text-xs font-semibold text-slate-400 line-through hidden">&#8377;4,990</span>
-                  </div>
-                  <div id="credit-pro" class="mt-1 text-[11px] font-semibold text-emerald-600 hidden">
-                    &#8377;299 current month credit applied
-                  </div>
+                <div class="font-display font-black text-3xl text-[var(--theme-text-primary)]">
+                  <span id="price-pro">₹499</span><span id="cycle-pro" class="text-xs font-normal text-[var(--theme-text-muted)]">/month</span>
                 </div>
-
-                <!-- Upgrade Action Button -->
-                <button id="btn-pro" class="w-full mb-5 p-3.5 text-sm rounded-xl text-center font-semibold bg-slate-900 text-white hover:bg-slate-800 shadow-md transition-all cursor-pointer">
-                  Upgrade to Pro Flagship (&#8377;499)
-                </button>
-
-                <ul class="space-y-2.5 font-medium py-3 text-xs text-[var(--theme-text-muted)] border-t border-[var(--theme-border-color)]">
-                  <li>&bull; Unlimited txns &amp; volume</li>
-                  <li>&bull; 24/7 WhatsApp VIP hotline</li>
-                  <li>&bull; Automated monthly PDF statements</li>
-                </ul>
+              </div>
+              <button id="btn-pro-action" onclick="showToast('Upgrading to Pro Flagship')" class="w-full py-2.5 rounded-xl bg-[#090D18] dark:bg-[#1E293B] hover:bg-black text-white text-xs font-bold cursor-pointer transition-colors">
+                Upgrade to Pro Flagship (₹499)
+              </button>
+              <div class="space-y-2 text-xs border-t border-[var(--theme-border-color)] pt-3">
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Unlimited txns &amp; volume</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>24/7 WhatsApp VIP hotline</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>Automated monthly PDF statements</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--theme-text-muted)]">
+                  <svg class="w-3.5 h-3.5 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <span>White-label (zero MyMobPay branding)</span>
+                </div>
               </div>
             </div>
 
@@ -865,302 +1249,454 @@
 
       </section>
 
-      <!-- ======================================================== -->
-      <!-- TAB 3: PAYMENT LINKS STUDIO                              -->
-      <!-- ======================================================== -->
-      <section id="tab-payment-links" class="tab-content space-y-6">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
+      <!-- ═══════════════════════════════════════════════════════════
+           TAB 3: PAYMENT LINKS
+           ═══════════════════════════════════════════════════════════ -->
+      <section id="tab-payment-links" class="tab-content p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] mb-2.5">
-              <span>Workspace</span>
-              <span>/</span>
-              <span class="text-blue-600 dark:text-blue-400 font-bold">Payment Links</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-[0.025em] text-[var(--theme-text-primary)] uppercase leading-snug">
-              PAYMENT LINKS &amp; QR STUDIO
-            </h1>
-            <p class="text-[13px] sm:text-[13.5px] text-[var(--theme-text-muted)] mt-2 leading-relaxed">
-              Generate instant shareable checkout links with automated WhatsApp &amp; SMS delivery
-            </p>
+            <h1 class="font-display font-black text-2xl sm:text-3xl text-[var(--theme-text-primary)]">PAYMENT LINKS</h1>
+            <p class="text-xs text-[var(--theme-text-muted)] mt-0.5">Create instant branded UPI checkout links with dynamic customer amounts</p>
           </div>
+          <button onclick="openModal('create-link-modal')" class="btn-enterprise px-4 py-2.5 rounded-xl bg-[#0F2BFF] text-white text-xs font-bold flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+            <span>Create New Link</span>
+          </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bento-card overflow-hidden">
+          <div class="p-4 border-b border-[var(--theme-border-color)] flex items-center justify-between">
+            <span class="text-xs font-bold text-[var(--theme-text-primary)]">Active Links (17)</span>
+            <input type="text" placeholder="Search link title or slug..." class="console-input px-3 py-1.5 rounded-xl text-xs w-60">
+          </div>
+          <div class="divide-y divide-[var(--theme-border-color)] text-xs">
+            <div class="p-4 flex items-center justify-between hover:bg-[var(--theme-bg-secondary)]/40 transition-colors">
+              <div>
+                <div class="font-bold text-sm text-[var(--theme-text-primary)]">Freelance Invoice #4092</div>
+                <div class="font-mono text-[11px] text-[#0F2BFF] dark:text-[#60A5FA] mt-0.5">https://pay.mymobpay.tech/pay/inv_4092</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-mono font-bold text-sm">₹4,500.00</span>
+                <button onclick="copyToClipboard('https://pay.mymobpay.tech/pay/inv_4092', 'Link copied')" class="px-3 py-1 rounded-lg bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] font-bold hover:border-[#0F2BFF]">Copy</button>
+              </div>
+            </div>
+            <div class="p-4 flex items-center justify-between hover:bg-[var(--theme-bg-secondary)]/40 transition-colors">
+              <div>
+                <div class="font-bold text-sm text-[var(--theme-text-primary)]">Annual SaaS Subscription License</div>
+                <div class="font-mono text-[11px] text-[#0F2BFF] dark:text-[#60A5FA] mt-0.5">https://pay.mymobpay.tech/pay/saas_annual</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-mono font-bold text-sm">₹2,990.00</span>
+                <button onclick="copyToClipboard('https://pay.mymobpay.tech/pay/saas_annual', 'Link copied')" class="px-3 py-1 rounded-lg bg-[var(--theme-bg-well)] border border-[var(--theme-border-color)] font-bold hover:border-[#0F2BFF]">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           TAB 4: TRANSACTIONS AUDIT LEDGER
+           ═══════════════════════════════════════════════════════════ -->
+      <section id="tab-transactions" class="tab-content p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="font-display font-black text-2xl sm:text-3xl text-[var(--theme-text-primary)]">TRANSACTIONS AUDIT LEDGER</h1>
+            <p class="text-xs text-[var(--theme-text-muted)] mt-0.5">Live verifiable NPCI settlement history &bull; 148 verified orders</p>
+          </div>
+          <button onclick="showToast('Exporting 148 transactions as CSV')" class="px-4 py-2.5 rounded-xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] text-xs font-bold text-[var(--theme-text-primary)] hover:border-[#0F2BFF] flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span>Export CSV</span>
+          </button>
+        </div>
+
+        <div class="bento-card p-4 space-y-3">
+          <div class="flex items-center gap-3">
+            <input type="text" placeholder="Search by UTR or Customer VPA..." class="console-input px-3.5 py-2 rounded-xl text-xs flex-1">
+            <select class="console-input px-3 py-2 rounded-xl text-xs">
+              <option>All Statuses</option>
+              <option>Settled</option>
+              <option>Processing</option>
+            </select>
+          </div>
+          <div class="text-xs text-[var(--theme-text-muted)] font-mono">
+            Showing latest 5 of 148 total cleared orders. All settlements route directly to IndusInd Bank (Account 4325).
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           TAB 5: DEVELOPER HUB
+           ═══════════════════════════════════════════════════════════ -->
+      <section id="tab-developer" class="tab-content p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <div>
+          <h1 class="font-display font-black text-2xl sm:text-3xl text-[var(--theme-text-primary)]">DEVELOPER CONSOLE &amp; API RAILS</h1>
+          <p class="text-xs text-[var(--theme-text-muted)] mt-0.5">High-speed REST API, webhook endpoints, and integration SDKs</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="bento-card p-6 space-y-4">
-            <h3 class="text-sm font-bold text-[var(--theme-text-primary)]">Quick Generate Link</h3>
-            <div>
-              <label class="block text-xs font-semibold text-[var(--theme-text-muted)] mb-1">Amount (&#8377;)</label>
-              <input type="number" value="1499" class="w-full p-2.5 rounded-xl border border-[var(--theme-border-color)] bg-slate-50 dark:bg-slate-900 text-sm font-mono font-bold text-[var(--theme-text-primary)]">
+            <h3 class="text-sm font-extrabold text-[var(--theme-text-primary)]">API Authentication Keys</h3>
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Merchant ID (MID)</label>
+                <div class="mt-1 flex items-center gap-2">
+                  <input readonly value="MTD: 53cTFMhw" class="console-input w-full px-3 py-2 rounded-xl font-mono text-xs">
+                  <button onclick="copyToClipboard('MTD: 53cTFMhw', 'MID copied')" class="px-3 py-2 rounded-xl bg-[var(--theme-bg-secondary)] font-bold">Copy</button>
+                </div>
+              </div>
+              <div>
+                <label class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Production API Secret</label>
+                <div class="mt-1 flex items-center gap-2">
+                  <input readonly value="mmp_live_677d9312a53f4b96815f53e0eee1b292" class="console-input w-full px-3 py-2 rounded-xl font-mono text-xs">
+                  <button onclick="copyToClipboard('mmp_live_677d9312a53f4b96815f53e0eee1b292', 'API Key copied')" class="px-3 py-2 rounded-xl bg-[var(--theme-bg-secondary)] font-bold">Copy</button>
+                </div>
+              </div>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-[var(--theme-text-muted)] mb-1">Purpose / Note</label>
-              <input type="text" value="Consulting Invoice #984" class="w-full p-2.5 rounded-xl border border-[var(--theme-border-color)] bg-slate-50 dark:bg-slate-900 text-xs text-[var(--theme-text-primary)]">
-            </div>
-            <button class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer">
-              Generate &bull; mymobpay.tech/pay/demo_link
-            </button>
           </div>
 
-          <div class="lg:col-span-2 bento-card p-6">
-            <h3 class="text-sm font-bold text-[var(--theme-text-primary)] mb-4">Active Payment Links</h3>
-            <div class="space-y-3">
-              <div class="p-3.5 rounded-xl border border-[var(--theme-border-color)] flex items-center justify-between">
-                <div>
-                  <span class="font-bold text-xs text-[var(--theme-text-primary)]">Web Development Retainer</span>
-                  <span class="text-[11px] text-[var(--theme-text-muted)] block">Created 2 days ago &bull; 8 views</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <span class="font-mono font-bold text-sm text-[var(--theme-text-primary)]">&#8377;15,000</span>
-                  <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">Active</span>
-                </div>
+          <div class="bento-card p-6 space-y-4">
+            <h3 class="text-sm font-extrabold text-[var(--theme-text-primary)]">Live Webhook Target</h3>
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Endpoint URL</label>
+                <input value="https://api.yourdomain.com/v1/webhooks/mymobpay" class="console-input w-full px-3 py-2 rounded-xl font-mono text-xs mt-1">
               </div>
-              <div class="p-3.5 rounded-xl border border-[var(--theme-border-color)] flex items-center justify-between">
-                <div>
-                  <span class="font-bold text-xs text-[var(--theme-text-primary)]">Cloud Hosting Setup</span>
-                  <span class="text-[11px] text-[var(--theme-text-muted)] block">Created 5 days ago &bull; 24 views</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <span class="font-mono font-bold text-sm text-[var(--theme-text-primary)]">&#8377;4,990</span>
-                  <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">Active</span>
-                </div>
-              </div>
+              <button onclick="showToast('Webhook endpoint saved')" class="btn-enterprise px-4 py-2 rounded-xl bg-[#0F2BFF] text-white text-xs font-bold">
+                Save Webhook
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- TAB 4: DEVELOPER HUB                                     -->
-      <!-- ======================================================== -->
-      <section id="tab-developer" class="tab-content space-y-6">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
-          <div>
-            <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] mb-2.5">
-              <span>Platform</span>
-              <span>/</span>
-              <span class="text-blue-600 dark:text-blue-400 font-bold">Developer API &amp; SDKs</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-[0.025em] text-[var(--theme-text-primary)] uppercase leading-snug">
-              DEVELOPER CONSOLE &amp; RAILS
-            </h1>
-            <p class="text-[13px] sm:text-[13.5px] text-[var(--theme-text-muted)] mt-2 leading-relaxed">
-              API credentials, webhook configuration, and high-speed direct bank rails
-            </p>
-          </div>
+      <!-- ═══════════════════════════════════════════════════════════
+           TAB 6: SETTINGS & ROUTING
+           ═══════════════════════════════════════════════════════════ -->
+      <section id="tab-settings" class="tab-content p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <div>
+          <h1 class="font-display font-black text-2xl sm:text-3xl text-[var(--theme-text-primary)]">SETTINGS &amp; BANK ROUTING</h1>
+          <p class="text-xs text-[var(--theme-text-muted)] mt-0.5">Manage bank account settlement, IFSC credentials, and business identity</p>
         </div>
 
-        <div class="bento-card p-6 space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-[var(--theme-text-primary)]">Live API Secret Key</h3>
-            <span class="text-[11px] text-emerald-600 font-bold">&bull; Active &amp; Verified</span>
-          </div>
-          <div class="p-3.5 rounded-xl bg-slate-900 font-mono text-xs text-slate-200 flex items-center justify-between">
-            <span>mmp_live_677d9312a53f4b96815f53e0eee1b292</span>
-            <button onclick="copyText('mmp_live_677d9312a53f4b96815f53e0eee1b292', 'key-btn')" id="key-btn" class="px-2 py-1 rounded bg-slate-800 text-[11px] font-bold hover:bg-slate-700 text-white cursor-pointer">
-              Copy
-            </button>
-          </div>
-          <div class="pt-4 border-t border-[var(--theme-border-color)]">
-            <h4 class="text-xs font-bold text-[var(--theme-text-primary)] mb-2">cURL Sample Integration</h4>
-            <pre class="p-4 rounded-xl bg-slate-900 text-slate-300 font-mono text-[11px] overflow-x-auto">curl -X POST https://mymobpay.tech/api/orders \
-  -H "Content-Type: application/json" \
-  -d '{"api_key": "mmp_live_demo", "amount": 299, "note": "Order_101"}'</pre>
-          </div>
-        </div>
-      </section>
-
-      <!-- ======================================================== -->
-      <!-- TAB 5: SETTINGS & ROUTING                                -->
-      <!-- ======================================================== -->
-      <section id="tab-settings" class="tab-content space-y-6">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
-          <div>
-            <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] mb-2.5">
-              <span>Account</span>
-              <span>/</span>
-              <span class="text-blue-600 dark:text-blue-400 font-bold">Settings &amp; Routing</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-[0.025em] text-[var(--theme-text-primary)] uppercase leading-snug">
-              MERCHANT ACCOUNT SETTINGS
-            </h1>
-            <p class="text-[13px] sm:text-[13.5px] text-[var(--theme-text-muted)] mt-2 leading-relaxed">
-              Business profile, bank account routing, webhook endpoints, and tax receipts
-            </p>
-          </div>
-        </div>
-
-        <div class="bento-card p-6 space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div class="bento-card p-6 space-y-4 max-w-2xl">
+          <h3 class="text-sm font-extrabold text-[var(--theme-text-primary)]">Settlement Bank Account</h3>
+          <div class="space-y-3 text-xs">
             <div>
-              <label class="block text-[11px] font-bold text-[var(--theme-text-muted)] mb-1">Business Name</label>
-              <input type="text" value="Acme Retail PvLT." class="w-full p-2.5 rounded-xl border border-[var(--theme-border-color)] bg-slate-50 dark:bg-slate-900 text-[var(--theme-text-primary)] font-bold">
+              <label class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Bank Name</label>
+              <input value="IndusInd Bank" class="console-input w-full px-3 py-2 rounded-xl mt-1">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">Account Number</label>
+                <input value="501004325678" class="console-input w-full px-3 py-2 rounded-xl font-mono mt-1">
+              </div>
+              <div>
+                <label class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">IFSC Code</label>
+                <input value="INDB0001077" class="console-input w-full px-3 py-2 rounded-xl font-mono mt-1">
+              </div>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-[var(--theme-text-muted)] mb-1">Support Email</label>
-              <input type="email" value="support@acmeretail.com" class="w-full p-2.5 rounded-xl border border-[var(--theme-border-color)] bg-slate-50 dark:bg-slate-900 text-[var(--theme-text-primary)]">
+              <label class="text-[10.5px] font-semibold text-[var(--theme-text-muted)]">UPI VPA</label>
+              <input value="9410181307@okbizaxis" class="console-input w-full px-3 py-2 rounded-xl font-mono mt-1">
             </div>
-            <div>
-              <label class="block text-[11px] font-bold text-[var(--theme-text-muted)] mb-1">Direct Settlement UPI ID</label>
-              <input type="text" value="acme@okbizaxis" class="w-full p-2.5 rounded-xl border border-[var(--theme-border-color)] bg-slate-50 dark:bg-slate-900 text-[var(--theme-text-primary)] font-mono">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-[var(--theme-text-muted)] mb-1">Primary Settlement Bank</label>
-              <input type="text" value="IndusInd Bank • Current Account" class="w-full p-2.5 rounded-xl border border-[var(--theme-border-color)] bg-slate-50 dark:bg-slate-900 text-[var(--theme-text-primary)] font-bold">
-            </div>
-          </div>
-          <div class="pt-4 border-t border-[var(--theme-border-color)] flex justify-end">
-            <button class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs cursor-pointer shadow-xs">
-              Save Preferences
+            <button onclick="showToast('Banking configurations updated')" class="btn-enterprise px-4 py-2 rounded-xl bg-[#0F2BFF] text-white text-xs font-bold">
+              Save Changes
             </button>
           </div>
         </div>
       </section>
 
     </main>
+
   </div>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-6 right-6 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold shadow-lg transform translate-y-20 opacity-0 transition-all z-50 flex items-center gap-2">
-    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-    <span id="toast-text">Copied to clipboard!</span>
+  <!-- ═══════════════════════════════════════════════════════════
+       MODAL 1: STATIC COUNTER QR CODE
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="static-qr-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--theme-border-color)]">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+          <span class="font-extrabold text-sm text-[var(--theme-text-primary)]">Static Counter QR</span>
+        </div>
+        <button onclick="closeModal('static-qr-modal')" class="text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] p-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- QR Display Container -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col items-center justify-center space-y-3">
+        <!-- SVG Generated QR Simulation with MyMobPay Center Badge -->
+        <div class="w-48 h-48 bg-slate-900 rounded-xl flex items-center justify-center relative p-2 shadow-inner">
+          <svg viewBox="0 0 29 29" class="w-full h-full" shape-rendering="crispEdges">
+            <path fill="#ffffff" d="M0,0 h7 v7 h-7 z M1,1 h5 v5 h-5 z M2,2 h3 v3 h-3 z M22,0 h7 v7 h-7 z M23,1 h5 v5 h-5 z M24,2 h3 v3 h-3 z M0,22 h7 v7 h-7 z M1,23 h5 v5 h-5 z M2,24 h3 v3 h-3 z M8,2 h2 v1 h-2 z M12,2 h1 v2 h-1 z M15,1 h2 v2 h-2 z M19,3 h1 v2 h-1 z M9,5 h4 v1 h-4 z M8,8 h1 v4 h-1 z M10,9 h3 v1 h-3 z M15,8 h3 v2 h-3 z M20,8 h2 v2 h-2 z M24,9 h2 v2 h-2 z M10,13 h1 v3 h-1 z M14,14 h2 v2 h-2 z M18,13 h3 v1 h-3 z M8,18 h2 v2 h-2 z M12,19 h2 v2 h-2 z M16,18 h2 v3 h-2 z M20,18 h3 v2 h-3 z M8,24 h3 v1 h-3 z M13,23 h2 v3 h-2 z M18,24 h2 v3 h-2 z M22,23 h3 v2 h-3 z"/>
+          </svg>
+          <div class="absolute inset-0 m-auto w-9 h-9 rounded-lg bg-white shadow-md flex items-center justify-center border border-slate-200">
+            <span class="font-display font-black text-xs text-[#0F2BFF]">M</span>
+          </div>
+        </div>
+        <div class="text-center">
+          <div class="font-mono text-xs font-bold text-slate-800">9410181307@okbizaxis</div>
+          <div class="text-[10px] text-slate-500 font-medium">Scan with GPay, PhonePe, Paytm, CRED</div>
+        </div>
+      </div>
+
+      <button onclick="showToast('Counter Standee PDF ready to print')" class="w-full py-2.5 rounded-xl bg-[#0F2BFF] text-white text-xs font-bold cursor-pointer">
+        Print Counter Standee
+      </button>
+    </div>
   </div>
 
-  <!-- Client-Side Dashboard Controller Script -->
+  <!-- ═══════════════════════════════════════════════════════════
+       MODAL 2: CREATE PAYMENT LINK MODAL
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="create-link-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--theme-border-color)]">
+        <h3 class="font-extrabold text-sm text-[var(--theme-text-primary)]">Create Instant Payment Link</h3>
+        <button onclick="closeModal('create-link-modal')" class="text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] p-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <form onsubmit="event.preventDefault(); submitCreateLink();" class="space-y-3.5 text-xs">
+        <div>
+          <label class="font-semibold text-[var(--theme-text-muted)]">Customer Name or Purpose</label>
+          <input id="link-title" required placeholder="e.g. Design Consulting Invoice #102" class="console-input w-full px-3.5 py-2.5 rounded-xl mt-1">
+        </div>
+        <div>
+          <label class="font-semibold text-[var(--theme-text-muted)]">Amount (INR &bull; ₹)</label>
+          <input id="link-amount" type="number" step="0.01" required placeholder="0.00" class="console-input w-full px-3.5 py-2.5 rounded-xl font-mono mt-1">
+        </div>
+        <div>
+          <label class="font-semibold text-[var(--theme-text-muted)]">Customer Phone (Optional for WhatsApp)</label>
+          <input id="link-phone" type="tel" placeholder="+91 98765 43210" class="console-input w-full px-3.5 py-2.5 rounded-xl font-mono mt-1">
+        </div>
+        <button type="submit" class="w-full py-3 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold cursor-pointer transition-all shadow-md">
+          Generate Link &amp; Dynamic UPI QR
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       INTERACTIVE CLIENT CONTROLLER JAVASCRIPT
+       ═══════════════════════════════════════════════════════════ -->
   <script>
-    // Tab Navigation Logic
+    // Tab Switching
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-      const targetTab = document.getElementById(`tab-${tabId}`);
-      if (targetTab) targetTab.classList.add('active');
+      const targetTab = document.getElementById('tab-' + tabId);
+      const targetNav = document.getElementById('nav-' + tabId);
 
-      const targetNav = document.getElementById(`nav-${tabId}`);
+      if (targetTab) targetTab.classList.add('active');
       if (targetNav) targetNav.classList.add('active');
 
+      // Close mobile drawer on tab click
+      document.getElementById('sidebar').classList.add('-translate-x-full');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Theme Switcher (Dark / Light)
+    // Mobile Sidebar Drawer Toggle
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('-translate-x-full');
+    }
+
+    // Theme Toggle (Light <-> Dark)
     function toggleTheme() {
       const html = document.documentElement;
-      const sun = document.getElementById('theme-icon-sun');
-      const moon = document.getElementById('theme-icon-moon');
-
-      if (html.classList.contains('dark')) {
-        html.classList.remove('dark');
-        html.classList.add('light');
-        sun.classList.add('hidden');
-        moon.classList.remove('hidden');
-      } else {
-        html.classList.remove('light');
-        html.classList.add('dark');
-        moon.classList.add('hidden');
-        sun.classList.remove('hidden');
-      }
+      const isDark = html.classList.toggle('dark');
+      document.getElementById('theme-icon-moon').classList.toggle('hidden', isDark);
+      document.getElementById('theme-icon-sun').classList.toggle('hidden', !isDark);
+      document.getElementById('theme-text').textContent = isDark ? 'Light' : 'Dark';
+      showToast(isDark ? 'Dark Mode Enabled' : 'Light Mode Enabled');
     }
 
-    // Live vs Test Simulation Mode
+    // Live / Test Mode Switcher
     function setMode(mode) {
-      const liveBtn = document.getElementById('mode-live');
-      const testBtn = document.getElementById('mode-test');
+      const liveBtn = document.getElementById('btn-live-mode');
+      const testBtn = document.getElementById('btn-test-mode');
 
       if (mode === 'live') {
-        liveBtn.className = "px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-[var(--theme-text-primary)] shadow-xs flex items-center gap-1.5 cursor-pointer";
-        testBtn.className = "px-3 py-1 rounded-full text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] flex items-center gap-1.5 cursor-pointer";
-        showToast('Switched to Live Production rails');
+        liveBtn.className = 'px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 bg-white dark:bg-[#121826] text-[#059669] dark:text-[#34D399] shadow-xs';
+        testBtn.className = 'px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)]';
+        showToast('Switched to 0% MDR Live Mode');
       } else {
-        testBtn.className = "px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-[var(--theme-text-primary)] shadow-xs flex items-center gap-1.5 cursor-pointer";
-        liveBtn.className = "px-3 py-1 rounded-full text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] flex items-center gap-1.5 cursor-pointer";
-        showToast('Switched to Test Sandbox simulation');
+        testBtn.className = 'px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 bg-white dark:bg-[#121826] text-amber-600 dark:text-amber-400 shadow-xs';
+        liveBtn.className = 'px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)]';
+        showToast('Switched to Sandbox Test Mode');
       }
     }
 
-    // Billing Switcher (Monthly vs Yearly with Universal Credit)
-    function setBillingCycle(cycle) {
-      const mBtn = document.getElementById('cycle-monthly');
-      const yBtn = document.getElementById('cycle-yearly');
-
-      const badgeGrowth = document.getElementById('badge-growth');
-      const priceGrowth = document.getElementById('price-growth');
-      const periodGrowth = document.getElementById('period-growth');
-      const strikeGrowth = document.getElementById('strike-growth');
-      const creditGrowth = document.getElementById('credit-growth');
-      const btnGrowth = document.getElementById('btn-growth');
-
-      const pricePro = document.getElementById('price-pro');
-      const periodPro = document.getElementById('period-pro');
-      const strikePro = document.getElementById('strike-pro');
-      const creditPro = document.getElementById('credit-pro');
-      const btnPro = document.getElementById('btn-pro');
-
-      if (cycle === 'yearly') {
-        mBtn.className = "px-5 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-[var(--theme-text-primary)] flex items-center gap-2 transition-all cursor-pointer";
-        yBtn.className = "px-5 py-2 rounded-full bg-blue-600 text-white shadow-sm transition-all cursor-pointer flex items-center gap-2";
-
-        // Growth: Not current plan on annual! Display as upgrade with 299 credit
-        badgeGrowth.textContent = "Popular";
-        badgeGrowth.className = "bg-blue-500 text-white px-2.5 py-0.5 rounded-full text-xs font-semibold";
-        priceGrowth.textContent = "₹2,691";
-        periodGrowth.textContent = "/year";
-        strikeGrowth.classList.remove('hidden');
-        creditGrowth.classList.remove('hidden');
-        btnGrowth.disabled = false;
-        btnGrowth.textContent = "Upgrade to Growth (₹2,691)";
-        btnGrowth.className = "w-full mb-5 p-3.5 text-sm rounded-xl text-center font-semibold bg-gradient-to-t from-blue-500 to-blue-600 text-white shadow-md shadow-blue-500/20 cursor-pointer hover:opacity-95";
-
-        // Pro: Prorated with 299 credit
-        pricePro.textContent = "₹4,691";
-        periodPro.textContent = "/year";
-        strikePro.classList.remove('hidden');
-        creditPro.classList.remove('hidden');
-        btnPro.textContent = "Upgrade to Pro Flagship (₹4,691)";
-      } else {
-        yBtn.className = "px-5 py-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-[var(--theme-text-primary)] flex items-center gap-2 transition-all cursor-pointer";
-        mBtn.className = "px-5 py-2 rounded-full bg-blue-600 text-white shadow-sm transition-all cursor-pointer";
-
-        // Growth: Current plan on monthly
-        badgeGrowth.textContent = "Current Plan";
-        badgeGrowth.className = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-500/30";
-        priceGrowth.textContent = "₹299";
-        periodGrowth.textContent = "/month";
-        strikeGrowth.classList.add('hidden');
-        creditGrowth.classList.add('hidden');
-        btnGrowth.disabled = true;
-        btnGrowth.textContent = "Current";
-        btnGrowth.className = "w-full mb-5 p-3.5 text-sm rounded-xl text-center font-semibold bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700 cursor-not-allowed select-none";
-
-        // Pro: Standard monthly price
-        pricePro.textContent = "₹499";
-        periodPro.textContent = "/month";
-        strikePro.classList.add('hidden');
-        creditPro.classList.add('hidden');
-        btnPro.textContent = "Upgrade to Pro Flagship (₹499)";
-      }
-    }
-
-    // Helper: Toast Notification
-    function showToast(message) {
+    // Toast Notification Helper
+    let toastTimeout;
+    function showToast(msg) {
       const toast = document.getElementById('toast');
       const text = document.getElementById('toast-text');
-      text.textContent = message;
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
+      text.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+        toast.classList.remove('opacity-100', 'translate-y-0');
       }, 3000);
     }
 
-    // Helper: Copy Text
-    function copyText(val, btnId) {
-      navigator.clipboard.writeText(val);
-      const btn = document.getElementById(btnId);
-      const orig = btn.textContent;
-      btn.textContent = "Copied!";
-      showToast(`Copied ${val}`);
-      setTimeout(() => {
-        btn.textContent = orig;
-      }, 2000);
+    // Clipboard Copy Helper
+    function copyToClipboard(text, label) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+      }
+      showToast(label);
     }
+
+    // Modals
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Toggle Notifications Panel
+    function toggleNotifications() {
+      const panel = document.getElementById('notifications-panel');
+      panel.classList.toggle('hidden');
+    }
+
+    // Mask / Unmask Vault Account Number
+    let vaultMasked = true;
+    function toggleMaskVault() {
+      vaultMasked = !vaultMasked;
+      document.getElementById('vault-acc-num').textContent = vaultMasked 
+        ? '•••• •••• 4325' 
+        : '501004325678';
+    }
+
+    // Chart Readout Update on Hover
+    function updateChartReadout(month, upi, imps, total, txns) {
+      const readout = document.getElementById('chart-readout');
+      readout.textContent = `${month} Telemetry: UPI ${upi}% • IMPS ${imps}% • ${total} (${txns} txns)`;
+    }
+
+    // Inline UTR Verifier
+    function verifyUtr() {
+      const utr = document.getElementById('inline-utr-input').value.trim();
+      if (!utr || utr.length !== 12) {
+        showToast('Please enter a valid 12-digit numeric UTR');
+        return;
+      }
+      showToast(`UTR ${utr} successfully verified on NPCI rail & settled`);
+      document.getElementById('inline-utr-input').value = '';
+    }
+
+    // Simulate Incoming Payment (+₹500.00)
+    let todayInflowVal = 0;
+    let directSettledVal = 68.03;
+    let clearedOrdersVal = 29;
+
+    function simulateIncomingPayment() {
+      todayInflowVal += 500;
+      directSettledVal += 500;
+      clearedOrdersVal += 1;
+
+      const kpiInflow = document.getElementById('kpi-today-inflow');
+      const kpiSettled = document.getElementById('kpi-direct-settled');
+      const kpiOrders = document.getElementById('kpi-cleared-orders');
+
+      kpiInflow.textContent = '₹' + todayInflowVal.toFixed(2);
+      kpiSettled.textContent = '₹' + directSettledVal.toFixed(2);
+      kpiOrders.textContent = clearedOrdersVal;
+
+      kpiInflow.classList.add('kpi-flash');
+      kpiSettled.classList.add('kpi-flash');
+      setTimeout(() => {
+        kpiInflow.classList.remove('kpi-flash');
+        kpiSettled.classList.remove('kpi-flash');
+      }, 500);
+
+      showToast('Simulated payment received: +₹500.00 credited to IndusInd Bank (•••• 4325)');
+    }
+
+    // Billing Cycle Switcher in SaaS Subscriptions
+    function setBillingCycle(cycle) {
+      const isYear = cycle === 'yearly';
+      const monthlyBtn = document.getElementById('billing-monthly');
+      const yearlyBtn = document.getElementById('billing-yearly');
+
+      if (isYear) {
+        yearlyBtn.className = 'px-3.5 py-1 rounded-full text-xs font-bold bg-[#0F2BFF] text-white shadow-xs transition-all flex items-center gap-1';
+        monthlyBtn.className = 'px-3.5 py-1 rounded-full text-xs font-bold text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] transition-all';
+
+        // Yearly prices
+        document.getElementById('price-starter').textContent = '₹990';
+        document.getElementById('cycle-starter').textContent = '/year';
+
+        document.getElementById('price-growth').textContent = '₹2,691';
+        document.getElementById('cycle-growth').textContent = '/year';
+        document.getElementById('credit-growth').classList.remove('hidden');
+
+        document.getElementById('price-pro').textContent = '₹4,990';
+        document.getElementById('cycle-pro').textContent = '/year';
+
+        const btnGrowth = document.getElementById('btn-growth-action');
+        btnGrowth.textContent = 'Current';
+        btnGrowth.disabled = true;
+        btnGrowth.className = 'w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 text-xs font-bold cursor-not-allowed';
+
+        document.getElementById('btn-pro-action').textContent = 'Upgrade to Pro Flagship (₹4,990)';
+        showToast('Switched to Annual Billing (₹299 paid credit applied)');
+      } else {
+        monthlyBtn.className = 'px-3.5 py-1 rounded-full text-xs font-bold bg-[#0F2BFF] text-white shadow-xs transition-all';
+        yearlyBtn.className = 'px-3.5 py-1 rounded-full text-xs font-bold text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] transition-all flex items-center gap-1';
+
+        // Monthly prices
+        document.getElementById('price-starter').textContent = '₹99';
+        document.getElementById('cycle-starter').textContent = '/month';
+
+        document.getElementById('price-growth').textContent = '₹299';
+        document.getElementById('cycle-growth').textContent = '/month';
+        document.getElementById('credit-growth').classList.add('hidden');
+
+        document.getElementById('price-pro').textContent = '₹499';
+        document.getElementById('cycle-pro').textContent = '/month';
+
+        const btnGrowth = document.getElementById('btn-growth-action');
+        btnGrowth.textContent = 'Extend License (₹299)';
+        btnGrowth.disabled = false;
+        btnGrowth.className = 'w-full py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold cursor-pointer transition-colors';
+
+        document.getElementById('btn-pro-action').textContent = 'Upgrade to Pro Flagship (₹499)';
+        showToast('Switched to Monthly Billing');
+      }
+    }
+
+    // Submit Create Link
+    function submitCreateLink() {
+      const title = document.getElementById('link-title').value.trim();
+      const amt = document.getElementById('link-amount').value.trim();
+      closeModal('create-link-modal');
+      showToast(`Created payment link for "${title}" (₹${parseFloat(amt).toFixed(2)})`);
+    }
+
+    // Keyboard shortcuts (N for create link, Esc for modals)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal('static-qr-modal');
+        closeModal('create-link-modal');
+        document.getElementById('notifications-panel').classList.add('hidden');
+      }
+      if ((e.key === 'n' || e.key === 'N') && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        openModal('create-link-modal');
+      }
+    });
   </script>
 </body>
 </html>
