@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { sendSubscriptionInvoiceEmail } from '@/lib/mailer';
 import { generateOrderId } from '@/lib/orderId';
 import { resolveMerchantIdToUuid, formatMerchantId } from '@/lib/merchantId';
+import { isSubscriptionOrder } from '@/lib/subscriptionOrders';
 
 export async function POST(req) {
   try {
@@ -80,21 +81,37 @@ export async function POST(req) {
           .maybeSingle();
         if (ord && (ord.merchant_id === actualMerchantId || ord.external_ref === actualMerchantId)) {
           const isMockOrder = ord.utr && (ord.utr.startsWith('TS_MOCK_') || ord.utr.startsWith('TEST_'));
-          if (!isMockOrder && ord.mode !== 'test') {
-            verifiedOrder = ord;
+          if (!isMockOrder) {
+            if (ord.mode === 'test' && isSubscriptionOrder(ord)) {
+              ord.mode = 'live';
+              try {
+                await supabaseAdmin.from('orders').update({ mode: 'live' }).eq('id', ord.id);
+              } catch {}
+            }
+            if (ord.mode !== 'test') {
+              verifiedOrder = ord;
+            }
           }
         }
       } else if (cleanUtr) {
         const { data: ord } = await supabaseAdmin
           .from('orders')
-          .select('id, amount, status, merchant_id, external_ref, utr, method, mode')
+          .select('id, amount, status, merchant_id, external_ref, utr, method, mode, note, project')
           .eq('utr', cleanUtr)
           .eq('status', 'verified')
           .maybeSingle();
         if (ord && (ord.merchant_id === actualMerchantId || ord.external_ref === actualMerchantId)) {
           const isMockOrder = ord.utr && (ord.utr.startsWith('TS_MOCK_') || ord.utr.startsWith('TEST_'));
-          if (!isMockOrder && ord.mode !== 'test') {
-            verifiedOrder = ord;
+          if (!isMockOrder) {
+            if (ord.mode === 'test' && isSubscriptionOrder(ord)) {
+              ord.mode = 'live';
+              try {
+                await supabaseAdmin.from('orders').update({ mode: 'live' }).eq('id', ord.id);
+              } catch {}
+            }
+            if (ord.mode !== 'test') {
+              verifiedOrder = ord;
+            }
           }
         }
       }

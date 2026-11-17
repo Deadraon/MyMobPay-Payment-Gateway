@@ -10,6 +10,7 @@ import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { generateOrderId } from '@/lib/orderId';
 import { findMerchantByApiKey } from '@/lib/merchantAuth';
 import { syncOrderVerificationToPaymentLink } from '@/lib/paymentLinks';
+import { isSubscriptionOrder } from '@/lib/subscriptionOrders';
 
 export async function POST(request) {
   try {
@@ -73,8 +74,9 @@ export async function POST(request) {
        }
     }
 
-    const isTestMode = isTestFromKey || merchant.sandbox_mode !== false;
-    const isAdminMerchant = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || actualKey === CONFIG.platformApiKey;
+    const isSubOrder = isSubscriptionOrder({ note, project });
+    const isTestMode = isSubOrder ? false : (isTestFromKey || merchant.sandbox_mode !== false);
+    const isAdminMerchant = merchant.id === '677d9312-a53f-4b96-815f-53e0eee1b292' || actualKey === CONFIG.platformApiKey || isSubOrder;
 
     if (!isTestMode && !isAdminMerchant) {
       if (!isSubActive) {
@@ -250,7 +252,7 @@ export async function POST(request) {
           callback_url: callback_url || null,
           external_ref: external_ref || null,
           status: 'pending',
-          mode: (isTestFromKey || merchant.sandbox_mode !== false) ? 'test' : 'live'
+          mode: isSubOrder ? 'live' : ((isTestFromKey || merchant.sandbox_mode !== false) ? 'test' : 'live')
         }
       ])
       .select('id')
@@ -261,7 +263,8 @@ export async function POST(request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ orderId: data.id, orderAmount: finalAmount, mode: (isTestFromKey || merchant.sandbox_mode !== false) ? 'test' : 'live' }, { status: 201 });
+    const createdMode = isSubOrder ? 'live' : ((isTestFromKey || merchant.sandbox_mode !== false) ? 'test' : 'live');
+    return NextResponse.json({ orderId: data.id, orderAmount: finalAmount, mode: createdMode }, { status: 201 });
   } catch (err) {
     console.error('API orders error:', err);
     return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
@@ -408,12 +411,20 @@ export async function GET(request) {
       }
     }
 
+    const isSub = isSubscriptionOrder(order);
+    if (isSub && order.mode === 'test') {
+      try {
+        await supabaseAdmin.from('orders').update({ mode: 'live' }).eq('id', order.id);
+      } catch {}
+      order.mode = 'live';
+    }
+
     return NextResponse.json({ 
       orderId: order.id, 
       amount: order.amount, 
       status: order.status, 
       note: order.note,
-      mode: order.mode,
+      mode: isSub ? 'live' : order.mode,
       utr: order.utr,
       project: order.project,
       callback_url: order.callback_url,

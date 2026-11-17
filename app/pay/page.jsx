@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
 import { formatRefId, generateOrderId } from '@/lib/orderId';
+import { isSubscriptionOrder } from '@/lib/subscriptionOrders';
 
 const DesktopCheckoutView = dynamic(() => import('@/components/DesktopCheckoutView'), {
   ssr: false,
@@ -884,7 +885,12 @@ function PayPageContent() {
         if (data.orderId) setOrderId(data.orderId);
         if (data.amount != null) setOrderAmount(parseFloat(data.amount));
         if (data.note) setOrderNote(data.note);
-        if (data.mode) setOrderMode(data.mode);
+        const isSub = isSubscriptionOrder({ note: data.note, project: data.project });
+        if (isSub) {
+          setOrderMode('live');
+        } else if (data.mode) {
+          setOrderMode(data.mode);
+        }
         if (data.payment_link_id || data.is_payment_link || data.token || paramLid) setIsLinkPayment(true);
         if (data.merchant) setMerchant(prev => ({ ...prev, ...data.merchant }));
         setCurView('vPay');
@@ -1125,7 +1131,8 @@ function PayPageContent() {
           } catch {}
         }
         if (am != null) setOrderAmount(am);
-        setOrderMode(data.mode || 'live');
+        const isSubFallback = isSubscriptionOrder({ note: data.note, project: data.project });
+        setOrderMode(isSubFallback ? 'live' : (data.mode || 'live'));
         if (data.note) setOrderNote(data.note);
         if (callback && id) localStorage.setItem(`callback_${id}`, callback);
       } else {

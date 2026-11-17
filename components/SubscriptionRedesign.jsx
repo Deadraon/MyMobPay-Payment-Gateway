@@ -31,6 +31,7 @@ import { CONFIG } from '@/lib/config';
 import { openTaxInvoiceWindow } from '@/lib/invoiceGenerator';
 import { formatMerchantId } from '@/lib/merchantId';
 import { generateOrderId } from '@/lib/orderId';
+import { detectSubscriptionTier } from '@/lib/subscriptionOrders';
 
 export default function SubscriptionRedesign({
   profile = {},
@@ -122,22 +123,33 @@ export default function SubscriptionRedesign({
     const totalDays = profile?.subscription_plan === '3months' ? 90 : profile?.subscription_plan === '2months' ? 60 : 30;
     const percentRemaining = totalDays > 0 ? Math.min(100, Math.max(0, Math.round((daysLeft / totalDays) * 100))) : 0;
 
-    const planTypeStr = String(profile?.subscription_plan || profile?.setup_progress?.plan_type || '').toLowerCase();
-    const planTitle = planTypeStr.includes('pro') || planTypeStr.includes('499') || planTypeStr.includes('flagship') || planTypeStr.includes('999')
-      ? 'Pro Flagship Plan (Unlimited)'
-      : planTypeStr.includes('growth') || planTypeStr.includes('299')
-      ? 'Growth Plan (REST API)'
-      : planTypeStr.includes('starter') || planTypeStr.includes('99')
-      ? 'Starter Plan'
-      : 'Active Subscription Plan';
+    // 1. Resolve detected tier dynamically from verified order, profile setup_progress, or fallback
+    const latestVerifiedOrder = historyOrders?.find(o => o.status === 'verified' || o.status === 'paid') || historyOrders?.[0];
+    const detectedFromOrder = latestVerifiedOrder ? detectSubscriptionTier(latestVerifiedOrder) : null;
+    const detectedFromProfile = detectSubscriptionTier(profile?.setup_progress?.plan_type || profile?.subscription_plan);
 
-    const planAmount = planTypeStr.includes('pro') || planTypeStr.includes('499') || planTypeStr.includes('flagship') || planTypeStr.includes('999')
-      ? 499
-      : planTypeStr.includes('growth') || planTypeStr.includes('299')
-      ? 299
-      : planTypeStr.includes('starter') || planTypeStr.includes('99')
-      ? 99
-      : 499;
+    const activeTier = detectedFromOrder || detectedFromProfile || (isActive ? {
+      tierIndex: 2,
+      id: 'growth',
+      name: 'Growth',
+      title: 'Growth Plan (REST API)',
+      tierLabel: 'Growth Tier',
+      price: 299,
+      isAnnual: false
+    } : {
+      tierIndex: 0,
+      id: 'free',
+      name: 'Free Link Starter',
+      title: 'Free Link Starter (Sandbox)',
+      tierLabel: 'Free Sandbox Tier',
+      price: 0,
+      isAnnual: false
+    });
+
+    const tierIndex = isActive ? activeTier.tierIndex : 0;
+    const planTitle = isActive ? activeTier.title : 'No Active Plan';
+    const planTierLabel = isActive ? activeTier.tierLabel : 'Free Sandbox Tier';
+    const planAmount = isActive ? activeTier.price : 0;
 
     const paymentMethodUsed = historyOrders?.[0]?.payment_mode || historyOrders?.[0]?.payment_method || 'Direct UPI Settlement (0% MDR)';
     const orderRef = historyOrders?.[0]?.id
@@ -154,7 +166,9 @@ export default function SubscriptionRedesign({
       expiryDateStr,
       expiresAt,
       activatedAtStr,
+      tierIndex,
       planTitle,
+      planTierLabel,
       planAmount,
       paymentMethodUsed,
       orderRef,
@@ -177,13 +191,8 @@ export default function SubscriptionRedesign({
 
   // Determine current active subscription tier index (0: Free, 1: Starter, 2: Growth, 3: Pro)
   const currentTierIndex = useMemo(() => {
-    if (!subDetails.isActive) return 0;
-    const planStr = String(profile?.subscription_plan || profile?.setup_progress?.plan_type || '').toLowerCase();
-    if (planStr.includes('pro') || planStr.includes('499') || planStr.includes('flagship')) return 3;
-    if (planStr.includes('growth') || planStr.includes('299')) return 2;
-    if (planStr.includes('starter') || planStr.includes('99')) return 1;
-    return 0;
-  }, [subDetails.isActive, profile?.subscription_plan, profile?.setup_progress?.plan_type]);
+    return subDetails.tierIndex;
+  }, [subDetails.tierIndex]);
 
   // ── Plan Definitions (4 Tiers Matching /pricing) ─────────────
   const plans = useMemo(() => {
@@ -365,8 +374,8 @@ export default function SubscriptionRedesign({
         date: order.created_at
           ? new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
           : 'Recent',
-        plan: order.note || 'Standard Plan License',
-        amount: order.amount || 499,
+        plan: detectSubscriptionTier(order)?.title || order.note || 'Platform License',
+        amount: order.amount || subDetails.planAmount || 299,
         status: order.status === 'verified' || order.status === 'paid' ? 'Paid' : order.status || 'Pending'
       }));
     }
@@ -428,11 +437,7 @@ export default function SubscriptionRedesign({
             </div>
 
             <span className="text-lg font-bold text-[#000d21] dark:text-white tracking-tight">
-              {profile?.subscription_plan === '3months'
-                ? 'Quarterly Tier'
-                : profile?.subscription_plan === '2months'
-                ? 'Bi-Monthly Tier'
-                : 'Standard Tier'}
+              {subDetails.isActive ? subDetails.planTierLabel : 'Free Sandbox Tier'}
             </span>
 
             <span className="text-lg font-bold text-blue-600 dark:text-blue-400">

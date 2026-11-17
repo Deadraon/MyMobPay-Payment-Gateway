@@ -6,6 +6,7 @@ import { CONFIG } from '@/lib/config';
 import { MyMobPayLogo, MyMobPayMark } from '@/components/MyMobPayLogo';
 import { formatRefId, generateOrderId } from '@/lib/orderId';
 import PaymentSuccessTick from '@/components/PaymentSuccessTick';
+import { isSubscriptionOrder } from '@/lib/subscriptionOrders';
 
 /* ── Instant Inline Vector Icons (0ms render time, no font loading delays, no text ligatures) ── */
 const IconVerifiedUser = ({ className = "w-[18px] h-[18px]" }) => (
@@ -229,6 +230,11 @@ export default function DesktopCheckoutView({
   const [successCountdown, setSuccessCountdown] = useState(5);
 
   // Safeguarded values (declared before any useEffect hooks)
+  const isSubscriptionCheckout = isSubscriptionOrder({
+    note: orderNote,
+    project: merchant?.project || paramProject
+  });
+  const effectiveOrderMode = isSubscriptionCheckout ? 'live' : orderMode;
   const safeBizName = (bizName && bizName !== 'Demo Store') ? bizName : 'Merchant';
   const safeActiveId = activeId ? String(activeId) : (paramRef ? String(paramRef) : generateOrderId('order'));
   const safeUpiId = (!upiId || upiId === 'pending@upi' || !upiId.includes('@')) 
@@ -355,7 +361,7 @@ export default function DesktopCheckoutView({
       return submitCardPayment(e);
     }
     if (e) e.preventDefault();
-    if (orderMode !== 'test') {
+    if (effectiveOrderMode !== 'test') {
       onCardMsgChange('Direct card gateway is reserved for test mode. For live payments, please switch to UPI or Net Banking.');
       return;
     }
@@ -645,7 +651,7 @@ export default function DesktopCheckoutView({
           <div className="relative w-full max-w-[820px] flex flex-col items-center">
 
             {/* Test Mode Sandbox Banner */}
-            {orderMode === 'test' && (
+            {effectiveOrderMode === 'test' && (
               <div className="w-full mb-3 bg-amber-50 border border-amber-300 rounded-xl p-2.5 px-4 text-xs font-bold text-amber-900 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                 <span>Test mode &mdash; simulated sandbox transaction</span>
@@ -928,7 +934,7 @@ export default function DesktopCheckoutView({
                                   <IconCheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                                 </div>
                                 <span className="text-body-sm text-[11.5px] text-on-surface-variant truncate block">
-                                  {orderMode === 'test' ? 'Sandbox Order' : 'Verified Merchant Settlement'}
+                                  {effectiveOrderMode === 'test' ? 'Sandbox Order' : 'Verified Merchant Settlement'}
                                 </span>
                               </div>
                             </div>

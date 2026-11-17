@@ -37,7 +37,7 @@ import SupportHelpRedesign from '@/components/SupportHelpRedesign';
 import AdminConsole from '@/components/AdminConsole';
 import PlatformSubscriptionsHub from '@/components/PlatformSubscriptionsHub';
 import PremiumTierBadge from '@/components/PremiumTierBadge';
-import { isSubscriptionOrder } from '@/lib/subscriptionOrders';
+import { isSubscriptionOrder, detectSubscriptionTier } from '@/lib/subscriptionOrders';
 
 import ProfileBusinessInfoModal from '@/components/ProfileBusinessInfoModal';
 import { formatMerchantId } from '@/lib/merchantId';
@@ -236,6 +236,40 @@ export default function DashboardPage() {
   const subscriptionOrders = useMemo(() => {
     return orders.filter(o => isSubscriptionOrder(o));
   }, [orders]);
+
+  const activePlanInfo = useMemo(() => {
+    const latestVerified = historyOrders?.find(o => o.status === 'verified' || o.status === 'paid') || historyOrders?.[0];
+    const detectedFromOrder = latestVerified ? detectSubscriptionTier(latestVerified) : null;
+    if (detectedFromOrder) {
+      return {
+        id: detectedFromOrder.id,
+        name: detectedFromOrder.name,
+        badge: detectedFromOrder.id === 'pro' ? 'PRO' : (detectedFromOrder.id === 'growth' ? 'GROWTH' : 'STARTER'),
+        price: detectedFromOrder.price,
+        title: detectedFromOrder.title,
+        tierLabel: detectedFromOrder.tierLabel
+      };
+    }
+    const detectedFromProfile = detectSubscriptionTier(profile?.setup_progress?.plan_type || profile?.subscription_plan);
+    if (detectedFromProfile) {
+      return {
+        id: detectedFromProfile.id,
+        name: detectedFromProfile.name,
+        badge: detectedFromProfile.id === 'pro' ? 'PRO' : (detectedFromProfile.id === 'growth' ? 'GROWTH' : 'STARTER'),
+        price: detectedFromProfile.price,
+        title: detectedFromProfile.title,
+        tierLabel: detectedFromProfile.tierLabel
+      };
+    }
+    return {
+      id: 'growth',
+      name: 'Growth',
+      badge: 'ACTIVE',
+      price: 299,
+      title: 'Growth Plan (REST API)',
+      tierLabel: 'Growth Tier'
+    };
+  }, [historyOrders, profile?.setup_progress?.plan_type, profile?.subscription_plan]);
 
   const [emailLogs, setEmailLogs] = useState([]);
 
@@ -1167,30 +1201,37 @@ export default function DashboardPage() {
         }
       }
 
-      // Safety auto-activation: if user has a verified subscription order in the orders table, ensure status is active!
-      if (data.subscription_status !== 'active') {
-        const { data: verifiedOrders } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('external_ref', userId)
-          .eq('status', 'verified')
-          .order('created_at', { ascending: false })
-          .limit(1);
+      // Safety auto-activation & dynamic plan synchronization from verified orders
+      const { data: verifiedOrders } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('external_ref', userId)
+        .eq('status', 'verified')
+        .order('created_at', { ascending: false })
+        .limit(1);
 
-        if (verifiedOrders && verifiedOrders.length > 0) {
-          const ord = verifiedOrders[0];
-          const orderDate = new Date(ord.verified_at || ord.created_at);
-          const durationDays = 30;
-          const expiryDate = new Date(orderDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
+      if (verifiedOrders && verifiedOrders.length > 0) {
+        const ord = verifiedOrders[0];
+        const detectedTier = detectSubscriptionTier(ord);
+        const planCode = detectedTier?.id || 'growth';
+        const orderDate = new Date(ord.verified_at || ord.created_at);
+        const durationDays = (ord.amount >= 900 || ord.note?.toLowerCase().includes('annual')) ? 365 : 30;
+        const expiryDate = new Date(orderDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
-          if (expiryDate > new Date()) {
+        const currentPlanType = data.setup_progress?.plan_type;
+        const needsPlanSync = !currentPlanType || currentPlanType === 'subscription' || currentPlanType === '1month';
+
+        if (expiryDate > new Date()) {
+          const statusNeedsUpdate = data.subscription_status !== 'active';
+          if (statusNeedsUpdate || needsPlanSync) {
             data.subscription_status = 'active';
             data.subscription_expires_at = expiryDate.toISOString();
+            data.sandbox_mode = false;
             const currProg = data.setup_progress || {};
             const updatedProg = {
               ...currProg,
-              subscription_activated_at: orderDate.toISOString(),
-              plan_type: 'subscription',
+              subscription_activated_at: currProg.subscription_activated_at || orderDate.toISOString(),
+              plan_type: planCode,
               last_payment_at: orderDate.toISOString(),
               last_order_id: ord.id
             };
@@ -1198,26 +1239,27 @@ export default function DashboardPage() {
             await supabase.from('merchants').update({
               subscription_status: 'active',
               subscription_expires_at: expiryDate.toISOString(),
-              setup_progress: updatedProg
-            }).eq('id', userId);
-          } else {
-            data.subscription_status = 'expired';
-            data.subscription_expires_at = expiryDate.toISOString();
-            data.sandbox_mode = true;
-            const currProg = data.setup_progress || {};
-            const updatedProg = {
-              ...currProg,
-              plan_type: currProg.plan_type || 'subscription',
-              last_order_id: ord.id
-            };
-            data.setup_progress = updatedProg;
-            await supabase.from('merchants').update({
-              subscription_status: 'expired',
-              subscription_expires_at: expiryDate.toISOString(),
-              sandbox_mode: true,
-              setup_progress: updatedProg
+              setup_progress: updatedProg,
+              sandbox_mode: false
             }).eq('id', userId);
           }
+        } else if (data.subscription_status === 'active') {
+          data.subscription_status = 'expired';
+          data.subscription_expires_at = expiryDate.toISOString();
+          data.sandbox_mode = true;
+          const currProg = data.setup_progress || {};
+          const updatedProg = {
+            ...currProg,
+            plan_type: planCode,
+            last_order_id: ord.id
+          };
+          data.setup_progress = updatedProg;
+          await supabase.from('merchants').update({
+            subscription_status: 'expired',
+            subscription_expires_at: expiryDate.toISOString(),
+            sandbox_mode: true,
+            setup_progress: updatedProg
+          }).eq('id', userId);
         }
       }
 
@@ -2962,9 +3004,9 @@ echo "Order Created: " . $data['orderId'];
                     </div>
                     <div className="font-mono text-[9px] text-[var(--theme-text-muted,#5E6782)] truncate">
                       {isLiveUnlocked ? (
-                        subDaysRemaining !== null ? `Standard • ${subDaysRemaining}d left` : 'Standard • Active'
+                        subDaysRemaining !== null ? `${activePlanInfo.name} • ${subDaysRemaining}d left` : `${activePlanInfo.name} • Active`
                       ) : (
-                        'Standard Plan • ₹499/mo'
+                        'Free Sandbox • ₹0'
                       )}
                     </div>
                   </div>
@@ -2976,7 +3018,7 @@ echo "Order Created: " . $data['orderId'];
                     : 'bg-amber-500/15 border border-amber-500/35 text-amber-600 dark:text-amber-400'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${isLiveUnlocked ? 'bg-[#10B981] animate-pulse' : 'bg-amber-500'}`}></span>
-                  <span>{isLiveUnlocked ? 'PRO' : 'PLAN'}</span>
+                  <span>{isLiveUnlocked ? activePlanInfo.badge : 'PLAN'}</span>
                 </span>
               </div>
 
@@ -3028,7 +3070,7 @@ echo "Order Created: " . $data['orderId'];
                     <TrendingUp className="w-3 h-3 text-[#10B981] shrink-0" />
                     <span>Extend</span>
                   </span>
-                  <span className="font-mono text-[8.5px] font-bold text-[var(--theme-text-muted,#5E6782)]">₹499</span>
+                  <span className="font-mono text-[8.5px] font-bold text-[var(--theme-text-muted,#5E6782)]">₹{activePlanInfo.price}</span>
                 </button>
               </div>
 
