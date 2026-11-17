@@ -154,14 +154,14 @@ const PricingSwitch = ({ onSwitch }) => {
 
   return (
     <div className="flex justify-center">
-      <div className="relative z-50 mx-auto flex w-fit rounded-full bg-neutral-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 p-1">
+      <div className="relative z-50 mx-auto flex w-fit rounded-full theme-bg-elevated border theme-border p-1 shadow-xs">
         <button
           type="button"
           onClick={() => handleSwitch("0")}
           className={`relative z-10 w-fit sm:h-12 h-10 rounded-full sm:px-6 px-3 sm:py-2 py-1 font-medium transition-colors cursor-pointer ${
             selected === "0"
               ? "text-white"
-              : "text-muted-foreground hover:text-black dark:hover:text-white"
+              : "theme-text-muted hover:theme-text-primary"
           }`}
         >
           {selected === "0" && (
@@ -180,7 +180,7 @@ const PricingSwitch = ({ onSwitch }) => {
           className={`relative z-10 w-fit sm:h-12 h-10 flex-shrink-0 rounded-full sm:px-6 px-3 sm:py-2 py-1 font-medium transition-colors cursor-pointer ${
             selected === "1"
               ? "text-white"
-              : "text-muted-foreground hover:text-black dark:hover:text-white"
+              : "theme-text-muted hover:theme-text-primary"
           }`}
         >
           {selected === "1" && (
@@ -192,7 +192,7 @@ const PricingSwitch = ({ onSwitch }) => {
           )}
           <span className="relative flex items-center gap-2">
             Yearly
-            <span className="rounded-full bg-blue-50 dark:bg-blue-900/60 px-2 py-0.5 text-xs font-medium text-black dark:text-blue-200">
+            <span className="rounded-full bg-blue-100 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-700/50 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-300">
               Save 20%
             </span>
           </span>
@@ -274,6 +274,7 @@ export default function PricingClient() {
           --bg-primary: #FFFFFF;
           --bg-secondary: #F2F3FB;
           --bg-elevated: #FFFFFF;
+          --bg-card: #FFFFFF;
           --bg-well: #F7F8FD;
           --bg-header: rgba(255, 255, 255, 0.92);
           --bg-pill-nav: rgba(255, 255, 255, 0.95);
@@ -289,6 +290,7 @@ export default function PricingClient() {
           --bg-primary: #0B0E14;
           --bg-secondary: #101520;
           --bg-elevated: #161D2B;
+          --bg-card: #161D2B;
           --bg-well: #0E131D;
           --bg-header: rgba(11, 14, 20, 0.90);
           --bg-pill-nav: rgba(22, 29, 43, 0.95);
@@ -515,13 +517,13 @@ export default function PricingClient() {
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-8 pb-16 sm:pt-14 sm:pb-24" ref={pricingRef}>
         <div className="text-center mb-6 max-w-3xl mx-auto relative z-10">
-          <h2 className="md:text-6xl sm:text-4xl text-3xl font-medium text-gray-900 dark:text-white mb-4">
+          <h2 className="md:text-6xl sm:text-4xl text-3xl font-medium theme-text-primary mb-4">
             Plans that works best for your{" "}
-            <span className="border border-dashed border-blue-500 px-3 py-1 rounded-xl bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 capitalize inline-block font-semibold">
+            <span className="border border-dashed border-blue-500 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 capitalize inline-block font-semibold">
               business
             </span>
           </h2>
-          <p className="sm:text-base text-sm text-gray-600 dark:text-gray-300 sm:w-[70%] w-[80%] mx-auto">
+          <p className="sm:text-base text-sm theme-text-muted sm:w-[70%] w-[80%] mx-auto">
             Trusted by millions, We help teams all around the world, Explore which option is right for you.
           </p>
         </div>
@@ -534,15 +536,15 @@ export default function PricingClient() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-3xl border text-left p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 ${
+              className={`relative rounded-3xl border text-left p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 shadow-sm ${
                 plan.popular
-                  ? "ring-2 ring-blue-500 border-blue-500 bg-blue-50 dark:bg-blue-950/40"
-                  : "border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+                  ? "ring-2 ring-blue-500 border-blue-500 bg-blue-50/70 dark:bg-[#0D1F38]"
+                  : "theme-bg-elevated theme-border"
               }`}
             >
               <div>
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-2xl sm:text-3xl font-semibold theme-text-primary">
                     {plan.name}
                   </h3>
                   {plan.popular && (
@@ -553,14 +555,14 @@ export default function PricingClient() {
                     </div>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 min-h-[40px]">
+                <p className="text-sm theme-text-muted mb-4 min-h-[40px] leading-relaxed">
                   {plan.description}
                 </p>
                 <div className="flex items-baseline mb-6">
-                  <span className="text-4xl font-semibold text-gray-900 dark:text-white">
+                  <span className="text-4xl font-semibold theme-text-primary">
                     ₹{isYearly ? plan.yearlyPrice : plan.price}
                   </span>
-                  <span className="text-gray-600 dark:text-gray-400 ml-1 text-sm font-medium">
+                  <span className="theme-text-muted ml-1 text-sm font-medium">
                     /{plan.isFreeForever ? "forever" : isYearly ? (plan.isMonthlyOnly ? "month" : "year") : "month"}
                   </span>
                 </div>
@@ -570,7 +572,7 @@ export default function PricingClient() {
                   className={`w-full mb-6 p-4 text-xl rounded-xl text-center block font-medium transition-all ${
                     plan.popular
                       ? "bg-gradient-to-t from-blue-500 to-blue-600 shadow-lg shadow-blue-500/50 border border-blue-400 text-white hover:opacity-95"
-                      : "bg-gradient-to-t from-neutral-900 to-neutral-600 shadow-lg shadow-neutral-900/40 border border-neutral-700 text-white hover:opacity-95"
+                      : "bg-gradient-to-t from-neutral-900 to-neutral-700 dark:from-[#232D42] dark:to-[#161D2B] shadow-lg shadow-neutral-900/30 dark:shadow-black/60 border border-neutral-700 dark:border-[#384663] text-white hover:opacity-95"
                   }`}
                 >
                   {plan.buttonText}
@@ -579,27 +581,27 @@ export default function PricingClient() {
                 <ul className="space-y-2 font-semibold py-5">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center">
-                      <span className="text-neutral-800 dark:text-neutral-200 grid place-content-center mt-0.5 mr-3 shrink-0">
+                      <span className="theme-text-secondary grid place-content-center mt-0.5 mr-3 shrink-0">
                         {feature.icon}
                       </span>
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                      <span className="text-sm theme-text-secondary">
                         {feature.text}
                       </span>
                     </li>
                   ))}
                 </ul>
 
-                <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                  <h4 className="font-medium text-base text-gray-900 dark:text-white mb-3">
+                <div className="space-y-3 pt-4 border-t theme-border">
+                  <h4 className="font-semibold text-base theme-text-primary mb-3">
                     {plan.includes[0]}
                   </h4>
                   <ul className="space-y-2 font-semibold">
                     {plan.includes.slice(1).map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-center">
-                        <span className="h-6 w-6 bg-green-50 dark:bg-green-950/40 border border-blue-500 rounded-full grid place-content-center mt-0.5 mr-3 shrink-0">
-                          <CheckCheck className="h-4 w-4 text-blue-500" />
+                        <span className="h-6 w-6 bg-blue-50 dark:bg-blue-950/60 border border-blue-500/40 dark:border-blue-400/40 rounded-full grid place-content-center mt-0.5 mr-3 shrink-0">
+                          <CheckCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                         </span>
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                        <span className="text-sm theme-text-secondary">
                           {feature}
                         </span>
                       </li>
@@ -612,7 +614,7 @@ export default function PricingClient() {
         </div>
 
         {/* ── Trust & Settlement Guarantees Banner (Borderless, Elevated) ── */}
-        <div className="mt-16 p-7 sm:p-8 rounded-3xl theme-bg-elevated shadow-sm max-w-5xl mx-auto">
+        <div className="mt-16 p-7 sm:p-8 rounded-3xl theme-bg-elevated border theme-border shadow-sm max-w-5xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
@@ -678,19 +680,19 @@ export default function PricingClient() {
             </p>
           </div>
 
-          <div className="theme-bg-elevated rounded-3xl overflow-hidden shadow-sm">
+          <div className="theme-bg-elevated border theme-border rounded-3xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-slate-100 dark:border-slate-800/60 theme-bg-well">
+                  <tr className="border-b theme-border theme-bg-well">
                     <th className="py-4 px-4 sm:px-6 font-bold theme-text-primary w-2/5">Feature</th>
                     <th className="py-4 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400">Free (₹0)</th>
-                    <th className="py-4 px-3 text-center font-bold text-slate-700 dark:text-slate-300">Starter (₹99)</th>
+                    <th className="py-4 px-3 text-center font-bold theme-text-secondary">Starter (₹99)</th>
                     <th className="py-4 px-3 text-center font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">Growth (₹299)</th>
                     <th className="py-4 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Pro Flagship (₹499)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                <tbody className="divide-y theme-border">
                   {/* Category: Pricing & Limits */}
                   <tr className="theme-bg-well/60">
                     <td colSpan={5} className="py-2.5 px-4 sm:px-6 font-mono font-bold text-[10px] uppercase tracking-wider theme-text-muted">
@@ -883,7 +885,7 @@ export default function PricingClient() {
               return (
                 <div
                   key={index}
-                  className="theme-bg-elevated rounded-2xl shadow-xs overflow-hidden transition-colors"
+                  className="theme-bg-elevated border theme-border rounded-2xl shadow-xs overflow-hidden transition-colors"
                 >
                   <button
                     type="button"
@@ -901,7 +903,7 @@ export default function PricingClient() {
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-6 pb-5 pt-1 text-xs theme-text-secondary leading-relaxed border-t border-slate-100 dark:border-slate-800/60">
+                    <div className="px-6 pb-5 pt-1 text-xs theme-text-secondary leading-relaxed border-t theme-border">
                       {item.a}
                     </div>
                   )}
@@ -930,7 +932,8 @@ export default function PricingClient() {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/login?mode=signup"
-                className="w-full sm:w-auto px-6 py-3 rounded-full bg-white text-[#0F2BFF] hover:bg-slate-100 text-xs sm:text-sm font-bold shadow-lg transition-transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 rounded-full bg-white text-[#0F2BFF] hover:bg-neutral-100 text-xs sm:text-sm font-bold shadow-lg transition-transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                style={{ backgroundColor: '#ffffff', color: '#0F2BFF' }}
               >
                 <span>Create Free Merchant Account</span>
                 <ArrowRight className="w-4 h-4" />
