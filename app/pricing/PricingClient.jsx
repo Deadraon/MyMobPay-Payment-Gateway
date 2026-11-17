@@ -375,7 +375,7 @@ export default function PricingClient() {
             Stop paying 2% on every checkout. Switch to flat, predictable software subscriptions. Direct UPI &amp; IMPS settlement into your own merchant bank account.
           </p>
 
-          {/* Micro-Trust Highlights (Clean text with color dots, no emojis) */}
+          {/* Micro-Trust Highlights */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-y-2 gap-x-5 text-xs font-semibold theme-text-muted">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -425,322 +425,339 @@ export default function PricingClient() {
           </div>
 
           {isAnnual && (
-            <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-              Annual plans start from Growth (₹299/mo) and Pro Flagship (₹499/mo). Get 12 months for the price of 10!
+            <p className="mt-2.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+              Annual billing available for Growth and Pro Flagship (Pay for 10 months, get 12 months)
             </p>
           )}
         </div>
 
-        {/* ── THE 4 PRICING MODELS (FREE TO TOP TIER) ── */}
+        {/* ── THE 4 PRICING MODELS (CLEAN FINTECH ARCHITECTURE) ── */}
         <div className="mt-10 sm:mt-14">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             
-            {/* ── Model 1: Free Link Starter (₹0) ── */}
-            <div className="theme-bg-elevated border theme-border rounded-2xl p-6 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-200 theme-card-shadow relative group">
-              <div className="absolute -top-3 left-6 bg-emerald-600 text-white font-mono text-[9.5px] font-extrabold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs">
-                FREE FOREVER
-              </div>
-
+            {/* ── Card 1: Free Link Starter (₹0) ── */}
+            <div className="theme-bg-elevated border theme-border rounded-2xl p-6 sm:p-7 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 theme-card-shadow relative">
               <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                    TIER 0 &bull; LINKS ONLY
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-xl font-bold theme-text-primary">Free Link Starter</h3>
+                  <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                    Free Forever
                   </span>
                 </div>
-                
-                <h3 className="text-xl font-bold theme-text-primary mt-1.5">Free Link Starter</h3>
-                <p className="text-xs theme-text-muted mt-1 leading-relaxed min-h-[34px]">
-                  For creators, Instagram sellers &amp; zero-cost live trials.
+                <p className="text-xs theme-text-muted mt-2 leading-relaxed min-h-[34px]">
+                  Ideal for creators, social sellers &amp; zero-cost testing.
                 </p>
 
-                <div className="mt-4 pt-3 border-t theme-border">
+                <div className="mt-5 pt-4 border-t theme-border">
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹0</span>
+                    <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹0</span>
                     <span className="theme-text-muted text-xs font-semibold">/ forever</span>
                   </div>
-                  <div className="mt-1 inline-block font-mono text-[10.5px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
-                    Up to 100 link txns / month
+                  <div className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    Up to 100 link transactions / month
                   </div>
                 </div>
 
-                <div className="mt-5 space-y-2.5 text-xs theme-text-secondary">
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                    <span><strong className="theme-text-primary">0% Platform Commission</strong></span>
+                <div className="mt-6 space-y-3 text-xs theme-text-secondary">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
+                    <span><strong className="theme-text-primary">0% Gateway Commission</strong></span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Instant Direct Bank Settlement (T+0)</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                    <span>Universal UPI Intent &amp; Dynamic QR</span>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
+                    <span>Dynamic UPI QR &amp; Intent Links</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Up to 10 Active Payment Links</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                    <span>Printable Standee Counter QR</span>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
+                    <span>Printable Counter Standee QR</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Live Merchant Dashboard</span>
                   </div>
-                  <div className="flex items-start gap-2 text-slate-400 dark:text-slate-500">
-                    <X className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                    <span>No Developer REST API</span>
+                  <div className="flex items-start gap-2.5 text-slate-400 dark:text-slate-500">
+                    <div className="w-4 h-4 rounded-full bg-slate-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <X className="w-3 h-3 stroke-[2.2]" />
+                    </div>
+                    <span>Developer REST API &amp; Webhooks</span>
                   </div>
                 </div>
               </div>
 
               <Link
                 href="/login?mode=signup"
-                className="mt-6 w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold text-center block transition-all shadow-xs hover:shadow-md cursor-pointer"
+                className="mt-8 w-full py-2.5 rounded-xl border theme-border hover:border-emerald-600 hover:text-emerald-600 dark:hover:text-emerald-400 theme-text-primary text-xs font-bold text-center block transition-all cursor-pointer shadow-2xs"
               >
                 Start Free Forever
               </Link>
             </div>
 
-            {/* ── Model 2: Starter Plan (₹99/mo) — Monthly Only ── */}
-            <div className="theme-bg-elevated border theme-border rounded-2xl p-6 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-200 theme-card-shadow relative group">
-              <div className="absolute -top-3 left-6 bg-slate-700 dark:bg-slate-600 text-white font-mono text-[9.5px] font-extrabold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs">
-                LINK SCALE
-              </div>
-
+            {/* ── Card 2: Starter Plan (₹99/mo) ── */}
+            <div className="theme-bg-elevated border theme-border rounded-2xl p-6 sm:p-7 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 theme-card-shadow relative">
               <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider theme-link">
-                    TIER 1 &bull; 300 TXNS
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-xl font-bold theme-text-primary">Starter</h3>
+                  <span className="font-mono text-[10px] font-bold theme-text-muted bg-slate-500/10 px-2 py-0.5 rounded-full">
+                    {isAnnual ? 'Monthly Only' : 'Links Scale'}
                   </span>
-                  {isAnnual && (
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded font-bold">
-                      Monthly Only
-                    </span>
-                  )}
                 </div>
-
-                <h3 className="text-xl font-bold theme-text-primary mt-1.5">Starter Plan</h3>
-                <p className="text-xs theme-text-muted mt-1 leading-relaxed min-h-[34px]">
-                  Higher link quota, custom slugs &amp; statement downloads.
+                <p className="text-xs theme-text-muted mt-2 leading-relaxed min-h-[34px]">
+                  Higher link quota, custom slugs &amp; statement exports.
                 </p>
 
-                <div className="mt-4 pt-3 border-t theme-border">
+                <div className="mt-5 pt-4 border-t theme-border">
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹99</span>
+                    <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹99</span>
                     <span className="theme-text-muted text-xs font-semibold">/ month</span>
                   </div>
-                  <div className="mt-1 flex items-center gap-1.5">
-                    <span className="font-mono text-[10.5px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">
-                      Up to 300 link txns / month
-                    </span>
+                  <div className="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                    Up to 300 link transactions / month
                   </div>
                   {isAnnual && (
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                      Billed monthly at ₹99 (Annual billing begins from Growth plan)
+                    <div className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                      Billed monthly at ₹99
                     </div>
                   )}
                 </div>
 
-                <div className="mt-5 space-y-2.5 text-xs theme-text-secondary">
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <div className="mt-6 space-y-3 text-xs theme-text-secondary">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span><strong className="theme-text-primary">Everything in Free</strong></span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Up to 300 Link Txns / month</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Unlimited Payment Links</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Custom Link Slugs &amp; Payee Notes</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>CSV Statement Exports</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-                    <span>Standard Email Support (48h)</span>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
+                    <span>Standard Support (48h SLA)</span>
                   </div>
-                  <div className="flex items-start gap-2 text-slate-400 dark:text-slate-500">
-                    <X className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                    <span>No Developer REST API</span>
+                  <div className="flex items-start gap-2.5 text-slate-400 dark:text-slate-500">
+                    <div className="w-4 h-4 rounded-full bg-slate-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <X className="w-3 h-3 stroke-[2.2]" />
+                    </div>
+                    <span>Developer REST API &amp; Webhooks</span>
                   </div>
                 </div>
               </div>
 
               <Link
                 href="/login?mode=signup"
-                className="mt-6 w-full py-2.5 rounded-xl border theme-border hover:border-[#0F2BFF] theme-bg-well theme-text-primary hover:text-[#0F2BFF] text-xs font-bold text-center block transition-all cursor-pointer"
+                className="mt-8 w-full py-2.5 rounded-xl border theme-border hover:border-[#0F2BFF] theme-bg-well theme-text-primary hover:text-[#0F2BFF] text-xs font-bold text-center block transition-all cursor-pointer shadow-2xs"
               >
                 Get Started for ₹99
               </Link>
             </div>
 
-            {/* ── Model 3: Growth Plan (₹299/mo or ₹2,990/yr) — UNLOCKS API & ANNUAL ── */}
-            <div className="theme-bg-elevated border-2 border-sky-500 dark:border-sky-400 rounded-2xl p-6 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-200 relative shadow-xl shadow-sky-500/10 group">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-sky-600 text-white font-mono text-[9.5px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full shadow-md whitespace-nowrap">
-                UNLOCKS REST API
-              </div>
-
+            {/* ── Card 3: Growth Plan (₹299/mo or ₹2,990/yr) — RECOMMENDED API TIER ── */}
+            <div className="theme-bg-elevated border-2 border-sky-500 dark:border-sky-400 rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-xl shadow-sky-500/10 relative">
               <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
-                    TIER 2 &bull; 1,000 TXNS
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-xl font-bold theme-text-primary">Growth</h3>
+                  <span className="font-mono text-[10px] font-bold text-white bg-sky-600 px-2.5 py-0.5 rounded-full shadow-2xs">
+                    Popular &bull; REST API
                   </span>
-                  {isAnnual && (
-                    <span className="font-mono text-[9px] uppercase tracking-wider bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold">
-                      2 Months Free
-                    </span>
-                  )}
                 </div>
-
-                <h3 className="text-xl font-bold theme-text-primary mt-1.5">Growth Plan</h3>
-                <p className="text-xs theme-text-muted mt-1 leading-relaxed min-h-[34px]">
+                <p className="text-xs theme-text-muted mt-2 leading-relaxed min-h-[34px]">
                   Full Developer REST API &amp; webhooks for apps &amp; checkouts.
                 </p>
 
-                <div className="mt-4 pt-3 border-t theme-border">
+                <div className="mt-5 pt-4 border-t theme-border">
                   {isAnnual ? (
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹2,990</span>
+                        <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹2,990</span>
                         <span className="theme-text-muted text-xs font-semibold">/ year</span>
                       </div>
-                      <div className="mt-1 font-mono text-[10.5px] font-bold text-emerald-600 dark:text-emerald-400">
-                        ₹249/mo effective &bull; Save ₹598/yr
+                      <div className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        ₹249/mo &bull; Save ₹598/yr (2 Months Free)
                       </div>
                     </div>
                   ) : (
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹299</span>
+                        <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹299</span>
                         <span className="theme-text-muted text-xs font-semibold">/ month</span>
                       </div>
-                      <div className="mt-1 inline-block font-mono text-[10.5px] font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
-                        Up to 1,000 txns / month (API + Links)
+                      <div className="mt-2 text-xs font-semibold text-sky-600 dark:text-sky-400">
+                        Up to 1,000 transactions / month
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-5 space-y-2.5 text-xs theme-text-secondary">
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                <div className="mt-6 space-y-3 text-xs theme-text-secondary">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span><strong className="theme-text-primary">Full Developer REST API Access</strong></span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span><strong className="theme-text-primary">5 Webhooks with Auto-Retry</strong></span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Automated UTR Bank Matching</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Up to 1,000 Verified Transactions</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Unlimited Links &amp; Standee QR</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
-                    <span>Priority Email Support (24h SLA)</span>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
+                    <span>Priority Support (24h SLA)</span>
                   </div>
                 </div>
               </div>
 
               <Link
                 href="/login?mode=signup"
-                className="mt-6 w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-md cursor-pointer"
+                className="mt-8 w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-xs hover:shadow-md cursor-pointer"
               >
                 <span>{isAnnual ? 'Choose Growth (₹2,990/yr)' : 'Choose Growth (₹299/mo)'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
-            {/* ── Model 4: Pro Flagship (₹499/mo or ₹4,990/yr) — UNLIMITED CROWN TIER ── */}
-            <div className="theme-bg-elevated border-2 border-[#0F2BFF] dark:border-[#3B82F6] rounded-2xl p-6 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-200 relative shadow-2xl shadow-blue-500/20 group">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#0F2BFF] to-[#2563EB] text-white font-mono text-[9.5px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full shadow-lg whitespace-nowrap">
-                MAX VALUE &bull; UNLIMITED
-              </div>
-
+            {/* ── Card 4: Pro Flagship (₹499/mo or ₹4,990/yr) — UNLIMITED TIER ── */}
+            <div className="theme-bg-elevated border-2 border-[#0F2BFF] dark:border-[#3B82F6] rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-2xl shadow-blue-500/15 relative">
               <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
-                    TIER 3 &bull; UNLIMITED EVERYTHING
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-xl font-bold theme-text-primary">Pro Flagship</h3>
+                  <span className="font-mono text-[10px] font-bold text-white bg-gradient-to-r from-[#0F2BFF] to-[#2563EB] px-2.5 py-0.5 rounded-full shadow-2xs">
+                    Unlimited
                   </span>
-                  {isAnnual && (
-                    <span className="font-mono text-[9px] uppercase tracking-wider bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold">
-                      2 Months Free
-                    </span>
-                  )}
                 </div>
-
-                <h3 className="text-xl font-bold theme-text-primary mt-1.5">Pro Flagship</h3>
-                <p className="text-xs theme-text-muted mt-1 leading-relaxed min-h-[34px]">
+                <p className="text-xs theme-text-muted mt-2 leading-relaxed min-h-[34px]">
                   Zero limits, 24/7 WhatsApp VIP hotline &amp; PDF bank statements.
                 </p>
 
-                <div className="mt-4 pt-3 border-t theme-border">
+                <div className="mt-5 pt-4 border-t theme-border">
                   {isAnnual ? (
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹4,990</span>
+                        <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹4,990</span>
                         <span className="theme-text-muted text-xs font-semibold">/ year</span>
                       </div>
-                      <div className="mt-1 font-mono text-[10.5px] font-bold text-emerald-600 dark:text-emerald-400">
-                        ₹415/mo effective &bull; Save ₹998/yr
+                      <div className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        ₹415/mo &bull; Save ₹998/yr (2 Months Free)
                       </div>
                     </div>
                   ) : (
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹499</span>
+                        <span className="text-4xl font-extrabold theme-text-primary font-mono tracking-tight">₹499</span>
                         <span className="theme-text-muted text-xs font-semibold">/ month</span>
                       </div>
-                      <div className="mt-1 inline-block font-mono text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/10 px-2 py-0.5 rounded">
+                      <div className="mt-2 text-xs font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
                         UNLIMITED Transactions &amp; Volume
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-5 space-y-2.5 text-xs theme-text-secondary">
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5" />
+                <div className="mt-6 space-y-3 text-xs theme-text-secondary">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span><strong className="theme-text-primary">UNLIMITED Transactions &amp; Volume</strong></span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span><strong className="theme-text-primary">24/7 Dedicated WhatsApp Hotline (&lt;1h SLA)</strong></span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span><strong className="theme-text-primary">Automated Monthly PDF Bank Statements</strong></span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Full REST API &amp; High-Speed Webhooks</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Real-Time Bank Polling (Zero Latency)</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>White-Label (Remove MyMobPay branding)</span>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-[#0F2BFF]/15 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 stroke-[2.8]" />
+                    </div>
                     <span>Multi-Staff Team Accounts (3 Seats)</span>
                   </div>
                 </div>
@@ -748,7 +765,7 @@ export default function PricingClient() {
 
               <Link
                 href="/login?mode=signup"
-                className="mt-6 w-full py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg cursor-pointer"
+                className="mt-8 w-full py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg cursor-pointer"
               >
                 <span>{isAnnual ? 'Get Pro Flagship (₹4,990/yr)' : 'Get Pro Flagship (₹499/mo)'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -758,7 +775,7 @@ export default function PricingClient() {
         </div>
 
         {/* ── Trust & Settlement Guarantees Banner ── */}
-        <div className="mt-14 p-6 rounded-2xl theme-bg-elevated border theme-border theme-card-shadow max-w-5xl mx-auto">
+        <div className="mt-14 p-6 sm:p-7 rounded-2xl theme-bg-elevated border theme-border theme-card-shadow max-w-5xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
             <div className="flex items-start gap-3">
               <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
