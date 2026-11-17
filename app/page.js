@@ -2276,44 +2276,18 @@ export default function HomePage() {
           KEEP 100% OF YOUR REVENUE. <br />
           PICK YOUR PLAN.
         </h2>
-        <p className="mt-2.5 text-[14px] theme-text-secondary">
-          Select your monthly payment volume to see how much 2% gateway commission you save:
+        <p className="mt-2.5 text-[14px] sm:text-[15px] theme-text-secondary max-w-2xl mx-auto leading-relaxed">
+          Flat, predictable monthly software subscriptions with 0% gateway commission. Collect directly into your own merchant bank account via instant UPI &amp; IMPS.
         </p>
 
-        {/* Interactive Monthly Volume Pill Bar */}
-        <div className="mt-5 inline-grid grid-cols-2 sm:inline-flex sm:flex-wrap items-center justify-center gap-1.5 sm:gap-2 theme-bg-elevated p-1.5 rounded-2xl sm:rounded-full border theme-border max-w-full">
-          <button
-            type="button"
-            onClick={(e) => selectPlanVolume(100000, e.currentTarget)}
-            className="vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors text-center"
+        <div className="mt-5 flex items-center justify-center gap-2">
+          <Link
+            href="/pricing"
+            className="inline-flex items-center gap-1.5 text-xs font-bold theme-link hover:underline bg-[#0F2BFF]/10 dark:bg-[#60A5FA]/10 px-4 py-2 rounded-full border border-[#0F2BFF]/20 transition-colors"
           >
-            ₹1L/mo
-          </button>
-          <button
-            type="button"
-            onClick={(e) => selectPlanVolume(500000, e.currentTarget)}
-            className="vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold bg-[#0F2BFF] text-white shadow-2xs transition-colors text-center"
-          >
-            ₹5L/mo
-          </button>
-          <button
-            type="button"
-            onClick={(e) => selectPlanVolume(1500000, e.currentTarget)}
-            className="vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors text-center"
-          >
-            ₹15L/mo
-          </button>
-          <button
-            type="button"
-            onClick={(e) => selectPlanVolume(2500000, e.currentTarget)}
-            className="vol-pill px-3 sm:px-4 py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold theme-text-secondary hover:theme-text-primary transition-colors text-center"
-          >
-            ₹25L/mo
-          </button>
-        </div>
-
-        <div id="plan-savings-callout" className="mt-3 font-mono text-xs font-semibold theme-link">
-          At ₹5,00,000/mo: Save ₹10,000/mo in 2% gateway fees • MyMobPay Commission: ₹0.00
+            <span>Compare all 4 plans (Free, ₹99, ₹299, ₹499)</span>
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </Link>
         </div>
 
         {/* 3 Iconic Square Graphic Poster Cards (330px x 330px) */}
