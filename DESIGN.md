@@ -1,143 +1,135 @@
 ---
 version: alpha
-name: stripe.com
-description: Stripe's design language — a financial-infrastructure brand built on a deep navy ink, an electric indigo primary, and a recurring atmospheric gradient mesh that occupies the upper third of nearly every marketing page. The system pairs the proprietary Sohne family at thin (300) weights with negative letter-spacing for editorial-density display headlines, and uses tabular-figure body type where money and numerics matter. Buttons are tight-radius pills, cards live on near-white surfaces, and the dashboard track flips polarity to a familiar dark-app shell.
+name: mymobpay.tech
+description: MyMobPay's design system — an enterprise financial gateway brand built on an electric cobalt blue, high-contrast crisp architectural grids, and direct-to-bank zero-custody infrastructure. The system pairs Anton and Barlow Condensed display typography with Plus Jakarta Sans body text and JetBrains Mono for financial tokens and API code. Interactive elements include sculpted 3D clay/titanium iPhone mockups, real-time volume savings calculators, a live REST API code terminal, and a classic editorial typewriter engine.
 
 colors:
-  primary: "#533afd"
-  primary-deep: "#4434d4"
-  primary-press: "#2e2b8c"
-  primary-soft: "#665efd"
-  primary-bg-subdued-hover: "#b9b9f9"
-  brand-dark-900: "#1c1e54"
-  ink: "#0d253d"
-  ink-secondary: "#273951"
-  ink-mute: "#64748d"
-  ink-mute-2: "#61718a"
-  on-primary: "#ffffff"
-  canvas: "#ffffff"
-  canvas-soft: "#f6f9fc"
-  canvas-cream: "#f5e9d4"
-  hairline: "#e3e8ee"
-  hairline-input: "#a8c3de"
-  ruby: "#ea2261"
-  magenta: "#f96bee"
-  lemon: "#9b6829"
-  shadow-blue: "#003770"
+  primary: "#0F2BFF"
+  primary-hover: "#081EC4"
+  primary-press: "#061594"
+  primary-soft: "#E8EDFF"
+  primary-glow: "rgba(15, 43, 255, 0.35)"
+  brand-dark-900: "#090A10"
+  brand-navy-banner: "#211D8A"
+  accent-orange: "#FF6D00"
+  accent-amber: "#FF9614"
+  success-green: "#10B981"
+  success-deep: "#059669"
+  success-soft: "#E6F4EA"
+  danger-red: "#DC2626"
+  danger-soft: "#FFF5F5"
+  canvas: "#FFFFFF"
+  canvas-secondary: "#F2F3FB"
+  canvas-well: "#F7F8FD"
+  canvas-elevated: "#FFFFFF"
+  border-subtle: "#E2E5F4"
+  border-phone: "#ECEEF8"
+  text-primary: "#090A10"
+  text-secondary: "#222533"
+  text-muted: "#5A607A"
+  dark-canvas: "#0B0E14"
+  dark-canvas-secondary: "#101520"
+  dark-canvas-elevated: "#161D2B"
+  dark-canvas-well: "#0E131D"
+  dark-border: "#232D42"
+  dark-text-primary: "#F8FAFC"
+  dark-text-secondary: "#CBD5E1"
+  dark-text-muted: "#94A3B8"
+  dark-accent-link: "#60A5FA"
 
 typography:
-  display-xxl:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 56px
-    fontWeight: 300
-    lineHeight: 1.03
-    letterSpacing: -1.4px
-    fontFeature: ss01
-  display-xl:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 48px
-    fontWeight: 300
-    lineHeight: 1.15
-    letterSpacing: -0.96px
-    fontFeature: ss01
-  display-lg:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 32px
-    fontWeight: 300
-    lineHeight: 1.1
-    letterSpacing: -0.64px
-    fontFeature: ss01
-  display-md:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 26px
-    fontWeight: 300
-    lineHeight: 1.12
-    letterSpacing: -0.26px
-    fontFeature: ss01
+  display-hero:
+    fontFamily: "'Anton', 'Barlow Condensed', Impact, sans-serif"
+    fontSize: 54px
+    fontWeight: 400
+    lineHeight: 0.95
+    letterSpacing: 0.01em
+    textTransform: uppercase
+  display-section:
+    fontFamily: "'Anton', 'Barlow Condensed', Impact, sans-serif"
+    fontSize: 42px
+    fontWeight: 400
+    lineHeight: 0.96
+    letterSpacing: 0.01em
+    textTransform: uppercase
+  display-card:
+    fontFamily: "'Anton', 'Barlow Condensed', Impact, sans-serif"
+    fontSize: 28px
+    fontWeight: 400
+    lineHeight: 1.0
+    letterSpacing: 0.01em
+    textTransform: uppercase
+  stat-tabular:
+    fontFamily: "'Barlow Condensed', 'Anton', sans-serif"
+    fontSize: 36px
+    fontWeight: 800
+    lineHeight: 1.0
+    letterSpacing: -0.01em
+    fontFeature: tnum
+    textTransform: uppercase
   heading-lg:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 22px
-    fontWeight: 300
-    lineHeight: 1.1
-    letterSpacing: -0.22px
-    fontFeature: ss01
-  heading-md:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
     fontSize: 20px
-    fontWeight: 300
-    lineHeight: 1.4
-    letterSpacing: -0.2px
-    fontFeature: ss01
-  heading-sm:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 18px
-    fontWeight: 300
-    lineHeight: 1.4
-    letterSpacing: 0
-    fontFeature: ss01
-  body-lg:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
+    fontWeight: 700
+    lineHeight: 1.3
+    letterSpacing: -0.02em
+  heading-md:
+    fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
     fontSize: 16px
-    fontWeight: 300
-    lineHeight: 1.4
-    letterSpacing: 0
-    fontFeature: ss01
-  body-md:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
+    fontWeight: 700
+    lineHeight: 1.35
+    letterSpacing: -0.01em
+  body-lead:
+    fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
     fontSize: 15px
-    fontWeight: 300
-    lineHeight: 1.4
+    fontWeight: 500
+    lineHeight: 1.55
     letterSpacing: 0
-    fontFeature: ss01
-  body-tabular:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 14px
-    fontWeight: 300
-    lineHeight: 1.4
-    letterSpacing: -0.42px
-    fontFeature: tnum
-  button-md:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 16px
-    fontWeight: 400
-    lineHeight: 1.0
+  body-md:
+    fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
+    fontSize: 13.5px
+    fontWeight: 500
+    lineHeight: 1.5
     letterSpacing: 0
-    fontFeature: ss01
-  button-sm:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 14px
-    fontWeight: 400
-    lineHeight: 1.0
+  body-sm:
+    fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
+    fontSize: 12px
+    fontWeight: 500
+    lineHeight: 1.45
     letterSpacing: 0
-    fontFeature: ss01
-  caption:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 13px
-    fontWeight: 400
-    lineHeight: 1.4
-    letterSpacing: -0.39px
-    fontFeature: tnum
-  micro:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
-    fontSize: 11px
-    fontWeight: 300
-    lineHeight: 1.4
-    letterSpacing: 0
-    fontFeature: ss01
-  micro-cap:
-    fontFamily: "sohne-var, 'SF Pro Display', system-ui, -apple-system, sans-serif"
+  code-mono:
+    fontFamily: "'JetBrains Mono', monospace"
+    fontSize: 12px
+    fontWeight: 500
+    lineHeight: 1.5
+    letterSpacing: -0.02em
+  code-micro:
+    fontFamily: "'JetBrains Mono', monospace"
     fontSize: 10px
-    fontWeight: 400
-    lineHeight: 1.15
-    letterSpacing: 0.1px
-    fontFeature: ss01
+    fontWeight: 600
+    lineHeight: 1.4
+    letterSpacing: 0
+  button-primary:
+    fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
+    fontSize: 13.5px
+    fontWeight: 700
+    lineHeight: 1.0
+    letterSpacing: 0
+  badge-eyebrow:
+    fontFamily: "'JetBrains Mono', monospace"
+    fontSize: 10px
+    fontWeight: 700
+    lineHeight: 1.2
+    letterSpacing: 0.08em
+    textTransform: uppercase
 
 rounded:
   xs: 4px
   sm: 6px
-  md: 8px
-  lg: 12px
-  xl: 16px
+  md: 10px
+  lg: 16px
+  xl: 24px
+  phone: 50px
   pill: 9999px
 
 spacing:
@@ -149,342 +141,296 @@ spacing:
   xl: 24px
   xxl: 32px
   huge: 64px
+  section: 96px
 
 components:
   button-primary-pill:
     backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button-md}"
+    textColor: "#FFFFFF"
+    typography: "{typography.button-primary}"
     rounded: "{rounded.pill}"
-    padding: 8px 16px
-  button-primary-pill-pressed:
-    backgroundColor: "{colors.primary-press}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button-md}"
+    padding: 12px 24px
+  button-secondary-outline:
+    backgroundColor: "transparent"
+    borderColor: "{colors.border-subtle}"
+    textColor: "{colors.text-primary}"
+    typography: "{typography.button-primary}"
     rounded: "{rounded.pill}"
-    padding: 8px 16px
-  button-secondary:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.primary}"
-    typography: "{typography.button-md}"
+    padding: 12px 24px
+  nav-pill-item:
+    backgroundColor: "transparent"
+    textColor: "{colors.text-secondary}"
+    typography: "{typography.body-sm}"
     rounded: "{rounded.pill}"
-    padding: 8px 16px
-  button-on-dark:
-    backgroundColor: "{colors.brand-dark-900}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.pill}"
-    padding: 8px 16px
-  text-input:
+    padding: 6px 12px
+  card-bento:
     backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
+    borderColor: "{colors.border-subtle}"
     typography: "{typography.body-md}"
-    rounded: "{rounded.sm}"
-    padding: 8px 12px
-  text-input-focused:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.sm}"
-    padding: 8px 12px
-  card-feature-light:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.lg}"
-    padding: 32px
-  card-pricing:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.lg}"
-    padding: 32px
-  card-pricing-featured:
-    backgroundColor: "{colors.brand-dark-900}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.lg}"
-    padding: 32px
-  card-cream-band:
-    backgroundColor: "{colors.canvas-cream}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.lg}"
-    padding: 32px
-  card-dashboard-mockup:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-tabular}"
-    rounded: "{rounded.lg}"
+    rounded: "{rounded.xl}"
     padding: 24px
-  pill-tag-soft:
-    backgroundColor: "{colors.primary-bg-subdued-hover}"
-    textColor: "{colors.primary-deep}"
-    typography: "{typography.micro-cap}"
-    rounded: "{rounded.pill}"
-    padding: 4px 8px
-  nav-bar-on-mesh:
+  card-pricing-standard:
     backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xs}"
-    padding: 16px 24px
-  link-on-light:
+    borderColor: "{colors.border-subtle}"
+    rounded: "{rounded.xl}"
+    padding: 28px
+  card-pricing-popular:
     backgroundColor: "{colors.canvas}"
-    textColor: "{colors.primary}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xs}"
-    padding: 0px
-  footer-light:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink-mute}"
-    typography: "{typography.caption}"
-    rounded: "{rounded.xs}"
-    padding: 64px 24px
+    borderColor: "{colors.primary}"
+    rounded: "{rounded.xl}"
+    padding: 28px
+  clay-iphone-chassis:
+    backgroundColor: "#F5F6FC"
+    borderColor: "rgba(255, 255, 255, 0.95)"
+    rounded: "{rounded.phone}"
+    width: 316px
+    height: 610px
+    padding: 14px
+  api-terminal:
+    backgroundColor: "#0F172A"
+    borderColor: "#1E293B"
+    rounded: "{rounded.xl}"
+    padding: 20px
 ---
 <!-- MIT licensed. Copyright and license: https://opendesignmd.com/licenses/ -->
 
-# How stripe.com is designed
+# How mymobpay.tech is designed
 
 ## Overview
 
-Stripe's design language opens with the gradient mesh. A wide horizontal band of pastel cream, sherbet orange, lavender, electric indigo, and ruby pink occupies the upper third of nearly every marketing page — the brand's instantly-recognizable atmospheric backdrop. Type and product UI mockups float above it on `{colors.canvas}` (white), with the gradient acting as both decoration and visual anchor. The lower portion of the page returns to white, with feature explanations on `{colors.canvas-soft}` (a barely-tinted cool off-white) and dashboard product mockups composited as faux IDE/console panels in deep navy.
+MyMobPay is an enterprise-grade Indian payment infrastructure platform enabling merchants to accept Direct-to-Bank UPI and IMPS collections with 0% platform commission, zero escrow custody, and instant T+0 NPCI rail settlement. The homepage design language blends high-velocity financial engineering with physical hardware craftsmanship and editorial boldness.
 
-The color system has two primary roles. **Indigo** (`{colors.primary}` — `#533afd`) is the brand's signature CTA color, used sparingly: one filled pill per band. **Deep navy** (`{colors.ink}` — `#0d253d`) is the universal body text color and the fill of dashboard mockups, the featured pricing tier, and the dark-app surfaces on the dashboard track. Ruby (`{colors.ruby}`) and magenta (`{colors.magenta}`) appear inside the gradient mesh and as accent dots in product UI mockups; they are not used as button colors.
+The design breaks away from muted fintech cliches by fusing an architectural blue grid backdrop (`48px x 48px`), high-contrast uppercase display typography (`Anton` and `Barlow Condensed`), tactile ceramic-clay and titanium 3D smartphone models, an interactive real-time 0% fee savings calculator, and a live REST API code terminal.
 
-Typography is built around **Sohne** at weight 300 with negative letter-spacing — the brand's editorial-density display signature. Display sizes (32–56px) use -1.4px to -0.64px tracking; body sizes use 0; tabular caption sizes (where money and numerics matter) use the OpenType `tnum` feature plus a tightening -0.36 to -0.42px tracking. The `ss01` stylistic set is enabled across all roles.
+### Key Visual Signatures
+1. **Architectural Blue Grid Canvas**: An ultra-subtle engineering graph (`linear-gradient(to right, rgba(15, 43, 255, 0.055) 1px, transparent 1px)`) laid across section headers and hero viewports, evoking blueprints, circuit diagrams, and banking switchboards.
+2. **Kinetic Editorial Typewriter**: The hero headline delivers crisp value statements using the heavyweight `Anton` typeface, cycling through `OWN IT.`, `KEEP 100%.`, `ZERO FEES.`, and `SETTLE T+0.` in pure electric cobalt blue (`#0F2BFF`) with an animated pulsing caret.
+3. **Sculpted 3D Clay & Titanium iPhone Chassis**: Custom-proportioned 316px by 610px ceramic device mockups with smooth rounded 50px corners, hardware buttons (silent rocker, volume rockers, power key), top speaker slit, camera sensor, and realistic soft drop-shadows. Inside, mobile checkouts showcase live payment feeds, dynamic QR codes, and simulated UTR reconciliation.
+4. **Dual Light and Dark Polarity**: Seamless theme switching between clean ceramic light surfaces (`#FFFFFF`, `#F2F3FB`) and dark tactical operations surfaces (`#0B0E14`, `#101520`, `#161D2B`).
+5. **Exact 0% Fee Calculator Slider**: A tactile volume range slider enabling merchants to calculate their exact savings compared to standard 2.0% gateway MDR + 18% GST on fees across monthly volumes from ₹50,000 to ₹1,00,00,000.
+6. **Live Developer REST API Sandbox**: A dual-pane terminal featuring syntax-highlighted cURL requests and 200 OK JSON responses with real-time endpoint switching and clipboard triggers.
 
-**Key Characteristics:**
-- Gradient-mesh backdrop on every marketing hero — cream/orange/lavender/indigo/ruby horizontally washed across the upper third of the page.
-- Single-indigo CTA hierarchy: filled `{colors.primary}` pill is the only filled button on marketing surfaces.
-- Sohne thin (weight 300) display tier with negative tracking from -1.4px to -0.2px depending on size.
-- Tabular-figure body type (`tnum`) for any cell containing money or numerics — the brand's quiet financial-data signal.
-- Dark-app dashboard track: deep navy product UI mockups sit composited above the white canvas, frequently with rendered code or dashboard tables inside.
-- Pill-shaped buttons (`{rounded.pill}` 9999px) with tight `8px 16px` padding — short, decisive, transactional.
-- Cream-band feature cards (`{colors.canvas-cream}`) introduce a warm interlude between blue/white sections without breaking the brand's chromatic logic.
+---
+
+## Brand Identity & Logo Mark
+
+The MyMobPay logo mark is a continuous 3D geometric ribbon forming an architectural "M" shape across 4 distinct gradient segments:
+- **Segment 1 (Center-Left Blue Fold)**: `#004BFF` to `#0033B5`
+- **Segment 2 (Center-Right Orange Arch)**: `#E64400` to `#FF9614`
+- **Segment 3 (Left Outer Cyan Leg)**: `#0044E5` to `#00C8FF`
+- **Segment 4 (Right Outer Amber Leg)**: `#FF9E1B` to `#F05A00`
+
+The mark is accompanied by the logotype: **MyMobPay** (`MyMob` in ink primary `#090A10` or `#F8FAFC`, `Pay` in cobalt `#0F2BFF`) with the sub-badge `0% MDR ENTERPRISE`.
+
+---
 
 ## Colors
 
-> **Source pages:** home (`/`), `/payments`, `/pricing`, `dashboard.stripe.com/register/payments`.
+### Primary Palette
+- **Electric Cobalt** (`{colors.primary}` — `#0F2BFF`): The core brand anchor. Used for primary CTAs, active states, typewriter accents, and focus rings.
+- **Cobalt Hover** (`{colors.primary-hover}` — `#081EC4`): Deepened cobalt for button hover feedback.
+- **Cobalt Soft** (`{colors.primary-soft}` — `#E8EDFF`): Low-opacity blue fill for status badges and pill backgrounds.
+- **Deep Navy Banner** (`{colors.brand-navy-banner}` — `#211D8A`): Deep operational container background used for the security protocol section.
 
-### Brand & Accent
-- **Indigo** (`{colors.primary}` — `#533afd`): The brand's signature CTA color. Filled-pill button, link emphasis, gradient anchor.
-- **Indigo Deep** (`{colors.primary-deep}` — `#4434d4`): A deeper indigo used in gradient mid-stops and as the press-state warmer alternative.
-- **Indigo Press** (`{colors.primary-press}` — `#2e2b8c`): Pressed-state lift of the primary.
-- **Indigo Soft** (`{colors.primary-soft}` — `#665efd`): A lighter indigo used in product-UI accents and chart highlights.
-- **Indigo Subdued** (`{colors.primary-bg-subdued-hover}` — `#b9b9f9`): Pale indigo fill used as soft tag background.
-- **Brand Dark 900** (`{colors.brand-dark-900}` — `#1c1e54`): The deep navy used on the featured pricing tier and dashboard chrome.
-- **Ruby** (`{colors.ruby}` — `#ea2261`): Gradient accent and chart highlight; never a button.
-- **Magenta** (`{colors.magenta}` — `#f96bee`): Brighter pink stop in gradient meshes.
-- **Lemon** (`{colors.lemon}` — `#9b6829`): Warm sherbet stop in gradient backdrops.
+### Accent & Secondary
+- **Vibrant Orange** (`{colors.accent-orange}` — `#FF6D00`): Secondary brand energy derived from the ribbon mark.
+- **Sun Amber** (`{colors.accent-amber}` — `#FF9614`): Highlight stop in decorative gradients and orbital rings.
+- **Emerald Kept** (`{colors.success-green}` — `#10B981`): Represents 100% kept merchant revenue, settled UTR status, and HTTP 200 OK responses.
+- **Emerald Soft** (`{colors.success-soft}` — `#E6F4EA`): Background pill fill for settled orders and zero-fee badges.
+- **Crimson Drag** (`{colors.danger-red}` — `#DC2626`): Represents legacy gateway fee losses, commission deductions, and MDR drag.
 
-### Surface
-- **Canvas** (`{colors.canvas}` — `#ffffff`): Default page background.
-- **Canvas Soft** (`{colors.canvas-soft}` — `#f6f9fc`): Cool-tinted off-white used on feature bands beneath the gradient hero.
-- **Canvas Cream** (`{colors.canvas-cream}` — `#f5e9d4`): Warm cream used as a feature-band fill — the brand's chromatic interlude.
-- **Hairline** (`{colors.hairline}` — `#e3e8ee`): 1px borders on cards and tables.
-- **Hairline Input** (`{colors.hairline-input}` — `#a8c3de`): Slightly cooler hairline used on form inputs.
+### Surface Tones (Light Mode)
+- **Canvas Primary** (`{colors.canvas}` — `#FFFFFF`): Clean crisp base for content containers and product cards.
+- **Canvas Secondary** (`{colors.canvas-secondary}` — `#F2F3FB`): Slightly cool tinted off-white backing for grid-textured sections.
+- **Canvas Well** (`{colors.canvas-well}` — `#F7F8FD`): Inset recesses and subtle input backgrounds.
+- **Border Subtle** (`{colors.border-subtle}` — `#E2E5F4`): 1px structural hairbars separating cards, tables, and nav bars.
 
-### Text
-- **Ink** (`{colors.ink}` — `#0d253d`): Default body text color across the brand. Deep navy, never pure black.
-- **Ink Secondary** (`{colors.ink-secondary}` — `#273951`): Secondary text on white.
-- **Ink Mute** (`{colors.ink-mute}` — `#64748d`): Helper text, captions, table labels.
-- **Ink Mute 2** (`{colors.ink-mute-2}` — `#61718a`): Near-equivalent to ink-mute used in nav.
-- **On Primary** (`{colors.on-primary}` — `#ffffff`): Text on indigo / dark-navy surfaces.
+### Surface Tones (Dark Mode)
+- **Dark Canvas Primary** (`{colors.dark-canvas}` — `#0B0E14`): Deep obsidian base surface.
+- **Dark Canvas Secondary** (`{colors.dark-canvas-secondary}` — `#101520`): Deep blue-tinted secondary section background.
+- **Dark Canvas Elevated** (`{colors.dark-canvas-elevated}` — `#161D2B`): Bento cards, navigation shells, and modal containers.
+- **Dark Canvas Well** (`{colors.dark-canvas-well}` — `#0E131D`): Inset panels and code wells.
+- **Dark Border** (`{colors.dark-border}` — `#232D42`): Crisp structural division lines in dark mode.
 
-### Semantic
-The brand does not use a separate semantic color palette in the marketing system — error / success states live in dashboard-product UI specifically.
+---
 
 ## Typography
 
-### Font Family
+### Font Families
+1. **Anton** (`'Anton', Impact, sans-serif`): High-impact, condensed, heavyweight display font used exclusively for main section titles, hero punchlines, and the typewriter engine.
+2. **Barlow Condensed** (`'Barlow Condensed', sans-serif`): High-density tabular numerics, currency figures, and financial statistics.
+3. **JetBrains Mono** (`'JetBrains Mono', monospace`): Code payloads, API keys, UTR transaction numbers, and technical metadata.
+4. **Plus Jakarta Sans** (`'Plus Jakarta Sans', system-ui, sans-serif`): Primary UI typeface for navigation, body text, buttons, and form labels.
 
-The display and UI tier is **Sohne** (proprietary, licensed from Klim Type Foundry) at weights 300 (thin) and 400 (regular). The variable font (`sohne-var`) is loaded with `font-feature-settings: "ss01"` enabled globally — the stylistic set substitutes a single-story `a` and other character variants that are part of the brand's typographic signature.
+### Typographic Hierarchy
 
-When Sohne is unavailable, fall back to **SF Pro Display** at thin weights, then system-ui. For maximum brand fidelity, **Inter** (open-source) at weight 300 with `font-feature-settings: "ss01"` and `letter-spacing: -1.4px` on display sizes approximates the rhythm closely.
+| Role | Font Family | Size | Weight | Line Height | Tracking | Text Case |
+|---|---|---|---|---|---|---|
+| `display-hero` | Anton | 54px | 400 | 0.95 | 0.01em | Uppercase |
+| `display-section` | Anton | 42px | 400 | 0.96 | 0.01em | Uppercase |
+| `display-card` | Anton | 28px | 400 | 1.00 | 0.01em | Uppercase |
+| `stat-tabular` | Barlow Condensed | 36px | 800 | 1.00 | -0.01em | Tabular Nums |
+| `heading-lg` | Plus Jakarta Sans | 20px | 700 | 1.30 | -0.02em | Normal |
+| `heading-md` | Plus Jakarta Sans | 16px | 700 | 1.35 | -0.01em | Normal |
+| `body-lead` | Plus Jakarta Sans | 15px | 500 | 1.55 | 0.00em | Normal |
+| `body-md` | Plus Jakarta Sans | 13.5px | 500 | 1.50 | 0.00em | Normal |
+| `code-mono` | JetBrains Mono | 12px | 500 | 1.50 | -0.02em | Monospace |
+| `badge-eyebrow`| JetBrains Mono | 10px | 700 | 1.20 | 0.08em | Uppercase |
 
-### Hierarchy
+---
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.display-xxl}` | 56px | 300 | 1.03 | -1.4px | Hero headline |
-| `{typography.display-xl}` | 48px | 300 | 1.15 | -0.96px | Section opener |
-| `{typography.display-lg}` | 32px | 300 | 1.1 | -0.64px | Card title / sub-section |
-| `{typography.display-md}` | 26px | 300 | 1.12 | -0.26px | Compact card title |
-| `{typography.heading-lg}` | 22px | 300 | 1.1 | -0.22px | Pricing tier name |
-| `{typography.heading-md}` | 20px | 300 | 1.4 | -0.2px | Section sub-heading |
-| `{typography.heading-sm}` | 18px | 300 | 1.4 | 0 | Mini-section label |
-| `{typography.body-lg}` | 16px | 300 | 1.4 | 0 | Marketing body lead |
-| `{typography.body-md}` | 15px | 300 | 1.4 | 0 | Default UI body |
-| `{typography.body-tabular}` | 14px | 300 | 1.4 | -0.42px | Money / numeric tables (uses `tnum`) |
-| `{typography.button-md}` | 16px | 400 | 1.0 | 0 | Pill button label |
-| `{typography.button-sm}` | 14px | 400 | 1.0 | 0 | Compact pill label |
-| `{typography.caption}` | 13px | 400 | 1.4 | -0.39px | Helper, table labels |
-| `{typography.micro}` | 11px | 300 | 1.4 | 0 | Fine print |
-| `{typography.micro-cap}` | 10px | 400 | 1.15 | 0.1px | All-caps eyebrow |
+## Layout & Spatial Geometry
 
-### Principles
-- **Thin weight is the brand.** Display tiers always render at weight 300. Bumping to 400+ removes the brand's editorial air.
-- **Negative tracking on display.** -1.4px at 56px, scaling proportionally down to -0.2px at 20px. The negative tracking is the brand's typographic signature.
-- **Tabular figures for money.** Any cell rendering currency, transaction amounts, or numeric counts uses `font-feature-settings: "tnum"` plus a tightening tracking. The brand quietly signals its financial DNA through this micro-detail.
-- **`ss01` globally.** Apply `font-feature-settings: "ss01"` to the body element so the stylistic-set substitution is on for every text role.
+### Spacing Scale
+- `xxs`: 2px
+- `xs`: 4px
+- `sm`: 8px
+- `md`: 12px
+- `lg`: 16px
+- `xl`: 24px
+- `xxl`: 32px
+- `huge`: 64px
+- `section`: 96px to 112px on desktop, 48px to 64px on mobile
 
-### Note on Font Substitutes
-Sohne is proprietary. Use **Inter** (open-source via Google Fonts) at weight 300 with `letter-spacing: -1.4px` and `font-feature-settings: "ss01"` for display tiers — Inter is the closest open-source analogue. For body sizes, Inter at 300 weight with `font-feature-settings: "tnum"` (where applicable) is the canonical substitute. Avoid Helvetica or system-ui defaults — they're heavier than the brand needs.
+### Containers & Responsive Grid
+- Maximum content width: `1280px` (`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`).
+- Bento cards arrange in 12-column responsive CSS grids (`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6`).
+- Pricing cards arrange in a 4-tier grid (`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6`).
 
-## Layout
+---
 
-### Spacing System
-- **Base unit**: 8px (with 2 / 4 / 12 sub-tokens for fine work).
-- **Tokens**: `{spacing.xxs}` 2px · `{spacing.xs}` 4px · `{spacing.sm}` 8px · `{spacing.md}` 12px · `{spacing.lg}` 16px · `{spacing.xl}` 24px · `{spacing.xxl}` 32px · `{spacing.huge}` 64px.
-- **Section padding**: 64–96px on marketing surfaces; 32–48px on dashboard / product surfaces.
-- **Card internal padding**: 32px on feature cards; 24px on dashboard mockups.
+## Elevation, Depth & Atmospheric Details
 
-### Grid & Container
-- Marketing pages center in a ~1200px container with the gradient mesh extending edge-to-edge above.
-- Pricing collapses 4-up → 2-up → 1-up at 1024 / 768 breakpoints.
-- Dashboard product mockups use their own internal grids (12-col tables, 3-col card grids) rendered as static composites.
-
-### Whitespace Philosophy
-The gradient mesh occupies the upper third of the page; the white canvas below is generously padded. Section gaps tend toward 96px, with content tightening to 32px on dashboard / pricing pages where users compare and act.
-
-## Elevation & Depth
-
-| Level | Treatment | Use |
+| Level | Styling | Usage |
 |---|---|---|
-| 0 | Flat | Default surface |
-| 1 | `box-shadow: rgba(0,55,112,0.08) 0 1px 3px` | Card lift on white |
-| 2 | `box-shadow: rgba(0,55,112,0.08) 0 8px 24px, rgba(0,55,112,0.04) 0 2px 6px` | Floating panels, dashboard mockup chrome |
-| 3 | Gradient mesh backdrop | The brand's primary depth medium — atmospheric color rather than literal shadow |
+| Level 0 | Flat surface | Page background |
+| Level 1 | `box-shadow: 0 4px 16px -4px rgba(20, 24, 80, 0.05)` | Bento feature cards, nav pill |
+| Level 2 | `box-shadow: 0 10px 30px -10px rgba(20, 24, 80, 0.08)` | Active pricing card, floating badges |
+| Level 3 | `box-shadow: -24px 28px 54px rgba(20, 24, 80, 0.14)` | 3D Clay iPhone hardware chassis |
 
-### Decorative Depth
-The gradient mesh IS the depth system. Implemented as a layered SVG or large background image rather than CSS gradients (the actual mesh has organic blob shapes that aren't CSS-renderable). The mesh provides the brand's signature lift; literal shadows are reserved for product-UI mockups and stay subtle.
+### Atmospheric Decor
+- **Architectural Grid**: `48px x 48px` subtle linear graph overlaying secondary backgrounds.
+- **Orbital Rings**: Dashed concentric orbital rings (`orbit-ring-cw`, `orbit-ring-ccw`) spinning in 28s and 20s opposite cycles behind device mockups.
+- **Dot Matrix**: `24px x 24px` radial point field adding depth behind technical diagrams.
+- **Vertical Grid Beams**: Glowing light pulses traveling downward through grid columns.
 
-## Shapes
+---
 
-### Border Radius Scale
+## Section Architecture of the Homepage
 
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.xs}` | 4px | Hairline tags, table chrome |
-| `{rounded.sm}` | 6px | Form inputs |
-| `{rounded.md}` | 8px | Compact cards, alerts |
-| `{rounded.lg}` | 12px | Pricing cards, feature cards |
-| `{rounded.xl}` | 16px | Dashboard product mockup chrome |
-| `{rounded.pill}` | 9999px | All buttons, tag pills |
+### 1. Sticky Navigation Header
+- **Floating Pill Container**: Centered pill bar (`header-nav-pill`) with backdrop blur 14px.
+- **Brand Identity**: Ribbon logo mark + "MyMobPay" wordmark.
+- **Anchor Links**: Why 0% Fees, Direct Bank, Savings Calculator, Developer API, Pricing, FAQ.
+- **Controls**: Dark / Light theme toggle, Sign In link, and "Get Started Free" primary CTA pill.
 
-### Photography Geometry
-The brand uses **product UI mockups** more than photography. Dashboard composites render as faux IDE/terminal/dashboard chrome inside `{rounded.lg}` 12px containers with a subtle `box-shadow`. Real photography appears in customer logo strips and the rare case-study card; treated as inset 4:3 with no shadow.
+### 2. Hero Section (`#home-hero`)
+- **Eyebrow Badge**: `DIRECT TO BANK NPCI RAILS • 0% MDR ENTERPRISE`.
+- **Display Title**: Anton uppercase headline with integrated Cobalt Typewriter engine (`OWN IT.`, `KEEP 100%.`, `ZERO FEES.`, `SETTLE T+0.`).
+- **Lead Copy**: Highlights zero platform custody, direct settlement to merchant bank accounts, and instant dynamic UPI QR generation.
+- **Action Group**: Primary "Start Collecting Free" button paired with "Explore Developer API" outline pill.
+- **Interactive Hero iPhone**: 3D ceramic chassis presenting live incoming UPI payment alerts, dynamic QR codes, and sub-150ms verification velocity.
 
-## Components
+### 3. "Own Your Money" Live Vault (`#own-your-money`)
+- Demonstrates direct NPCI settlement routing.
+- Visual flow: Buyer UPI App -> 0% Cut Direct Rail -> Merchant Current Account (IndusInd / HDFC).
+- Interactive filter pills (All, UPI QR, IMPS) dynamically recalculating transaction volumes and fee savings.
 
-### Buttons
+### 4. 2% MDR Drag vs 0% Enterprise Drag (`#fees-drag`)
+- Compares traditional aggregator escrow delays, 2.0% MDR commissions, and rolling reserves with MyMobPay's flat SaaS license model.
 
-**`button-primary-pill`** — the dominant CTA system-wide.
-- Background `{colors.primary}`, text `{colors.on-primary}`, type `{typography.button-md}`, padding `{spacing.sm} {spacing.lg}` (8px 16px), rounded `{rounded.pill}` 9999px.
-- Pressed state `button-primary-pill-pressed` shifts background to `{colors.primary-press}`.
+### 5. Settlement Velocity & Real-time Webhooks (`#settles-fast`)
+- Visualizes instant webhook dispatch (`payment.settled`, `utr.matched`) with 142ms latency metrics and automated bank reconciliation.
 
-**`button-secondary`** — outline-style alternative.
-- Background `{colors.canvas}`, text `{colors.primary}`, 1px solid `{colors.primary}` border, same pill geometry.
+### 6. Savings Calculator & Volume Slider (`#gateway-comparison`)
+- Interactive range slider from ₹50,000 to ₹1,00,00,000 monthly volume.
+- Real-time side-by-side computation:
+  - **Legacy 2% Gateway**: ₹X,XX,XXX lost annually to gateway commission fees.
+  - **MyMobPay 0% Model**: 100% net settlement retained, showing exact annual savings.
 
-**`button-on-dark`** — used on dashboard / dark surfaces.
-- Background `{colors.brand-dark-900}`, text `{colors.on-primary}`, same pill geometry.
+### 7. Merchant Use Cases & Workflows
+- 5 Cards illustrating production setups:
+  1. Billing Counter Standee QR
+  2. E-Commerce Checkout APIs
+  3. Branded Payment Links
+  4. SaaS Recurring Invoicing
+  5. Automated 12-Digit UTR Matcher
 
-### Cards & Containers
+### 8. Transparent SaaS Platform Licenses (`#pick-plan`)
+- Interactive Monthly / Annual billing toggle (with 20% annual discount badge).
+- 4 Tiers:
+  - **Free Link Starter (₹0/forever)**: For creators, up to 100 txns/mo.
+  - **Starter (₹99/mo)**: For small businesses, up to 300 txns/mo, unlimited links.
+  - **Growth (₹299/mo)**: Featured card, full REST API, 5 webhooks, 1,000 verified txns/mo.
+  - **Pro Flagship (₹499/mo)**: High-volume enterprise, unlimited txns, 24/7 WhatsApp VIP support.
 
-**`card-feature-light`** — feature explanation card on white.
-- Background `{colors.canvas}`, padding `{spacing.xxl}`, rounded `{rounded.lg}` 12px, 1px `{colors.hairline}` border, optional Level 1 shadow.
+### 9. Developer REST API Sandbox (`#clean-apis`)
+- Dual-column code terminal with interactive tabs:
+  - `POST /payments/create`
+  - `GET /payments/{id}`
+  - `POST /webhooks/payment`
+- Syntax-highlighted code with instant copy buttons and 200 OK simulated response payload.
 
-**`card-pricing`** — standard pricing tier.
-- Background `{colors.canvas}`, padding `{spacing.xxl}`, rounded `{rounded.lg}`, 1px `{colors.hairline}` border. Title `{typography.heading-lg}`, price `{typography.display-md}`, body `{typography.body-md}`, CTA pinned bottom as `button-primary-pill`.
+### 10. Security & Infrastructure Deep-Dive
+- High-contrast deep navy banner (`#211D8A`) covering TLS 1.3 Transport, HMAC-SHA256 cryptographically signed webhooks, and strict merchant workspace isolation.
 
-**`card-pricing-featured`** — the inverted dark featured tier.
-- Background `{colors.brand-dark-900}`, text `{colors.on-primary}`, otherwise identical structure to `card-pricing`. The deep-navy fill is the brand's distinctive featured-tier choice.
+### 11. Merchant FAQ Accordion (`#faq-section`)
+- Interactive expandable questions addressing NPCI compliance, bank account linking, zero escrow safety, and dispute resolution.
 
-**`card-cream-band`** — warm interlude card.
-- Background `{colors.canvas-cream}`, text `{colors.ink}`, padding `{spacing.xxl}`, rounded `{rounded.lg}`. Used to break up the indigo / white rhythm with warmth.
+### 12. Final Launch CTA & Site-wide Footer
+- Bold closing call-to-action with the 3D logo ribbon mark and multi-column sitemap navigation (Product, Developers, Company, Legal, Security).
 
-**`card-dashboard-mockup`** — composited dashboard / product UI screenshot.
-- Background `{colors.canvas}`, type `{typography.body-tabular}` (with `tnum`), padding `{spacing.xl}` 24px, rounded `{rounded.lg}` 12px, Level 2 shadow. Often contains nested mini-mockups: code preview + dashboard table + chart card.
+---
 
-### Inputs & Forms
+## Design Tokens & CSS Variables Reference
 
-**`text-input`** — standard form field.
-- Background `{colors.canvas}`, text `{colors.ink}`, type `{typography.body-md}`, padding `{spacing.sm} {spacing.md}` (8px 12px), rounded `{rounded.sm}` 6px, 1px `{colors.hairline-input}` border.
-- Focus state `text-input-focused`: border swaps to `{colors.primary}`.
+```css
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F2F3FB;
+  --bg-elevated: #FFFFFF;
+  --bg-well: #F7F8FD;
+  --bg-header: rgba(242, 243, 251, 0.90);
+  --bg-pill-nav: rgba(255, 255, 255, 0.92);
+  --text-primary: #090A10;
+  --text-secondary: #222533;
+  --text-muted: #5A607A;
+  --accent-link: #0F2BFF;
+  --border-color: #E2E5F4;
+  --card-shadow: 0 10px 30px -10px rgba(20, 24, 80, 0.07);
+}
 
-### Navigation
+html.dark {
+  --bg-primary: #0B0E14;
+  --bg-secondary: #101520;
+  --bg-elevated: #161D2B;
+  --bg-well: #0E131D;
+  --bg-header: rgba(11, 14, 20, 0.90);
+  --bg-pill-nav: rgba(22, 29, 43, 0.95);
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --accent-link: #60A5FA;
+  --border-color: #232D42;
+  --card-shadow: 0 16px 38px -10px rgba(0, 0, 0, 0.55);
+}
+```
 
-**`nav-bar-on-mesh`** — top nav floating over the gradient hero.
-- Background `{colors.canvas}` (or transparent depending on scroll), text `{colors.ink}`, padding `{spacing.lg} {spacing.xl}`. Logo wordmark on the left, primary nav center, sign-in + filled `button-primary-pill` on the right.
-
-### Pills, Tags, and Chips
-
-**`pill-tag-soft`** — subdued indigo tag.
-- Background `{colors.primary-bg-subdued-hover}`, text `{colors.primary-deep}`, type `{typography.micro-cap}`, padding `4px 8px`, rounded `{rounded.pill}`.
-
-### Signature Components
-
-**Gradient Mesh Backdrop** — pastel cream → sherbet orange → lavender → indigo → ruby pink stops blurred horizontally across the upper third of the page. Implemented as SVG or a large background image — not a flat CSS gradient (the real mesh has organic blob shapes).
-
-**Composited Dashboard Mockup** — multi-layer faux-product-UI compositions: an IDE panel on the left, a dashboard table center, a chart card on the right, all rendered at small scale inside `{rounded.lg}` containers with subtle Level 2 shadows. The composite is the brand's most-photographed feature.
-
-**Tabular-Figure Money Type** — every number rendering money, count, or transaction value uses `font-feature-settings: "tnum"`. The brand's quiet signal that it's a financial-infrastructure platform.
-
-**`link-on-light`** — inline links on light surfaces.
-- Text `{colors.primary}` rendered in `{typography.body-md}`, no underline by default.
-
-**`footer-light`** — site-wide footer.
-- Background `{colors.canvas}`, text `{colors.ink-mute}`, type `{typography.caption}`, padding `{spacing.huge} {spacing.xl}` (64px 24px). Holds 4–6 columns of link groups, social icons, and a small legal row.
+---
 
 ## Do's and Don'ts
 
 ### Do
-- Reserve `{colors.primary}` for filled CTAs and inline link emphasis — it should appear sparingly, one filled button per band.
-- Apply the gradient mesh to every marketing hero; bare-canvas heroes feel off-brand.
-- Render display tiers at weight 300 with negative letter-spacing — the thin tracking is the typographic signature.
-- Use `font-feature-settings: "tnum"` on every money / numeric cell.
-- Apply `font-feature-settings: "ss01"` globally on the body element.
-- Pair every feature explanation with a composited product UI mockup; the brand's argument is "look at the actual product."
+- Always use the `Anton` font for high-impact display headlines and the typewriter word.
+- Maintain high-contrast electric cobalt (`#0F2BFF`) for primary buttons and interactive accents.
+- Display tabular numerics using `Barlow Condensed` with `font-feature-settings: "tnum"` for currency amounts and settlement metrics.
+- Keep 3D ceramic iPhone mockups proportional (316px width) with smooth rounded 50px corners and hardware chassis details.
+- Preserve the architectural grid background (`48px x 48px`) across marketing hero sections and feature headers.
+- Strictly maintain zero emojis across all product UI elements, typography, and documentation.
 
 ### Don't
-- Don't bump display weight above 300 — at 400 the brand's editorial air collapses.
-- Don't add new accent colors outside the documented gradient stops (cream / orange / lavender / indigo / ruby / magenta).
-- Don't use the indigo `{colors.primary}` as a body-text color — it's a CTA and link color, not a type color at body size.
-- Don't shrink button padding below `8px 16px` — the tight pill is part of the brand's transactional feel.
-- Don't render money cells without `tnum` — it breaks the quiet financial-data signature.
-- Don't replace the pill shape with rounded-rectangles for buttons.
-
-## Responsive Behavior
-
-### Breakpoints
-
-| Name | Width | Key Changes |
-|---|---|---|
-| Wide | ≥ 1440px | Full gradient mesh edge-to-edge; dashboard composite at full scale |
-| Desktop | 1024–1440px | Default content max-width; pricing 4-up |
-| Tablet | 768–1023px | Pricing 2-up; dashboard composite simplifies to 2 panels |
-| Mobile | < 768px | Pricing 1-up; hamburger nav; display drops 56 → 36px |
-
-### Touch Targets
-- Pill buttons hit ≥ 40×40px on mobile via padding scaling. On smaller screens, buttons size up to 44×44px to maintain WCAG AAA.
-- Form fields stay at 40px minimum height.
-
-### Collapsing Strategy
-- Display tiers stair-step 56 → 48 → 32 → 26 → 22px through the breakpoints.
-- Gradient mesh re-tiles on mobile to preserve the wash without disappearing.
-- Dashboard composites simplify to single-panel mockups on mobile; the multi-layer composition only renders at desktop+.
-- Pricing tiers stair-step 4-up → 2-up → 1-up.
-
-### Image Behavior
-Product UI composites use `srcset` with art-direction crops at major breakpoints. Mobile crops focus on the most actionable inner panel; desktop crops show the full multi-layer composition.
-
-## Iteration Guide
-
-1. Focus on ONE component at a time.
-2. Reference component names and tokens directly (`{colors.primary}`, `{button-primary-pill}-pressed`, `{rounded.pill}`).
-3. Run `npx @google/design.md lint DESIGN.md` after edits.
-4. Add new variants as separate entries.
-5. Default body to `{typography.body-md}` (15px); use `{typography.body-tabular}` for any money / numeric cell.
-6. Apply `ss01` globally on the body; apply `tnum` per-element on numeric content.
-7. The gradient mesh is non-negotiable on marketing heroes — bare-canvas heroes break the brand.
+- Never use generic low-contrast sans-serif fonts for primary display headlines.
+- Do not introduce non-system accent colors outside the defined brand palette (Cobalt, Orange, Amber, Emerald, Navy).
+- Do not remove the physical chassis styling from the mobile preview mockups.
+- Avoid flat un-shadowed cards on pure white canvases without subtle hairlines (`#E2E5F4`).
+- Do not allow interactive sliders to stutter or omit the exact 0% commission savings comparison.
