@@ -2331,7 +2331,7 @@ export default function HomePage() {
                 Direct UPI QR & IMPS Links
               </div>
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="font-mono text-[26px] font-extrabold text-[#090A10] leading-none">₹499</span>
+                <span className="font-mono text-[26px] font-extrabold text-[#090A10] leading-none">₹99</span>
                 <span className="text-[#090A10]/70 text-xs font-semibold">/month</span>
               </div>
             </div>
@@ -2376,11 +2376,11 @@ export default function HomePage() {
               </div>
 
               <div className="mt-2.5 flex items-baseline gap-1">
-                <span className="font-mono text-[22px] font-extrabold text-[#090A10] leading-none">₹999</span>
+                <span className="font-mono text-[22px] font-extrabold text-[#090A10] leading-none">₹299</span>
                 <span className="text-[#6E748C] text-xs font-semibold">/month</span>
               </div>
               <p className="mt-2 text-[11px] text-[#222533] leading-relaxed">
-                Growth Plan — <strong>0% commission</strong> UPI & IMPS collections + real-time webhooks.
+                Growth Plan — <strong>REST API &amp; webhooks</strong> with 0% commission direct settlements.
               </p>
 
               <Link href="/login?mode=signup" className="mt-3 w-full py-2 rounded-lg bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-[11px] font-bold text-center transition-colors block">Explore Growth Plan</Link>
@@ -2393,7 +2393,7 @@ export default function HomePage() {
             className="cursor-pointer relative w-full max-w-[330px] h-[330px] bg-[#521828] rounded-xl overflow-hidden p-6 flex flex-col items-center justify-center text-center shadow-xs hover:-translate-y-1.5 transition-transform"
           >
             <div className="font-mono text-[9.5px] uppercase tracking-widest text-white/75 mb-3">
-              SCALE SUBSCRIPTION TIER
+              FLAGSHIP SUBSCRIPTION TIER
             </div>
 
             <div className="space-y-1.5">
@@ -2412,11 +2412,11 @@ export default function HomePage() {
             </div>
 
             <div className="mt-4 flex items-baseline gap-1 justify-center">
-              <span className="font-mono text-[22px] font-extrabold text-[#D8FF66] leading-none">Custom</span>
-              <span className="text-white/70 text-xs font-semibold">pricing</span>
+              <span className="font-mono text-[24px] font-extrabold text-[#D8FF66] leading-none">₹499</span>
+              <span className="text-white/70 text-xs font-semibold">/month</span>
             </div>
             <div className="mt-2 text-[11px] font-semibold text-white/85 underline">
-              View plans in Merchant Portal
+              Unlimited Volume &bull; 24/7 VIP Support
             </div>
           </Link>
         </div>
