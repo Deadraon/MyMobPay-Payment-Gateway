@@ -407,20 +407,40 @@ export default function SubscriptionRedesign({
   return (
     <div className="flex flex-col max-w-7xl mx-auto w-full pb-8 gap-6 animate-fadeIn font-sans">
 
+      {/* ── TOP HEADER BANNER ────────────────────────────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+            <span>Subscriptions</span>
+            <span>/</span>
+            <span className="text-[var(--accent-link,#0F2BFF)] font-bold">Platform Licenses</span>
+            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px] font-bold">
+              0% MDR &bull; Direct Settlement
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
+            SAAS SUBSCRIPTIONS &amp; PLATFORM LICENSES
+          </h1>
+          <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
+            Flat pricing with zero commission fees &bull; Instant activation via dynamic UPI QR directly into your bank
+          </p>
+        </div>
+      </div>
+
       {/* ═══════════════════════════════════════════════════════════
          1. HIGH-IMPACT HERO ACTIVE SUBSCRIPTION CARD
          ═══════════════════════════════════════════════════════════ */}
-      <div className="rounded-2xl bg-white dark:bg-[#121826] border border-slate-200/80 dark:border-[#1F2A40] shadow-xs p-6 flex flex-col gap-6">
+      <div className="bento-card p-5 sm:p-6 flex flex-col gap-6">
         {/* Card Top Strip */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[var(--theme-border-color)]">
           <div className="flex flex-wrap items-center gap-3">
             {/* Status Pill */}
             <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${
               subDetails.isActive
-                ? 'bg-slate-50 dark:bg-slate-800 text-[#000d21] dark:text-slate-100 border-slate-200 dark:border-slate-700'
+                ? 'bg-slate-50 dark:bg-slate-800 text-[var(--theme-text-primary)] border-slate-200 dark:border-slate-700'
                 : subDetails.isCancelled
                 ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-700/60'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                : 'bg-slate-100 dark:bg-slate-800 text-[var(--theme-text-muted)] border-slate-200 dark:border-slate-700'
             }`}>
               <span className={`w-2 h-2 rounded-full ${
                 subDetails.isActive
@@ -436,13 +456,13 @@ export default function SubscriptionRedesign({
                 : 'License Inactive'}
             </div>
 
-            <span className="text-lg font-bold text-[#000d21] dark:text-white tracking-tight">
+            <span className="text-lg font-bold text-[var(--theme-text-primary)] tracking-tight">
               {subDetails.isActive ? subDetails.planTierLabel : 'Free Sandbox Tier'}
             </span>
 
-            <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+            <span className="text-lg font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
               ₹{subDetails.planAmount}
-              <span className="text-xs text-slate-400 font-normal"> / month</span>
+              <span className="text-xs text-[var(--theme-text-muted)] font-normal"> / month</span>
             </span>
           </div>
 
@@ -450,15 +470,15 @@ export default function SubscriptionRedesign({
             <button
               onClick={handleDownloadInvoice}
               type="button"
-              className="px-3.5 py-2 rounded-xl bg-white dark:bg-[#172033] hover:bg-slate-50 dark:hover:bg-[#1F2A40] text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-[#232D42] shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-[var(--theme-bg-elevated)] hover:bg-slate-100 dark:hover:bg-[#1F2A40] text-[var(--theme-text-primary)] text-xs font-semibold border border-[var(--theme-border-color)] shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+              <Download className="w-3.5 h-3.5 text-[#0F2BFF] dark:text-[#60A5FA]" />
               Download Invoice
             </button>
             <button
               onClick={() => setShowDetailsModal(true)}
               type="button"
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs shadow-blue-500/20 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="btn-enterprise px-4 py-2 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-semibold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Info className="w-3.5 h-3.5" />
               Manage Subscription
@@ -471,13 +491,13 @@ export default function SubscriptionRedesign({
           {/* Tile 1: Current Plan */}
           <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-slate-200/70 dark:border-[#1F2A40] relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
-            <span className="text-[10px] text-slate-400 font-semibold">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Current Plan
             </span>
-            <span className="text-sm font-bold text-[#000d21] dark:text-white">
+            <span className="text-[18px] sm:text-[20px] font-extrabold tracking-tight text-[var(--theme-text-primary)] truncate mt-1">
               {subDetails.isActive ? subDetails.planTitle : 'No Active Plan'}
             </span>
-            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-medium text-[var(--theme-text-muted)] mt-0.5">
               {profile?.subscription_plan === '3months'
                 ? '90 Days cycle'
                 : profile?.subscription_plan === '2months'
@@ -489,15 +509,15 @@ export default function SubscriptionRedesign({
           {/* Tile 2: Next Renewal Date */}
           <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-slate-200/70 dark:border-[#1F2A40] relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-indigo-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
-            <span className="text-[10px] text-slate-400 font-semibold">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Next Renewal Date
             </span>
-            <span className="text-sm font-bold text-[#000d21] dark:text-white">
+            <span className="text-[18px] sm:text-[20px] font-extrabold tracking-tight text-[var(--theme-text-primary)] truncate mt-1">
               {subDetails.expiryDateStr}
             </span>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${subDetails.daysLeft > 0 ? 'bg-blue-600 dark:bg-blue-400' : 'bg-red-500'}`} />
-              <span className={`text-[11px] font-semibold ${subDetails.daysLeft > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className={`w-1.5 h-1.5 rounded-full ${subDetails.daysLeft > 0 ? 'bg-[#0F2BFF] dark:bg-[#60A5FA]' : 'bg-red-500'}`} />
+              <span className={`text-[11px] font-semibold ${subDetails.daysLeft > 0 ? 'text-[#0F2BFF] dark:text-[#60A5FA]' : 'text-red-600 dark:text-red-400'}`}>
                 {subDetails.daysLeft > 0 ? `${subDetails.daysLeft} Days remaining` : 'Renewal Required'}
               </span>
             </div>
@@ -506,18 +526,18 @@ export default function SubscriptionRedesign({
           {/* Tile 3: Direct Settlement Target */}
           <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-slate-200/70 dark:border-[#1F2A40] relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
-            <span className="text-[10px] text-slate-400 font-semibold">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Direct Settlement Target
             </span>
-            <div className="flex items-center gap-1.5">
-              <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-              <span className="text-sm font-semibold text-[#000d21] dark:text-white truncate">
+            <div className="flex items-center gap-1.5 mt-1">
+              <Building2 className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA] shrink-0" />
+              <span className="text-[15px] sm:text-[16px] font-extrabold text-[var(--theme-text-primary)] truncate">
                 {profile?.bank_name
                   ? `${profile.bank_name} •••• ${(profile.bank_account_number || '').slice(-4)}`
                   : profile?.upi_id || 'Instant Direct UPI'}
               </span>
             </div>
-            <span className="text-[10px] text-slate-400 truncate">
+            <span className="text-[11px] font-medium text-[var(--theme-text-muted)] truncate mt-0.5">
               {profile?.upi_id
                 ? profile.upi_id
                 : profile?.bank_account_number
@@ -529,14 +549,14 @@ export default function SubscriptionRedesign({
           {/* Tile 4: Gateway Fee Saved */}
           <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-slate-200/70 dark:border-[#1F2A40] relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
-            <span className="text-[10px] text-slate-400 font-semibold">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Gateway Fee Saved
             </span>
-            <div className="flex items-baseline gap-1">
-              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">0% MDR</span>
-              <span className="text-xs text-slate-400 font-normal">Direct UPI</span>
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-[18px] sm:text-[20px] font-extrabold text-[#059669] dark:text-[#34D399]">0% MDR</span>
+              <span className="text-xs text-[var(--theme-text-muted)] font-normal">Direct UPI</span>
             </div>
-            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+            <span className="text-[11px] text-[#059669] dark:text-[#34D399] font-bold mt-0.5">
               ₹{gatewayFeesSaved.toLocaleString('en-IN')} saved YTD
             </span>
           </div>

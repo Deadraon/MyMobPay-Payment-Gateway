@@ -1377,41 +1377,45 @@ export default function PaymentLinksRedesign({
       {/* ══════════════════════════════════════════════════════════
           HEADER BLOCK
           ══════════════════════════════════════════════════════════ */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Payment Links</h1>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold border border-slate-200/70">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Direct Rails T+0
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+            <span>Payment Links</span>
+            <span>/</span>
+            <span className="text-[var(--accent-link,#0F2BFF)] font-bold">Direct Rails</span>
+            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px] font-bold">
+              Direct to Bank &bull; T+0
             </span>
           </div>
-          <p className="text-sm text-slate-500">
-            Create, manage, and track instant payment links for your customers.
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
+            PAYMENT LINKS &amp; QR CHECKOUT
+          </h1>
+          <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
+            Create, manage, and track instant payment links &amp; counter standees with direct bank settlement.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={() => {
               if (!standeeBusinessName) setStandeeBusinessName(profile?.business_name || profile?.owner_name || 'My Store');
               if (!standeeUpiId) setStandeeUpiId(profile?.upi_id || 'merchant@upi');
               setShowStaticQrModal(true);
             }}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-2xs hover:bg-emerald-100 transition-colors text-sm font-semibold active:scale-[0.98] cursor-pointer"
+            className="px-3 sm:px-4 py-2.5 rounded-xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] hover:border-[#0F2BFF] text-xs font-bold text-[var(--theme-text-primary)] inline-flex items-center gap-1.5 sm:gap-2 shadow-2xs transition-all cursor-pointer"
             type="button"
           >
-            <QrIcon className="w-4 h-4 text-emerald-600" />
-            Counter Static QR
+            <QrIcon className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" />
+            <span>Counter Static QR</span>
           </button>
 
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 shadow-sm hover:bg-slate-50 transition-colors text-sm font-medium active:scale-[0.98]"
+            className="px-3 sm:px-4 py-2.5 rounded-xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] hover:border-[#0F2BFF] text-xs font-bold text-[var(--theme-text-primary)] inline-flex items-center gap-1.5 sm:gap-2 shadow-2xs transition-all cursor-pointer"
             type="button"
           >
-            <Download className="w-4 h-4 text-slate-500" />
-            Export CSV
+            <Download className="w-4 h-4 text-[var(--theme-text-muted)]" />
+            <span>Export CSV</span>
           </button>
 
           <button
@@ -1423,11 +1427,11 @@ export default function PaymentLinksRedesign({
                 }, 100);
               }
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors text-sm font-semibold active:scale-[0.98]"
+            className="btn-enterprise px-3 sm:px-5 py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold inline-flex items-center gap-1.5 sm:gap-2 shadow-md cursor-pointer"
             type="button"
           >
             <Plus className="w-4 h-4" />
-            {showCreateModal ? 'Close Generator' : 'Create Payment Link'}
+            <span>{showCreateModal ? 'Close Generator' : 'Create Payment Link'}</span>
           </button>
         </div>
       </div>
@@ -1437,74 +1441,80 @@ export default function PaymentLinksRedesign({
           ══════════════════════════════════════════════════════════ */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Card 1: Total Collected */}
-        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-blue-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">
+        <div className="bento-card bento-card-interactive stagger-1 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Total Collected
             </span>
-            <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
-          </div>
-          <div className="mt-2 sm:mt-3 flex flex-col">
-            <span className="text-lg sm:text-2xl text-slate-900 tracking-tight font-semibold truncate">
-              ₹ {metrics.totalCollected.toLocaleString('en-IN', { minimumFractionDigits: 0 })}
+            <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#0F2BFF]/10 text-[#0F2BFF] dark:text-[#60A5FA] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
-            <span className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 truncate">
+          </div>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            ₹{metrics.totalCollected.toLocaleString('en-IN', { minimumFractionDigits: 0 })}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate">
               {metrics.totalCount > 0 ? `Across ${metrics.totalCount} paid link${metrics.totalCount !== 1 ? 's' : ''}` : 'No payments yet'}
             </span>
           </div>
         </div>
 
         {/* Card 2: Active Links */}
-        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-amber-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">
+        <div className="bento-card bento-card-interactive stagger-2 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Active Links
             </span>
-            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
-          </div>
-          <div className="mt-2 sm:mt-3 flex flex-col">
-            <span className="text-lg sm:text-2xl text-slate-900 tracking-tight font-semibold truncate">
-              {metrics.activeLinks}
+            <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
-            <span className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 truncate">Awaiting payment</span>
+          </div>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {metrics.activeLinks}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate">
+              Awaiting payment
+            </span>
           </div>
         </div>
 
         {/* Card 3: Paid Links */}
-        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-emerald-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">
+        <div className="bento-card bento-card-interactive stagger-3 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Paid Links
             </span>
-            <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
-          </div>
-          <div className="mt-2 sm:mt-3 flex flex-col">
-            <span className="text-lg sm:text-2xl text-slate-900 tracking-tight font-semibold truncate">
-              {metrics.paidLinks}
+            <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#10B981]/15 text-[#10B981] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
-            <span className="text-[10px] sm:text-xs text-emerald-600 font-medium mt-0.5 sm:mt-1 truncate">
+          </div>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {metrics.paidLinks}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="font-bold text-[#059669] dark:text-[#34D399]">
               {metrics.conversionRate}% Conversion
             </span>
           </div>
         </div>
 
         {/* Card 4: Average Ticket */}
-        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute -right-5 -bottom-5 w-24 h-24 bg-purple-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-slate-500 font-semibold truncate">
+        <div className="bento-card bento-card-interactive stagger-4 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
               Average Ticket
             </span>
-            <Receipt className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
-          </div>
-          <div className="mt-2 sm:mt-3 flex flex-col">
-            <span className="text-lg sm:text-2xl text-slate-900 tracking-tight font-semibold truncate">
-              {metrics.avgTicket > 0 ? `₹ ${metrics.avgTicket.toLocaleString('en-IN')}` : '—'}
+            <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <Receipt className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
-            <span className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 truncate">
+          </div>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {metrics.avgTicket > 0 ? `₹${metrics.avgTicket.toLocaleString('en-IN')}` : '—'}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate">
               {metrics.paidLinks > 0 ? 'Per payment' : 'No paid links yet'}
             </span>
           </div>

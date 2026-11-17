@@ -471,16 +471,21 @@ export default function VerificationCenterRedesign({
     <div className="w-full space-y-6 font-sans antialiased text-[#0f141a]">
 
       {/* ── Header Title & Trust Badge ─────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Verification Center</h1>
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${healthMetrics.statusColor}`}>
-              <span className={`w-2 h-2 rounded-full ${healthMetrics.dotColor} animate-pulse`} />
+          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+            <span>Verification</span>
+            <span>/</span>
+            <span className="text-[var(--accent-link,#0F2BFF)] font-bold">UTR Matching</span>
+            <span className={`px-2 py-0.5 rounded-full text-[9.5px] font-bold border ${healthMetrics.statusColor}`}>
+              <span className={`inline-block w-1.5 h-1.5 rounded-full ${healthMetrics.dotColor} animate-pulse mr-1`} />
               {healthMetrics.statusLabel}
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-300 font-medium mt-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
+            VERIFICATION CENTER &amp; UTR RECONCILIATION
+          </h1>
+          <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
             Real-time automated payment match engine. Direct-to-bank UPI reconciliation with zero middleman hold.
           </p>
         </div>
@@ -489,10 +494,10 @@ export default function VerificationCenterRedesign({
           <button
             type="button"
             onClick={onRefresh}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer"
+            className="px-3.5 py-2.5 rounded-xl bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] hover:border-[#0F2BFF] text-xs font-bold text-[var(--theme-text-primary)] inline-flex items-center gap-2 shadow-2xs transition-all cursor-pointer"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-            Refresh Rails
+            <RefreshCw className="w-3.5 h-3.5 text-[var(--theme-text-muted)]" />
+            <span>Refresh Rails</span>
           </button>
         </div>
       </div>
@@ -533,83 +538,91 @@ export default function VerificationCenterRedesign({
       )}
 
       {/* ── Verification Health Cards ─────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         
         {/* Card 1: Auto-Verification Rate */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">Confirm Rate</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-              <Zap className="w-4 h-4" />
+        <div className="bento-card bento-card-interactive stagger-1 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Confirm Rate
+            </span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#10B981]/15 flex items-center justify-center text-[#10B981] group-hover:scale-110 transition-transform shrink-0">
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-900 tabular-nums">{healthMetrics.autoVerifiedRate}%</span>
-              <span className="text-[11px] font-bold text-emerald-600">Auto-Verified</span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              {healthMetrics.autoVerifiedCount} automated · {healthMetrics.manualVerifiedCount} manual overrides
-            </p>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {healthMetrics.autoVerifiedRate}%
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="font-bold text-[#059669] dark:text-[#34D399]">
+              Auto-Verified
+            </span>
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate text-right">
+              {healthMetrics.autoVerifiedCount} automated
+            </span>
           </div>
         </div>
 
         {/* Card 2: Avg Confirmation Latency */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">Avg Confirmation Delay</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-              <Clock className="w-4 h-4" />
+        <div className="bento-card bento-card-interactive stagger-2 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Avg Confirmation Delay
+            </span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#0F2BFF]/10 flex items-center justify-center text-[#0F2BFF] dark:text-[#60A5FA] group-hover:scale-110 transition-transform shrink-0">
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-900 tabular-nums">{healthMetrics.formattedAvgDelay}</span>
-              <span className="text-[11px] font-bold text-blue-600">Avg Settlement</span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">From customer scan to instant bank webhook/email match</p>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {healthMetrics.formattedAvgDelay}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="font-bold text-[#0F2BFF] dark:text-[#60A5FA]">
+              Avg Settlement
+            </span>
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate text-right">
+              Instant match
+            </span>
           </div>
         </div>
 
         {/* Card 3: Delayed Payments Queue */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">Delayed Payments (&gt;5m)</span>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${delayedOrders.length > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-400'}`}>
-              <AlertCircle className="w-4 h-4" />
+        <div className="bento-card bento-card-interactive stagger-3 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Delayed Payments (&gt;5m)
+            </span>
+            <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0 ${delayedOrders.length > 0 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-slate-100 dark:bg-slate-800 text-[var(--theme-text-muted)]'}`}>
+              <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3">
-            <div className="flex items-baseline gap-2">
-              <span className={`text-2xl font-semibold tabular-nums ${delayedOrders.length > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
-                {delayedOrders.length}
-              </span>
-              <span className="text-[11px] text-slate-500">awaiting confirmation</span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              {delayedOrders.length > 0 ? 'Pending bank confirmation or UTR check' : 'All transactions up to date'}
-            </p>
+          <div className={`text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none mt-2 sm:mt-2.5 truncate tabular-nums ${delayedOrders.length > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-[var(--theme-text-primary)]'}`}>
+            {delayedOrders.length}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate">
+              {delayedOrders.length > 0 ? 'Pending confirmation' : 'All orders clear'}
+            </span>
           </div>
         </div>
 
         {/* Card 4: Duplicate Warnings */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">Duplicate Flags</span>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${duplicateWarnings.length > 0 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-400'}`}>
-              <AlertTriangle className="w-4 h-4" />
+        <div className="bento-card bento-card-interactive stagger-4 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Duplicate Flags
+            </span>
+            <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0 ${duplicateWarnings.length > 0 ? 'bg-red-500/10 text-red-600 dark:text-red-400' : 'bg-slate-100 dark:bg-slate-800 text-[var(--theme-text-muted)]'}`}>
+              <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3">
-            <div className="flex items-baseline gap-2">
-              <span className={`text-2xl font-semibold tabular-nums ${duplicateWarnings.length > 0 ? 'text-red-600' : 'text-slate-900'}`}>
-                {duplicateWarnings.length}
-              </span>
-              <span className="text-[11px] font-medium text-slate-500">alerts detected</span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              {duplicateWarnings.length > 0 ? 'Potential double-spend or retry' : 'No collision or duplicate UTRs'}
-            </p>
+          <div className={`text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none mt-2 sm:mt-2.5 truncate tabular-nums ${duplicateWarnings.length > 0 ? 'text-red-600 dark:text-red-400' : 'text-[var(--theme-text-primary)]'}`}>
+            {duplicateWarnings.length}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate">
+              {duplicateWarnings.length > 0 ? 'Potential double-spend' : 'Zero duplicate UTRs'}
+            </span>
           </div>
         </div>
 

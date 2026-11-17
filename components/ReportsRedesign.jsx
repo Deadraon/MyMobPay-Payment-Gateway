@@ -341,23 +341,27 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
     <div className="w-full space-y-6 font-sans antialiased text-[#0f141a]">
 
       {/* ── Page Header ────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Financial & Analytics Reports</h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
-              <Sparkles className="w-3 h-3 text-blue-600" />
-              Tax & CA Ready
+          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+            <span>Reports</span>
+            <span>/</span>
+            <span className="text-[var(--accent-link,#0F2BFF)] font-bold">GST &amp; Analytics</span>
+            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px] font-bold">
+              Tax &amp; CA Ready &bull; T+0
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-300 font-medium mt-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
+            FINANCIAL &amp; ANALYTICS REPORTS
+          </h1>
+          <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
             Reconcile collections, export Indian CA/GST accounting journals, and analyze hourly UPI traffic.
           </p>
         </div>
 
         {/* Quick Period Selector */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center p-1 bg-slate-100 rounded-xl">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="flex items-center p-1 bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] rounded-xl">
             {[
               { id: 'today', label: 'Today' },
               { id: 'yesterday', label: 'Yesterday' },
@@ -372,8 +376,8 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
                 onClick={() => setTimeRange(tab.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                   timeRange === tab.id
-                    ? 'bg-white text-slate-900 shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                    ? 'bg-[#0F2BFF] text-white shadow-2xs'
+                    : 'text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)]'
                 }`}
               >
                 {tab.label}
@@ -384,121 +388,135 @@ Settlement: 100% Direct to Merchant UPI (Zero Gateway MDR)`;
           <button
             type="button"
             onClick={handleDownloadCsv}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#0c2340] hover:bg-[#143660] text-white text-xs font-bold rounded-xl transition-colors shadow-xs cursor-pointer"
+            className="btn-enterprise px-3 sm:px-5 py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold inline-flex items-center gap-1.5 sm:gap-2 shadow-md cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
-            Export CA CSV
+            <span>Export CA CSV</span>
           </button>
         </div>
       </div>
 
       {/* Custom Date Pickers (if custom selected) */}
       {timeRange === 'custom' && (
-        <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-xs flex flex-wrap items-center gap-4 text-xs">
-          <span className="font-bold text-slate-700">Custom Date Range:</span>
+        <div className="p-4 bg-[var(--theme-bg-elevated)] border border-[var(--theme-border-color)] rounded-xl shadow-xs flex flex-wrap items-center gap-4 text-xs">
+          <span className="font-bold text-[var(--theme-text-primary)]">Custom Date Range:</span>
           <div className="flex items-center gap-2">
-            <label className="text-slate-500 font-medium">From:</label>
+            <label className="text-[var(--theme-text-muted)] font-medium">From:</label>
             <input
               type="date"
               value={customStart}
               onChange={(e) => setCustomStart(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-hidden"
+              className="px-2.5 py-1.5 bg-[var(--theme-bg-surface)] border border-[var(--theme-border-color)] rounded-lg text-[var(--theme-text-primary)] focus:outline-hidden"
             />
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-slate-500 font-medium">To:</label>
+            <label className="text-[var(--theme-text-muted)] font-medium">To:</label>
             <input
               type="date"
               value={customEnd}
               onChange={(e) => setCustomEnd(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-hidden"
+              className="px-2.5 py-1.5 bg-[var(--theme-bg-surface)] border border-[var(--theme-border-color)] rounded-lg text-[var(--theme-text-primary)] focus:outline-hidden"
             />
           </div>
         </div>
       )}
 
       {/* ── Core Summary KPI Cards with Comparisons ────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
 
         {/* Total Collections */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">Gross Collections</span>
-            <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              metrics.totalGrowth > 0 ? 'bg-emerald-50 text-emerald-700' : metrics.totalGrowth < 0 ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600'
+        <div className="bento-card bento-card-interactive stagger-1 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Gross Collections
+            </span>
+            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-bold ${
+              metrics.totalGrowth > 0 ? 'bg-[#10B981]/15 text-[#059669] dark:text-[#34D399]' : metrics.totalGrowth < 0 ? 'bg-red-500/10 text-red-600 dark:text-red-400' : 'bg-slate-100 dark:bg-slate-800 text-[var(--theme-text-muted)]'
             }`}>
               {metrics.totalGrowth > 0 ? <TrendingUp className="w-3 h-3" /> : metrics.totalGrowth < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
               {Math.abs(metrics.totalGrowth)}%
             </div>
           </div>
-          <div className="mt-3">
-            <p className="text-2xl font-semibold text-slate-900 tabular-nums">{formatINR(metrics.curTotal)}</p>
-            <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
-              <span>{periodLabel}</span>
-              <span>Prior: {formatINR(metrics.prevTotal)}</span>
-            </div>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {formatINR(metrics.curTotal)}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate">
+              {periodLabel}
+            </span>
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate text-right">
+              Prior: {formatINR(metrics.prevTotal)}
+            </span>
           </div>
         </div>
 
         {/* Total Verified Transactions */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">Verified Orders</span>
-            <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              metrics.countGrowth > 0 ? 'bg-emerald-50 text-emerald-700' : metrics.countGrowth < 0 ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600'
+        <div className="bento-card bento-card-interactive stagger-2 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Verified Orders
+            </span>
+            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-bold ${
+              metrics.countGrowth > 0 ? 'bg-[#10B981]/15 text-[#059669] dark:text-[#34D399]' : metrics.countGrowth < 0 ? 'bg-red-500/10 text-red-600 dark:text-red-400' : 'bg-slate-100 dark:bg-slate-800 text-[var(--theme-text-muted)]'
             }`}>
               {metrics.countGrowth > 0 ? <TrendingUp className="w-3 h-3" /> : metrics.countGrowth < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
               {Math.abs(metrics.countGrowth)}%
             </div>
           </div>
-          <div className="mt-3">
-            <p className="text-2xl font-semibold text-slate-900 tabular-nums">{metrics.curCount}</p>
-            <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
-              <span>{metrics.curCount} paid</span>
-              <span>Prior: {metrics.prevCount}</span>
-            </div>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {metrics.curCount}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="font-bold text-[#059669] dark:text-[#34D399]">
+              {metrics.curCount} paid
+            </span>
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate text-right">
+              Prior: {metrics.prevCount}
+            </span>
           </div>
         </div>
 
         {/* Average Ticket Size */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">Average Ticket Size</span>
-            <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              metrics.avgTicketGrowth > 0 ? 'bg-emerald-50 text-emerald-700' : metrics.avgTicketGrowth < 0 ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600'
+        <div className="bento-card bento-card-interactive stagger-3 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              Average Ticket Size
+            </span>
+            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-bold ${
+              metrics.avgTicketGrowth > 0 ? 'bg-[#10B981]/15 text-[#059669] dark:text-[#34D399]' : metrics.avgTicketGrowth < 0 ? 'bg-red-500/10 text-red-600 dark:text-red-400' : 'bg-slate-100 dark:bg-slate-800 text-[var(--theme-text-muted)]'
             }`}>
               {metrics.avgTicketGrowth > 0 ? <TrendingUp className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
               {Math.abs(metrics.avgTicketGrowth)}%
             </div>
           </div>
-          <div className="mt-3">
-            <p className="text-2xl font-semibold text-slate-900 tabular-nums">{formatINR(metrics.curAvgTicket)}</p>
-            <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1">
-              <span>Per customer</span>
-              <span>Prior: {formatINR(metrics.prevAvgTicket)}</span>
-            </div>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {formatINR(metrics.curAvgTicket)}
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate">
+              Per customer
+            </span>
+            <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate text-right">
+              Prior: {formatINR(metrics.prevAvgTicket)}
+            </span>
           </div>
         </div>
 
         {/* Success Rate */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500">UPI Success Rate</span>
-            <span className="text-[10px] font-bold text-slate-500">{currentOrders.length} attempts</span>
+        <div className="bento-card bento-card-interactive stagger-4 p-3.5 sm:p-5 group">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] truncate">
+              UPI Success Rate
+            </span>
+            <span className="text-[9.5px] font-bold text-[var(--theme-text-muted)]">{currentOrders.length} attempts</span>
           </div>
-          <div className="mt-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-900 tabular-nums">{metrics.curSuccessRate}%</span>
-              <span className={`text-[11px] font-bold ${parseFloat(metrics.rateDiff) >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                {parseFloat(metrics.rateDiff) >= 0 ? `+${metrics.rateDiff}%` : `${metrics.rateDiff}%`}
-              </span>
-            </div>
-            <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
-              <div
-                className="bg-emerald-500 h-1.5 rounded-full transition-colors duration-500"
-                style={{ width: `${Math.min(parseFloat(metrics.curSuccessRate), 100)}%` }}
-              />
-            </div>
+          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+            {metrics.curSuccessRate}%
+          </div>
+          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+            <span className={`font-bold ${parseFloat(metrics.rateDiff) >= 0 ? 'text-[#059669] dark:text-[#34D399]' : 'text-red-500'}`}>
+              {parseFloat(metrics.rateDiff) >= 0 ? `+${metrics.rateDiff}%` : `${metrics.rateDiff}%`} vs prior
+            </span>
           </div>
         </div>
 

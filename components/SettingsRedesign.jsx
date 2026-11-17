@@ -1075,43 +1075,41 @@ export default function SettingsRedesign({
   return (
     <div className="w-full max-w-[1520px] mx-auto pb-16 animate-fadeIn">
       {/* ═══════════════════════════════════════════════════════════
-          HEADER BANNER (Clean, Solid White, Single Bottom Header)
+          HEADER BANNER
           ═══════════════════════════════════════════════════════════ */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-6 bg-white rounded-2xl p-6 shadow-xs">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-[var(--theme-border-color)] mb-6">
+        <div>
+          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
             <span
-              className="hover:text-slate-600 transition-colors cursor-pointer"
+              className="hover:text-[var(--accent-link,#0F2BFF)] transition-colors cursor-pointer"
               onClick={() => setActiveTab && setActiveTab('overview')}
             >
               Console
             </span>
-            <ChevronRight className="w-3 h-3 text-slate-400" />
-            <span className="text-slate-500">Configuration</span>
-            <ChevronRight className="w-3 h-3 text-slate-400" />
-            <span className="text-blue-600 font-semibold">Settings & Direct Routing</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-[#0c2340] dark:text-white tracking-tight">
-              Settings & Configuration
-            </h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-500/20 text-emerald-600 text-xs font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Direct PSP Connected
+            <span>/</span>
+            <span className="text-[var(--accent-link,#0F2BFF)] font-bold">Configuration</span>
+            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px] font-bold">
+              Direct PSP Connected &bull; T+0
             </span>
           </div>
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
+            SETTINGS &amp; DIRECT ROUTING
+          </h1>
+          <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
+            Configure merchant settlement bank accounts, UPI VPAs, routing rules, notifications, and security.
+          </p>
         </div>
 
         {/* Top Action Bar */}
-        <div className="flex items-center gap-3 self-start md:self-auto">
+        <div className="flex items-center gap-2.5 flex-wrap self-start md:self-auto">
           {isDirty && (
             <button
               onClick={handleRevert}
               type="button"
-              className="h-9 px-3.5 rounded-xl bg-white text-slate-600 hover:bg-slate-50 font-semibold text-xs transition-colors duration-200 border border-slate-200 shadow-xs flex items-center gap-1.5 hover:border-slate-300 cursor-pointer"
+              className="px-3.5 py-2.5 rounded-xl bg-[var(--theme-bg-elevated)] text-[var(--theme-text-primary)] hover:border-[#0F2BFF] font-semibold text-xs transition-colors duration-200 border border-[var(--theme-border-color)] shadow-2xs flex items-center gap-1.5 cursor-pointer"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
-              Revert to Default
+              <RotateCcw className="w-3.5 h-3.5 text-[var(--theme-text-muted)]" />
+              <span>Revert to Default</span>
             </button>
           )}
 
@@ -1119,7 +1117,7 @@ export default function SettingsRedesign({
             onClick={handleSave}
             disabled={saving}
             type="button"
-            className="h-9 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors duration-200 shadow-md shadow-blue-500/25 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+            className="btn-enterprise px-3 sm:px-5 py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white font-bold text-xs transition-colors duration-200 shadow-md flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
           >
             {saving ? (
               <RefreshCw className="w-4 h-4 animate-spin text-white" />
