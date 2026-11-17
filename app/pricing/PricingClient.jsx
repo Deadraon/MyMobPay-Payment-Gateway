@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Check,
+  X,
   ArrowRight,
   Zap,
   Shield,
@@ -23,30 +24,35 @@ import ThemeToggleButton from '@/components/ThemeToggleButton';
 
 const FAQ_ITEMS = [
   {
-    q: 'Why does MyMobPay charge a flat monthly subscription instead of 2%?',
-    a: 'Traditional payment gateways take a 2% cut of every rupee you collect, heavily penalizing high-volume and high-margin businesses. MyMobPay operates as payment infrastructure software: you pay a flat monthly fee, and 100% of customer collections land directly into your own bank account via UPI & IMPS with zero gateway deductions.',
+    q: 'How does the annual plan with 2 months free work?',
+    a: 'Annual billing is available for our Growth and Pro Flagship plans. When you choose annual billing, you pay for 10 months and receive 12 full months of service, giving you 2 months completely free (Growth at ₹2,990/year instead of ₹3,588, and Pro Flagship at ₹4,990/year instead of ₹5,988). The Starter plan is offered exclusively on a flexible monthly subscription at ₹99/month.',
+  },
+  {
+    q: 'Why does MyMobPay charge a flat software subscription instead of 2%?',
+    a: 'Traditional payment gateways deduct 2% on every single rupee you collect, eating away at your profit margins. MyMobPay operates as independent payment infrastructure software: you pay a flat predictable subscription, and 100% of customer collections land directly in your own merchant bank account via UPI and IMPS with zero gateway deductions.',
   },
   {
     q: 'Does MyMobPay hold our merchant funds in escrow or nodal accounts?',
-    a: 'Never. Unlike traditional aggregators that hold funds in nodal accounts for T+2 days, MyMobPay uses direct peer-to-peer UPI intent, dynamic QR codes, and bank rails. Money flows instantly and directly from your customer’s bank/UPI app into your designated merchant bank account (T+0).',
+    a: 'Never. Unlike traditional aggregators that hold funds in intermediary nodal accounts for T+2 days, MyMobPay uses direct peer-to-peer UPI intent, dynamic QR codes, and bank rails. Money flows directly from your customer into your designated bank account (T+0 settlement).',
   },
   {
     q: 'What happens if I exceed my monthly plan quota?',
-    a: 'You can easily upgrade your plan with a single click in your merchant dashboard at any time. We also notify you proactively before reaching your limit so your checkouts never get interrupted.',
+    a: 'You can upgrade your plan at any time directly inside your merchant dashboard. We notify you before reaching your limit so your payment links and API checkouts run smoothly without interruption.',
   },
   {
     q: 'Can I switch or cancel my plan at any time?',
-    a: 'Yes, absolutely. There are no annual lock-in contracts or cancellation penalties. You can upgrade, downgrade, or cancel your subscription at the end of any billing cycle directly from your settings.',
+    a: 'Yes. There are no lock-in contracts or cancellation penalties. You can switch between monthly and annual billing, upgrade, or cancel your subscription at the end of any billing cycle from your settings.',
   },
   {
-    q: 'What payment modes are supported across all plans?',
-    a: 'All plans include universal direct-to-bank UPI (Google Pay, PhonePe, Paytm, BHIM, Cred, and all bank UPI apps) plus IMPS bank rails with real-time automated UTR verification.',
+    q: 'What payment rails are supported across all plans?',
+    a: 'All plans include direct-to-bank UPI (Google Pay, PhonePe, Paytm, BHIM, Cred, and all bank UPI apps) plus IMPS bank rails with real-time automated UTR verification.',
   },
 ];
 
 export default function PricingClient() {
   const [theme, setTheme] = useState('dark');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'annually'
   const [openFaq, setOpenFaq] = useState(null);
 
   // Initialize theme from storage or DOM
@@ -89,6 +95,8 @@ export default function PricingClient() {
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
   };
+
+  const isAnnual = billingCycle === 'annually';
 
   return (
     <div className="pricing-root relative min-h-screen theme-bg-secondary bg-arch-grid theme-text-secondary overflow-hidden transition-colors duration-250 font-sans">
@@ -367,7 +375,7 @@ export default function PricingClient() {
             Stop paying 2% on every checkout. Switch to flat, predictable software subscriptions. Direct UPI &amp; IMPS settlement into your own merchant bank account.
           </p>
 
-          {/* Micro-Trust Highlights */}
+          {/* Micro-Trust Highlights (Clean text with color dots, no emojis) */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-y-2 gap-x-5 text-xs font-semibold theme-text-muted">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -386,10 +394,45 @@ export default function PricingClient() {
               Cancel or Upgrade Anytime
             </span>
           </div>
+
+          {/* ── Billing Cycle Selector (Monthly vs Annually with 2 Months Free) ── */}
+          <div className="mt-8 inline-flex items-center p-1 rounded-full theme-bg-elevated border theme-border shadow-xs">
+            <button
+              type="button"
+              onClick={() => setBillingCycle('monthly')}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                billingCycle === 'monthly'
+                  ? 'bg-[#0F2BFF] text-white shadow-xs'
+                  : 'theme-text-muted hover:theme-text-primary'
+              }`}
+            >
+              Monthly Billing
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingCycle('annually')}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                billingCycle === 'annually'
+                  ? 'bg-[#0F2BFF] text-white shadow-xs'
+                  : 'theme-text-muted hover:theme-text-primary'
+              }`}
+            >
+              <span>Annual Billing</span>
+              <span className="font-mono text-[9px] uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">
+                2 Months Free
+              </span>
+            </button>
+          </div>
+
+          {isAnnual && (
+            <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+              Annual plans start from Growth (₹299/mo) and Pro Flagship (₹499/mo). Get 12 months for the price of 10!
+            </p>
+          )}
         </div>
 
         {/* ── THE 4 PRICING MODELS (FREE TO TOP TIER) ── */}
-        <div className="mt-12 sm:mt-16">
+        <div className="mt-10 sm:mt-14">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             
             {/* ── Model 1: Free Link Starter (₹0) ── */}
@@ -446,7 +489,7 @@ export default function PricingClient() {
                     <span>Live Merchant Dashboard</span>
                   </div>
                   <div className="flex items-start gap-2 text-slate-400 dark:text-slate-500">
-                    <span className="w-4 h-4 text-center shrink-0 font-bold text-xs mt-0.5">✕</span>
+                    <X className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                     <span>No Developer REST API</span>
                   </div>
                 </div>
@@ -460,7 +503,7 @@ export default function PricingClient() {
               </Link>
             </div>
 
-            {/* ── Model 2: Starter Plan (₹99/mo) ── */}
+            {/* ── Model 2: Starter Plan (₹99/mo) — Monthly Only ── */}
             <div className="theme-bg-elevated border theme-border rounded-2xl p-6 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-200 theme-card-shadow relative group">
               <div className="absolute -top-3 left-6 bg-slate-700 dark:bg-slate-600 text-white font-mono text-[9.5px] font-extrabold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs">
                 LINK SCALE
@@ -471,6 +514,11 @@ export default function PricingClient() {
                   <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider theme-link">
                     TIER 1 &bull; 300 TXNS
                   </span>
+                  {isAnnual && (
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded font-bold">
+                      Monthly Only
+                    </span>
+                  )}
                 </div>
 
                 <h3 className="text-xl font-bold theme-text-primary mt-1.5">Starter Plan</h3>
@@ -483,9 +531,16 @@ export default function PricingClient() {
                     <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹99</span>
                     <span className="theme-text-muted text-xs font-semibold">/ month</span>
                   </div>
-                  <div className="mt-1 inline-block font-mono text-[10.5px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">
-                    Up to 300 link txns / month
+                  <div className="mt-1 flex items-center gap-1.5">
+                    <span className="font-mono text-[10.5px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">
+                      Up to 300 link txns / month
+                    </span>
                   </div>
+                  {isAnnual && (
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                      Billed monthly at ₹99 (Annual billing begins from Growth plan)
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-5 space-y-2.5 text-xs theme-text-secondary">
@@ -514,7 +569,7 @@ export default function PricingClient() {
                     <span>Standard Email Support (48h)</span>
                   </div>
                   <div className="flex items-start gap-2 text-slate-400 dark:text-slate-500">
-                    <span className="w-4 h-4 text-center shrink-0 font-bold text-xs mt-0.5">✕</span>
+                    <X className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                     <span>No Developer REST API</span>
                   </div>
                 </div>
@@ -528,10 +583,10 @@ export default function PricingClient() {
               </Link>
             </div>
 
-            {/* ── Model 3: Growth Plan (₹299/mo) — FEATURED: UNLOCKS API ── */}
+            {/* ── Model 3: Growth Plan (₹299/mo or ₹2,990/yr) — UNLOCKS API & ANNUAL ── */}
             <div className="theme-bg-elevated border-2 border-sky-500 dark:border-sky-400 rounded-2xl p-6 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-200 relative shadow-xl shadow-sky-500/10 group">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-sky-500 text-white font-mono text-[9.5px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full shadow-md whitespace-nowrap">
-                ★ UNLOCKS REST API
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-sky-600 text-white font-mono text-[9.5px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full shadow-md whitespace-nowrap">
+                UNLOCKS REST API
               </div>
 
               <div>
@@ -539,6 +594,11 @@ export default function PricingClient() {
                   <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
                     TIER 2 &bull; 1,000 TXNS
                   </span>
+                  {isAnnual && (
+                    <span className="font-mono text-[9px] uppercase tracking-wider bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold">
+                      2 Months Free
+                    </span>
+                  )}
                 </div>
 
                 <h3 className="text-xl font-bold theme-text-primary mt-1.5">Growth Plan</h3>
@@ -547,13 +607,27 @@ export default function PricingClient() {
                 </p>
 
                 <div className="mt-4 pt-3 border-t theme-border">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹299</span>
-                    <span className="theme-text-muted text-xs font-semibold">/ month</span>
-                  </div>
-                  <div className="mt-1 inline-block font-mono text-[10.5px] font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
-                    Up to 1,000 txns / month (API + Links)
-                  </div>
+                  {isAnnual ? (
+                    <div>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹2,990</span>
+                        <span className="theme-text-muted text-xs font-semibold">/ year</span>
+                      </div>
+                      <div className="mt-1 font-mono text-[10.5px] font-bold text-emerald-600 dark:text-emerald-400">
+                        ₹249/mo effective &bull; Save ₹598/yr
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹299</span>
+                        <span className="theme-text-muted text-xs font-semibold">/ month</span>
+                      </div>
+                      <div className="mt-1 inline-block font-mono text-[10.5px] font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
+                        Up to 1,000 txns / month (API + Links)
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-5 space-y-2.5 text-xs theme-text-secondary">
@@ -588,15 +662,15 @@ export default function PricingClient() {
                 href="/login?mode=signup"
                 className="mt-6 w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-md cursor-pointer"
               >
-                <span>Choose Growth (₹299)</span>
+                <span>{isAnnual ? 'Choose Growth (₹2,990/yr)' : 'Choose Growth (₹299/mo)'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
-            {/* ── Model 4: Pro Flagship (₹499/mo) — UNLIMITED CROWN TIER ── */}
+            {/* ── Model 4: Pro Flagship (₹499/mo or ₹4,990/yr) — UNLIMITED CROWN TIER ── */}
             <div className="theme-bg-elevated border-2 border-[#0F2BFF] dark:border-[#3B82F6] rounded-2xl p-6 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-200 relative shadow-2xl shadow-blue-500/20 group">
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#0F2BFF] to-[#2563EB] text-white font-mono text-[9.5px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full shadow-lg whitespace-nowrap">
-                👑 MAX VALUE &bull; UNLIMITED
+                MAX VALUE &bull; UNLIMITED
               </div>
 
               <div>
@@ -604,6 +678,11 @@ export default function PricingClient() {
                   <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-[#0F2BFF] dark:text-[#60A5FA]">
                     TIER 3 &bull; UNLIMITED EVERYTHING
                   </span>
+                  {isAnnual && (
+                    <span className="font-mono text-[9px] uppercase tracking-wider bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold">
+                      2 Months Free
+                    </span>
+                  )}
                 </div>
 
                 <h3 className="text-xl font-bold theme-text-primary mt-1.5">Pro Flagship</h3>
@@ -612,13 +691,27 @@ export default function PricingClient() {
                 </p>
 
                 <div className="mt-4 pt-3 border-t theme-border">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹499</span>
-                    <span className="theme-text-muted text-xs font-semibold">/ month</span>
-                  </div>
-                  <div className="mt-1 inline-block font-mono text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/10 px-2 py-0.5 rounded">
-                    UNLIMITED Transactions &amp; Volume
-                  </div>
+                  {isAnnual ? (
+                    <div>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹4,990</span>
+                        <span className="theme-text-muted text-xs font-semibold">/ year</span>
+                      </div>
+                      <div className="mt-1 font-mono text-[10.5px] font-bold text-emerald-600 dark:text-emerald-400">
+                        ₹415/mo effective &bull; Save ₹998/yr
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-3xl sm:text-4xl font-black theme-text-primary font-mono">₹499</span>
+                        <span className="theme-text-muted text-xs font-semibold">/ month</span>
+                      </div>
+                      <div className="mt-1 inline-block font-mono text-[10.5px] font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/10 px-2 py-0.5 rounded">
+                        UNLIMITED Transactions &amp; Volume
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-5 space-y-2.5 text-xs theme-text-secondary">
@@ -657,7 +750,7 @@ export default function PricingClient() {
                 href="/login?mode=signup"
                 className="mt-6 w-full py-2.5 rounded-xl bg-[#0F2BFF] hover:bg-[#081EC4] text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg cursor-pointer"
               >
-                <span>Get Pro Flagship (₹499)</span>
+                <span>{isAnnual ? 'Get Pro Flagship (₹4,990/yr)' : 'Get Pro Flagship (₹499/mo)'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -710,7 +803,7 @@ export default function PricingClient() {
               <div>
                 <h4 className="text-xs font-bold theme-text-primary">No Lock-in Contracts</h4>
                 <p className="text-[11.5px] theme-text-muted mt-0.5 leading-snug">
-                  Simple monthly software billing. Upgrade or cancel anytime.
+                  Simple predictable software billing. Upgrade or cancel anytime.
                 </p>
               </div>
             </div>
@@ -751,11 +844,18 @@ export default function PricingClient() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Monthly Fee</td>
+                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Monthly Subscription</td>
                     <td className="py-3 px-3 text-center font-mono font-bold text-emerald-600 dark:text-emerald-400">₹0</td>
                     <td className="py-3 px-3 text-center font-mono font-bold theme-text-primary">₹99/mo</td>
                     <td className="py-3 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">₹299/mo</td>
                     <td className="py-3 px-3 text-center font-mono font-black text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">₹499/mo</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Annual Billing (2 Months Free)</td>
+                    <td className="py-3 px-3 text-center font-mono text-emerald-600 dark:text-emerald-400">Free</td>
+                    <td className="py-3 px-3 text-center font-mono text-slate-400">Monthly Only</td>
+                    <td className="py-3 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">₹2,990/yr</td>
+                    <td className="py-3 px-3 text-center font-mono font-black text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">₹4,990/yr</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Gateway Commission</td>
@@ -780,17 +880,17 @@ export default function PricingClient() {
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Direct Bank Settlement (T+0)</td>
-                    <td className="py-3 px-3 text-center text-emerald-500">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-sky-500/5">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-[#0F2BFF]/5">✓</td>
+                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Dynamic UPI QR &amp; Intent</td>
-                    <td className="py-3 px-3 text-center text-emerald-500">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-sky-500/5">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-[#0F2BFF]/5">✓</td>
+                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Payment Links Limit</td>
@@ -801,17 +901,17 @@ export default function PricingClient() {
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Custom Slugs &amp; Payee Notes</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-emerald-500">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-sky-500/5">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-[#0F2BFF]/5">✓</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">CSV Statement Exports</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-emerald-500">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-sky-500/5">✓</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-[#0F2BFF]/5">✓</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center bg-sky-500/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
+                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5"><Check className="w-4 h-4 text-emerald-500 mx-auto" /></td>
                   </tr>
 
                   {/* Category: Developer & Integration */}
@@ -822,31 +922,43 @@ export default function PricingClient() {
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Developer REST API Access</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
                     <td className="py-3 px-3 text-center font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">Full Access</td>
                     <td className="py-3 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Full Access</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Signed Webhooks with Auto-Retry</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
                     <td className="py-3 px-3 text-center font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/5">5 Endpoints</td>
                     <td className="py-3 px-3 text-center font-mono font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Unlimited</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Automated UTR Bank Matching</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-sky-500/5">✓ Standard</td>
-                    <td className="py-3 px-3 text-center font-bold text-[#0F2BFF] dark:text-[#60A5FA] bg-[#0F2BFF]/5">Real-time Priority</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center bg-sky-500/5">
+                      <span className="inline-flex items-center gap-1 justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <Check className="w-3.5 h-3.5 text-emerald-500" /> Standard
+                      </span>
+                    </td>
+                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5">
+                      <span className="inline-flex items-center gap-1 justify-center text-[#0F2BFF] dark:text-[#60A5FA] font-bold">
+                        <Check className="w-3.5 h-3.5" /> Priority SLA
+                      </span>
+                    </td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">White-Labeling (Remove Badge)</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">—</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-[#0F2BFF]/5">✓ Included</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
+                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5">
+                      <span className="inline-flex items-center gap-1 justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <Check className="w-3.5 h-3.5 text-emerald-500" /> Included
+                      </span>
+                    </td>
                   </tr>
 
                   {/* Category: Support & SLA */}
@@ -864,17 +976,25 @@ export default function PricingClient() {
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">24/7 Dedicated WhatsApp Hotline</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">—</td>
-                    <td className="py-3 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-[#0F2BFF]/5">✓ 24/7 VIP Access</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
+                    <td className="py-3 px-3 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-[#0F2BFF]/5">
+                      <span className="inline-flex items-center gap-1 justify-center">
+                        <Check className="w-3.5 h-3.5 text-emerald-500" /> 24/7 VIP Access
+                      </span>
+                    </td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Automated PDF Bank Statements</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400">—</td>
-                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">—</td>
-                    <td className="py-3 px-3 text-center text-emerald-500 bg-[#0F2BFF]/5">✓ Monthly Automated</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400">-</td>
+                    <td className="py-3 px-3 text-center text-slate-400 bg-sky-500/5">-</td>
+                    <td className="py-3 px-3 text-center bg-[#0F2BFF]/5">
+                      <span className="inline-flex items-center gap-1 justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <Check className="w-3.5 h-3.5 text-emerald-500" /> Monthly Automated
+                      </span>
+                    </td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 sm:px-6 font-medium theme-text-primary">Staff Team Accounts</td>
@@ -899,7 +1019,7 @@ export default function PricingClient() {
               FREQUENTLY ASKED QUESTIONS
             </h2>
             <p className="text-xs sm:text-sm theme-text-muted mt-1">
-              Clear, transparent answers about our 0% fee model and subscription plans.
+              Clear, transparent answers about our 0% fee model, annual billing, and subscription plans.
             </p>
           </div>
 
