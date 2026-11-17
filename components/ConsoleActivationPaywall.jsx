@@ -778,7 +778,7 @@ export default function ConsoleActivationPaywall({
               {/* Subsection 2: Scan UPI QR Code Banner */}
               <div className="bg-slate-50 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 border border-slate-200/60">
                 {/* Live Dynamic QR Container */}
-                <div className="relative w-32 h-32 bg-white rounded-xl p-2 shadow-sm flex items-center justify-center shrink-0 border border-slate-200">
+                <div data-qr="surface" className="relative w-32 h-32 bg-white rounded-xl p-2 shadow-sm flex items-center justify-center shrink-0 border border-slate-200">
                   <QRCode
                     value={upiIntentUri}
                     size={110}

@@ -1144,7 +1144,7 @@ export default function DashboardOverviewRedesign({
               </div>
             </div>
 
-            <div className="my-5 w-48 h-48 mx-auto p-3.5 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-xs">
+            <div data-qr="surface" className="my-5 w-48 h-48 mx-auto p-3.5 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-xs">
               <QRCode
                 value={`upi://pay?pa=${encodeURIComponent(merchantVpa)}&pn=${encodeURIComponent(businessName)}&cu=INR`}
                 size={168}

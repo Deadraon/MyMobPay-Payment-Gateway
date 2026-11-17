@@ -592,25 +592,25 @@ export default function TransactionsRedesign({
           <button
             onClick={() => setShowFilters(!showFilters)}
             type="button"
-            className="bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition-colors duration-150 px-4 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-2"
+            className="bg-white dark:bg-[#121826] border border-slate-200 dark:border-[#1F2A40] hover:bg-slate-50 dark:hover:bg-[#172033] text-slate-700 dark:text-slate-200 transition-colors duration-150 px-4 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-2 cursor-pointer"
           >
-            <SlidersHorizontal className="w-4 h-4 text-blue-600" />
+            <SlidersHorizontal className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             {showFilters ? 'Hide Rails Filter' : 'Filter Rails'}
           </button>
           <button
             onClick={handleEmailStatement}
             disabled={emailingStatement}
             type="button"
-            className="bg-white border border-blue-200 hover:bg-blue-50 text-blue-700 transition-colors duration-150 px-4 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-2 disabled:opacity-50"
+            className="bg-white dark:bg-[#121826] border border-blue-200 dark:border-blue-900/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-blue-700 dark:text-blue-300 transition-colors duration-150 px-4 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-2 disabled:opacity-50 cursor-pointer"
             title="Dispatch monthly account statement to registered email via SendPulse"
           >
-            {emailingStatement ? <Loader2 className="w-4 h-4 animate-spin text-blue-600" /> : <Mail className="w-4 h-4 text-blue-600" />}
+            {emailingStatement ? <Loader2 className="w-4 h-4 animate-spin text-blue-600" /> : <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
             {emailingStatement ? 'Sending...' : 'Email Statement'}
           </button>
           <button
             onClick={handleExportStatement}
             type="button"
-            className="bg-blue-600 hover:bg-blue-700 transition-colors duration-150 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 flex items-center gap-2"
+            className="bg-blue-600 hover:bg-blue-700 transition-colors duration-150 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 flex items-center gap-2 cursor-pointer"
           >
             <Download className="w-4 h-4" />
             Download Statement (CSV/XLS)
@@ -725,22 +725,22 @@ export default function TransactionsRedesign({
       {/* ═══════════════════════════════════════════════════════════
          3. DYNAMIC FILTER CONTROL MATRIX
          ═══════════════════════════════════════════════════════════ */}
-      <div className="bg-white p-4 lg:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col gap-4 relative overflow-hidden group">
+      <div className="bg-white dark:bg-[#121826] p-4 lg:p-5 rounded-2xl border border-slate-200/80 dark:border-[#1F2A40] shadow-xs flex flex-col gap-4 relative overflow-hidden group">
         <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-blue-500/5 rounded-full pointer-events-none group- transition-transform duration-300"></div>
         {/* Status Selection Tabs & Time Quick Selector */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/70 overflow-x-auto no-scrollbar w-full sm:w-auto">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-[#0B0F1A] p-1.5 rounded-xl border border-slate-200/70 dark:border-[#1F2A40] overflow-x-auto no-scrollbar w-full sm:w-auto">
             <button
               onClick={() => { setStatusTab('all'); setCurrentPage(1); }}
               type="button"
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
                 statusTab === 'all'
-                  ? 'bg-white text-[#0c2340] shadow-xs border border-slate-200/80'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
+                  ? 'bg-white dark:bg-[#172033] text-[#0c2340] dark:text-white shadow-xs border border-slate-200/80 dark:border-[#1F2A40]'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-[#172033]/60'
               }`}
             >
               All Logs
-              <span className="bg-slate-100 text-slate-700 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
+              <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
                 {statusCounts.all}
               </span>
             </button>
@@ -748,15 +748,15 @@ export default function TransactionsRedesign({
             <button
               onClick={() => { setStatusTab('settled'); setCurrentPage(1); }}
               type="button"
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
                 statusTab === 'settled'
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
+                  ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-[#172033]/60'
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
               Auto-Settled
-              <span className="bg-emerald-100/70 text-emerald-800 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
+              <span className="bg-emerald-100/70 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
                 {statusCounts.settled}
               </span>
             </button>
@@ -764,15 +764,15 @@ export default function TransactionsRedesign({
             <button
               onClick={() => { setStatusTab('processing'); setCurrentPage(1); }}
               type="button"
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
                 statusTab === 'processing'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200/80 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
+                  ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/60 shadow-xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-[#172033]/60'
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
               Processing
-              <span className="bg-blue-100/70 text-blue-800 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
+              <span className="bg-blue-100/70 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
                 {statusCounts.processing}
               </span>
             </button>
@@ -780,15 +780,15 @@ export default function TransactionsRedesign({
             <button
               onClick={() => { setStatusTab('failed'); setCurrentPage(1); }}
               type="button"
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
                 statusTab === 'failed'
-                  ? 'bg-red-50 text-red-700 border border-red-200/80 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
+                  ? 'bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200/80 dark:border-red-800/60 shadow-xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-[#172033]/60'
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-red-500"></span>
               Failed
-              <span className="bg-red-100/70 text-red-800 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
+              <span className="bg-red-100/70 dark:bg-red-900/60 text-red-800 dark:text-red-200 text-[10px] font-mono px-1.5 py-0.5 rounded-full">
                 {statusCounts.failed}
               </span>
             </button>
@@ -796,24 +796,24 @@ export default function TransactionsRedesign({
 
           {/* Time Selector */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/70 text-slate-700">
+            <div className="flex items-center bg-slate-50 dark:bg-[#0B0F1A] px-3 py-1.5 rounded-xl border border-slate-200/70 dark:border-[#1F2A40] text-slate-700 dark:text-slate-300">
               <Clock className="w-4 h-4 text-slate-400 mr-2" />
               <select
                 value={timeFilter}
                 onChange={(e) => { setTimeFilter(e.target.value); setCurrentPage(1); }}
-                className="bg-transparent text-xs font-bold text-[#0c2340] focus:outline-none cursor-pointer pr-1"
+                className="bg-transparent text-xs font-bold text-[#0c2340] dark:text-white focus:outline-none cursor-pointer pr-1"
               >
-                <option value="today">Today (Real-time)</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="7days">Last 7 Days</option>
-                <option value="mtd">Month to Date</option>
-                <option value="all">All Time History</option>
+                <option value="today" className="dark:bg-[#121826]">Today (Real-time)</option>
+                <option value="yesterday" className="dark:bg-[#121826]">Yesterday</option>
+                <option value="7days" className="dark:bg-[#121826]">Last 7 Days</option>
+                <option value="mtd" className="dark:bg-[#121826]">Month to Date</option>
+                <option value="all" className="dark:bg-[#121826]">All Time History</option>
               </select>
             </div>
             {onRefresh && (
               <button
                 onClick={onRefresh}
-                className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 rounded-xl border border-slate-200/70 transition-colors"
+                className="p-2 bg-slate-50 dark:bg-[#0B0F1A] hover:bg-slate-100 dark:hover:bg-[#172033] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl border border-slate-200/70 dark:border-[#1F2A40] transition-colors cursor-pointer"
                 title="Refresh Transactions"
                 type="button"
               >
@@ -832,12 +832,12 @@ export default function TransactionsRedesign({
               onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
               placeholder="Search by Txn ID (txn_8849...), Bank UTR / RRN, Customer VPA, Order ID..."
               type="text"
-              className="w-full h-11 pl-10 pr-10 bg-slate-50 hover:bg-slate-100/50 text-[#0c2340] placeholder:text-slate-400 text-xs font-medium rounded-xl border border-slate-200/80 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              className="w-full h-11 pl-10 pr-10 bg-slate-50 dark:bg-[#0B0F1A] hover:bg-slate-100/50 dark:hover:bg-[#121826] text-[#0c2340] dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-medium rounded-xl border border-slate-200/80 dark:border-[#1F2A40] focus:outline-none focus:bg-white dark:focus:bg-[#121826] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 text-slate-400 hover:text-slate-700 text-xs font-bold p-1"
+                className="absolute right-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-bold p-1 cursor-pointer"
                 type="button"
               >
                 <X className="w-3.5 h-3.5" />
@@ -846,18 +846,18 @@ export default function TransactionsRedesign({
           </div>
 
           <div className="md:col-span-3">
-            <div className="h-11 px-3 bg-slate-50 border border-slate-200/80 rounded-xl flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-700 w-full">
-                <QrCode className="w-4 h-4 text-blue-600 shrink-0" />
+            <div className="h-11 px-3 bg-slate-50 dark:bg-[#0B0F1A] border border-slate-200/80 dark:border-[#1F2A40] rounded-xl flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 w-full">
+                <QrCode className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span className="text-xs text-slate-400 font-medium shrink-0">Rail:</span>
                 <select
                   value={railFilter}
                   onChange={(e) => { setRailFilter(e.target.value); setCurrentPage(1); }}
-                  className="bg-transparent text-xs font-bold text-[#0c2340] focus:outline-none cursor-pointer w-full truncate"
+                  className="bg-transparent text-xs font-bold text-[#0c2340] dark:text-white focus:outline-none cursor-pointer w-full truncate"
                 >
-                  <option value="all">All Rails (UPI, IMPS, Web3)</option>
-                  <option value="upi">UPI QR (PhonePe / GPay / Paytm)</option>
-                  <option value="imps">IMPS Direct Transfer</option>
+                  <option value="all" className="dark:bg-[#121826]">All Rails (UPI, IMPS, Web3)</option>
+                  <option value="upi" className="dark:bg-[#121826]">UPI QR (PhonePe / GPay / Paytm)</option>
+                  <option value="imps" className="dark:bg-[#121826]">IMPS Direct Transfer</option>
                   <option value="web3">Web3 Smart Collect (USDT Polygon)</option>
                 </select>
               </div>
@@ -951,12 +951,12 @@ export default function TransactionsRedesign({
       {/* ═══════════════════════════════════════════════════════════
          5. TRANSACTION LEDGER TABLE COMPONENT
          ═══════════════════════════════════════════════════════════ */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-[#121826] rounded-2xl border border-slate-200/80 dark:border-[#1F2A40] shadow-xs overflow-hidden flex flex-col">
         {/* Desktop Table View */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse table-auto">
-            <thead className="bg-slate-50 border-b border-slate-200/80">
-              <tr className="text-slate-500 text-[11px] font-bold">
+            <thead className="bg-slate-50 dark:bg-[#0B0F1A] border-b border-slate-200/80 dark:border-[#1F2A40]">
+              <tr className="text-slate-500 dark:text-slate-400 text-[11px] font-bold">
                 <th className="py-3.5 px-5 text-left font-semibold">ORDER &amp; TRANSACTION ID</th>
                 <th className="py-3.5 px-4 text-left font-semibold">RAIL</th>
                 <th className="py-3.5 px-4 text-left font-semibold">CUSTOMER</th>
@@ -965,7 +965,7 @@ export default function TransactionsRedesign({
                 <th className="py-3.5 px-5 text-right font-semibold">STATUS</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+            <tbody className="divide-y divide-slate-100 dark:divide-[#1F2A40] text-xs text-slate-700 dark:text-slate-300">
               {paginatedOrders.length > 0 ? (
                 paginatedOrders.map((order) => {
                   const pill = getAppPill(order);
@@ -983,19 +983,19 @@ export default function TransactionsRedesign({
                     <tr
                       key={order.id}
                       onClick={() => setSelectedOrder(order)}
-                      className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
+                      className="hover:bg-slate-50/80 dark:hover:bg-[#172033]/60 cursor-pointer transition-colors group"
                     >
                       {/* Order & Transaction ID */}
                       <td className="py-3.5 px-5">
                         <div className="flex flex-col gap-0.5">
-                          <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-[#0c2340] group-hover:text-blue-600 transition-colors">
+                          <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-[#0c2340] dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                             <span>{canonicalId}</span>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleCopy(canonicalId, `id_${order.id}`);
                               }}
-                              className="text-slate-300 hover:text-slate-600 p-0.5 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-300 p-0.5 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                               title="Copy ID"
                               type="button"
                             >
@@ -1020,11 +1020,11 @@ export default function TransactionsRedesign({
                       {/* Rail */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2.5">
-                          <div className={`w-8 h-8 rounded-xl ${pill.bg} ${pill.text} flex items-center justify-center font-bold text-xs flex-shrink-0 border border-slate-200/40 shadow-2xs`}>
+                          <div className={`w-8 h-8 rounded-xl ${pill.bg} ${pill.text} flex items-center justify-center font-bold text-xs flex-shrink-0 border border-slate-200/40 dark:border-slate-700/50 shadow-2xs`}>
                             <span className="material-symbols-outlined text-base">{pill.icon}</span>
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-xs font-bold text-[#0c2340]">
+                            <span className="text-xs font-bold text-[#0c2340] dark:text-white">
                               {pill.label}
                             </span>
                             <span className="font-mono text-[10px] text-slate-400 truncate max-w-[140px]">
@@ -1037,7 +1037,7 @@ export default function TransactionsRedesign({
                       {/* Customer */}
                       <td className="py-3.5 px-4">
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-[#0c2340] truncate max-w-[150px]">
+                          <span className="text-xs font-bold text-[#0c2340] dark:text-white truncate max-w-[150px]">
                             {order.customer_name || 'Direct Customer'}
                           </span>
                           <span className="text-[11px] text-slate-400 font-medium">
@@ -1049,14 +1049,14 @@ export default function TransactionsRedesign({
                       {/* Bank Ref / UTR */}
                       <td className="py-3.5 px-4">
                         {order.utr ? (
-                          <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-[#0c2340]">
+                          <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-[#0c2340] dark:text-white">
                             <span>UTR: {order.utr}</span>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleCopy(order.utr, `utr_${order.id}`);
                               }}
-                              className="text-slate-300 hover:text-slate-600 p-0.5 cursor-pointer"
+                              className="text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-300 p-0.5 cursor-pointer"
                               title="Copy UTR"
                               type="button"
                             >
@@ -1069,14 +1069,14 @@ export default function TransactionsRedesign({
                           </div>
                         ) : order.customer_utr ? (
                           <div className="flex flex-col gap-0.5">
-                            <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-amber-800 bg-amber-50/90 px-2 py-0.5 rounded border border-amber-200/90 w-fit">
+                            <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-200/90 dark:border-amber-800/60 w-fit">
                               <span>UTR: {order.customer_utr}</span>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleCopy(order.customer_utr, `cust_utr_${order.id}`);
                                 }}
-                                className="text-amber-500 hover:text-amber-800 p-0.5 cursor-pointer"
+                                className="text-amber-500 hover:text-amber-800 dark:hover:text-amber-200 p-0.5 cursor-pointer"
                                 title="Copy Customer Submitted UTR"
                                 type="button"
                               >
@@ -1087,13 +1087,13 @@ export default function TransactionsRedesign({
                                 )}
                               </button>
                             </div>
-                            <span className="text-[10px] text-amber-600 font-semibold flex items-center gap-1">
+                            <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                               User Submitted UTR
                             </span>
                           </div>
                         ) : isProcessing ? (
-                          <div className="flex items-center gap-1.5 text-amber-600 text-xs font-mono font-medium">
+                          <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 text-xs font-mono font-medium">
                             <Clock className="w-3.5 h-3.5 text-amber-500 animate-spin" />
                             <span>Awaiting Bank RRN</span>
                           </div>
@@ -1104,7 +1104,7 @@ export default function TransactionsRedesign({
 
                       {/* Amount Received */}
                       <td className="py-3.5 px-4 text-right">
-                        <div className="font-mono font-semibold text-sm text-[#0c2340]">
+                        <div className="font-mono font-semibold text-sm text-[#0c2340] dark:text-white">
                           ₹ {Number(order.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </div>
                         <div className={`text-[10px] font-bold font-mono flex items-center justify-end gap-0.5 ${
@@ -1404,25 +1404,25 @@ export default function TransactionsRedesign({
           onClick={() => setSelectedOrder(null)}
         >
           <div 
-            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden ${auditModalClass}`}
+            className={`bg-white dark:bg-[#121826] rounded-3xl border border-slate-200 dark:border-[#1F2A40] shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden ${auditModalClass}`}
             role="dialog"
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-[#0B0F1A]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
                   <Receipt className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col">
-                  <h3 className="text-base font-semibold text-[#0c2340]">Transaction Audit Details</h3>
+                  <h3 className="text-base font-semibold text-[#0c2340] dark:text-white">Transaction Audit Details</h3>
                   <span className="text-xs font-mono text-slate-400">ID: {activeSelectedOrder.id}</span>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 rounded-xl transition-colors"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 type="button"
               >
                 <X className="w-5 h-5" />
@@ -1432,10 +1432,10 @@ export default function TransactionsRedesign({
             {/* Modal Body */}
             <div className="p-4 sm:p-6 flex flex-col gap-3.5 sm:gap-4 text-xs overflow-y-auto flex-1">
               {/* Amount & Status Card */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#0B0F1A] border border-slate-200/80 dark:border-[#1F2A40] flex items-center justify-between">
                 <div className="flex flex-col">
                   <span className="text-[11px] font-bold text-slate-400">Amount Received</span>
-                  <span className="text-2xl font-semibold text-[#0c2340] tabular-nums mt-0.5">
+                  <span className="text-2xl font-semibold text-[#0c2340] dark:text-white tabular-nums mt-0.5">
                     ₹ {Number(selectedOrder.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -1743,25 +1743,25 @@ export default function TransactionsRedesign({
           onClick={() => setShowAddBankModal(false)}
         >
           <div 
-            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden ${addBankModalClass}`}
+            className={`bg-white dark:bg-[#121826] rounded-3xl border border-slate-200 dark:border-[#1F2A40] shadow-2xl max-w-lg w-full overflow-hidden ${addBankModalClass}`}
             role="dialog"
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-[#0B0F1A]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col">
-                  <h3 className="text-base font-semibold text-[#0c2340]">Add Bank Account</h3>
+                  <h3 className="text-base font-semibold text-[#0c2340] dark:text-white">Add Bank Account</h3>
                   <span className="text-xs text-slate-400 font-medium">Enable IMPS/RTGS direct settlement rail</span>
                 </div>
               </div>
               <button
                 onClick={() => setShowAddBankModal(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 rounded-xl transition-colors"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 type="button"
               >
                 <X className="w-5 h-5" />
@@ -1891,20 +1891,20 @@ export default function TransactionsRedesign({
           }}
         >
           <div 
-            className={`bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 overflow-hidden max-h-[92vh] overflow-y-auto ${refundModalClass}`}
+            className={`bg-white dark:bg-[#121826] rounded-3xl border border-slate-200 dark:border-[#1F2A40] shadow-2xl max-w-lg w-full p-6 space-y-4 overflow-hidden max-h-[92vh] overflow-y-auto ${refundModalClass}`}
             role="dialog"
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 border border-rose-100 dark:border-rose-900/50">
                   <RotateCcw className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-base">Record Outbound Refund</h3>
-                  <p className="text-xs text-slate-500">Order #{activeRefundOrder.id?.slice(0, 10)}... • Direct UPI Tracking</p>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base">Record Outbound Refund</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Order #{activeRefundOrder.id?.slice(0, 10)}... • Direct UPI Tracking</p>
                 </div>
               </div>
               <button
@@ -1914,7 +1914,7 @@ export default function TransactionsRedesign({
                   setRefundError(null);
                   setRefundSuccessMsg(null);
                 }}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>

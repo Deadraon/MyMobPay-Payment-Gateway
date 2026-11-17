@@ -401,9 +401,9 @@ export default function SubscriptionRedesign({
       {/* ═══════════════════════════════════════════════════════════
          1. HIGH-IMPACT HERO ACTIVE SUBSCRIPTION CARD
          ═══════════════════════════════════════════════════════════ */}
-      <div className="rounded-2xl bg-white border border-slate-200/80 shadow-xs p-6 flex flex-col gap-6">
+      <div className="rounded-2xl bg-white dark:bg-[#121826] border border-slate-200/80 dark:border-[#1F2A40] shadow-xs p-6 flex flex-col gap-6">
         {/* Card Top Strip */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
           <div className="flex flex-wrap items-center gap-3">
             {/* Status Pill */}
             <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${
@@ -435,7 +435,7 @@ export default function SubscriptionRedesign({
                 : 'Standard Tier'}
             </span>
 
-            <span className="text-lg font-bold text-blue-600">
+            <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
               ₹{subDetails.planAmount}
               <span className="text-xs text-slate-400 font-normal"> / month</span>
             </span>
@@ -445,9 +445,9 @@ export default function SubscriptionRedesign({
             <button
               onClick={handleDownloadInvoice}
               type="button"
-              className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-white dark:bg-[#172033] hover:bg-slate-50 dark:hover:bg-[#1F2A40] text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-[#232D42] shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5 text-blue-600" />
+              <Download className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               Download Invoice
             </button>
             <button
@@ -464,15 +464,15 @@ export default function SubscriptionRedesign({
         {/* 4 Hero Metric Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Tile 1: Current Plan */}
-          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
+          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-slate-200/70 dark:border-[#1F2A40] relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
             <span className="text-[10px] text-slate-400 font-semibold">
               Current Plan
             </span>
-            <span className="text-sm font-bold text-[#000d21]">
+            <span className="text-sm font-bold text-[#000d21] dark:text-white">
               {subDetails.isActive ? subDetails.planTitle : 'No Active Plan'}
             </span>
-            <span className="text-[11px] text-slate-500">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400">
               {profile?.subscription_plan === '3months'
                 ? '90 Days cycle'
                 : profile?.subscription_plan === '2months'
@@ -482,31 +482,31 @@ export default function SubscriptionRedesign({
           </div>
 
           {/* Tile 2: Next Renewal Date */}
-          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
+          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-slate-200/70 dark:border-[#1F2A40] relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-indigo-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
             <span className="text-[10px] text-slate-400 font-semibold">
               Next Renewal Date
             </span>
-            <span className="text-sm font-bold text-[#000d21]">
+            <span className="text-sm font-bold text-[#000d21] dark:text-white">
               {subDetails.expiryDateStr}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${subDetails.daysLeft > 0 ? 'bg-blue-600' : 'bg-red-500'}`} />
-              <span className={`text-[11px] font-semibold ${subDetails.daysLeft > 0 ? 'text-blue-600' : 'text-red-600'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${subDetails.daysLeft > 0 ? 'bg-blue-600 dark:bg-blue-400' : 'bg-red-500'}`} />
+              <span className={`text-[11px] font-semibold ${subDetails.daysLeft > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
                 {subDetails.daysLeft > 0 ? `${subDetails.daysLeft} Days remaining` : 'Renewal Required'}
               </span>
             </div>
           </div>
 
           {/* Tile 3: Direct Settlement Target */}
-          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
+          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-slate-200/70 dark:border-[#1F2A40] relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
             <span className="text-[10px] text-slate-400 font-semibold">
               Direct Settlement Target
             </span>
             <div className="flex items-center gap-1.5">
-              <Building2 className="w-4 h-4 text-blue-600 shrink-0" />
-              <span className="text-sm font-semibold text-[#000d21] truncate">
+              <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+              <span className="text-sm font-semibold text-[#000d21] dark:text-white truncate">
                 {profile?.bank_name
                   ? `${profile.bank_name} •••• ${(profile.bank_account_number || '').slice(-4)}`
                   : profile?.upi_id || 'Instant Direct UPI'}
@@ -522,16 +522,16 @@ export default function SubscriptionRedesign({
           </div>
 
           {/* Tile 4: Gateway Fee Saved */}
-          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 relative overflow-hidden group">
+          <div className="flex flex-col gap-1 p-4 rounded-xl bg-slate-50/80 dark:bg-[#0B0F1A]/80 border border-slate-200/70 dark:border-[#1F2A40] relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 rounded-full pointer-events-none group- transition-transform duration-300"></div>
             <span className="text-[10px] text-slate-400 font-semibold">
               Gateway Fee Saved
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="text-sm font-bold text-blue-600">0% MDR</span>
+              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">0% MDR</span>
               <span className="text-xs text-slate-400 font-normal">Direct UPI</span>
             </div>
-            <span className="text-[11px] text-emerald-600 font-medium">
+            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
               ₹{gatewayFeesSaved.toLocaleString('en-IN')} saved YTD
             </span>
           </div>
@@ -553,8 +553,8 @@ export default function SubscriptionRedesign({
               Zero lock-in. Instant activation via dynamic UPI QR directly into your bank account.
             </p>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-semibold border border-slate-200/70 dark:border-slate-700 self-start sm:self-auto">
-            <CheckCircle className="w-3.5 h-3.5 text-blue-600" />
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50/80 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-[11px] font-semibold border border-blue-200/70 dark:border-blue-800/60 self-start sm:self-auto">
+            <CheckCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             Direct bank settlement · 0% MDR
           </div>
         </div>
@@ -730,92 +730,92 @@ export default function SubscriptionRedesign({
       {/* ═══════════════════════════════════════════════════════════
           PLAN COMPARISON MATRIX
           ═══════════════════════════════════════════════════════════ */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+      <div className="p-6 rounded-2xl bg-white dark:bg-[#121826] border border-slate-200/80 dark:border-[#1F2A40] shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
           <div>
-            <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
               Plan Comparison
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Compare features across tiers. Upgrades take effect immediately.
             </p>
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-[10px]">
+          <table className="w-full text-left text-xs border border-slate-200 dark:border-[#1F2A40] rounded-xl overflow-hidden">
+            <thead className="bg-slate-50 dark:bg-[#0B0F1A] border-b border-slate-200 dark:border-[#1F2A40] text-slate-500 dark:text-slate-400 font-bold text-[10px]">
               <tr>
                 <th className="px-4 py-3">Feature / Capability</th>
                 <th className="px-4 py-3">Free Link (₹0)</th>
                 <th className="px-4 py-3">Starter (₹99/mo)</th>
                 <th className="px-4 py-3">Growth (₹299/mo)</th>
-                <th className="px-4 py-3 bg-blue-50/50 text-blue-900">Pro Flagship (₹499/mo)</th>
+                <th className="px-4 py-3 bg-blue-50/50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 font-bold">Pro Flagship (₹499/mo)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-[#1F2A40]">
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Direct Bank Settlement</td>
-                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
-                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
-                <td className="px-4 py-3 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
-                <td className="px-4 py-3 bg-blue-50/30 text-emerald-600 font-bold">100% Instant (0% MDR)</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Direct Bank Settlement</td>
+                <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-bold">100% Instant (0% MDR)</td>
+                <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-bold">100% Instant (0% MDR)</td>
+                <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-bold">100% Instant (0% MDR)</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 text-emerald-600 dark:text-emerald-400 font-bold">100% Instant (0% MDR)</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Monthly Transactions (Quota)</td>
-                <td className="px-4 py-3 font-mono text-slate-600">100 links/mo</td>
-                <td className="px-4 py-3 font-mono text-slate-600">300 links/mo</td>
-                <td className="px-4 py-3 font-mono text-slate-600">1,000 txns/mo</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-mono font-bold text-blue-900">UNLIMITED</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Monthly Transactions (Quota)</td>
+                <td className="px-4 py-3 font-mono text-slate-600 dark:text-slate-400">100 links/mo</td>
+                <td className="px-4 py-3 font-mono text-slate-600 dark:text-slate-400">300 links/mo</td>
+                <td className="px-4 py-3 font-mono text-slate-600 dark:text-slate-400">1,000 txns/mo</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 font-mono font-bold text-blue-900 dark:text-blue-300">UNLIMITED</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Developer REST API &amp; SDKs</td>
-                <td className="px-4 py-3 text-slate-400">-</td>
-                <td className="px-4 py-3 text-slate-400">-</td>
-                <td className="px-4 py-3 text-blue-600 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-blue-600" />Full REST API</td>
-                <td className="px-4 py-3 bg-blue-50/30 text-blue-900 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-blue-600" />High-Speed Rails</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Developer REST API &amp; SDKs</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">-</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">-</td>
+                <td className="px-4 py-3 text-blue-600 dark:text-blue-400 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-blue-600 dark:text-blue-400" />Full REST API</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 text-blue-900 dark:text-blue-300 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-blue-600 dark:text-blue-400" />High-Speed Rails</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Payment Links &amp; Counter QR</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Up to 10 Links</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Links</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Unlimited Links</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Unlimited Links</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Payment Links &amp; Counter QR</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">Up to 10 Links</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">Unlimited Links</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">Unlimited Links</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 font-medium text-blue-900 dark:text-blue-300 font-bold">Unlimited Links</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Automated UTR Verification</td>
-                <td className="px-4 py-3 text-slate-400">Manual Check</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Live UTR Rail</td>
-                <td className="px-4 py-3 text-blue-600 font-bold">Auto-UTR Engine</td>
-                <td className="px-4 py-3 bg-blue-50/30 text-blue-900 font-bold">Zero-Latency Matching</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Automated UTR Verification</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">Manual Check</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">Live UTR Rail</td>
+                <td className="px-4 py-3 text-blue-600 dark:text-blue-400 font-bold">Auto-UTR Engine</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 text-blue-900 dark:text-blue-300 font-bold">Zero-Latency Matching</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Webhook Endpoints &amp; Retries</td>
-                <td className="px-4 py-3 text-slate-400">-</td>
-                <td className="px-4 py-3 text-slate-400">-</td>
-                <td className="px-4 py-3 font-medium text-slate-600">5 Webhooks (Auto-retry)</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">Dedicated Replay Rail</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Webhook Endpoints &amp; Retries</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">-</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">-</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">5 Webhooks (Auto-retry)</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 font-medium text-blue-900 dark:text-blue-300 font-bold">Dedicated Replay Rail</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Bank Statements &amp; GST Invoices</td>
-                <td className="px-4 py-3 text-slate-400">Live Dashboard</td>
-                <td className="px-4 py-3 font-medium text-slate-600">CSV Export</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Full CSV + Inflow Analytics</td>
-                <td className="px-4 py-3 bg-blue-50/30 text-blue-900 font-bold">Monthly PDF via Email</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Bank Statements &amp; GST Invoices</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">Live Dashboard</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">CSV Export</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">Full CSV + Inflow Analytics</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 text-blue-900 dark:text-blue-300 font-bold">Monthly PDF via Email</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">White-Label Custom Branding</td>
-                <td className="px-4 py-3 text-slate-400">Powered by MyMobPay</td>
-                <td className="px-4 py-3 text-slate-400">Powered by MyMobPay</td>
-                <td className="px-4 py-3 text-slate-400">Powered by MyMobPay</td>
-                <td className="px-4 py-3 bg-blue-50/30 text-emerald-600 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-emerald-600" />100% White-Label</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">White-Label Custom Branding</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">Powered by MyMobPay</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">Powered by MyMobPay</td>
+                <td className="px-4 py-3 text-slate-400 dark:text-slate-600">Powered by MyMobPay</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 text-emerald-600 dark:text-emerald-400 font-bold"><Check className="w-3.5 h-3.5 inline mr-1 text-emerald-600 dark:text-emerald-400" />100% White-Label</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-slate-800">Support &amp; SLA</td>
-                <td className="px-4 py-3 font-medium text-slate-500">Docs &amp; Community</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Email (48h)</td>
-                <td className="px-4 py-3 font-medium text-slate-600">Priority Email (24h)</td>
-                <td className="px-4 py-3 bg-blue-50/30 font-medium text-blue-900 font-bold">24/7 Dedicated WhatsApp (&lt;1h)</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Support &amp; SLA</td>
+                <td className="px-4 py-3 font-medium text-slate-500 dark:text-slate-400">Docs &amp; Community</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">Email (48h)</td>
+                <td className="px-4 py-3 font-medium text-slate-600 dark:text-slate-300">Priority Email (24h)</td>
+                <td className="px-4 py-3 bg-blue-50/30 dark:bg-blue-950/20 font-medium text-blue-900 dark:text-blue-300 font-bold">24/7 Dedicated WhatsApp (&lt;1h)</td>
               </tr>
             </tbody>
           </table>
@@ -828,10 +828,10 @@ export default function SubscriptionRedesign({
       <div className="flex flex-col gap-4 pt-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold text-[#000d21] tracking-tight">
+            <h2 className="text-lg font-bold text-[#000d21] dark:text-white tracking-tight">
               Billing History &amp; Tax Invoices
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Download GST-compliant tax invoices and track historical cycle activations.
             </p>
           </div>
@@ -840,7 +840,7 @@ export default function SubscriptionRedesign({
             <select
               value={invoiceFilter}
               onChange={(e) => setInvoiceFilter(e.target.value)}
-              className="bg-white border border-slate-200/80 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer shadow-xs"
+              className="bg-white dark:bg-[#172033] border border-slate-200/80 dark:border-[#1F2A40] rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer shadow-xs"
             >
               <option value="all">All Records</option>
               <option value="paid">Paid Invoices</option>
@@ -849,9 +849,9 @@ export default function SubscriptionRedesign({
         </div>
 
         {/* Desktop Table (Visible on md and up) */}
-        <div className="hidden md:block overflow-x-auto rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-          <table className="w-full text-left text-xs text-slate-700">
-            <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500">
+        <div className="hidden md:block overflow-x-auto rounded-2xl bg-white dark:bg-[#121826] border border-slate-200/80 dark:border-[#1F2A40] shadow-xs">
+          <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+            <thead className="bg-slate-50 dark:bg-[#0B0F1A] border-b border-slate-200/80 dark:border-[#1F2A40] text-[11px] font-semibold text-slate-500 dark:text-slate-400">
               <tr>
                 <th className="py-3.5 px-5 font-semibold" scope="col">Invoice Ref</th>
                 <th className="py-3.5 px-4 font-semibold" scope="col">Settlement Date</th>
@@ -861,13 +861,13 @@ export default function SubscriptionRedesign({
                 <th className="py-3.5 px-5 font-semibold text-right" scope="col">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-[#1F2A40]">
               {filteredInvoices.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-10 text-center text-slate-400">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <Building2 className="w-8 h-8 text-slate-300" />
-                      <span className="text-xs font-semibold text-slate-600">No billing records found</span>
+                      <Building2 className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">No billing records found</span>
                       <span className="text-[11px] text-slate-400">
                         Official GST invoices will appear here automatically after subscription renewal.
                       </span>
@@ -876,22 +876,22 @@ export default function SubscriptionRedesign({
                 </tr>
               ) : (
                 filteredInvoices.map((inv, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3.5 px-5 font-semibold text-[#000d21]">
+                  <tr key={idx} className="hover:bg-slate-50/70 dark:hover:bg-[#172033]/60 transition-colors">
+                    <td className="py-3.5 px-5 font-semibold text-[#000d21] dark:text-white">
                       #{inv.ref}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-500">
+                    <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400">
                       {inv.date}
                     </td>
-                    <td className="py-3.5 px-4 font-medium text-slate-800">
+                    <td className="py-3.5 px-4 font-medium text-slate-800 dark:text-slate-200">
                       {inv.plan}
                     </td>
-                    <td className="py-3.5 px-4 font-bold text-[#000d21]">
+                    <td className="py-3.5 px-4 font-bold text-[#000d21] dark:text-white">
                       ₹{Number(inv.amount).toLocaleString('en-IN')}.00
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold text-[10px]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold text-[10px] border border-blue-200/60 dark:border-blue-800/60">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                         {inv.status}
                       </span>
                     </td>
@@ -899,7 +899,7 @@ export default function SubscriptionRedesign({
                       <button
                         onClick={() => handleDownloadInvoice(inv)}
                         type="button"
-                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold text-xs cursor-pointer hover:underline"
+                        className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold text-xs cursor-pointer hover:underline"
                       >
                         <Download className="w-3.5 h-3.5" />
                         Invoice PDF
@@ -915,35 +915,35 @@ export default function SubscriptionRedesign({
         {/* Mobile Invoice Cards (Visible only on md:hidden) */}
         <div className="md:hidden flex flex-col gap-3">
           {filteredInvoices.length === 0 ? (
-            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 text-center text-slate-400">
-              <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-xs font-semibold text-slate-700">No billing records found</p>
+            <div className="p-6 rounded-2xl bg-white dark:bg-[#121826] border border-slate-200/80 dark:border-[#1F2A40] text-center text-slate-400">
+              <Building2 className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">No billing records found</p>
               <p className="text-[11px] text-slate-400 mt-1">Official GST invoices will appear here automatically after renewal.</p>
             </div>
           ) : (
             filteredInvoices.map((inv, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col gap-3">
+              <div key={idx} className="p-4 rounded-2xl bg-white dark:bg-[#121826] border border-slate-200/80 dark:border-[#1F2A40] shadow-xs flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-xs font-bold text-[#000d21]">
+                  <span className="font-mono text-xs font-bold text-[#000d21] dark:text-white">
                     #{inv.ref}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold text-[10px]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold text-[10px] border border-blue-200/60 dark:border-blue-800/60">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                     {inv.status}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-600 font-medium">{inv.plan}</span>
-                  <span className="font-bold text-[#000d21] text-sm">
+                  <span className="text-slate-600 dark:text-slate-300 font-medium">{inv.plan}</span>
+                  <span className="font-bold text-[#000d21] dark:text-white text-sm">
                     ₹{Number(inv.amount).toLocaleString('en-IN')}.00
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-2.5 border-t border-slate-100">
+                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-2.5 border-t border-slate-100 dark:border-[#1F2A40]">
                   <span>Settled: {inv.date}</span>
                   <button
                     onClick={() => handleDownloadInvoice(inv)}
                     type="button"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-600 font-bold text-xs hover:bg-blue-100 transition-colors cursor-pointer active:scale-95"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 font-bold text-xs hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors cursor-pointer active:scale-95 border border-blue-200/60 dark:border-blue-800/60"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Invoice PDF</span>
@@ -968,24 +968,24 @@ export default function SubscriptionRedesign({
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className={`bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden ${detailsModalClass}`}
+            className={`bg-white dark:bg-[#121826] rounded-2xl border border-slate-200 dark:border-[#1F2A40] shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden ${detailsModalClass}`}
             role="dialog"
             aria-modal="true"
           >
             {/* Modal Header (Fixed at top) */}
-            <div className="shrink-0 px-5 sm:px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+            <div className="shrink-0 px-5 sm:px-6 py-4 bg-slate-50 dark:bg-[#0B0F1A] border-b border-slate-100 dark:border-[#1F2A40] flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400">
                   <Info className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#000d21]">Current Subscription Details</h3>
+                  <h3 className="text-sm font-bold text-[#000d21] dark:text-white">Current Subscription Details</h3>
                   <p className="text-[11px] text-slate-400">Live platform license metrics &amp; activation info</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowDetailsModal(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 type="button"
                 aria-label="Close dialog"
               >
@@ -999,34 +999,34 @@ export default function SubscriptionRedesign({
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {/* Primary Status Card */}
-              <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-100 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 flex items-center justify-between">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-semibold text-blue-700">Active Tier</span>
-                  <span className="text-base font-bold text-[#000d21]">{subDetails.planTitle}</span>
-                  <span className="text-xs text-slate-500 mt-0.5">₹{subDetails.planAmount} / cycle · 0% MDR</span>
+                  <span className="text-[10px] font-semibold text-blue-700 dark:text-blue-300">Active Tier</span>
+                  <span className="text-base font-bold text-[#000d21] dark:text-white">{subDetails.planTitle}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">₹{subDetails.planAmount} / cycle · 0% MDR</span>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
                     subDetails.isActive
-                      ? 'bg-emerald-100 text-emerald-800'
+                      ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
                       : subDetails.isCancelled
-                      ? 'bg-amber-100 text-amber-800'
-                      : 'bg-slate-200 text-slate-700'
+                      ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                      : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}>
                     <span className={`w-2 h-2 rounded-full ${subDetails.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
                     {subDetails.isActive ? 'Active' : subDetails.isCancelled ? 'Cancelled' : 'Expired'}
                   </span>
-                  <span className="text-[11px] text-blue-700 font-semibold">{subDetails.daysLeft} days remaining</span>
+                  <span className="text-[11px] text-blue-700 dark:text-blue-300 font-semibold">{subDetails.daysLeft} days remaining</span>
                 </div>
               </div>
 
               {/* Validity Progress Meter */}
               <div className="flex flex-col gap-1.5">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-500">Cycle Duration ({subDetails.totalDays} Days)</span>
-                  <span className="font-semibold text-[#000d21]">{subDetails.daysLeft} days left</span>
+                  <span className="text-slate-500 dark:text-slate-400">Cycle Duration ({subDetails.totalDays} Days)</span>
+                  <span className="font-semibold text-[#000d21] dark:text-white">{subDetails.daysLeft} days left</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                   <div
                     className="h-full bg-blue-600 rounded-full transition-colors duration-500"
                     style={{ width: `${subDetails.percentRemaining}%` }}
@@ -1036,34 +1036,34 @@ export default function SubscriptionRedesign({
 
               {/* Comprehensive Key-Value Information Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0B0F1A] border border-slate-200/70 dark:border-[#1F2A40] flex flex-col gap-0.5">
                   <span className="text-[10px] text-slate-400 font-semibold">Purchased On</span>
-                  <span className="font-semibold text-[#000d21]">{subDetails.activatedAtStr}</span>
+                  <span className="font-semibold text-[#000d21] dark:text-white">{subDetails.activatedAtStr}</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0B0F1A] border border-slate-200/70 dark:border-[#1F2A40] flex flex-col gap-0.5">
                   <span className="text-[10px] text-slate-400 font-semibold">Next Renewal / Expiry</span>
-                  <span className="font-semibold text-[#000d21]">{subDetails.expiryDateStr}</span>
+                  <span className="font-semibold text-[#000d21] dark:text-white">{subDetails.expiryDateStr}</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0B0F1A] border border-slate-200/70 dark:border-[#1F2A40] flex flex-col gap-0.5">
                   <span className="text-[10px] text-slate-400 font-semibold">Payment Method Used</span>
-                  <span className="font-semibold text-[#000d21] truncate">{subDetails.paymentMethodUsed}</span>
+                  <span className="font-semibold text-[#000d21] dark:text-white truncate">{subDetails.paymentMethodUsed}</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0B0F1A] border border-slate-200/70 dark:border-[#1F2A40] flex flex-col gap-0.5">
                   <span className="text-[10px] text-slate-400 font-semibold">Amount Paid</span>
-                  <span className="font-bold text-blue-600">₹{subDetails.planAmount}.00 (0% Fee)</span>
+                  <span className="font-bold text-blue-600 dark:text-blue-400">₹{subDetails.planAmount}.00 (0% Fee)</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0B0F1A] border border-slate-200/70 dark:border-[#1F2A40] flex flex-col gap-0.5">
                   <span className="text-[10px] text-slate-400 font-semibold">Order / Invoice Ref</span>
-                  <span className="font-semibold text-[#000d21] truncate">#{subDetails.orderRef}</span>
+                  <span className="font-semibold text-[#000d21] dark:text-white truncate">#{subDetails.orderRef}</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-0.5">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0B0F1A] border border-slate-200/70 dark:border-[#1F2A40] flex flex-col gap-0.5">
                   <span className="text-[10px] text-slate-400 font-semibold">Settlement Target</span>
-                  <span className="font-semibold text-[#000d21] truncate">
+                  <span className="font-semibold text-[#000d21] dark:text-white truncate">
                     {profile?.bank_name
                       ? `${profile.bank_name} •••• ${(profile.bank_account_number || '').slice(-4)}`
                       : profile?.upi_id || 'Instant Direct UPI'}
@@ -1073,11 +1073,11 @@ export default function SubscriptionRedesign({
             </div>
 
             {/* Modal Action Buttons (Fixed at bottom - Never Cut Off!) */}
-            <div className="shrink-0 p-4 sm:px-6 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="shrink-0 p-4 sm:px-6 bg-slate-50 dark:bg-[#0B0F1A] border-t border-slate-100 dark:border-[#1F2A40] flex flex-col sm:flex-row items-center justify-between gap-3">
               <button
                 onClick={handleDownloadInvoice}
                 type="button"
-                className="text-blue-600 hover:text-blue-700 text-xs font-semibold cursor-pointer py-1 flex items-center gap-1"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-semibold cursor-pointer py-1 flex items-center gap-1"
               >
                 <Download className="w-3.5 h-3.5" />
                 Download GST Tax Invoice
@@ -1087,7 +1087,7 @@ export default function SubscriptionRedesign({
                 <button
                   onClick={() => setShowDetailsModal(false)}
                   type="button"
-                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Close
                 </button>
@@ -1122,15 +1122,15 @@ export default function SubscriptionRedesign({
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className={`bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden ${contactSalesModalClass}`}
+            className={`bg-white dark:bg-[#121826] rounded-2xl border border-slate-200 dark:border-[#1F2A40] shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden ${contactSalesModalClass}`}
             role="dialog"
             aria-modal="true"
           >
-            <div className="shrink-0 px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#000d21]">Enterprise &amp; High-Throughput</h3>
+            <div className="shrink-0 px-6 py-4 bg-slate-50 dark:bg-[#0B0F1A] border-b border-slate-100 dark:border-[#1F2A40] flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[#000d21] dark:text-white">Enterprise &amp; High-Throughput</h3>
               <button
                 onClick={() => setShowContactSalesModal(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1 cursor-pointer"
                 type="button"
                 aria-label="Close dialog"
               >
@@ -1141,13 +1141,13 @@ export default function SubscriptionRedesign({
               className="flex-1 overflow-y-auto overscroll-contain p-6 flex flex-col gap-4 text-xs touch-pan-y"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                 Need high throughput transaction routing (&gt; 5,000 txns/day), dedicated parsing workers, or bespoke sub-merchant architecture?
               </p>
-              <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 flex flex-col gap-2">
-                <span className="font-bold text-blue-900">Direct Enterprise Desk</span>
-                <span className="text-blue-700">support@mymobpay.tech</span>
-                <span className="text-slate-500">SLA: &lt; 2-hour response guarantee</span>
+              <div className="p-4 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-100 dark:border-blue-900/50 flex flex-col gap-2">
+                <span className="font-bold text-blue-900 dark:text-blue-200">Direct Enterprise Desk</span>
+                <span className="text-blue-700 dark:text-blue-300">support@mymobpay.tech</span>
+                <span className="text-slate-500 dark:text-slate-400">SLA: &lt; 2-hour response guarantee</span>
               </div>
               <a
                 href={`mailto:support@mymobpay.tech?subject=Enterprise%20Plan%20Inquiry%20-%20MID%20${merchantMid}`}
@@ -1165,9 +1165,9 @@ export default function SubscriptionRedesign({
          ═══════════════════════════════════════════════════════════ */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 animate-scaleUp">
-          <div className="bg-white border border-slate-200/90 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3">
-            <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="text-xs text-slate-800 font-medium">{toastMessage}</span>
+          <div className="bg-white dark:bg-[#121826] border border-slate-200/90 dark:border-[#1F2A40] px-4 py-3 rounded-xl shadow-xl flex items-center gap-3">
+            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="text-xs text-slate-800 dark:text-white font-medium">{toastMessage}</span>
           </div>
         </div>
       )}

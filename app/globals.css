@@ -2501,6 +2501,201 @@ html.dark {
 .theme-card-shadow { box-shadow: var(--theme-card-shadow); }
 .theme-modal-shadow { box-shadow: var(--theme-modal-shadow); }
 
+/* ══════════════════════════════════════════════════════════════
+   DASHBOARD UNIVERSAL EXECUTIVE DARK MODE COMPATIBILITY
+   Guarantees all 10 dashboard tabs, modal dialogs, data tables,
+   segmented controls, and forms render with consistent dark surfaces.
+   ══════════════════════════════════════════════════════════════ */
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* 1. Primary Elevated Dark Surfaces (Cards, Panels, Modals) */
+html.dark main .bg-white:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"].bg-white:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] .bg-white:not([data-qr]):not([data-qr] *),
+html.dark [aria-modal="true"].bg-white:not([data-qr]):not([data-qr] *),
+html.dark [aria-modal="true"] .bg-white:not([data-qr]):not([data-qr] *),
+html.dark .fixed.inset-0 .bg-white:not([data-qr]):not([data-qr] *),
+html.dark .dashboard-modal .bg-white:not([data-qr]):not([data-qr] *) {
+  background-color: var(--theme-bg-elevated, #121826) !important;
+}
+
+/* 2. Inner Wells, Stat Sub-tiles, and Control Trays */
+html.dark main .bg-slate-50:not([data-qr]):not([data-qr] *),
+html.dark main .bg-slate-50\/80:not([data-qr]):not([data-qr] *),
+html.dark main .bg-slate-50\/70:not([data-qr]):not([data-qr] *),
+html.dark main .bg-slate-50\/60:not([data-qr]):not([data-qr] *),
+html.dark main .bg-slate-50\/50:not([data-qr]):not([data-qr] *),
+html.dark main .bg-slate-100:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] .bg-slate-50:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] .bg-slate-50\/80:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] .bg-slate-50\/70:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] .bg-slate-50\/60:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] .bg-slate-100:not([data-qr]):not([data-qr] *),
+html.dark .fixed.inset-0 .bg-slate-50:not([data-qr]):not([data-qr] *),
+html.dark .fixed.inset-0 .bg-slate-100:not([data-qr]):not([data-qr] *) {
+  background-color: var(--theme-bg-well, #0B0F1A) !important;
+}
+
+/* 3. Borders, Outlines & Dividers */
+html.dark main .border-slate-200,
+html.dark main .border-slate-200\/90,
+html.dark main .border-slate-200\/80,
+html.dark main .border-slate-200\/70,
+html.dark main .border-slate-200\/60,
+html.dark main .border-slate-100,
+html.dark [role="dialog"].border-slate-200,
+html.dark [role="dialog"] .border-slate-200,
+html.dark [aria-modal="true"].border-slate-200,
+html.dark [aria-modal="true"] .border-slate-200,
+html.dark [role="dialog"] .border-slate-100,
+html.dark [role="dialog"] .border-slate-200\/80,
+html.dark [role="dialog"] .border-slate-200\/70,
+html.dark .fixed.inset-0 .border-slate-200,
+html.dark .fixed.inset-0 .border-slate-100,
+html.dark main .divide-slate-100 > * + *,
+html.dark main .divide-slate-200 > * + *,
+html.dark [role="dialog"] .divide-slate-100 > * + *,
+html.dark [role="dialog"] .divide-slate-200 > * + * {
+  border-color: var(--theme-border-color, #1F2A40) !important;
+}
+
+/* 4. High-Contrast Text Headings and Metric Labels */
+html.dark main .text-slate-900,
+html.dark main .text-slate-800,
+html.dark main .text-\[\#000d21\],
+html.dark main .text-\[\#0c2340\],
+html.dark [role="dialog"] .text-slate-900,
+html.dark [role="dialog"] .text-slate-800,
+html.dark [role="dialog"] .text-\[\#000d21\],
+html.dark [role="dialog"] .text-\[\#0c2340\],
+html.dark .fixed.inset-0 .text-slate-900,
+html.dark .fixed.inset-0 .text-slate-800,
+html.dark .fixed.inset-0 .text-\[\#000d21\],
+html.dark .fixed.inset-0 .text-\[\#0c2340\] {
+  color: var(--theme-text-primary, #F8FAFC) !important;
+}
+
+/* 5. Secondary Body Text */
+html.dark main .text-slate-700,
+html.dark [role="dialog"] .text-slate-700,
+html.dark .fixed.inset-0 .text-slate-700 {
+  color: var(--theme-text-secondary, #CBD5E1) !important;
+}
+
+/* 6. Muted Helper and Timestamp Text */
+html.dark main .text-slate-600,
+html.dark main .text-slate-500,
+html.dark [role="dialog"] .text-slate-600,
+html.dark [role="dialog"] .text-slate-500,
+html.dark .fixed.inset-0 .text-slate-600,
+html.dark .fixed.inset-0 .text-slate-500 {
+  color: var(--theme-text-muted, #8E9BB5) !important;
+}
+
+/* 7. Form Controls (Input, Select, Textarea) */
+html.dark main input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([data-qr]):not([data-qr] *),
+html.dark .fixed.inset-0 input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([data-qr]):not([data-qr] *),
+html.dark main select,
+html.dark [role="dialog"] select,
+html.dark .fixed.inset-0 select,
+html.dark main textarea,
+html.dark [role="dialog"] textarea,
+html.dark .fixed.inset-0 textarea {
+  background-color: var(--theme-bg-well, #0B0F1A) !important;
+  border-color: var(--theme-border-color, #1F2A40) !important;
+  color: var(--theme-text-primary, #F8FAFC) !important;
+}
+
+html.dark main input::placeholder,
+html.dark main textarea::placeholder,
+html.dark [role="dialog"] input::placeholder,
+html.dark [role="dialog"] textarea::placeholder,
+html.dark .fixed.inset-0 input::placeholder,
+html.dark .fixed.inset-0 textarea::placeholder {
+  color: #5E6782 !important;
+}
+
+/* 8. Data Tables (Header, Row Hover, Dividers) */
+html.dark main table thead,
+html.dark [role="dialog"] table thead,
+html.dark .fixed.inset-0 table thead {
+  background-color: var(--theme-bg-well, #0B0F1A) !important;
+  border-color: var(--theme-border-color, #1F2A40) !important;
+  color: var(--theme-text-muted, #8E9BB5) !important;
+}
+
+html.dark main table thead th,
+html.dark [role="dialog"] table thead th,
+html.dark .fixed.inset-0 table thead th {
+  color: var(--theme-text-muted, #8E9BB5) !important;
+}
+
+html.dark main table tbody tr:hover,
+html.dark [role="dialog"] table tbody tr:hover,
+html.dark .fixed.inset-0 table tbody tr:hover {
+  background-color: rgba(23, 32, 51, 0.5) !important;
+}
+
+/* 9. Secondary Action Buttons */
+html.dark main button.bg-white:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] button.bg-white:not([data-qr]):not([data-qr] *),
+html.dark .fixed.inset-0 button.bg-white:not([data-qr]):not([data-qr] *) {
+  background-color: var(--theme-bg-secondary, #172033) !important;
+  border-color: var(--theme-border-color, #1F2A40) !important;
+  color: var(--theme-text-secondary, #CBD5E1) !important;
+}
+
+html.dark main button.bg-white:hover:not([data-qr]):not([data-qr] *),
+html.dark [role="dialog"] button.bg-white:hover:not([data-qr]):not([data-qr] *),
+html.dark .fixed.inset-0 button.bg-white:hover:not([data-qr]):not([data-qr] *) {
+  background-color: #1F2A40 !important;
+  color: #FFFFFF !important;
+}
+
+/* 10. Status and Pill Badges */
+html.dark main .bg-blue-50,
+html.dark [role="dialog"] .bg-blue-50,
+html.dark .fixed.inset-0 .bg-blue-50 {
+  background-color: rgba(30, 58, 138, 0.3) !important;
+  color: #93C5FD !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+html.dark main .bg-emerald-50,
+html.dark [role="dialog"] .bg-emerald-50,
+html.dark .fixed.inset-0 .bg-emerald-50 {
+  background-color: rgba(6, 78, 59, 0.35) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+html.dark main .bg-amber-50,
+html.dark [role="dialog"] .bg-amber-50,
+html.dark .fixed.inset-0 .bg-amber-50 {
+  background-color: rgba(120, 53, 15, 0.35) !important;
+  color: #FCD34D !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+html.dark main .bg-red-50,
+html.dark [role="dialog"] .bg-red-50,
+html.dark .fixed.inset-0 .bg-red-50 {
+  background-color: rgba(127, 29, 29, 0.35) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+/* 11. Preserved QR Code Canvas Surfaces */
+[data-qr="surface"],
+[data-qr="surface"] * {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
 /* Bento Cards with Cursor Spotlight Glow */
 .bento-card {
   position: relative;

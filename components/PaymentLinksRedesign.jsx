@@ -1983,7 +1983,7 @@ export default function PaymentLinksRedesign({
 
                       {/* Collapsible Mobile QR display */}
                       {showMobileQr && (
-                        <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-slate-200 shadow-inner animate-fade-in gap-2">
+                        <div data-qr="surface" className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-slate-200 shadow-inner animate-fade-in gap-2">
                           <QRCode
                             value={activeUrl}
                             size={160}
@@ -2064,6 +2064,7 @@ export default function PaymentLinksRedesign({
                         }
                       }}
                       title="Tap to copy payment link URL"
+                      data-qr="surface"
                       className="relative p-3 bg-white hover:bg-slate-50 rounded-2xl border-2 border-slate-100 shadow-sm cursor-pointer active:scale-95 transition-colors"
                     >
                       <QRCode
@@ -3322,7 +3323,7 @@ export default function PaymentLinksRedesign({
                             );
                           })()}
 
-                          <div className="relative" id="standee-qr-frame">
+                          <div data-qr="surface" className="relative" id="standee-qr-frame">
                             <QRCode
                               id="standee-real-qr-code"
                               value={
