@@ -7,6 +7,8 @@ import {
   Check,
   CheckCheck,
   ArrowRight,
+  Briefcase,
+  Database,
   Zap,
   Shield,
   ShieldCheck,
@@ -49,125 +51,144 @@ const FAQ_ITEMS = [
   },
 ];
 
-const PLANS = [
+const plans = [
   {
-    id: 'free',
-    name: 'Free Link Starter',
-    description: 'Ideal for creators, social sellers and zero-cost live testing.',
-    monthlyPrice: 0,
-    annualPrice: 0,
-    monthlySuffix: '/ forever',
-    annualSuffix: '/ forever',
-    monthlyNote: 'Up to 100 transactions / month',
-    annualNote: 'Free forever with 0% gateway commission',
-    buttonText: 'Start Free Forever',
-    buttonVariant: 'ghost',
-    href: '/login?mode=signup',
+    name: "Starter",
+    description:
+      "Great for small businesses and startups looking to get started with flat-rate payments",
+    price: 99,
+    yearlyPrice: 99,
+    isMonthlyOnly: true,
+    buttonText: "Get started",
+    buttonVariant: "outline",
+    popular: false,
     features: [
-      { text: '100 Transactions / month', icon: <Zap className="w-4 h-4 text-emerald-500" /> },
-      { text: 'Dynamic UPI QR & Intent links', icon: <QrCode className="w-4 h-4 text-emerald-500" /> },
-      { text: 'Direct Bank Settlement (T+0)', icon: <ShieldCheck className="w-4 h-4 text-emerald-500" /> },
+      { text: "Up to 300 txns per month", icon: <Briefcase size={20} /> },
+      { text: "Unlimited payment links", icon: <Database size={20} /> },
+      { text: "CSV statement downloads", icon: <Server size={20} /> },
     ],
-    includesTitle: 'Free includes:',
     includes: [
-      '0% Gateway transaction commission',
-      'Direct peer-to-peer bank settlement',
-      'Printable counter standee QR',
-      'Up to 10 active payment links',
-      'Live merchant analytics dashboard',
+      "Free includes:",
+      "Direct bank settlement (T+0)",
+      "Dynamic UPI QR & Intent links",
+      "Printable counter QR standee",
+      "Live merchant analytics dashboard",
     ],
   },
   {
-    id: 'starter',
-    name: 'Starter',
-    description: 'Higher volume, custom slugs and CSV financial statement exports.',
-    monthlyPrice: 99,
-    annualPrice: 99,
-    monthlySuffix: '/ month',
-    annualSuffix: '/ month',
-    monthlyNote: 'Up to 300 transactions / month',
-    annualNote: 'Billed monthly at ₹99/month',
-    buttonText: 'Get Starter (₹99)',
-    buttonVariant: 'secondary',
-    href: '/login?mode=signup',
+    name: "Growth",
+    description:
+      "Best value for growing businesses that need developer REST API and webhooks",
+    price: 299,
+    yearlyPrice: 2990,
+    buttonText: "Get started",
+    buttonVariant: "default",
+    popular: true,
     features: [
-      { text: '300 Transactions / month', icon: <Zap className="w-4 h-4 text-blue-500" /> },
-      { text: 'Unlimited Payment Links', icon: <QrCode className="w-4 h-4 text-blue-500" /> },
-      { text: 'Custom Slugs & CSV Exports', icon: <FileText className="w-4 h-4 text-blue-500" /> },
+      { text: "Full Developer REST API", icon: <Briefcase size={20} /> },
+      { text: "5 Webhooks with auto-retry", icon: <Database size={20} /> },
+      { text: "1,000 verified txns/month", icon: <Server size={20} /> },
     ],
-    includesTitle: 'Everything in Free, plus:',
     includes: [
-      '300 monthly transactions',
-      'Unlimited payment links and QR',
-      'Custom link slugs and payee notes',
-      'Instant CSV statement exports',
-      'Standard email support (48h SLA)',
+      "Everything in Starter, plus:",
+      "Automated UTR bank matching",
+      "High-speed webhook retries",
+      "Custom slug & payee notes",
+      "Priority email support (24h SLA)",
     ],
   },
   {
-    id: 'growth',
-    name: 'Growth',
-    description: 'Full Developer REST API & webhooks for applications & checkouts.',
-    monthlyPrice: 299,
-    annualPrice: 2990,
-    monthlySuffix: '/ month',
-    annualSuffix: '/ year',
-    monthlyNote: 'Up to 1,000 transactions / month (API + Links)',
-    annualNote: '₹249/mo effective (Save ₹598/yr • 2 Months Free)',
-    buttonText: 'Choose Growth (₹299/mo)',
-    buttonTextAnnual: 'Choose Growth (₹2,990/yr)',
-    buttonVariant: 'growth',
-    href: '/login?mode=signup',
+    name: "Pro Flagship",
+    description:
+      "Advanced plan with enhanced security, VIP hotline and unlimited access",
+    price: 499,
+    yearlyPrice: 4990,
+    buttonText: "Get started",
+    buttonVariant: "outline",
+    popular: false,
     features: [
-      { text: 'Full Developer REST API Access', icon: <Code2 className="w-4 h-4 text-sky-500" /> },
-      { text: '5 Webhooks with Auto-Retry', icon: <Server className="w-4 h-4 text-sky-500" /> },
-      { text: '1,000 Verified Transactions / mo', icon: <Zap className="w-4 h-4 text-sky-500" /> },
+      { text: "Unlimited txns & volume", icon: <Briefcase size={20} /> },
+      { text: "24/7 WhatsApp VIP hotline", icon: <Database size={20} /> },
+      { text: "Automated monthly PDF statements", icon: <Server size={20} /> },
     ],
-    includesTitle: 'Everything in Starter, plus:',
     includes: [
-      'Production REST API credentials',
-      'Automated UTR bank matching',
-      'High-speed webhook dispatches',
-      'Up to 1,000 verified transactions',
-      'Priority email support (24h SLA)',
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro Flagship',
-    description: 'Zero limits, 24/7 WhatsApp VIP hotline and PDF bank statements.',
-    monthlyPrice: 499,
-    annualPrice: 4990,
-    monthlySuffix: '/ month',
-    annualSuffix: '/ year',
-    monthlyNote: 'Unlimited transactions and volume',
-    annualNote: '₹415/mo effective (Save ₹998/yr • 2 Months Free)',
-    buttonText: 'Get Pro Flagship (₹499/mo)',
-    buttonTextAnnual: 'Get Pro Flagship (₹4,990/yr)',
-    buttonVariant: 'pro',
-    href: '/login?mode=signup',
-    features: [
-      { text: 'Unlimited Volume & Transactions', icon: <Zap className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" /> },
-      { text: '24/7 WhatsApp VIP (under 1h SLA)', icon: <Headphones className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" /> },
-      { text: 'Automated Monthly PDF Statements', icon: <FileText className="w-4 h-4 text-[#0F2BFF] dark:text-[#60A5FA]" /> },
-    ],
-    includesTitle: 'Everything in Growth, plus:',
-    includes: [
-      'Uncapped transaction quota & volume',
-      'Dedicated 24/7 WhatsApp VIP hotline',
-      'Automated monthly PDF bank statements',
-      'Real-time zero-latency bank polling',
-      'White-label (remove MyMobPay badge)',
-      'Multi-staff team accounts (3 seats)',
+      "Everything in Growth, plus:",
+      "Dedicated VIP support (under 1h SLA)",
+      "Automated monthly PDF statements",
+      "White-label (zero MyMobPay branding)",
+      "Multi-staff team accounts (3 seats)",
     ],
   },
 ];
 
+const PricingSwitch = ({ onSwitch }) => {
+  const [selected, setSelected] = useState("0");
+
+  const handleSwitch = (value) => {
+    setSelected(value);
+    onSwitch(value);
+  };
+
+  return (
+    <div className="flex justify-center">
+      <div className="relative z-50 mx-auto flex w-fit rounded-full bg-neutral-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 p-1">
+        <button
+          type="button"
+          onClick={() => handleSwitch("0")}
+          className={`relative z-10 w-fit sm:h-12 h-10 rounded-full sm:px-6 px-3 sm:py-2 py-1 font-medium transition-colors cursor-pointer ${
+            selected === "0"
+              ? "text-white"
+              : "text-muted-foreground hover:text-black dark:hover:text-white"
+          }`}
+        >
+          {selected === "0" && (
+            <motion.span
+              layoutId={"switch"}
+              className="absolute top-0 left-0 sm:h-12 h-10 w-full rounded-full border-4 shadow-sm shadow-blue-600 border-blue-600 bg-gradient-to-t from-blue-500 via-blue-400 to-blue-600"
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            />
+          )}
+          <span className="relative">Monthly</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleSwitch("1")}
+          className={`relative z-10 w-fit sm:h-12 h-10 flex-shrink-0 rounded-full sm:px-6 px-3 sm:py-2 py-1 font-medium transition-colors cursor-pointer ${
+            selected === "1"
+              ? "text-white"
+              : "text-muted-foreground hover:text-black dark:hover:text-white"
+          }`}
+        >
+          {selected === "1" && (
+            <motion.span
+              layoutId={"switch"}
+              className="absolute top-0 left-0 sm:h-12 h-10 w-full rounded-full border-4 shadow-sm shadow-blue-600 border-blue-600 bg-gradient-to-t from-blue-500 via-blue-400 to-blue-600"
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            />
+          )}
+          <span className="relative flex items-center gap-2">
+            Yearly
+            <span className="rounded-full bg-blue-50 dark:bg-blue-900/60 px-2 py-0.5 text-xs font-medium text-black dark:text-blue-200">
+              Save 20%
+            </span>
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default function PricingClient() {
   const [theme, setTheme] = useState('dark');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'annually'
+  const [isYearly, setIsYearly] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
+  const pricingRef = React.useRef(null);
+
+  const togglePricingPeriod = (val) => {
+    setIsYearly(Number.parseInt(val) === 1);
+  };
 
   // Initialize theme from storage or DOM
   useEffect(() => {
@@ -210,7 +231,7 @@ export default function PricingClient() {
     setOpenFaq(openFaq === index ? null : index);
   };
 
-  const isAnnual = billingCycle === 'annually';
+  const isAnnual = isYearly;
 
   return (
     <div className="pricing-root relative min-h-screen theme-bg-secondary bg-arch-grid theme-text-secondary overflow-hidden transition-colors duration-250 font-sans">
@@ -469,197 +490,121 @@ export default function PricingClient() {
         )}
       </header>
 
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-8 pb-16 sm:pt-14 sm:pb-24">
-        {/* ── Sleek Clean Hero Section (No Border on Pill) ── */}
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full theme-bg-elevated shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] theme-text-primary">
-              DIRECT-TO-BANK UPI &amp; IMPS • 0% COMMISSION
-            </span>
-          </div>
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-8 pb-16 sm:pt-14 sm:pb-24" ref={pricingRef}>
+        {/* Radial glow background aura from design */}
+        <div
+          className="absolute top-0 left-[10%] right-[10%] w-[80%] h-[550px] z-0 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at center, #206ce8 0%, transparent 70%)`,
+            opacity: 0.55,
+            mixBlendMode: "multiply",
+          }}
+        />
 
-          <h1 className="headline-anton text-[42px] sm:text-[62px] lg:text-[76px] mt-4 tracking-tight">
-            KEEP 100% OF YOUR REVENUE. <br />
-            <span className="bg-gradient-to-r from-[#0F2BFF] via-[#2563EB] to-[#00A3FF] dark:from-[#60A5FA] dark:via-[#93C5FD] dark:to-[#38BDF8] bg-clip-text text-transparent">
-              PICK YOUR PLAN.
+        <div className="text-center mb-6 max-w-3xl mx-auto relative z-10">
+          <h2 className="md:text-6xl sm:text-4xl text-3xl font-medium text-gray-900 dark:text-white mb-4">
+            Plans that works best for your{" "}
+            <span className="border border-dashed border-blue-500 px-3 py-1 rounded-xl bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 capitalize inline-block font-semibold">
+              business
             </span>
-          </h1>
-          <p className="mt-3 text-sm sm:text-base theme-text-secondary leading-relaxed max-w-2xl mx-auto font-medium">
-            Stop paying 2% on every checkout. Switch to flat, predictable software subscriptions. Direct UPI &amp; IMPS settlement into your own merchant bank account.
+          </h2>
+          <p className="sm:text-base text-sm text-gray-600 dark:text-gray-300 sm:w-[70%] w-[80%] mx-auto">
+            Trusted by millions, We help teams all around the world, Explore which option is right for you.
           </p>
-
-          {/* Micro-Trust Highlights (Clean text with color dots, no stickers, no emojis) */}
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-y-2 gap-x-5 text-xs font-semibold theme-text-muted">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              0% Transaction Fees
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-              Instant T+0 Direct Bank Settlement
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-              Zero Escrow / No Nodal Hold
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-              Cancel or Upgrade Anytime
-            </span>
-          </div>
-
-          {/* ── Billing Cycle Selector (Borderless, Sticker-Free Clean Tab with Smooth Motion) ── */}
-          <div className="mt-8 flex justify-center">
-            <div className="relative mx-auto flex w-fit rounded-full theme-bg-elevated p-1.5 shadow-sm">
-              <button
-                type="button"
-                onClick={() => setBillingCycle('monthly')}
-                className={`relative z-10 w-fit h-11 rounded-full px-5 sm:px-6 py-2 text-xs sm:text-sm font-bold transition-colors cursor-pointer ${
-                  billingCycle === 'monthly'
-                    ? 'text-white'
-                    : 'theme-text-muted hover:theme-text-primary'
-                }`}
-              >
-                {billingCycle === 'monthly' && (
-                  <motion.span
-                    layoutId="pricing-switch-pill"
-                    className="absolute inset-0 rounded-full bg-[#0F2BFF] shadow-md"
-                    transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                  />
-                )}
-                <span className="relative z-10">Monthly Billing</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setBillingCycle('annually')}
-                className={`relative z-10 w-fit h-11 rounded-full px-5 sm:px-6 py-2 text-xs sm:text-sm font-bold transition-colors cursor-pointer ${
-                  billingCycle === 'annually'
-                    ? 'text-white'
-                    : 'theme-text-muted hover:theme-text-primary'
-                }`}
-              >
-                {billingCycle === 'annually' && (
-                  <motion.span
-                    layoutId="pricing-switch-pill"
-                    className="absolute inset-0 rounded-full bg-[#0F2BFF] shadow-md"
-                    transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                  />
-                )}
-                <span className="relative z-10">Annual (2 Months Free)</span>
-              </button>
-            </div>
-          </div>
-
-          {isAnnual && (
-            <p className="mt-3 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-              Annual billing available for Growth and Pro Flagship (Pay for 10 months, get 12 months)
-            </p>
-          )}
         </div>
 
-        {/* ── THE 4 PRICING MODELS (BORDERLESS, STICKER-FREE FINTECH DESIGN) ── */}
-        <div className="mt-10 sm:mt-14">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-            {PLANS.map((plan) => {
-              const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
-              const suffix = isAnnual ? plan.annualSuffix : plan.monthlySuffix;
-              const note = isAnnual ? plan.annualNote : plan.monthlyNote;
-              const btnLabel =
-                isAnnual && plan.buttonTextAnnual
-                  ? plan.buttonTextAnnual
-                  : plan.buttonText;
+        <div className="relative z-10 mb-4">
+          <PricingSwitch onSwitch={togglePricingPeriod} />
+        </div>
 
-              return (
-                <div
-                  key={plan.id}
-                  className={`theme-bg-elevated rounded-3xl p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 relative border-0 ${
-                    plan.id === 'pro'
-                      ? 'shadow-lg hover:shadow-2xl hover:-translate-y-1'
-                      : plan.id === 'growth'
-                      ? 'shadow-md hover:shadow-2xl hover:-translate-y-1'
-                      : 'shadow-sm hover:shadow-lg'
+        <div className="text-center mb-4 relative z-10">
+          <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
+            Looking for zero-cost testing?{" "}
+            <Link href="/login?mode=signup" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+              Try Free Link Starter (₹0 forever &bull; 100 txns/mo) &rarr;
+            </Link>
+          </span>
+        </div>
+
+        <div className="grid md:grid-cols-3 max-w-7xl gap-4 py-6 mx-auto relative z-10">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`relative rounded-3xl border text-left p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 ${
+                plan.popular
+                  ? "ring-2 ring-blue-500 border-blue-500 bg-blue-50 dark:bg-blue-950/40"
+                  : "border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+              }`}
+            >
+              <div>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-3xl font-semibold text-gray-900 dark:text-white">
+                    {plan.name}
+                  </h3>
+                  {plan.popular && (
+                    <div>
+                      <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        Popular
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 min-h-[40px]">
+                  {plan.description}
+                </p>
+                <div className="flex items-baseline mb-6">
+                  <span className="text-4xl font-semibold text-gray-900 dark:text-white">
+                    ₹{isYearly ? plan.yearlyPrice : plan.price}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400 ml-1 text-sm font-medium">
+                    /{isYearly ? (plan.isMonthlyOnly ? "month" : "year") : "month"}
+                  </span>
+                </div>
+
+                <Link
+                  href="/login?mode=signup"
+                  className={`w-full mb-6 p-4 text-xl rounded-xl text-center block font-medium transition-all ${
+                    plan.popular
+                      ? "bg-gradient-to-t from-blue-500 to-blue-600 shadow-lg shadow-blue-500/50 border border-blue-400 text-white hover:opacity-95"
+                      : "bg-gradient-to-t from-neutral-900 to-neutral-600 shadow-lg shadow-neutral-900/40 border border-neutral-700 text-white hover:opacity-95"
                   }`}
                 >
-                  <div className="flex flex-col justify-between h-full">
-                    <div>
-                      {/* Plan Header */}
-                      <h3 className="text-2xl font-black theme-text-primary tracking-tight font-sans">
-                        {plan.name}
-                      </h3>
-                      <p className="text-xs sm:text-sm theme-text-muted mt-2 leading-relaxed min-h-[38px]">
-                        {plan.description}
-                      </p>
+                  {plan.buttonText}
+                </Link>
 
-                      {/* Price Lockup */}
-                      <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/60">
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="text-4xl sm:text-5xl font-extrabold theme-text-primary font-mono tracking-tight">
-                            ₹{price.toLocaleString('en-IN')}
-                          </span>
-                          <span className="theme-text-muted text-xs sm:text-sm font-semibold">
-                            {suffix}
-                          </span>
-                        </div>
-                        <div className="mt-2 text-xs font-semibold min-h-[18px] text-slate-500 dark:text-slate-400">
-                          {note}
-                        </div>
-                      </div>
+                <ul className="space-y-2 font-semibold py-5">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center">
+                      <span className="text-neutral-800 dark:text-neutral-200 grid place-content-center mt-0.5 mr-3 shrink-0">
+                        {feature.icon}
+                      </span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        {feature.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
 
-                      {/* CTA Button Directly Under Price (Inspiration Pattern) */}
-                      <div className="mt-6">
-                        <Link
-                          href={plan.href}
-                          className={`w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-center flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                            plan.buttonVariant === 'pro'
-                              ? 'bg-[#0F2BFF] hover:bg-[#081EC4] text-white shadow-md hover:shadow-lg'
-                              : plan.buttonVariant === 'growth'
-                              ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sm hover:shadow-md'
-                              : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 theme-text-primary'
-                          }`}
-                        >
-                          <span>{btnLabel}</span>
-                          {(plan.buttonVariant === 'growth' || plan.buttonVariant === 'pro') && (
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          )}
-                        </Link>
-                      </div>
-
-                      {/* Primary Features Highlight (with dedicated icons) */}
-                      <ul className="mt-7 space-y-3 font-medium">
-                        {plan.features.map((feature, featureIndex) => (
-                          <li key={featureIndex} className="flex items-center gap-2.5">
-                            <span className="shrink-0 p-1.5 rounded-lg theme-bg-well">
-                              {feature.icon}
-                            </span>
-                            <span className="text-xs sm:text-[13px] theme-text-primary font-semibold leading-snug">
-                              {feature.text}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      {/* Divider and Secondary "Includes:" Checklist */}
-                      <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800/60">
-                        <p className="text-xs font-bold uppercase tracking-wider theme-text-muted mb-3">
-                          {plan.includesTitle}
-                        </p>
-                        <ul className="space-y-2.5 text-xs sm:text-[13px] theme-text-secondary">
-                          {plan.includes.map((include, includeIndex) => (
-                            <li key={includeIndex} className="flex items-center gap-2">
-                              <CheckCheck className="w-4 h-4 text-emerald-500 shrink-0 stroke-[2.2]" />
-                              <span className="leading-snug">{include}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
+                <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                  <h4 className="font-medium text-base text-gray-900 dark:text-white mb-3">
+                    {plan.includes[0]}
+                  </h4>
+                  <ul className="space-y-2 font-semibold">
+                    {plan.includes.slice(1).map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center">
+                        <span className="h-6 w-6 bg-green-50 dark:bg-green-950/40 border border-blue-500 rounded-full grid place-content-center mt-0.5 mr-3 shrink-0">
+                          <CheckCheck className="h-4 w-4 text-blue-500" />
+                        </span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* ── Trust & Settlement Guarantees Banner (Borderless, Elevated) ── */}
