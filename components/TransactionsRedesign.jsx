@@ -574,18 +574,18 @@ export default function TransactionsRedesign({
          ═══════════════════════════════════════════════════════════ */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
         <div>
-          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] mb-2.5">
             <span>Transactions</span>
             <span>/</span>
             <span className="text-[var(--accent-link,#0F2BFF)] font-bold">Audit Ledger</span>
-            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[10px] font-bold">
               Live Ingestion &bull; T+0
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
+          <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-[0.025em] text-[var(--theme-text-primary)] uppercase leading-snug">
             TRANSACTIONS &amp; REAL-TIME AUDIT LEDGER
           </h1>
-          <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
+          <p className="text-[13px] sm:text-[13.5px] text-[var(--theme-text-muted)] mt-2 leading-relaxed">
             Real-time payment audit trail across UPI QR, IMPS Direct, and Web3 rails with instant direct-to-bank settlement.
           </p>
         </div>
@@ -634,10 +634,10 @@ export default function TransactionsRedesign({
               <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+          <div className="text-[22px] sm:text-[30px] lg:text-[34px] font-bold tracking-tight leading-none text-[var(--theme-text-primary)] my-2 sm:my-3 truncate tabular-nums">
             ₹{kpiMetrics.totalVolume.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </div>
-          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
             <span className="font-bold text-[#059669] dark:text-[#34D399] inline-flex items-center gap-1 shrink-0">
               <TrendingUp className="w-3 h-3" />
               <span>{kpiMetrics.growthDelta}</span>
@@ -658,10 +658,10 @@ export default function TransactionsRedesign({
               <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+          <div className="text-[22px] sm:text-[30px] lg:text-[34px] font-bold tracking-tight leading-none text-[var(--theme-text-primary)] my-2 sm:my-3 truncate tabular-nums">
             ₹{kpiMetrics.settledVolume.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </div>
-          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
             <span className="font-bold text-[#059669] dark:text-[#34D399]">
               Direct T+0
             </span>
@@ -678,10 +678,10 @@ export default function TransactionsRedesign({
               <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+          <div className="text-[22px] sm:text-[30px] lg:text-[34px] font-bold tracking-tight leading-none text-[var(--theme-text-primary)] my-2 sm:my-3 truncate tabular-nums">
             {kpiMetrics.successfulTxns.toLocaleString('en-IN')}
           </div>
-          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
             <span className="font-bold text-[#059669] dark:text-[#34D399]">
               {kpiMetrics.conversionRate}% Conv.
             </span>
@@ -698,10 +698,10 @@ export default function TransactionsRedesign({
               <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
           </div>
-          <div className="text-[22px] sm:text-[32px] lg:text-[36px] font-extrabold tracking-tight leading-none text-[var(--theme-text-primary)] mt-2 sm:mt-2.5 truncate tabular-nums">
+          <div className="text-[22px] sm:text-[30px] lg:text-[34px] font-bold tracking-tight leading-none text-[var(--theme-text-primary)] my-2 sm:my-3 truncate tabular-nums">
             142ms
           </div>
-          <div className="mt-2 sm:mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] min-w-0">
             <span className="text-[10.5px] font-medium text-[var(--theme-text-muted)] truncate">
               Sub-second NPCI speed
             </span>

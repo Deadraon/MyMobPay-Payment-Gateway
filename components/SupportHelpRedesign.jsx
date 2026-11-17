@@ -126,7 +126,7 @@ export default function SupportHelpRedesign({
       {/* ── Page Header ────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
         <div>
-          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] mb-2.5">
             <span>Support</span>
             <span>/</span>
             <span className="text-[var(--accent-link,#0F2BFF)] font-bold">Help Desk &amp; Status</span>
@@ -134,10 +134,10 @@ export default function SupportHelpRedesign({
               Priority Founder Support &bull; 24/7
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
+          <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-[0.025em] text-[var(--theme-text-primary)] uppercase leading-snug">
             SUPPORT &amp; RESOLUTION DESK
           </h1>
-          <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
+          <p className="text-[13px] sm:text-[13.5px] text-[var(--theme-text-muted)] mt-2 leading-relaxed">
             Open engineering support tickets, diagnose UPI error codes, and check live bank switch health.
           </p>
         </div>

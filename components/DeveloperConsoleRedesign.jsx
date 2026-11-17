@@ -158,18 +158,18 @@ export default function DeveloperConsoleRedesign({
       {/* ── Page Header ────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
         <div>
-          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)]">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-text-muted)] mb-2.5">
             <span>Developers</span>
             <span>/</span>
             <span className="text-[var(--accent-link,#0F2BFF)] font-bold">API Rails</span>
-            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[9.5px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] text-[10px] font-bold">
               REST API v2.1 &bull; Direct Settlement
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[var(--theme-text-primary)] mt-1 uppercase">
+          <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-[0.025em] text-[var(--theme-text-primary)] uppercase leading-snug">
             DEVELOPER &amp; API INFRASTRUCTURE
           </h1>
-          <p className="text-[12.5px] text-[var(--theme-text-muted)] mt-0.5">
+          <p className="text-[13px] sm:text-[13.5px] text-[var(--theme-text-muted)] mt-2 leading-relaxed">
             Programmatic UPI checkout integration, HMAC SHA-256 webhooks, and live request inspector.
           </p>
         </div>
