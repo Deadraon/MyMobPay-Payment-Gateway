@@ -651,9 +651,11 @@ export default function SubscriptionRedesign({
 
             let buttonLabel = `Subscribe (${plan.name})`;
             if (isCurrent) {
-              buttonLabel = plan.isFreeForever ? "Current Active Plan" : `Extend License (₹${effectivePrice.toLocaleString('en-IN')})`;
+              buttonLabel = "Current";
             } else if (isUpgrade) {
-              buttonLabel = `Upgrade to ${plan.name} (₹${effectivePrice.toLocaleString('en-IN')})`;
+              buttonLabel = subDetails.isActive
+                ? `Upgrade to ${plan.name} (₹${effectivePrice.toLocaleString('en-IN')})`
+                : `Subscribe to ${plan.name} (₹${effectivePrice.toLocaleString('en-IN')})`;
             } else if (isDowngrade) {
               buttonLabel = `Downgrade to ${plan.name}`;
             }
@@ -698,26 +700,31 @@ export default function SubscriptionRedesign({
                     </span>
                   </div>
 
-                  <button
-                    type="button"
-                    disabled={isActivating || isCheckingOut || (isCurrent && plan.isFreeForever)}
-                    onClick={() => {
-                      if (!plan.isFreeForever) {
-                        handleProceedToCheckout(plan, isYearly);
-                      }
-                    }}
-                    className={`w-full mb-5 p-3.5 text-sm sm:text-base rounded-xl text-center font-semibold transition-all cursor-pointer ${
-                      isCurrent && plan.isFreeForever
-                        ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 cursor-default"
-                        : plan.popular
-                        ? "bg-gradient-to-t from-blue-500 to-blue-600 shadow-lg shadow-blue-500/50 border border-blue-400 text-white hover:opacity-95"
-                        : "bg-gradient-to-t from-neutral-900 to-neutral-700 dark:from-[#232D42] dark:to-[#161D2B] shadow-lg shadow-neutral-900/30 dark:shadow-black/60 border border-neutral-700 dark:border-[#384663] text-white hover:opacity-95"
-                    }`}
-                  >
-                    {isCheckingOut && selectedPlanId === plan.id
-                      ? "Redirecting to Checkout..."
-                      : buttonLabel}
-                  </button>
+                  {/* Plan Action Selection: Hide downgrade options when subscription is active. Current subscription card selection is grayed out with text "Current" */}
+                  {isDowngrade && subDetails.isActive ? null : (
+                    <button
+                      type="button"
+                      disabled={isActivating || isCheckingOut || isCurrent}
+                      onClick={() => {
+                        if (!isCurrent && !plan.isFreeForever) {
+                          handleProceedToCheckout(plan, isYearly);
+                        }
+                      }}
+                      className={`w-full mb-5 p-3.5 text-sm sm:text-base rounded-xl text-center font-semibold transition-all ${
+                        isCurrent
+                          ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 cursor-not-allowed select-none shadow-none pointer-events-none"
+                          : plan.popular
+                          ? "bg-gradient-to-t from-blue-500 to-blue-600 shadow-lg shadow-blue-500/50 border border-blue-400 text-white hover:opacity-95 cursor-pointer"
+                          : "bg-gradient-to-t from-neutral-900 to-neutral-700 dark:from-[#232D42] dark:to-[#161D2B] shadow-lg shadow-neutral-900/30 dark:shadow-black/60 border border-neutral-700 dark:border-[#384663] text-white hover:opacity-95 cursor-pointer"
+                      }`}
+                    >
+                      {isCheckingOut && selectedPlanId === plan.id
+                        ? "Redirecting to Checkout..."
+                        : isCurrent
+                        ? "Current"
+                        : buttonLabel}
+                    </button>
+                  )}
 
                   <ul className="space-y-2.5 font-medium py-3 text-xs">
                     {plan.features.map((feature, featureIndex) => (
