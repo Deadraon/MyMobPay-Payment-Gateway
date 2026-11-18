@@ -1586,7 +1586,7 @@ export default function DashboardPage() {
     // Lock Live Mode if subscription is not active
     if (!nextSandbox && !isLiveUnlocked) {
       setActiveTab('subscription');
-      alert('🔒 Live Production Mode is locked.\n\nPlease activate or renew your subscription plan to accept live customer payments and unlock your Live API Key!');
+      alert('Live Production Mode is locked.\n\nPlease activate or renew your subscription plan to accept live customer payments and unlock your Live API Key!');
       return;
     }
 
@@ -2886,7 +2886,7 @@ echo "Order Created: " . $data['orderId'];
 
     return {
       active,
-      planName: 'Premium Subscription Tier',
+      planName: 'Subscription Tier',
       activatedAt,
       expiresAt,
       daysLeft,
@@ -2988,19 +2988,19 @@ echo "Order Created: " . $data['orderId'];
           {/* Unified Enterprise License & Privilege Control Pod */}
           <div className="px-3.5 pb-2 shrink-0">
             <div className="workspace-license-pod space-y-2 p-2.5">
-              {/* Top Row: Premium Active Status + Live PRO Badge */}
+              {/* Top Row: Subscription Active Status + Live Plan Badge */}
               <div
                 onClick={() => { setActiveTab('subscription'); setIsMobileMenuOpen(false); }}
                 className="flex items-center justify-between gap-2 p-1 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors cursor-pointer group"
-                title={isLiveUnlocked ? "Inspect 0% MDR License" : "Upgrade to Pro License"}
+                title={isLiveUnlocked ? "Manage Subscription Plan" : "Upgrade Subscription"}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-7 h-7 rounded-lg bg-[#10B981] text-[#042F1E] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                    <Crown className="w-3.5 h-3.5 crown-emblem-anim text-[#042F1E]" strokeWidth={2.3} />
+                  <span className="w-7 h-7 rounded-lg bg-[#0F2BFF] text-white flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
+                    <Layers className="w-3.5 h-3.5 text-white" strokeWidth={2.3} />
                   </span>
                   <div className="leading-tight min-w-0">
-                    <div className="text-[11.5px] font-extrabold text-[var(--theme-text-primary,#090D18)] group-hover:text-[#059669] dark:group-hover:text-[#34D399] transition-colors truncate">
-                      {isLiveUnlocked ? 'Premium Active' : 'Free Sandbox'}
+                    <div className="text-[11.5px] font-extrabold text-[var(--theme-text-primary,#090D18)] group-hover:text-[#0F2BFF] dark:group-hover:text-[#60A5FA] transition-colors truncate">
+                      {isLiveUnlocked ? 'Subscription Active' : 'Free Sandbox'}
                     </div>
                     <div className="font-mono text-[9px] text-[var(--theme-text-muted,#5E6782)] truncate">
                       {isLiveUnlocked ? (
@@ -3014,10 +3014,10 @@ echo "Order Created: " . $data['orderId'];
 
                 <span className={`px-1.5 py-0.5 rounded-full font-mono text-[9px] font-extrabold inline-flex items-center gap-1 shrink-0 ${
                   isLiveUnlocked
-                    ? 'bg-[#10B981]/15 border border-[#10B981]/35 text-[#059669] dark:text-[#34D399]'
+                    ? 'bg-[#0F2BFF]/10 dark:bg-[#0F2BFF]/20 border border-[#0F2BFF]/30 text-[#0F2BFF] dark:text-[#60A5FA]'
                     : 'bg-amber-500/15 border border-amber-500/35 text-amber-600 dark:text-amber-400'
                 }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${isLiveUnlocked ? 'bg-[#10B981] animate-pulse' : 'bg-amber-500'}`}></span>
+                  <span className={`w-1.5 h-1.5 rounded-full ${isLiveUnlocked ? 'bg-[#0F2BFF] dark:bg-[#60A5FA] animate-pulse' : 'bg-amber-500'}`}></span>
                   <span>{isLiveUnlocked ? activePlanInfo.badge : 'PLAN'}</span>
                 </span>
               </div>
@@ -4117,7 +4117,7 @@ echo "Order Created: " . $data['orderId'];
 
                     <div>
                       <label className="block mb-1.5 flex items-center gap-1.5 text-slate-600">
-                        <Mail className="w-3.5 h-3.5" /> Login Account Email <span className="text-[9px] bg-amber-100 text-amber-800 border border-amber-250 px-2 py-0.5 rounded-lg font-semibold flex items-center gap-1">🔒 LOCKED</span>
+                        <Mail className="w-3.5 h-3.5" /> Login Account Email <span className="text-[9px] bg-amber-100 text-amber-800 border border-amber-250 px-2 py-0.5 rounded-lg font-semibold flex items-center gap-1">LOCKED</span>
                       </label>
                       <input
                         type="email"
@@ -4287,7 +4287,7 @@ echo "Order Created: " . $data['orderId'];
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="block text-xs font-semibold text-slate-900 flex items-center gap-1.5">
-                            <span className="text-emerald-600 font-bold">🏛️</span> Direct Bank Transfer (IMPS / NEFT)
+                            <Building2 className="w-3.5 h-3.5 text-emerald-600" /> Direct Bank Transfer (IMPS / NEFT)
                             <span className="text-[9px] bg-emerald-100 text-emerald-800 font-semibold px-1.5 py-0.2 rounded-md">0% MDR</span>
                           </label>
                           <p className="text-[10px] text-slate-400 font-medium mt-0.5">Enable buyers to pay via high-value bank transfers verified automatically via bank email.</p>
